@@ -88,5 +88,8 @@ public enum DiplomacyTextState
 	REJECT_EXCHANGE_SPELL,
 
 	/** Other wizard saying thanks for thr trade */
-	THANKS_FOR_EXCHANGING_SPELL;
+	THANKS_FOR_EXCHANGING_SPELL,
+	
+	/** Broken a wizard pact or alliance by attacking their units or a city, so they're mad about it */
+	BROKEN_PACT_UNITS_OR_CITY;
 }

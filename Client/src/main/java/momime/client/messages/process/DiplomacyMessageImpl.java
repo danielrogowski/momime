@@ -54,6 +54,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 		getDiplomacyUI ().setOfferGoldAmount (getOfferGoldAmount ());
 		getDiplomacyUI ().setRequestSpellID (getRequestSpellID ());
 		getDiplomacyUI ().setOfferSpellID (getOfferSpellID ());
+		getDiplomacyUI ().setCityName (getCityName ());
 		getDiplomacyUI ().setMeetWizardMessage (null);
 
 		switch (getAction ())
@@ -194,6 +195,19 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_EXCHANGING_SPELL);
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
+				break;
+
+			case BROKEN_WIZARD_PACT_CITY:
+			case BROKEN_ALLIANCE_CITY:
+			case BROKEN_ALLIANCE_UNITS:
+				getDiplomacyUI ().initializeTalkingWizard ();
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
+				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				getDiplomacyUI ().updateRelationScore ();
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				getDiplomacyUI ().setVisible (true);
 				break;
 				
 			default:

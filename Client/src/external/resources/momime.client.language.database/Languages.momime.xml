@@ -4638,9 +4638,15 @@ Bonus Or +GOLD_BONUS%</text>
 		<endConversation language="en">
 			<text>Good Bye</text>
 		</endConversation>
+		<wizardPact language="en">
+			<text>Wizard Pact</text>
+		</wizardPact>
 		<proposeWizardPact language="en">
 			<text>Propose Wizard Pact</text>
 		</proposeWizardPact>
+		<alliance language="en">
+			<text>Alliance</text>
+		</alliance>
 		<proposeAlliance language="en">
 			<text>Propose Alliance</text>
 		</proposeAlliance>
@@ -5381,6 +5387,105 @@ Bonus Or +GOLD_BONUS%</text>
 				<text>Genau, wie ich argwoehnte. Ihr kleidet Eure Gaunereien in leere Versprechungen!</text>
 			</textVariant>
 		</brokenPactPhrase>
+		<pactBrokenUnitsPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you attacked my troops after being warned. Our TYPE_OF_PACT is broken.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, vous avez attaque mes troupes en depit de mes avertissements. Notre TYPE_OF_PACT est rompu.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr habt trotz meiner Warnungen meine Truppen angegriffen. Unser TYPE_OF_PACT ist beendet.</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenUnitsPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>You back-stabbing infidel! You agreed to uphold our TYPE_OF_PACT, then you attacked!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous n'etes qu'un traite et un lache! Vous acceptez de vous en tenir aux termes de notre TYPE_OF_PACT, puis vous attaquez!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Hinterhaeltiger Hund! Ihr hattet geschworen, dass unser TYPE_OF_PACT nie gebrochen wuerde und habt dann doch angegriffen!</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenUnitsPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Your attack on my troops proves you place no trust in our TYPE_OF_PACT. Consider it broken.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre attaque de mes troupes prouve que je ne peux pas etre sur que vous honorerez notre TYPE_OF_PACT. Il est donc revoque.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer Angriff auf meine Truppen beweist, dass Euch unser TYPE_OF_PACT nicht viel bedeutet. Betrachtet unser Abkommen als hinfaellig.</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenUnitsPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>You have slain my minions. The TYPE_OF_PACT is no more.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous avez tue mes hommes. Le TYPE_OF_PACT n'a plus cours.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr habt meine Gefolgsleute dahingeschlachtet! Unser TYPE_OF_PACT gilt daher nicht mehr.</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenUnitsPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I will not stand for allies destroying my troops, even if inadvertently. Our agreement ends now.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, je ne supporterai pas de voir des allies detruire mon armee meme par megarde. Notre accord n'est plus que du passe.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, was sind das fuer Verbuendete, die meine Truppen vernichten? Auch wenn es unbeabsichtigt war - unser Abkommen ist hinfaellig!</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenCityPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, your tyrannical nature has forced me to break our TYPE_OF_PACT. Another attack like the one at CITY_NAME and we shall be at war.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, votre nature tyrannique me force a rompre notre TYPE_OF_PACT. Une autre attaque du genre de celle de CITY_NAME et ce sera la guerre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, durch Euer tyrannisches Verhalten ist unser TYPE_OF_PACT ungueltig. Noch eine Attacke wie bei CITY_NAME, und es gibt Krieg.</text>
+			</textVariant>
+		</pactBrokenCityPhrase>
+		<pactBrokenCityPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Your attack on CITY_NAME proves that you have no honor. Our treaty is over.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre attaque de CITY_NAME montre que vous n'avez pas d'honneur. Notre traite est revoque.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer Angriff auf CITY_NAME beweist, dass Ihr keinen Funken Ehre im Leib habt. Unser Abkommen ist hiermit beendet.</text>
+			</textVariant>
+		</pactBrokenCityPhrase>
+		<pactBrokenCityPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I can stomach no treaties with a lying dog who mercilessly attacks my cities.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne veux aucun traite avec un fourbe qui attaque mes villes sans faire de quartier.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich kann keine Buendnisse mit einem raeudigen Hund aufrechterhalten, der meine Staedte gnadenlos angreift.</text>
+			</textVariant>
+		</pactBrokenCityPhrase>
+		<pactBrokenCityPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Our TYPE_OF_PACT ends now. Another attack like the one at CITY_NAME and I will retaliate.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Notre TYPE_OF_PACT n'a plus cours. Une autre attaque comme celle de CITY_NAME et je me vengerai.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Unser TYPE_OF_PACT ist hiermit beendet. Noch ein Angriff wie der bei CITY_NAME, und ich werde zurueckschlagen.</text>
+			</textVariant>
+		</pactBrokenCityPhrase>
 		<grownImpatientPhrase variantNumber="1">
 			<textVariant language="en">
 				<text>I tire of diplomatic negotiations. We can continue discussions at a later time.</text>

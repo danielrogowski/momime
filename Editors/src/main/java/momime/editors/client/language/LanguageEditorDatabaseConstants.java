@@ -29,12 +29,18 @@ public final class LanguageEditorDatabaseConstants
 	/** Accept an alliance */
 	public final static String TAG_ENTITY_ACCEPT_ALLIANCE_PHRASE = "acceptAlliancePhrase";
 	
-	/** Break a pact (we're telling other wizard thnot just a wizard pact but any kind of pact) */
+	/** Break a pact (we're telling other wizard; not just a wizard pact but any kind of pact) */
 	public final static String TAG_ENTITY_BREAK_PACT_PHRASE = "breakPactPhrase";
 	
 	/** Broken a pact (not just a wizard pact but any kind of pact) */
 	public final static String TAG_ENTITY_BROKEN_PACT_PHRASE = "brokenPactPhrase";
 
+	/** We broke an alliance by attacking other wizard's units */
+	public final static String TAG_PACT_BROKEN_UNITS_PHRASE = "pactBrokenUnitsPhrase";
+
+	/** We broke an alliance or wizard pact by attacking other wizard's city */
+	public final static String TAG_PACT_BROKEN_CITY_PHRASE = "pactBrokenCityPhrase";
+	
 	/** Other wizard got fed up of us making proposals to them and ended the conversation */
 	public final static String TAG_ENTITY_GROWN_IMPATIENT_PHRASE = "grownImpatientPhrase";
 	
@@ -49,7 +55,7 @@ public final class LanguageEditorDatabaseConstants
 	
 	/** We requested a spell from the other wizard, and they said forget it OR they offered a lame spell in return and we said forget it */
 	public final static String TAG_REFUSE_EXCHANGE_SPELL_PHRASE = "refuseExchangeSpellPhrase";
-	
+
 	/**
 	 * Prevent instatiation of this class
 	 */

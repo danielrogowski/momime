@@ -22,17 +22,20 @@ import momime.common.database.CitySize;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
+import momime.common.messages.DiplomacyAction;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NumberedHeroItem;
+import momime.common.messages.PactType;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
+import momime.common.messages.servertoclient.DiplomacyMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.utils.KnownWizardUtils;
@@ -53,6 +56,7 @@ import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.CombatMapServerUtils;
+import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 
 /**
@@ -154,6 +158,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
+	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -605,6 +612,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Have to do this before we advance the attacker, otherwise we end up trying to advance the combat summoned units
 			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, mom);
 			
+			// Remember the name of the city before we possibly destroy and remove the city
+			final String cityName = (tc.getCityData () == null) ? null : tc.getCityData ().getCityName ();
+			
 			// If its a border conflict, then we don't actually care who won - one side will already have been wiped out, and hence their
 			// PendingMovement will have been removed, leaving the winner's PendingMovement still to be processed, and the main
 			// processSimultaneousTurnsMovement method will figure out what to do about that (i.e. whether its a move or another combat)
@@ -746,6 +756,34 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (defendingPlayer != null)
 					getServerResourceCalculations ().recalculateGlobalProductionValues (defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 
+				// If its two wizards and they had a pact, see if it is broken
+				if ((defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ())))
+				{
+					final PactType pactType = getKnownWizardUtils ().findPactWith (atkWizard.getPact (), defendingPlayer.getPlayerDescription ().getPlayerID ());
+					if ((pactType == PactType.ALLIANCE) ||
+						((pactType == PactType.WIZARD_PACT) && (cityName != null)))
+					{
+						// Show popup about them being mad
+						final DiplomacyMessage brokenPactMessage = new DiplomacyMessage ();
+						brokenPactMessage.setTalkFromPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
+						brokenPactMessage.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (-100, "combatEnded").getRelationScoreID ());
+						brokenPactMessage.setCityName (cityName);
+						
+						if (pactType == PactType.WIZARD_PACT)
+							brokenPactMessage.setAction (DiplomacyAction.BROKEN_WIZARD_PACT_CITY);
+						else if (cityName != null)
+							brokenPactMessage.setAction (DiplomacyAction.BROKEN_ALLIANCE_CITY);
+						else
+							brokenPactMessage.setAction (DiplomacyAction.BROKEN_ALLIANCE_UNITS);
+							
+						attackingPlayer.getConnection ().sendMessageToClient (brokenPactMessage);
+						
+						// Remove the pact
+						getKnownWizardServerUtils ().updatePact (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (), null, mom);
+						getKnownWizardServerUtils ().updatePact (defendingPlayer.getPlayerDescription ().getPlayerID (), attackingPlayer.getPlayerDescription ().getPlayerID (), null, mom);
+					}
+				}
+				
 				// Clear out combat related items
 				final boolean removed = mom.getCombatDetails ().remove (combatDetails);
 				log.debug ("combatEnded clearing up combat URN " + combatDetails.getCombatURN () + "; removed = " + removed);
@@ -1141,5 +1179,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
 	{
 		combatMapServerUtils = u;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

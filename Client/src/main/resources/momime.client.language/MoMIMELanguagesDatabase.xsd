@@ -2557,8 +2557,16 @@
 						<xsd:selector xpath="endConversation" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenWizardPactPK">
+						<xsd:selector xpath="wizardPact" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenProposeWizardPactPK">
 						<xsd:selector xpath="proposeWizardPact" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAlliancePK">
+						<xsd:selector xpath="alliance" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="diplomacyScreenProposeAlliancePK">
@@ -2647,6 +2655,14 @@
 					</xsd:key>
 					<xsd:key name="diplomacyScreenBrokenPactPhrasePK">
 						<xsd:selector xpath="brokenPactPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenPactBrokenUnitsPhrasePK">
+						<xsd:selector xpath="pactBrokenUnitsPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenPactBrokenCityPhrasePK">
+						<xsd:selector xpath="pactBrokenCityPhrase" />
 						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
 					<xsd:key name="diplomacyScreenGrownImpatientPhrasePK">
@@ -4981,7 +4997,9 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerTribute" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="exchangeSpells" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="endConversation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wizardPact" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeWizardPact" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alliance" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeAlliance" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposePeaceTreaty" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeDeclareWarOnAnotherWizard" />
@@ -5050,6 +5068,18 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="brokenPactPhrase" type="momimecommon:languageTextVariant" nxe:label="Broken pact">
 				<xsd:key name="diplomacyScreenBrokenPactPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pactBrokenUnitsPhrase" type="momimecommon:languageTextVariant" nxe:label="Pact broken (units)">
+				<xsd:key name="diplomacyScreenPactBrokenUnitsPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pactBrokenCityPhrase" type="momimecommon:languageTextVariant" nxe:label="Pact broken (city)">
+				<xsd:key name="diplomacyScreenPactBrokenCityPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />
 					<xsd:field xpath="@language" />
 				</xsd:key>

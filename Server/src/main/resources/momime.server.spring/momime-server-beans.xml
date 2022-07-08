@@ -788,6 +788,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">

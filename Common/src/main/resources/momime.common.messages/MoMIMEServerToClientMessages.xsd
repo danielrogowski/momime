@@ -1648,6 +1648,11 @@ Exception to this is if conjunction is true, it tells the client to update (or c
 		  						<xsd:documentation>Required for PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>						
+						<xsd:element minOccurs="0" maxOccurs="1" name="cityName" type="momimecommon:description">
+						    <xsd:annotation>
+		  						<xsd:documentation>The city they're mad about might already have been destroyed so need to include its name.</xsd:documentation>
+		  					</xsd:annotation>
+						</xsd:element>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

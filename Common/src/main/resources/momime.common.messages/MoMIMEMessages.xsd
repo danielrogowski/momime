@@ -1456,12 +1456,16 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_WIZARD_PACT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="BW"><xsd:annotation>
-				<xsd:documentation>Break wizard pact</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BREAK_WIZARD_PACT" /></xsd:appinfo>
+				<xsd:documentation>Break wizard pact (nicely from diplomacy screen)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BREAK_WIZARD_PACT_NICELY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="KW"><xsd:annotation>
-				<xsd:documentation>Broken wizard pact (response to break wizard pact)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BROKEN_WIZARD_PACT" /></xsd:appinfo>
+				<xsd:documentation>Broken wizard pact (in response to break wizard pact nicely)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BROKEN_WIZARD_PACT_NICELY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="CW"><xsd:annotation>
+				<xsd:documentation>Broken wizard pact (in response to attacking a city)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BROKEN_WIZARD_PACT_CITY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="PA"><xsd:annotation>
 				<xsd:documentation>Propose alliance</xsd:documentation>
@@ -1476,12 +1480,20 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_ALLIANCE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="BA"><xsd:annotation>
-				<xsd:documentation>Break alliance</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BREAK_ALLIANCE" /></xsd:appinfo>
+				<xsd:documentation>Break alliance (nicely from diplomacy screen)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BREAK_ALLIANCE_NICELY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="KA"><xsd:annotation>
-				<xsd:documentation>Broken alliance (response to break alliance)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BROKEN_ALLIANCE" /></xsd:appinfo>
+				<xsd:documentation>Broken alliance (in response to break alliance nicely)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BROKEN_ALLIANCE_NICELY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="CA"><xsd:annotation>
+				<xsd:documentation>Broken alliance (in response to attacking a city)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BROKEN_ALLIANCE_CITY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="UA"><xsd:annotation>
+				<xsd:documentation>Broken alliance (in response to attacking units)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BROKEN_ALLIANCE_UNITS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="PP"><xsd:annotation>
 				<xsd:documentation>Propose peace treaty</xsd:documentation>

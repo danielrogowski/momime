@@ -35,8 +35,8 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 
 	450 - Nicely break treaty (diplomacyScreen / breakPactPhrase)
 	465 - Get out of my land, treaty broken
-	480 - Stop attacking my units, treaty broken
-	495 - Stop attacking my cities, treaty broken
+	480 - Stop attacking my units, treaty broken (diplomacyScreen / pactBrokenUnitsPhrase)
+	495 - Stop attacking my cities, treaty broken (diplomacyScreen / pactBrokenCityPhrase)
 	510 - Stop casting SoM, treaty broken
 	525 - Stop summoning powerful units, treaty broken
 	540 - Switch off your X spell (overland enchantment), treaty broken

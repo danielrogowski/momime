@@ -213,6 +213,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Spell donated as a tribute */
 	private String offerSpellID;
 	
+	/** City they're mad about being attacked */
+	private String cityName;
+	
 	/** Text or buttons in the lower half of the screen */
 	private JPanel textPanel;
 	
@@ -546,7 +549,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 					initializePortrait ();
 				}
 				
-				else if (getTextState () == DiplomacyTextState.GROWN_IMPATIENT)
+				else if ((getTextState () == DiplomacyTextState.GROWN_IMPATIENT) ||
+					(getTextState () == DiplomacyTextState.BROKEN_PACT_UNITS_OR_CITY))
 				{
 					setPortraitState (DiplomacyPortraitState.DISAPPEARING);
 					initializePortrait ();
@@ -1018,6 +1022,14 @@ public final class DiplomacyUI extends MomClientFrameUI
 					case THANKS_FOR_EXCHANGING_SPELL:
 						singular = getLanguages ().getDiplomacyScreen ().getThanksForExchangingSpell ();
 						break;
+						
+					// We had a wizard pact or alliance with the other wizard and broke it by attacking their units or cities
+					case BROKEN_PACT_UNITS_OR_CITY:
+						if (getDiplomacyAction () == DiplomacyAction.BROKEN_ALLIANCE_UNITS)
+							variants = getLanguages ().getDiplomacyScreen ().getPactBrokenUnitsPhrase ();
+						else
+							variants = getLanguages ().getDiplomacyScreen ().getPactBrokenCityPhrase ();
+						break;
 				}
 		
 				if ((variants != null) && (!variants.isEmpty ()))
@@ -1032,10 +1044,16 @@ public final class DiplomacyUI extends MomClientFrameUI
 					
 					String text = getLanguageHolder ().findDescription (singular).replaceAll
 						("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer));
+						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)).replaceAll
+						("TYPE_OF_PACT", getLanguageHolder ().findDescription ((getDiplomacyAction () == DiplomacyAction.BROKEN_WIZARD_PACT_CITY) ?
+							getLanguages ().getDiplomacyScreen ().getWizardPact () : getLanguages ().getDiplomacyScreen ().getAlliance ())).replaceAll
+						("YEAR", Integer.valueOf (1400 + ((getClient ().getGeneralPublicKnowledge ().getTurnNumber () - 1) / 12)).toString ());
 					
 					if (getOfferGoldAmount () != null)
 						text = text.replaceAll ("GOLD_AMOUNT", getTextUtils ().intToStrCommas (getOfferGoldAmount ()));
+					
+					if (cityName != null)
+						text = text.replaceAll ("CITY_NAME", cityName);
 					
 					if (text.contains ("REQUEST_SPELL_NAME"))
 					{
@@ -1142,6 +1160,13 @@ public final class DiplomacyUI extends MomClientFrameUI
 									case ACCEPT_TALKING:
 									case ACCEPT_TALKING_IMPATIENT:
 										setTextState (DiplomacyTextState.ACCEPT_TALK);
+										initializeText ();
+										break;
+										
+									case BROKEN_WIZARD_PACT_CITY:
+									case BROKEN_ALLIANCE_CITY:
+									case BROKEN_ALLIANCE_UNITS:
+										setTextState (DiplomacyTextState.BROKEN_PACT_UNITS_OR_CITY);
 										initializeText ();
 										break;
 										
@@ -1862,6 +1887,22 @@ public final class DiplomacyUI extends MomClientFrameUI
 	public final void setOfferSpellID (final String s)
 	{
 		offerSpellID = s;
+	}
+	
+	/**
+	 * @return City they're mad about being attacked
+	 */
+	public final String getCityName ()
+	{
+		return cityName;
+	}
+
+	/**
+	 * @param c City they're mad about being attacked
+	 */
+	public final void setCityName (final String c)
+	{
+		cityName = c;
 	}
 	
 	/**

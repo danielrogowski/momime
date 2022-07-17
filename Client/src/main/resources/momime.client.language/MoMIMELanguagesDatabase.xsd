@@ -2565,12 +2565,20 @@
 						<xsd:selector xpath="proposeWizardPact" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenBreakWizardPactPK">
+						<xsd:selector xpath="breakWizardPact" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenAlliancePK">
 						<xsd:selector xpath="alliance" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="diplomacyScreenProposeAlliancePK">
 						<xsd:selector xpath="proposeAlliance" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBreakAlliancePK">
+						<xsd:selector xpath="breakAlliance" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="diplomacyScreenProposePeaceTreatyPK">
@@ -2583,6 +2591,10 @@
 					</xsd:key>
 					<xsd:key name="diplomacyScreenProposeBreakAllianceWithAnotherWizardPK">
 						<xsd:selector xpath="proposeBreakAllianceWithAnotherWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenThreatenToAttackPK">
+						<xsd:selector xpath="threatenToAttack" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="diplomacyScreenBackToMainChoicesPK">
@@ -4999,11 +5011,14 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="endConversation" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wizardPact" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeWizardPact" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakWizardPact" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alliance" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeAlliance" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakAlliance" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposePeaceTreaty" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeDeclareWarOnAnotherWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeBreakAllianceWithAnotherWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="threatenToAttack" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="backToMainChoices" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="receivedGold" />

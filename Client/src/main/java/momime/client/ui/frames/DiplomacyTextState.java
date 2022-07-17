@@ -50,6 +50,15 @@ public enum DiplomacyTextState
 	
 	/** Accept alliance */
 	ACCEPT_ALLIANCE,
+
+	/** Pick a type of treaty to break*/
+	BREAK_TREATY,
+	
+	/** Other wizard broke telling us they are breaking our wizard pact or alliance nicely, via diplomacy screen */
+	BREAK_WIZARD_PACT_OR_ALLIANCE,
+	
+	/** We broke our wizard pact or alliance nicely via diplomacy screen, other wizard is conveying their displeasure back to us */
+	BROKEN_WIZARD_PACT_OR_ALLIANCE,
 	
 	/** Other wizard got fed up of us making proposals to them and ended the conversation */ 
 	GROWN_IMPATIENT,

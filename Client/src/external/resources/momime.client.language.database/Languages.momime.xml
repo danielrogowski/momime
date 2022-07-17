@@ -4644,12 +4644,18 @@ Bonus Or +GOLD_BONUS%</text>
 		<proposeWizardPact language="en">
 			<text>Propose Wizard Pact</text>
 		</proposeWizardPact>
+		<breakWizardPact language="en">
+			<text>Break Wizard Pact</text>
+		</breakWizardPact>
 		<alliance language="en">
 			<text>Alliance</text>
 		</alliance>
 		<proposeAlliance language="en">
 			<text>Propose Alliance</text>
 		</proposeAlliance>
+		<breakAlliance language="en">
+			<text>Break Alliance</text>
+		</breakAlliance>
 		<proposePeaceTreaty language="en">
 			<text>Propose Peace Treaty</text>
 		</proposePeaceTreaty>
@@ -4659,6 +4665,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<proposeBreakAllianceWithAnotherWizard language="en">
 			<text>Propose Break Alliance with another Wizard</text>
 		</proposeBreakAllianceWithAnotherWizard>
+		<threatenToAttack language="en">
+			<text>Threaten to Attack</text>
+		</threatenToAttack>
 		<backToMainChoices language="en">
 			<text>Forget It</text>
 		</backToMainChoices>

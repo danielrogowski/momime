@@ -90,6 +90,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 	private final static List<DiplomacyPortraitState> MIRROR_STATES = Arrays.asList
 		(DiplomacyPortraitState.APPEARING, DiplomacyPortraitState.DISAPPEARING, DiplomacyPortraitState.MIRROR);
 	
+	/** Used for replacing the TYPE_OF_PACT text in some of the language text */
+	private final static List<DiplomacyAction> WIZARD_PACT_ACTIONS = Arrays.asList
+		(DiplomacyAction.BROKEN_WIZARD_PACT_CITY, DiplomacyAction.BREAK_WIZARD_PACT_NICELY);
+	
 	/** Milliseconds between animation frames (same as WizardWonUI which also shows wizard talking) */
 	private final static int TIMER_TICKS_MS = 150;
 	
@@ -269,6 +273,15 @@ public final class DiplomacyUI extends MomClientFrameUI
 	
 	/** Propose breaking alliance with another wizard */
 	private Action proposeBreakAllianceWithAnotherWizardAction;
+
+	/** Break a wizard pact */
+	private Action breakWizardPactAction;
+	
+	/** Break an alliance */
+	private Action breakAllianceAction;
+	
+	/** Threaten to attack */
+	private Action threatenToAttackAction;
 	
 	/** Back to main choices */
 	private Action backToMainChoicesAction;
@@ -325,7 +338,11 @@ public final class DiplomacyUI extends MomClientFrameUI
 			initializeText ();
 		});
 		
-		breakTreatyAction = new LoggingAction ((ev) -> {});
+		breakTreatyAction = new LoggingAction ((ev) ->
+		{
+			setTextState (DiplomacyTextState.BREAK_TREATY);
+			initializeText ();
+		});
 		
 		offerTributeAction = new LoggingAction ((ev) ->
 		{
@@ -453,6 +470,34 @@ public final class DiplomacyUI extends MomClientFrameUI
 		proposePeaceTreatyAction = new LoggingAction ((ev) -> {});
 		proposeDeclareWarOnAnotherWizardAction = new LoggingAction ((ev) -> {});
 		proposeBreakAllianceWithAnotherWizardAction = new LoggingAction ((ev) -> {});
+
+		breakWizardPactAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.BREAK_WIZARD_PACT_NICELY);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			// The player we're breaking our wizard pact with doesn't have to click "OK, I accept", the server auto-replies it.
+			// But still, wait for that reply because if its an AI player, they will convey back their worsened visibleRelationScoreID as part of the response.
+			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+			initializeText ();
+		});
+		
+		breakAllianceAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.BREAK_ALLIANCE_NICELY);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			// The player we're breaking our alliance with doesn't have to click "OK, I accept", the server auto-replies it.
+			// But still, wait for that reply because if its an AI player, they will convey back their worsened visibleRelationScoreID as part of the response.
+			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+			initializeText ();
+		});
+		
+		threatenToAttackAction = new LoggingAction ((ev) -> {});
 		
 		backToMainChoicesAction = new LoggingAction ((ev) ->
 		{
@@ -559,6 +604,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 				else if ((getTextState () == DiplomacyTextState.ACCEPT_TALK) ||
 					(getTextState () == DiplomacyTextState.ACCEPT_WIZARD_PACT) ||
 					(getTextState () == DiplomacyTextState.ACCEPT_ALLIANCE) ||
+					(getTextState () == DiplomacyTextState.BREAK_WIZARD_PACT_OR_ALLIANCE) ||
+					(getTextState () == DiplomacyTextState.BROKEN_WIZARD_PACT_OR_ALLIANCE) ||
 					(getTextState () == DiplomacyTextState.GIVEN_GOLD) ||
 					(getTextState () == DiplomacyTextState.GIVEN_SPELL) ||
 					(getTextState () == DiplomacyTextState.THANKS_FOR_GOLD) ||
@@ -842,6 +889,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 							
 					// Pick a kind of treaty to propose
 					case PROPOSE_TREATY:
+					{
 						// Which kinds of treaties are relevant depends on our current pact with the wizard
 						final PactType pactType = getKnownWizardUtils ().findPactWith (ourWizardDetails.getPact (), getTalkingWizardID ());
 						
@@ -861,6 +909,25 @@ public final class DiplomacyUI extends MomClientFrameUI
 							proposeBreakAllianceWithAnotherWizardAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
+					}
+
+					// Pick a kind of treaty to break
+					case BREAK_TREATY:
+					{
+						// Which kinds of treaties are relevant depends on our current pact with the wizard
+						final PactType pactType = getKnownWizardUtils ().findPactWith (ourWizardDetails.getPact (), getTalkingWizardID ());
+						
+						breakWizardPactAction.setEnabled (pactType == PactType.WIZARD_PACT);
+						breakAllianceAction.setEnabled (pactType == PactType.ALLIANCE);
+						
+						componentsBelowText.add (getUtils ().createTextOnlyButton (breakWizardPactAction,
+							breakWizardPactAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (breakAllianceAction,
+							breakAllianceAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (threatenToAttackAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
+					}
 
 					// General "no" message in response to some proposal
 					case GENERIC_REFUSE:
@@ -1023,6 +1090,16 @@ public final class DiplomacyUI extends MomClientFrameUI
 						singular = getLanguages ().getDiplomacyScreen ().getThanksForExchangingSpell ();
 						break;
 						
+					// Other wizard broke telling us they are breaking our wizard pact or alliance nicely, via diplomacy screen
+					case BREAK_WIZARD_PACT_OR_ALLIANCE:
+						variants = getLanguages ().getDiplomacyScreen ().getBreakPactPhrase ();
+						break;
+						
+					// We broke our wizard pact or alliance nicely via diplomacy screen, other wizard is conveying their displeasure back to us
+					case BROKEN_WIZARD_PACT_OR_ALLIANCE:
+						variants = getLanguages ().getDiplomacyScreen ().getBrokenPactPhrase ();
+						break;
+							
 					// We had a wizard pact or alliance with the other wizard and broke it by attacking their units or cities
 					case BROKEN_PACT_UNITS_OR_CITY:
 						if (getDiplomacyAction () == DiplomacyAction.BROKEN_ALLIANCE_UNITS)
@@ -1045,7 +1122,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 					String text = getLanguageHolder ().findDescription (singular).replaceAll
 						("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)).replaceAll
-						("TYPE_OF_PACT", getLanguageHolder ().findDescription ((getDiplomacyAction () == DiplomacyAction.BROKEN_WIZARD_PACT_CITY) ?
+						("TYPE_OF_PACT", getLanguageHolder ().findDescription (WIZARD_PACT_ACTIONS.contains (getDiplomacyAction ()) ?
 							getLanguages ().getDiplomacyScreen ().getWizardPact () : getLanguages ().getDiplomacyScreen ().getAlliance ())).replaceAll
 						("YEAR", Integer.valueOf (1400 + ((getClient ().getGeneralPublicKnowledge ().getTurnNumber () - 1) / 12)).toString ());
 					
@@ -1390,78 +1467,92 @@ public final class DiplomacyUI extends MomClientFrameUI
 		try
 		{
 			final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "languageChanged (O)");
+			final String ourPlayerName = getWizardClientUtils ().getPlayerName (ourWizard);
+			final String talkingPlayerName = getWizardClientUtils ().getPlayerName (talkingPlayer);
 			
 			acceptTalkToAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getAcceptTalkTo ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			reluctantlyTalkToAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getReluctantlyTalkTo ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 				
 			refuseTalkToAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getRefuseTalkTo ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			proposeTreatyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposeTreaty ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 
 			breakTreatyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getBreakTreaty ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 
 			offerTributeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getOfferTribute ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 
 			exchangeSpellAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getExchangeSpells ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 
 			endConversationAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getEndConversation ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			acceptProposalAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getAcceptProposal ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			refuseProposalAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getRefuseProposal ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			proposeWizardPactAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposeWizardPact ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			proposeAllianceAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposeAlliance ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			proposePeaceTreatyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposePeaceTreaty ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			proposeDeclareWarOnAnotherWizardAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposeDeclareWarOnAnotherWizard ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			proposeBreakAllianceWithAnotherWizardAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposeBreakAllianceWithAnotherWizard ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
+
+			breakWizardPactAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getBreakWizardPact ()).replaceAll
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
+				
+			breakAllianceAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getBreakAlliance ()).replaceAll
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
+
+			threatenToAttackAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getThreatenToAttack ()).replaceAll
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			backToMainChoicesAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getBackToMainChoices ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			tiredOfTalkingAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getTiredOfWaitingForProposal ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			offerSpellAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getOfferSpell ()).replaceAll
-				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
 			regenerateGoldOfferText ();
 		}

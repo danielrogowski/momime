@@ -133,8 +133,26 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				
 				// Further gold offers will be more expensive (there's no message for this - client triggers same update from the ACCEPT_GOLD msg sent above)
 				talkToWizard.setMaximumGoldTribute (talkToWizard.getMaximumGoldTribute () + offerGoldAmount);
+				break;
 			}
-			break;
+			
+			// Breaking a wizard pact / alliance send an automated reply without even waiting for the recipient to click anything
+			case BREAK_WIZARD_PACT_NICELY:
+			case BREAK_ALLIANCE_NICELY:
+			{
+				final DiplomacyMessage msg = new DiplomacyMessage ();	
+				msg.setTalkFromPlayerID (getTalkToPlayerID ());
+				msg.setAction ((getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY) ? DiplomacyAction.BROKEN_WIZARD_PACT_NICELY : DiplomacyAction.BROKEN_ALLIANCE_NICELY);
+				msg.setOtherPlayerID (getOtherPlayerID ());
+				msg.setOfferGoldAmount (offerGoldAmount);			
+				
+				sender.getConnection ().sendMessageToClient (msg);
+				
+				// Remove pact
+				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
+				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+				break;
+			}
 			
 			// Generate list of tradeable spells
 			case GIVE_SPELL:

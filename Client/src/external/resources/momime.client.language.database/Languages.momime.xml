@@ -5495,6 +5495,160 @@ Bonus Or +GOLD_BONUS%</text>
 				<text>Unser TYPE_OF_PACT ist hiermit beendet. Noch ein Angriff wie der bei CITY_NAME, und ich werde zurueckschlagen.</text>
 			</textVariant>
 		</pactBrokenCityPhrase>
+		<declareWarCityPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you will crumble under the weight of your broken promises.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, vous serez ecrase sous le poids des promesses que vous avez rompues.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr werdet unter der Last Eurer leeren Versprechen zusammenbrechen.</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>So, OUR_PLAYER_NAME, you cannot keep your word. I shall not forget this.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Alors, OUR_PLAYER_NAME, vous ne savez pas tenir vos promesses. Je ne l'oublierai pas.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Nun, OUR_PLAYER_NAME, Ihr koennt Euer Wort also nicht halten. Ich werde das nicht so schnell vergessen.</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>You will soon know the meaning of pain! We will meet on the battlefield!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous allez bientot savoir ce que souffrir veut dire! Nous nous retrouverons sur le champ de bataille!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Bald werdet Ihr wissen, was Schmerz bedeutet. Wir sehen uns auf dem Schlachtfeld wieder!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>If it is war that you want, I shall deliver!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Si vous voulez la guerre, vous l'aurez!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wenn Ihr Krieg wollt - den koennt Ihr haben!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I shall crush your armies in the blink of an eye!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, je vais ecraser votre armee en un clin d'oeil!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, ich werde Eure Armeen im Handumdrehen zermalmen!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, there is no turning back now! Prepare to die!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, voici le point de non-retour! Preparez-vous a mourir!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, jetzt gibt es kein Zurueck mehr! Euer letztes Stuendlein hat geschlagen!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>You fool! My magic shall turn your armies to dust! Prepare yourself!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Imbecile! Ma magie va reduire votre armee en poussiere! Preparez-vous!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Narr! Mein Zauber wird Eure Armeen zu Staub verwandeln! Macht Euch bereit!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="8">
+			<textVariant language="en">
+				<text>Yet another foolish parlor magician who wishes to meet his match! So be it!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Encore un magicien de pacotille qui essaie de se mesurer a plus fort que lui! Soit!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Schon wieder so ein drittklassiger Salonmagier, der sich an mir messen will! Nun gut, so sei es!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="9">
+			<textVariant language="en">
+				<text>Hail OUR_PLAYER_NAME, let the battle begin!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations OUR_PLAYER_NAME, que la bataille commence!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Seid gegruesst, OUR_PLAYER_NAME. Auf in den Kampf!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="10">
+			<textVariant language="en">
+				<text>So be it! See you in hell, my friend!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Soit! Je vous verrai en enfer, mon ami!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>So sei es! Wir sehen uns in der Hoelle wieder, mein Freund!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="11">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I shall hold your head high before the day is done!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, j'aurai votre peau avant le coucher du soleil!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, bevor dieser Tag sich seinem Ende zuneigt, wird Euer Kopf rollen!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="12">
+			<textVariant language="en">
+				<text>The blood of your armies will spill this day, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Le sang de votre armee va couler aujourd'hui, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Das Blut Eurer Truppen wird heute noch das Land besudeln, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="13">
+			<textVariant language="en">
+				<text>I shall strike your existence from the pages of history! Die OUR_PLAYER_NAME!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je vais debarrasser le monde de toute trace de votre existence! Mourez OUR_PLAYER_NAME!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich werde Euren Namen aus den Geschichtsbuechern tilgen! Sterbt, OUR_PLAYER_NAME!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="14">
+			<textVariant language="en">
+				<text>Good! I was looking for a reason to kill you!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Tres bien! Je cherchais une bonne raison de vous tuer!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Gut! Ich habe ohnehin nach einem Grund gesucht, Euch umzubringen!</text>
+			</textVariant>
+		</declareWarCityPhrase>
 		<grownImpatientPhrase variantNumber="1">
 			<textVariant language="en">
 				<text>I tire of diplomatic negotiations. We can continue discussions at a later time.</text>

@@ -760,8 +760,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if ((defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ())))
 				{
 					final PactType pactType = getKnownWizardUtils ().findPactWith (atkWizard.getPact (), defendingPlayer.getPlayerDescription ().getPlayerID ());
-					if ((pactType == PactType.ALLIANCE) ||
-						((pactType == PactType.WIZARD_PACT) && (cityName != null)))
+					if ((pactType == PactType.ALLIANCE) ||													// Any attack anywhere voids an alliance
+						((pactType == PactType.WIZARD_PACT) && (cityName != null)) ||		// Only an attack on a city voids a wizard pact; skimishes are allowed
+						((pactType == null) && (cityName != null)))										// Only an attack on a city is an instant declaration of war
 					{
 						// Show popup about them being mad
 						final DiplomacyMessage brokenPactMessage = new DiplomacyMessage ();
@@ -769,18 +770,24 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 						brokenPactMessage.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (-100, "combatEnded").getRelationScoreID ());
 						brokenPactMessage.setCityName (cityName);
 						
+						PactType newPactType = null;
 						if (pactType == PactType.WIZARD_PACT)
 							brokenPactMessage.setAction (DiplomacyAction.BROKEN_WIZARD_PACT_CITY);
-						else if (cityName != null)
+						else if ((pactType == PactType.WIZARD_PACT) && (cityName != null))
 							brokenPactMessage.setAction (DiplomacyAction.BROKEN_ALLIANCE_CITY);
+						else if ((pactType == null) && (cityName != null))
+						{
+							brokenPactMessage.setAction (DiplomacyAction.DECLARE_WAR_CITY);
+							newPactType = PactType.WAR;
+						}
 						else
 							brokenPactMessage.setAction (DiplomacyAction.BROKEN_ALLIANCE_UNITS);
 							
 						attackingPlayer.getConnection ().sendMessageToClient (brokenPactMessage);
 						
 						// Remove the pact
-						getKnownWizardServerUtils ().updatePact (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (), null, mom);
-						getKnownWizardServerUtils ().updatePact (defendingPlayer.getPlayerDescription ().getPlayerID (), attackingPlayer.getPlayerDescription ().getPlayerID (), null, mom);
+						getKnownWizardServerUtils ().updatePact (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (), newPactType, mom);
+						getKnownWizardServerUtils ().updatePact (defendingPlayer.getPlayerDescription ().getPlayerID (), attackingPlayer.getPlayerDescription ().getPlayerID (), newPactType, mom);
 					}
 				}
 				

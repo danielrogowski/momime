@@ -1102,7 +1102,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 							
 					// We had a wizard pact or alliance with the other wizard and broke it by attacking their units or cities
 					case BROKEN_PACT_UNITS_OR_CITY:
-						if (getDiplomacyAction () == DiplomacyAction.BROKEN_ALLIANCE_UNITS)
+						if (getDiplomacyAction () == DiplomacyAction.DECLARE_WAR_CITY)
+							variants = getLanguages ().getDiplomacyScreen ().getDeclareWarCityPhrase ();
+						else if (getDiplomacyAction () == DiplomacyAction.BROKEN_ALLIANCE_UNITS)
 							variants = getLanguages ().getDiplomacyScreen ().getPactBrokenUnitsPhrase ();
 						else
 							variants = getLanguages ().getDiplomacyScreen ().getPactBrokenCityPhrase ();
@@ -1243,6 +1245,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 									case BROKEN_WIZARD_PACT_CITY:
 									case BROKEN_ALLIANCE_CITY:
 									case BROKEN_ALLIANCE_UNITS:
+									case DECLARE_WAR_CITY:
 										setTextState (DiplomacyTextState.BROKEN_PACT_UNITS_OR_CITY);
 										initializeText ();
 										break;

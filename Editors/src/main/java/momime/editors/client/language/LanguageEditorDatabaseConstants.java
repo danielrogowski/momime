@@ -41,6 +41,9 @@ public final class LanguageEditorDatabaseConstants
 	/** We broke an alliance or wizard pact by attacking other wizard's city */
 	public final static String TAG_PACT_BROKEN_CITY_PHRASE = "pactBrokenCityPhrase";
 	
+	/** They declared war on us because we attacked their city */
+	public final static String TAG_DECLARE_WAR_CITY_PHRASE = "declareWarCityPhrase";
+	
 	/** Other wizard got fed up of us making proposals to them and ended the conversation */
 	public final static String TAG_ENTITY_GROWN_IMPATIENT_PHRASE = "grownImpatientPhrase";
 	

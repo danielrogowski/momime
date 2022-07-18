@@ -2677,6 +2677,10 @@
 						<xsd:selector xpath="pactBrokenCityPhrase" />
 						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenDeclareWarCityPhrasePK">
+						<xsd:selector xpath="declareWarCityPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenGrownImpatientPhrasePK">
 						<xsd:selector xpath="grownImpatientPhrase" />
 						<xsd:field xpath="@variantNumber" />
@@ -5095,6 +5099,12 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pactBrokenCityPhrase" type="momimecommon:languageTextVariant" nxe:label="Pact broken (city)">
 				<xsd:key name="diplomacyScreenPactBrokenCityPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="declareWarCityPhrase" type="momimecommon:languageTextVariant" nxe:label="Declare war (city)">
+				<xsd:key name="diplomacyScreenDeclareWarCityPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />
 					<xsd:field xpath="@language" />
 				</xsd:key>

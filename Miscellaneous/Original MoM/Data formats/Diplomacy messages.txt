@@ -3,7 +3,7 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	15 - Thanks for the gift (diplomacyScreen / thanksForGoldPhrase)
 	30 - Thanks for attacking wizard X, have some gold
 	45 - Thanks for the spell (diplomacyScreen / thanksForSpellPhrase)
-	60 - I'm going to kill you
+	60 - I'm going to kill you (diplomacyScreen / declareWarCityPhrase)
 	75 - I don't like you anymore (diplomacyScreen / brokenPactPhrase)
 	90 - Lets both kill wizard X
 	

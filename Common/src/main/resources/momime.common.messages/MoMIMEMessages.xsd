@@ -1507,6 +1507,10 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:documentation>Reject peace treaty</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_PEACE_TREATY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="CD"><xsd:annotation>
+				<xsd:documentation>Delcare war (in response to attacking a city)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DECLARE_WAR_CITY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="PD"><xsd:annotation>
 				<xsd:documentation>Propose declare war on another wizard</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD" /></xsd:appinfo>

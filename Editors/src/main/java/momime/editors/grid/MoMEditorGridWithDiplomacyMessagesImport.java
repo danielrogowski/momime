@@ -167,6 +167,13 @@ public abstract class MoMEditorGridWithDiplomacyMessagesImport extends MoMEditor
 				out.add (s);
 		}
 		
+		// Entry 0060 is buggy in English+French files and split over two lines, but not German files, so if we find that then merge the two rows
+		if ((out.size () > 1) && (out.get (0).equals ("OUR_PLAYER_NAME")))
+		{
+			out.remove (0);
+			out.set (0, "OUR_PLAYER_NAME," + out.get (0));
+		}
+		
 		return out;
 	}
 

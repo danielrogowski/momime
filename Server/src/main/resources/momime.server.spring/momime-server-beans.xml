@@ -719,6 +719,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 		<property name="movementUtils" ref="movementUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">

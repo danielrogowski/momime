@@ -13,6 +13,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
@@ -20,6 +21,7 @@ import momime.common.calculations.SpellCalculations;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitCanCast;
@@ -27,6 +29,7 @@ import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.PactType;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
@@ -49,6 +52,7 @@ import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.SpellCastType;
@@ -61,6 +65,7 @@ import momime.server.knowledge.CombatDetails;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.HeroItemServerUtils;
+import momime.server.utils.KnownWizardServerUtils;
 
 /**
  * Methods for validating spell requests and deciding whether to queue them up or cast immediately.
@@ -128,6 +133,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
+	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
 	/**
 	 * Client wants to cast a spell, either overland or in combat
@@ -569,7 +580,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(castingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 			}
 			else
-				queueSpell (castingPlayer, mom.getPlayers (), spellID, heroItem, variableDamage);
+				queueSpell (castingPlayer, mom, spellID, heroItem, variableDamage);
 		}
 		
 		return combatEnded;
@@ -579,19 +590,22 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * Adds a spell to a player's overland casting queue.  This assumes we've already been through all the validation to make sure they're allowed to cast it,
 	 * and to make sure they can't cast it instantly.
 	 * 
-	 * @param player Player casting the spell
-	 * @param players List of players in the session
+	 * @param castingPlayer Player casting the spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem If create item/artifact, the details of the item to create
 	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
+	 * @throws RecordNotFoundException If we can't find the wizard we are meeting
+	 * @throws PlayerNotFoundException If we can't find the player we are meeting
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void queueSpell (final PlayerServerDetails player, final List<PlayerServerDetails> players, final String spellID, final HeroItem heroItem,
-		final Integer variableDamage) throws JAXBException, XMLStreamException
+	public final void queueSpell (final PlayerServerDetails castingPlayer, final MomSessionVariables mom, final String spellID, final HeroItem heroItem,
+		final Integer variableDamage)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
 		// Queue it on server
 		final QueuedSpell queued = new QueuedSpell ();
@@ -602,24 +616,45 @@ public final class SpellQueueingImpl implements SpellQueueing
 		priv.getQueuedSpell ().add (queued);
 		
 		// Queue it on client
-		if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final OverlandCastQueuedMessage reply = new OverlandCastQueuedMessage ();
 			reply.setSpellID (spellID);
 			reply.setHeroItem (heroItem);
 			reply.setVariableDamage (variableDamage);
 			
-			player.getConnection ().sendMessageToClient (reply);
+			castingPlayer.getConnection ().sendMessageToClient (reply);
 		}
 		
-		// Tell everyone if someone started casting Spell of Mastery
+		// Tell everyone if someone started casting Spell of Mastery, and everyone automatically declares war on them
 		if ((priv.getQueuedSpell ().size () == 1) && (spellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY)))
 		{
+			// Everyone meets us
+			getKnownWizardServerUtils ().meetWizard (castingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
+			
+			// We meet everyone
+			for (final KnownWizardDetails trueWizard : mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ())
+				if ((trueWizard.getPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (getPlayerKnowledgeUtils ().isWizard (trueWizard.getWizardID ())))
+					getKnownWizardServerUtils ().meetWizard (trueWizard.getPlayerID (), castingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
+			
+			// Everyone declares war on them
+			final KnownWizardDetails castingWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), castingPlayer.getPlayerDescription ().getPlayerID (), "queueSpell");
+			
+			for (final KnownWizardDetails trueWizard : mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ())
+				if ((trueWizard.getPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (getPlayerKnowledgeUtils ().isWizard (trueWizard.getWizardID ())) &&
+					(getKnownWizardUtils ().findPactWith (castingWizard.getPact (), trueWizard.getPlayerID ()) != PactType.WAR))
+				{
+					getKnownWizardServerUtils ().updatePact (castingPlayer.getPlayerDescription ().getPlayerID (), trueWizard.getPlayerID (), PactType.WAR, mom);
+					getKnownWizardServerUtils ().updatePact (trueWizard.getPlayerID (), castingPlayer.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+				}
+			
+			// Show animation
 			final PlayAnimationMessage msg = new PlayAnimationMessage ();
 			msg.setAnimationID (AnimationID.STARTED_SPELL_OF_MASTERY);
-			msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+			msg.setPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 			
-			getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
+			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 		}
 	}
 
@@ -1013,5 +1048,37 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

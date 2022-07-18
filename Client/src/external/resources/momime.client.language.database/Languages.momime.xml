@@ -5209,6 +5209,127 @@ Bonus Or +GOLD_BONUS%</text>
 				<text>Ich erkenne die tiefe Weisheit dieses Buendnisses. So sei es!</text>
 			</textVariant>
 		</acceptAlliancePhrase>
+		<proposePeaceTreatyPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Great OUR_PLAYER_NAME, this war has been a tremendous strain on us both. Sign a peace treaty so we can end this senseless destruction.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Grand OUR_PLAYER_NAME, cette guerre nous a coute tres cher a tous les deux. Signez un traite de paix qui mettra un terme a cette destruction stupide.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Oh OUR_PLAYER_NAME, dieser Krieg ist fuer uns beide eine riesige Belastung. Lasst uns durch einen Friedensvertrag die sinnlose Zerstoerung beenden.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>This war between us is senseless. Let us call an end to it with a peace treaty.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Cette guerre entre nous n'a aucun sens. Mettons-y fin avec un traite de paix.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Dieser Krieg ist sinnlos. Setzen wir ihm durch einen Friedensvertrag ein Ende.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Both our peoples have suffered greatly. Isn't it time we sought peace instead?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Nos deux peuples ont beaucoup souffert. Ne serait-il pas temps d'essayer de vivre en paix?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Unsere Voelker haben genug gelitten. Ist es nicht an der Zeit, Frieden zu stiften?</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Oh mighty OUR_PLAYER_NAME, I bring you an offer of peace. Accept and we can end this war.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Oh puissant OUR_PLAYER_NAME, je vous apporte une offre de paix. Acceptez-la et nous pouvons mettre fin a cette guerre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin gekommen, d. maechtigen OUR_PLAYER_NAME ein Friedensangebot zu unterbreiten. Nehmt es an, und lasst uns diesen Krieg beenden.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Do you wish to suffer still more? I see no need to continue hostilities. Let us agree to peace.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Voulez-vous continuer a souffrir? Il n'y a pas lieu de continuer les hostilites. Signons un traite de paix.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Habt Ihr denn noch nicht genug gelitten? Ich sehe keine Veranlassung, die Feindseligkeiten fortzusetzen. Lasst uns Friedensverhandlungen fuehren.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>We can no longer sustain this horrible war. We offer a peace treaty to the powerful OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Nous ne pouvons plus continuer cette horrible guerre. Nous offrons un traite de paix au puissant OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wir koennen diesen furchtbaren Krieg nicht mehr verantworten. Wir bieten d. maechtigen OUR_PLAYER_NAME daher einen Friedensvertrag an.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>In the year YEAR, TALKING_PLAYER_NAME and OUR_PLAYER_NAME agree to terminate all hostilities.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>En YEAR, TALKING_PLAYER_NAME et OUR_PLAYER_NAME ont accepte de mettre fin aux hostilites.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Im Jahr YEAR erklaeren sich TALKING_PLAYER_NAME und OUR_PLAYER_NAME bereit, alle Feindseligkeiten zu beenden.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I, TALKING_PLAYER_NAME, hereby order all hostilities to end.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Moi, TALKING_PLAYER_NAME, jure d'arreter toutes les hostilites.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich, TALKING_PLAYER_NAME, befehle hiermit, alle Feindseligkeiten zu beenden.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I agree that the time has come to end our petty bickering.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte d'arreter nos chamailleries.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich erkenne an, dass die Zeit gekommen ist, unser kleinmuetiges Gezaenk zu beenden.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I accept your offer of peace. Cease your attacks and we shall stop ours.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte votre offre de paix. Cessez vos attaques et nous cesserons les notres.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich nehme Euer Friedensangebot an. Stellt Eure Angriffe ein, und wir werden dasselbe tun.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>I grow weary of senseless destruction. I accept your offer of peace.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je suis las de cette destruction inutile. J'accepte votre offre de paix.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin dieser sinnlosen Zerstoerung ueberdruessig und nehme Euer Friedensangebot an.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
 		<breakPactPhrase variantNumber="1">
 			<textVariant language="en">
 				<text>OUR_PLAYER_NAME, I find the TYPE_OF_PACT is no longer convenient.</text>

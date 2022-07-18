@@ -113,6 +113,11 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.ALLIANCE, mom);
 				break;
 				
+			case ACCEPT_PEACE_TREATY:
+				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
+				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+				break;
+				
 			// Tributes send an automated reply without even waiting for the recipient to click anything
 			case GIVE_GOLD:
 			{

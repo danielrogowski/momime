@@ -394,6 +394,11 @@ public final class DiplomacyUI extends MomClientFrameUI
 					setTextState (DiplomacyTextState.ACCEPT_ALLIANCE);
 					break;
 				
+				case PROPOSE_PEACE_TREATY:
+					msg.setAction (DiplomacyAction.ACCEPT_PEACE_TREATY);
+					setTextState (DiplomacyTextState.ACCEPT_PEACE_TREATY);
+					break;
+				
 				// Unlike other "accept proposals", its the initiating wizard doing the accepting, so they just go back to the main choice list
 				case PROPOSE_EXCHANGE_SPELL:					
 					msg.setAction (DiplomacyAction.ACCEPT_EXCHANGE_SPELL);
@@ -423,6 +428,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 
 				case PROPOSE_ALLIANCE:
 					msg.setAction (DiplomacyAction.REJECT_ALLIANCE);
+					break;
+
+				case PROPOSE_PEACE_TREATY:
+					msg.setAction (DiplomacyAction.REJECT_PEACE_TREATY);
 					break;
 
 				// Other player rejects our request for a spell before they even suggest a trade
@@ -467,7 +476,17 @@ public final class DiplomacyUI extends MomClientFrameUI
 			initializeText ();
 		});
 		
-		proposePeaceTreatyAction = new LoggingAction ((ev) -> {});
+		proposePeaceTreatyAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.PROPOSE_PEACE_TREATY);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+			initializeText ();
+		});
+		
 		proposeDeclareWarOnAnotherWizardAction = new LoggingAction ((ev) -> {});
 		proposeBreakAllianceWithAnotherWizardAction = new LoggingAction ((ev) -> {});
 
@@ -604,6 +623,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 				else if ((getTextState () == DiplomacyTextState.ACCEPT_TALK) ||
 					(getTextState () == DiplomacyTextState.ACCEPT_WIZARD_PACT) ||
 					(getTextState () == DiplomacyTextState.ACCEPT_ALLIANCE) ||
+					(getTextState () == DiplomacyTextState.ACCEPT_PEACE_TREATY) ||
 					(getTextState () == DiplomacyTextState.BREAK_WIZARD_PACT_OR_ALLIANCE) ||
 					(getTextState () == DiplomacyTextState.BROKEN_WIZARD_PACT_OR_ALLIANCE) ||
 					(getTextState () == DiplomacyTextState.GIVEN_GOLD) ||
@@ -954,6 +974,16 @@ public final class DiplomacyUI extends MomClientFrameUI
 						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseProposalAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
 						
+					// Other wizard proposes a peace treaty to us
+					case PROPOSE_PEACE_TREATY:
+						variants = getLanguages ().getDiplomacyScreen ().getProposePeaceTreatyPhrase ();
+						
+						// Buttons to accept or refuse
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (acceptProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
+						
 					// Accepted wizard pact
 					case ACCEPT_WIZARD_PACT:
 						variants = getLanguages ().getDiplomacyScreen ().getAcceptWizardPactPhrase ();
@@ -962,6 +992,11 @@ public final class DiplomacyUI extends MomClientFrameUI
 					// Accepted alliance
 					case ACCEPT_ALLIANCE:
 						variants = getLanguages ().getDiplomacyScreen ().getAcceptAlliancePhrase ();
+						break;
+
+					// Accepted alliance
+					case ACCEPT_PEACE_TREATY:
+						variants = getLanguages ().getDiplomacyScreen ().getAcceptPeaceTreatyPhrase ();
 						break;
 
 					// Other wizard got fed up of us making proposals to them and ended the conversation

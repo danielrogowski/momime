@@ -2661,6 +2661,14 @@
 						<xsd:selector xpath="acceptAlliancePhrase" />
 						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenProposePeaceTreatyPhrasePK">
+						<xsd:selector xpath="proposePeaceTreatyPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptPeaceTreatyPhrasePK">
+						<xsd:selector xpath="acceptPeaceTreatyPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenBreakPactPhrasePK">
 						<xsd:selector xpath="breakPactPhrase" />
 						<xsd:field xpath="@variantNumber" />
@@ -5075,6 +5083,18 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptAlliancePhrase" type="momimecommon:languageTextVariant" nxe:label="Accept alliance">
 				<xsd:key name="diplomacyScreenAcceptAlliancePhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="proposePeaceTreatyPhrase" type="momimecommon:languageTextVariant" nxe:label="Propose Peace Treaty">
+				<xsd:key name="diplomacyScreenProposePeaceTreatyPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptPeaceTreatyPhrase" type="momimecommon:languageTextVariant" nxe:label="Accept Peace Treaty">
+				<xsd:key name="diplomacyScreenAcceptPeaceTreatyPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />
 					<xsd:field xpath="@language" />
 				</xsd:key>

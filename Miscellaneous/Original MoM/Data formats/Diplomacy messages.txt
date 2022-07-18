@@ -54,11 +54,11 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	690 - Lets have an alliance (diplomacyScreen / proposeAlliancePhrase)
 	705 - Break your treaty with wizard X
 	720 - I want your spell X (diplomacyScreen / exchangeSpellOursPhrase)
-	735 - Lets have a peace treaty
+	735 - Lets have a peace treaty (diplomacyScreen / proposePeaceTreatyPhrase)
 	750 - Lets have a peace treaty if I suck up and give you X
 	765 - Agree to wizard pact (diplomacyScreen / acceptWizardPactPhrase)
 	780 - Agree to alliance (diplomacyScreen / acceptAlliancePhrase)
-	795 - Agree to peace treaty
+	795 - Agree to peace treaty (diplomacyScreen / acceptPeaceTreatyPhrase)
 	810 - You were nice and gave me a spell, so sure (but in response to what?)
 	825 - Sure I broke my treaty with wizard X
 	840 - Sure lets have an alliance to kill wizard X

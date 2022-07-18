@@ -89,6 +89,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 
 			case REJECT_WIZARD_PACT:
 			case REJECT_ALLIANCE:
+			case REJECT_PEACE_TREATY:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.GENERIC_REFUSE);
 				getDiplomacyUI ().initializeText ();
@@ -108,6 +109,13 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
+
+			case PROPOSE_PEACE_TREATY:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.PROPOSE_PEACE_TREATY);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;				
 				
 			case ACCEPT_WIZARD_PACT:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
@@ -119,6 +127,13 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_ALLIANCE:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_ALLIANCE);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+			
+			case ACCEPT_PEACE_TREATY:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_PEACE_TREATY);
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;

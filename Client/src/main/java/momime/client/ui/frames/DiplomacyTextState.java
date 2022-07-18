@@ -44,12 +44,18 @@ public enum DiplomacyTextState
 	
 	/** Other wizard proposes an alliance with us */
 	PROPOSE_ALLIANCE,
+	
+	/** Other wizard proposes a peace treaty to us */
+	PROPOSE_PEACE_TREATY,
 
 	/** Accept wizard pact */
 	ACCEPT_WIZARD_PACT,
 	
 	/** Accept alliance */
 	ACCEPT_ALLIANCE,
+	
+	/** Accept peace treaty */
+	ACCEPT_PEACE_TREATY,
 
 	/** Pick a type of treaty to break*/
 	BREAK_TREATY,

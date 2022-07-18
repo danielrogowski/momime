@@ -29,6 +29,12 @@ public final class LanguageEditorDatabaseConstants
 	/** Accept an alliance */
 	public final static String TAG_ENTITY_ACCEPT_ALLIANCE_PHRASE = "acceptAlliancePhrase";
 	
+	/** Propose a peace treaty */
+	public final static String TAG_ENTITY_PROPOSE_PEACE_TREATY_PHRASE = "proposePeaceTreatyPhrase";
+	
+	/** Accept a peace treaty */
+	public final static String TAG_ENTITY_ACCEPT_PEACE_TREATY_PHRASE = "acceptPeaceTreatyPhrase";
+	
 	/** Break a pact (we're telling other wizard; not just a wizard pact but any kind of pact) */
 	public final static String TAG_ENTITY_BREAK_PACT_PHRASE = "breakPactPhrase";
 	

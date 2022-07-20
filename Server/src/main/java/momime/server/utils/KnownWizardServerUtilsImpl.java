@@ -328,6 +328,31 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 	}
 	
 	/**
+	 * Sets flag everywhere in server side memory
+	 * 
+	 * @param castingPlayerID Player who started casting Spell of Mastery
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 */
+	@Override
+	public final void setEverStartedCastingSpellOfMastery (final int castingPlayerID, final MomSessionVariables mom)
+		throws RecordNotFoundException
+	{
+		// Update true wizard details on server
+		final KnownWizardDetails trueCastingWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), castingPlayerID, "setEverStartedCastingSpellOfMastery");
+		trueCastingWizard.setEverStartedCastingSpellOfMastery (true);
+
+		// Each player who knows them
+		for (final PlayerServerDetails player : mom.getPlayers ())
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), castingPlayerID);
+			if (wizardDetails != null)
+				wizardDetails.setEverStartedCastingSpellOfMastery (true);
+		}
+	}
+	
+	/**
 	 * @return Methods for finding KnownWizardDetails from the list
 	 */
 	public final KnownWizardUtils getKnownWizardUtils ()

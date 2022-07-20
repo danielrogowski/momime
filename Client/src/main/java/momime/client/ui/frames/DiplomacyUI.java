@@ -911,11 +911,15 @@ public final class DiplomacyUI extends MomClientFrameUI
 					case PROPOSE_TREATY:
 					{
 						// Which kinds of treaties are relevant depends on our current pact with the wizard
+						final boolean pactsAllowed = (!talkingWizardDetails.isEverStartedCastingSpellOfMastery ()) && (!ourWizardDetails.isEverStartedCastingSpellOfMastery ());
+						
 						final PactType pactType = getKnownWizardUtils ().findPactWith (ourWizardDetails.getPact (), getTalkingWizardID ());
 						
-						proposeWizardPactAction.setEnabled (pactType == null);
-						proposeAllianceAction.setEnabled ((pactType == null) || (pactType == PactType.WIZARD_PACT));
-						proposePeaceTreatyAction.setEnabled (pactType == PactType.WAR);
+						proposeWizardPactAction.setEnabled ((pactsAllowed) && (pactType == null));
+						proposeAllianceAction.setEnabled ((pactsAllowed) && ((pactType == null) || (pactType == PactType.WIZARD_PACT)));
+						proposePeaceTreatyAction.setEnabled ((pactsAllowed) && (pactType == PactType.WAR));
+						proposeDeclareWarOnAnotherWizardAction.setEnabled (pactsAllowed);
+						proposeBreakAllianceWithAnotherWizardAction.setEnabled (pactsAllowed);
 						
 						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeWizardPactAction,
 							proposeWizardPactAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));

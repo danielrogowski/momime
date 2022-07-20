@@ -62,6 +62,9 @@ public final class PlayAnimationMessageImpl extends PlayAnimationMessage impleme
 				break;
 				
 			case STARTED_SPELL_OF_MASTERY:
+				getKnownWizardUtils ().findKnownWizardDetails (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
+					getPlayerID (), "PlayAnimationMessageImpl").setEverStartedCastingSpellOfMastery (true);
+				
 				final SpellOfMasteryStartUI spellOfMasteryStartUI = getPrototypeFrameCreator ().createSpellOfMasteryStart ();
 				spellOfMasteryStartUI.setCastingWizard (player);
 				spellOfMasteryStartUI.setPlayAnimationMessage (this);

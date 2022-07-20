@@ -87,4 +87,14 @@ public interface KnownWizardServerUtils
 	 */
 	public void updatePact (final int updatePlayerID, final int pactPlayerID, final PactType pactType, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Sets flag everywhere in server side memory
+	 * 
+	 * @param castingPlayerID Player who started casting Spell of Mastery
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 */
+	public void setEverStartedCastingSpellOfMastery (final int castingPlayerID, final MomSessionVariables mom)
+		throws RecordNotFoundException; 
 }

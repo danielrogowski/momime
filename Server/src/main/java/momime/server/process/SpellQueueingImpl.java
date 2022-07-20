@@ -640,6 +640,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Everyone declares war on them
 			final KnownWizardDetails castingWizard = getKnownWizardUtils ().findKnownWizardDetails
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), castingPlayer.getPlayerDescription ().getPlayerID (), "queueSpell");
+			getKnownWizardServerUtils ().setEverStartedCastingSpellOfMastery (castingPlayer.getPlayerDescription ().getPlayerID (), mom);
 			
 			for (final KnownWizardDetails trueWizard : mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ())
 				if ((trueWizard.getPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (getPlayerKnowledgeUtils ().isWizard (trueWizard.getWizardID ())) &&

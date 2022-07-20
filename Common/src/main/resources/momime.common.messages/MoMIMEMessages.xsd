@@ -534,6 +534,7 @@ standardPhotoIDs over and over again</xsd:documentation>
 					<xsd:documentation>Only filled in for AI wizards (not human wizards, raiders or rampaging monsters).</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="everStartedCastingSpellOfMastery" type="xsd:boolean" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pact" type="momimemsgs:pact" />

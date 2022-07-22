@@ -106,5 +106,23 @@ public enum DiplomacyTextState
 	THANKS_FOR_EXCHANGING_SPELL,
 	
 	/** Broken a wizard pact or alliance by attacking their units or a city, so they're mad about it */
-	BROKEN_PACT_UNITS_OR_CITY;
+	BROKEN_PACT_UNITS_OR_CITY,
+
+	/** List of other wizards we can ask the wizard we're talking to to declare war on */
+	CHOOSE_OTHER_WIZARD_TO_DECLARE_WAR_ON,
+	
+	/** Suggesting that we declare war on another wizard */
+	PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD,
+	
+	/** They agreed to declare war on another wizard like we asked */
+	ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD,
+	
+	/** List of other wizards we can ask the wizard we're talking to to break their alliance with */
+	CHOOSE_OTHER_WIZARD_TO_BREAK_ALLIANCE_WITH,
+
+	/** Suggesting that we break our alliance with another wizard */
+	PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD,
+
+	/** They agreed to break their alliance with another wizard */
+	ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD;
 }

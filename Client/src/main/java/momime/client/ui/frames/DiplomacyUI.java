@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.swing.Action;
@@ -102,6 +103,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	
 	/** Spaces left around components added to the text panel */
 	private final static int NO_INSET = 0;
+
+	/** Amount of space in the UI to list other wizards */
+	private final static int MAXIMUM_CANDIDATE_WIZARDS = 5;
 	
 	/** XML layout */
 	private XmlLayoutContainerEx diplomacyLayout;
@@ -147,6 +151,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	
 	/** Which wizard we are talking to */
 	private int talkingWizardID;
+	
+	/** Which wizard we are talking about */
+	private Integer otherWizardID;
 
 	/** Which wizard is the one controlling making proposals (and which one is waiting for the other side to make a proposal) */
 	private int proposingWizardID;
@@ -379,6 +386,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 		{
 			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setOtherPlayerID (getOtherWizardID ());
 			msg.setRequestSpellID (getRequestSpellID ());
 			msg.setOfferSpellID (getOfferSpellID ());
 			
@@ -405,6 +413,16 @@ public final class DiplomacyUI extends MomClientFrameUI
 					setTextState (DiplomacyTextState.MAIN_CHOICES);
 					break;
 					
+				case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+					msg.setAction (DiplomacyAction.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD);
+					setTextState (DiplomacyTextState.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD);
+					break;
+					
+				case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+					msg.setAction (DiplomacyAction.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
+					setTextState (DiplomacyTextState.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
+					break;
+					
 				default:
 					throw new IOException ("Accepting proposal, but don't know what of proposal " + getTextState () + " is");
 			}
@@ -417,6 +435,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 		{
 			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setOtherPlayerID (getOtherWizardID ());
 			msg.setRequestSpellID (getRequestSpellID ());
 			msg.setOfferSpellID (getOfferSpellID ());
 			
@@ -442,6 +461,14 @@ public final class DiplomacyUI extends MomClientFrameUI
 				// We wanted their spell, but to give it to us they requested something way too good in return
 				case PROPOSE_EXCHANGE_SPELL:					
 					msg.setAction (DiplomacyAction.REJECT_EXCHANGE_SPELL);
+					break;
+
+				case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+					msg.setAction (DiplomacyAction.REJECT_DECLARE_WAR_ON_OTHER_WIZARD);
+					break;
+					
+				case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+					msg.setAction (DiplomacyAction.REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
 					break;
 					
 				default:
@@ -487,8 +514,17 @@ public final class DiplomacyUI extends MomClientFrameUI
 			initializeText ();
 		});
 		
-		proposeDeclareWarOnAnotherWizardAction = new LoggingAction ((ev) -> {});
-		proposeBreakAllianceWithAnotherWizardAction = new LoggingAction ((ev) -> {});
+		proposeDeclareWarOnAnotherWizardAction = new LoggingAction ((ev) ->
+		{
+			setTextState (DiplomacyTextState.CHOOSE_OTHER_WIZARD_TO_DECLARE_WAR_ON);
+			initializeText ();
+		});
+
+		proposeBreakAllianceWithAnotherWizardAction = new LoggingAction ((ev) ->
+		{
+			setTextState (DiplomacyTextState.CHOOSE_OTHER_WIZARD_TO_BREAK_ALLIANCE_WITH);
+			initializeText ();
+		});
 
 		breakWizardPactAction = new LoggingAction ((ev) ->
 		{
@@ -918,8 +954,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 						proposeWizardPactAction.setEnabled ((pactsAllowed) && (pactType == null));
 						proposeAllianceAction.setEnabled ((pactsAllowed) && ((pactType == null) || (pactType == PactType.WIZARD_PACT)));
 						proposePeaceTreatyAction.setEnabled ((pactsAllowed) && (pactType == PactType.WAR));
-						proposeDeclareWarOnAnotherWizardAction.setEnabled (pactsAllowed);
-						proposeBreakAllianceWithAnotherWizardAction.setEnabled (pactsAllowed);
+						proposeDeclareWarOnAnotherWizardAction.setEnabled ((pactsAllowed) && (pactType != PactType.WAR) && (!listWhoWeCanAskWizardToDeclareWarOn ().isEmpty ()));
+						proposeBreakAllianceWithAnotherWizardAction.setEnabled ((pactsAllowed) && (pactType != PactType.WAR) && (!listWhoWeCanAskWizardToBreakAllianceWith ().isEmpty ()));
 						
 						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeWizardPactAction,
 							proposeWizardPactAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
@@ -1148,6 +1184,65 @@ public final class DiplomacyUI extends MomClientFrameUI
 						else
 							variants = getLanguages ().getDiplomacyScreen ().getPactBrokenCityPhrase ();
 						break;
+						
+					// List 3rd party wizards so player can pick one
+					case CHOOSE_OTHER_WIZARD_TO_DECLARE_WAR_ON:
+					case CHOOSE_OTHER_WIZARD_TO_BREAK_ALLIANCE_WITH:
+						final List<Integer> playerIDs = (getTextState () == DiplomacyTextState.CHOOSE_OTHER_WIZARD_TO_DECLARE_WAR_ON) ?
+							listWhoWeCanAskWizardToDeclareWarOn () : listWhoWeCanAskWizardToBreakAllianceWith ();
+						for (final Integer otherPlayerID : playerIDs)
+						{
+							final PlayerPublicDetails otherPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), otherPlayerID, "initializeText");
+							final String otherPlayerName = getWizardClientUtils ().getPlayerName (otherPlayer);
+							
+							final Action otherPlayerAction = new LoggingAction (otherPlayerName, (ev) ->
+							{
+								final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+								msg.setTalkToPlayerID (getTalkingWizardID ());
+								msg.setOtherPlayerID (otherPlayerID);
+								msg.setAction ((getTextState () == DiplomacyTextState.CHOOSE_OTHER_WIZARD_TO_DECLARE_WAR_ON) ?
+									DiplomacyAction.PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD : DiplomacyAction.PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
+
+								getClient ().getServerConnection ().sendMessageToServer (msg);
+
+								setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+								initializeText ();
+							});
+							
+							componentsBelowText.add (getUtils ().createTextOnlyButton (otherPlayerAction, MomUIConstants.GOLD, getMediumFont ()));
+						}
+						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));						
+						break;
+						
+					// Suggesting that we declare war on another wizard
+					case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+						variants = getLanguages ().getDiplomacyScreen ().getProposeDeclareWarOnAnotherWizardPhrase ();
+						
+						// Buttons to accept or refuse
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (acceptProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
+
+					// Suggesting that we break our alliance with another wizard
+					case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+						variants = getLanguages ().getDiplomacyScreen ().getProposeBreakAllianceWithAnotherWizardPhrase ();
+						
+						// Buttons to accept or refuse
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (acceptProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
+						
+					// They agreed to declare war on another wizard like we asked
+					case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
+						variants = getLanguages ().getDiplomacyScreen ().getAcceptDeclareWarOnAnotherWizardPhrase ();
+						break;
+
+					// They agreed to break their alliance with another wizard
+					case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+						variants = getLanguages ().getDiplomacyScreen ().getAcceptBreakAllianceWithAnotherWizardPhrase ();
+						break;
 				}
 		
 				if ((variants != null) && (!variants.isEmpty ()))
@@ -1172,6 +1267,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 					
 					if (cityName != null)
 						text = text.replaceAll ("CITY_NAME", cityName);
+					
+					if ((getOtherWizardID () != null) && (text.contains ("THIRD_PLAYER_NAME")))
+					{
+						final PlayerPublicDetails otherWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getOtherWizardID (), "initializeText");
+						text = text.replaceAll ("THIRD_PLAYER_NAME", getWizardClientUtils ().getPlayerName (otherWizard));
+					}
 					
 					if (text.contains ("REQUEST_SPELL_NAME"))
 					{
@@ -1623,6 +1724,40 @@ public final class DiplomacyUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @return List of wizards we can ask the wizard we're talking to to declare war on 
+	 */
+	private final List<Integer> listWhoWeCanAskWizardToDeclareWarOn ()
+	{
+		// We have to be at war with the wizard
+		// They have to NOT be at war with the wizard
+		final List<Integer> playerIDs = ourWizardDetails.getPact ().stream ().filter
+			(p -> (p.getPactType () == PactType.WAR) && (getKnownWizardUtils ().findPactWith (talkingWizardDetails.getPact (), p.getPactWithPlayerID ()) != PactType.WAR)).map
+			(p -> p.getPactWithPlayerID ()).collect (Collectors.toList ());
+		
+		while (playerIDs.size () > MAXIMUM_CANDIDATE_WIZARDS)
+			playerIDs.remove (getRandomUtils ().nextInt (playerIDs.size ()));
+		
+		return playerIDs;
+	}
+	
+	/**
+	 * @return List of wizards we can ask the wizard we're talking to to break their alliance with 
+	 */
+	private final List<Integer> listWhoWeCanAskWizardToBreakAllianceWith ()
+	{
+		// We have to be at war with the wizard
+		// They have to have an alliance with the wizard
+		final List<Integer> playerIDs = ourWizardDetails.getPact ().stream ().filter
+			(p -> (p.getPactType () == PactType.WAR) && (getKnownWizardUtils ().findPactWith (talkingWizardDetails.getPact (), p.getPactWithPlayerID ()) == PactType.ALLIANCE)).map
+			(p -> p.getPactWithPlayerID ()).collect (Collectors.toList ());
+
+		while (playerIDs.size () > MAXIMUM_CANDIDATE_WIZARDS)
+			playerIDs.remove (getRandomUtils ().nextInt (playerIDs.size ()));
+		
+		return playerIDs;
+	}
+	
+	/**
 	 * @return XML layout
 	 */
 	public final XmlLayoutContainerEx getDiplomacyLayout ()
@@ -1862,6 +1997,22 @@ public final class DiplomacyUI extends MomClientFrameUI
 		talkingWizardID = w;
 	}
 
+	/**
+	 * @return Which wizard we are talking about
+	 */
+	public final Integer getOtherWizardID ()
+	{
+		return otherWizardID;
+	}
+
+	/**
+	 * @param w Which wizard we are talking about
+	 */
+	public final void setOtherWizardID (final Integer w)
+	{
+		otherWizardID = w;
+	}
+	
 	/**
 	 * @return Which wizard is the one controlling making proposals (and which one is waiting for the other side to make a proposal)
 	 */

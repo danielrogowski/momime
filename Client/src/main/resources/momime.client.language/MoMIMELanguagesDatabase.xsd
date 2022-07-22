@@ -2709,6 +2709,22 @@
 						<xsd:selector xpath="refuseExchangeSpellPhrase" />
 						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeDeclareWarOnAnotherWizardPhrasePK">
+						<xsd:selector xpath="proposeDeclareWarOnAnotherWizardPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptDeclareWarOnAnotherWizardPhrasePK">
+						<xsd:selector xpath="acceptDeclareWarOnAnotherWizardPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeBreakAllianceWithAnotherWizardPhrasePK">
+						<xsd:selector xpath="proposeBreakAllianceWithAnotherWizardPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptBreakAllianceWithAnotherWizardPhrasePK">
+						<xsd:selector xpath="acceptBreakAllianceWithAnotherWizardPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="helpScreen" type="momimelangs:helpScreen">
 					<xsd:key name="helpScreenTitlePK">
@@ -5155,6 +5171,30 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="refuseExchangeSpellPhrase" type="momimecommon:languageTextVariant" nxe:label="Refuse exchange spell">
 				<xsd:key name="diplomacyScreenRefuseExchangeSpellPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="proposeDeclareWarOnAnotherWizardPhrase" type="momimecommon:languageTextVariant" nxe:label="Propose declare war on another wizard">
+				<xsd:key name="diplomacyScreenProposeDeclareWarOnAnotherWizardPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptDeclareWarOnAnotherWizardPhrase" type="momimecommon:languageTextVariant" nxe:label="Accept declare war on another wizard">
+				<xsd:key name="diplomacyScreenAcceptDeclareWarOnAnotherWizardPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="proposeBreakAllianceWithAnotherWizardPhrase" type="momimecommon:languageTextVariant" nxe:label="Propose break alliance with another wizard">
+				<xsd:key name="diplomacyScreenProposeBreakAllianceWithAnotherWizardPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptBreakAllianceWithAnotherWizardPhrase" type="momimecommon:languageTextVariant" nxe:label="Accept break alliance with another wizard">
+				<xsd:key name="diplomacyScreenAcceptBreakAllianceWithAnotherWizardPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />
 					<xsd:field xpath="@language" />
 				</xsd:key>

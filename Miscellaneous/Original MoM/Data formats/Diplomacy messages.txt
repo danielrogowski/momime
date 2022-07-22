@@ -5,7 +5,7 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	45 - Thanks for the spell (diplomacyScreen / thanksForSpellPhrase)
 	60 - I'm going to kill you (diplomacyScreen / declareWarCityPhrase)
 	75 - I don't like you anymore (diplomacyScreen / brokenPactPhrase)
-	90 - Lets both kill wizard X
+	90 - Lets both kill wizard X (diplomacyScreen / proposeDeclareWarOnAnotherWizardPhrase)
 	
 	105 - Get out of my land or I will kill you
 	120 - Stop attacking my units or I will kill you
@@ -52,7 +52,7 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	660 - I'm not talking to you! (diplomacyScreen / refuseGreeting)
 	675 - Lets have a wizard pact (diplomacyScreen / proposeWizardPactPhrase)
 	690 - Lets have an alliance (diplomacyScreen / proposeAlliancePhrase)
-	705 - Break your treaty with wizard X
+	705 - Break your treaty with wizard X (diplomacyScreen / proposeBreakAllianceWithAnotherWizardPhrase)
 	720 - I want your spell X (diplomacyScreen / exchangeSpellOursPhrase)
 	735 - Lets have a peace treaty (diplomacyScreen / proposePeaceTreatyPhrase)
 	750 - Lets have a peace treaty if I suck up and give you X
@@ -60,8 +60,8 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	780 - Agree to alliance (diplomacyScreen / acceptAlliancePhrase)
 	795 - Agree to peace treaty (diplomacyScreen / acceptPeaceTreatyPhrase)
 	810 - You were nice and gave me a spell, so sure (but in response to what?)
-	825 - Sure I broke my treaty with wizard X
-	840 - Sure lets have an alliance to kill wizard X
+	825 - Sure I broke my treaty with wizard X (diplomacyScreen / acceptBreakAllianceWithAnotherWizardPhrase)
+	840 - Sure lets have an alliance to kill wizard X (diplomacyScreen / acceptDeclareWarOnAnotherWizardPhrase)
 	
 	855 - No (diplomacyScreen / genericRefusePhrase)
 	870 - No, because of previously broken treaties

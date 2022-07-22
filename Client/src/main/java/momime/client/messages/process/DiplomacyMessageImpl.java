@@ -50,6 +50,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 		log.debug ("Received diplomacy action " + getAction () + " from player ID " + getTalkFromPlayerID ());
 		
 		getDiplomacyUI ().setTalkingWizardID (getTalkFromPlayerID ());
+		getDiplomacyUI ().setOtherWizardID (getOtherPlayerID ());
 		getDiplomacyUI ().setDiplomacyAction (getAction ());
 		getDiplomacyUI ().setOfferGoldAmount (getOfferGoldAmount ());
 		getDiplomacyUI ().setRequestSpellID (getRequestSpellID ());
@@ -90,6 +91,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case REJECT_WIZARD_PACT:
 			case REJECT_ALLIANCE:
 			case REJECT_PEACE_TREATY:
+			case REJECT_DECLARE_WAR_ON_OTHER_WIZARD:
+			case REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.GENERIC_REFUSE);
 				getDiplomacyUI ().initializeText ();
@@ -238,6 +241,34 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case BROKEN_ALLIANCE_NICELY:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.BROKEN_WIZARD_PACT_OR_ALLIANCE);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;

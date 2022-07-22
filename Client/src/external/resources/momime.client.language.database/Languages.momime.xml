@@ -6166,6 +6166,226 @@ Bonus Or +GOLD_BONUS%</text>
 				<text>Verschwendet nicht meine Zeit! Ihr habt nichts zu bieten, was mir zunutze kommen koennte!</text>
 			</textVariant>
 		</refuseExchangeSpellPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Together our two forces can challenge the threat of THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ensemble, nos forces peuvent faire face aux menaces de THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Gemeinsam koennen unsere Truppen der Bedrohung durch THIRD_PLAYER_NAME die Stirn bieten.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Your attacks against THIRD_PLAYER_NAME have proven that you fight for a just cause.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos attaques contre THIRD_PLAYER_NAME prouve que vous vous battez pour une juste cause.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure Angriffe gegen THIRD_PLAYER_NAME haben bewiesen, dass Ihr fuer eine gerechte Sache kaempft.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, now you to must realize the incredible threat THIRD_PLAYER_NAME poses to our kingdoms.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, maintenant vous devez realiser quelle menace THIRD_PLAYER_NAME fait peser sur nos royaumes.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, nun muss Euch doch klar sein, welch unglaubliche Bedrohung THIRD_PLAYER_NAME fuer unsere Koenigreiche darstellt.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>It would seem that we both share a common enemy, the loathsome forces of THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Il semblerait que nous ayons un ennemi commun, les forces repugnantes de THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Es scheint, als haetten wir einen gemeinsamen Gegner - die verhassten Truppen von THIRD_PLAYER_NAME.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Obviously THIRD_PLAYER_NAME's menace has even reached into your empire. Together we will smite the infidel dog.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>De toute evidence, le danger represente par THIRD_PLAYER_NAME a aussi atteint votre royaume. Ensemble, nous punirons ce chien d'infidele.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Offenbar wird auch Euer Reich von THIRD_PLAYER_NAME bedroht. Gemeinsam werden wir den treulosen Hund verjagen.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Yes, OUR_PLAYER_NAME, the time has come for both our empires to strike out against THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Oui, OUR_PLAYER_NAME, l'heure de la guerre contre THIRD_PLAYER_NAME a sonne pour nos deux empires.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>In der Tat, OUR_PLAYER_NAME, die Zeit ist gekommen, unsere Kraefte gegen THIRD_PLAYER_NAME zu vereinen.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Our armies must unite to strike down the wicked THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Nous armees doivent s'unir pour frapper l'inique THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Unsere Armeen muessen sich vereinen, um den heimtueckischen THIRD_PLAYER_NAME zur Strecke zu bringen.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>THIRD_PLAYER_NAME's empire must fall before the combined might of our armies.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>L'empire de THIRD_PLAYER_NAME doit tomber grace a la puissance de nos deux armees reunies.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>THIRD_PLAYER_NAMEs Zauberreich muss vor der vereinten Kraft unserer Armeen klein beigeben.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>With our troops allied, THIRD_PLAYER_NAME can not last long.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Avec nos troupes se battant conjointement, les jours de THIRD_PLAYER_NAME sont comptes.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Mit unseren alliierten Truppen werden wir THIRD_PLAYER_NAME in die Knie zwingen.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>In the year YEAR, TALKING_PLAYER_NAME and OUR_PLAYER_NAME shall join forces to rid the world of the THIRD_PLAYER_NAME menace.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>En YEAR, TALKING_PLAYER_NAME et OUR_PLAYER_NAME joindront leurs forces pour se debarrasser de THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Im Jahr YEAR schliessen TALKING_PLAYER_NAME und OUR_PLAYER_NAME ihre Kraefte zusammen, um die Welt von der Bedrohung durch THIRD_PLAYER_NAME zu befreien.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>In view of the threat from THIRD_PLAYER_NAME, I have no choice but to unite!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Compte tenu de la menace representee par THIRD_PLAYER_NAME, je n'ai pas d'autre choix que de m'unir!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Angesichts der Bedrohung durch THIRD_PLAYER_NAME habe ich keine andere Wahl, als mich mit einem Buendnispartner zusammenzuschliessen!</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<proposeBreakAllianceWithAnotherWizardPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you must break your treaty with THIRD_PLAYER_NAME if you expect to deal with me.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, vous devez revoquer votre traite avec THIRD_PLAYER_NAME si vous voulez traiter avec moi.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr muesst zuerst Euren Vertrag mit THIRD_PLAYER_NAME brechen, wenn Ihr mit mir in Verhandlung treten wollt.</text>
+			</textVariant>
+		</proposeBreakAllianceWithAnotherWizardPhrase>
+		<proposeBreakAllianceWithAnotherWizardPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I will not deal with a friend of THIRD_PLAYER_NAME. Break your treaty or we cannot talk.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne vais pas traiter avec un ami de THIRD_PLAYER_NAME. Rompez votre traite ou il n'y aura aucun pourparler.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich werde mich nicht mit einem Freund von THIRD_PLAYER_NAME einlassen. Brecht Euer Buendnis mit ihm, dann koennen wir verhandeln.</text>
+			</textVariant>
+		</proposeBreakAllianceWithAnotherWizardPhrase>
+		<proposeBreakAllianceWithAnotherWizardPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Once you have ended your dealings with THIRD_PLAYER_NAME, we can discuss our mutual future.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Lorsque vous aurez mis un terme a vos relations avec THIRD_PLAYER_NAME, nous pourrons discuter de notre avenir.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Habt Ihr Eure Beziehungen zu THIRD_PLAYER_NAME erst einmal beendet, koennen wir unsere gemeinsame Zukunft bereden.</text>
+			</textVariant>
+		</proposeBreakAllianceWithAnotherWizardPhrase>
+		<proposeBreakAllianceWithAnotherWizardPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Any friend of THIRD_PLAYER_NAME is an enemy of mine. If you would deal with me, break your treaty with that scum first.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Les amis de THIRD_PLAYER_NAME sont mes ennemis. Si vous voulez traiter avec moi, vous devez d'abord revoquer le traite que vous avez signe avec cet etre abject</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Jeder Freund von THIRD_PLAYER_NAME ist mein Feind. Wollt Ihr mit mir verhandeln, muesst Ihr erst Euren Vertrag mit diesem raeudigen Hund brechen.</text>
+			</textVariant>
+		</proposeBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I agree, THIRD_PLAYER_NAME is no longer trustworthy and I have broken our alliance.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte, THIRD_PLAYER_NAME n'est plus digne de confiance et j'ai revoque notre traite.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich stimme zu, dass THIRD_PLAYER_NAME meines Vertrauens nicht wuerdig ist, und habe unser Buendnis beendet.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Though it pains me to turn my back on THIRD_PLAYER_NAME, I will do so.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Bien qu'il m'en coute de trahir THIRD_PLAYER_NAME, je vais le faire.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Obschon es mich schmerzt, mich von THIRD_PLAYER_NAME abzuwenden, werde ich es gleichwohl tun.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>THIRD_PLAYER_NAME is no longer an ally of mine.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>THIRD_PLAYER_NAME ne compte plus parmi mes allies.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>THIRD_PLAYER_NAME zaehlt nicht laenger zu meinen Verbuendeten.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>My alliance with THIRD_PLAYER_NAME now lies in shreds.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Mon alliance avec THIRD_PLAYER_NAME n'est plus que du passe.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Mein Buendnis mit THIRD_PLAYER_NAME liegt in Scherben.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>As you wish, OUR_PLAYER_NAME, I no longer shall call THIRD_PLAYER_NAMEan ally.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Comme vous le souhaitiez, OUR_PLAYER_NAME, THIRD_PLAYER_NAMEn'est plus un de mes allies.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wie Ihr wuenscht, OUR_PLAYER_NAME. THIRD_PLAYER_NAME gehoert nicht mehr zu meinen Verbuendeten.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
 	</diplomacyScreen>
 	<helpScreen>
 		<title language="en">

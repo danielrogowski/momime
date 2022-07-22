@@ -65,6 +65,18 @@ public final class LanguageEditorDatabaseConstants
 	/** We requested a spell from the other wizard, and they said forget it OR they offered a lame spell in return and we said forget it */
 	public final static String TAG_REFUSE_EXCHANGE_SPELL_PHRASE = "refuseExchangeSpellPhrase";
 
+	/** Propose that they declare war on another wizard */
+	public final static String TAG_PROPOSE_DECLARE_WAR_ON_ANOTHER_WIZARD_PHRASE = "proposeDeclareWarOnAnotherWizardPhrase";
+
+	/** Accept that we should declare war on another wizard */
+	public final static String TAG_ACCEPT_DECLARE_WAR_ON_ANOTHER_WIZARD_PHRASE = "acceptDeclareWarOnAnotherWizardPhrase";
+
+	/** Propose that they break alliance with another wizard */
+	public final static String TAG_PROPOSE_BREAK_ALLIANCE_WITH_ANOTHER_WIZARD_PHRASE = "proposeBreakAllianceWithAnotherWizardPhrase";
+
+	/** Accept that we should break alliance with another wizard */
+	public final static String TAG_ACCEPT_BREAK_ALLIANCE_WITH_ANOTHER_WIZARD_PHRASE = "acceptBreakAllianceWithAnotherWizardPhrase";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

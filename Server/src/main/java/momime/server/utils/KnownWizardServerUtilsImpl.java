@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -19,6 +21,7 @@ import momime.common.database.RelationScore;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.Pact;
 import momime.common.messages.PactType;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
@@ -94,6 +97,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					knownWizardDetails.setMaximumGoldTribute (ServerDatabaseValues.INITIAL_MAXIMUM_GOLD_TRIBUTE);
 					knownWizardDetails.getPowerBaseHistory ().addAll (metWizard.getPowerBaseHistory ());
 					copyPickList (metWizard.getPick (), knownWizardDetails.getPick ());
+					copyPacts (metWizard.getPact (), knownWizardDetails.getPact (), priv.getFogOfWarMemory ().getWizardDetails ().stream ().map (w -> w.getPlayerID ()).collect (Collectors.toSet ()));
 					
 					// Calculate their base opinion of us based on what spell books we both have
 					final KnownWizardDetails ourWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
@@ -126,6 +130,26 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 						
 						player.getConnection ().sendMessageToClient (meet);
 					}
+					
+					// The reverse versions of any pacts sent above also need to be added+sent
+					for (final Pact srcPact : knownWizardDetails.getPact ())
+					{
+						final KnownWizardDetails pactWithPlayer = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), srcPact.getPactWithPlayerID (), "meetWizard (P)");
+						
+						final Pact destPact = new Pact ();
+						destPact.setPactWithPlayerID (metWizardID);
+						destPact.setPactType (srcPact.getPactType ());
+						pactWithPlayer.getPact ().add (destPact);
+						
+						if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+						{
+							final PactMessage msg = new PactMessage ();
+							msg.setUpdatePlayerID (srcPact.getPactWithPlayerID ());
+							msg.setPactPlayerID (metWizardID);
+							msg.setPactType (srcPact.getPactType ());
+							player.getConnection ().sendMessageToClient (msg);
+						}
+					}
 				}
 			}
 	}
@@ -146,6 +170,24 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 			destPick.setOriginalQuantity (srcPick.getOriginalQuantity ());
 			dest.add (destPick);
 		}					
+	}
+
+	/**
+	 * @param src List of pacts to copy from
+	 * @param dest List of pacts to copy to
+	 * @param playerIDs Restrict copy to containing only these playerIDs
+	 */
+	final void copyPacts (final List<Pact> src, final List<Pact> dest, final Set<Integer> playerIDs)
+	{
+		dest.clear ();
+		for (final Pact srcPact : src)
+			if (playerIDs.contains (srcPact.getPactWithPlayerID ()))
+			{
+				final Pact destPact = new Pact ();
+				destPact.setPactWithPlayerID (srcPact.getPactWithPlayerID ());
+				destPact.setPactType (srcPact.getPactType ());
+				dest.add (destPact);
+			}
 	}
 	
 	/**
@@ -313,12 +355,12 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 		msg.setPactPlayerID (pactPlayerID);
 		msg.setPactType (pactType);
 		
-		// Each player who knows them
+		// Each player who knows BOTH wizards involved in the pact
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), updatePlayerID);
-			if (wizardDetails != null)
+			if ((wizardDetails != null) && (getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), pactPlayerID) != null))
 			{
 				getKnownWizardUtils ().updatePactWith (wizardDetails.getPact (), pactPlayerID, pactType);
 				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)

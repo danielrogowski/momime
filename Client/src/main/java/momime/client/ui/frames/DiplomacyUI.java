@@ -666,6 +666,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 					(getTextState () == DiplomacyTextState.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD) ||
 					(getTextState () == DiplomacyTextState.BREAK_WIZARD_PACT_OR_ALLIANCE) ||
 					(getTextState () == DiplomacyTextState.BROKEN_WIZARD_PACT_OR_ALLIANCE) ||
+					(getTextState () == DiplomacyTextState.CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD) ||
 					(getTextState () == DiplomacyTextState.GIVEN_GOLD) ||
 					(getTextState () == DiplomacyTextState.GIVEN_SPELL) ||
 					(getTextState () == DiplomacyTextState.THANKS_FOR_GOLD) ||
@@ -1260,6 +1261,11 @@ public final class DiplomacyUI extends MomClientFrameUI
 					// Breaking alliance with you because another wizard asked us to
 					case BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD:
 						singular = getLanguages ().getDiplomacyScreen ().getBreakAllianceWithYouBecauseOfOtherWizard ();
+						break;
+					
+					// We asked player 2 to declare war on player 3, but player 2 doesn't even know player 3
+					case CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD:
+						singular = getLanguages ().getDiplomacyScreen ().getCannotDeclareWarOnUnknownWizard ();
 						break;
 				}
 		

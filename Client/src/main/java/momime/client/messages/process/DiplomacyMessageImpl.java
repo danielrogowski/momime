@@ -260,6 +260,13 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
+
+			case CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
 				
 			case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);

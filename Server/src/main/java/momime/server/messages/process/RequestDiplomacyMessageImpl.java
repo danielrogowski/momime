@@ -118,6 +118,24 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
 				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
 				break;
+
+			// Player 1 asking player 2 to declare war on player 3 has no idea whether player 2 even knows who player 3 is.
+			// So if they don't know each other, send back a special reply.
+			case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+			{
+				if (getKnownWizardUtils ().findKnownWizardDetails (talkToPlayerPriv.getFogOfWarMemory ().getWizardDetails (), getOtherPlayerID ()) == null)
+				{
+					final DiplomacyMessage msg = new DiplomacyMessage ();	
+					msg.setTalkFromPlayerID (getTalkToPlayerID ());
+					msg.setAction (DiplomacyAction.CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD);
+					msg.setOtherPlayerID (getOtherPlayerID ());
+					
+					sender.getConnection ().sendMessageToClient (msg);
+					proceed = false;
+				}
+				
+				break;
+			}
 				
 			case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
 			{

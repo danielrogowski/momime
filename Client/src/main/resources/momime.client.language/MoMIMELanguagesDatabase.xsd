@@ -2629,6 +2629,10 @@
 						<xsd:selector xpath="thanksForExchangingSpell" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenCannotDeclareWarOnUnknownWizardPK">
+						<xsd:selector xpath="cannotDeclareWarOnUnknownWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenDeclareWarOnYouBecauseOfOtherWizardPK">
 						<xsd:selector xpath="declareWarOnYouBecauseOfOtherWizard" />
 						<xsd:field xpath="@language" />
@@ -5063,6 +5067,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeExchangeSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rejectExchangeSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="thanksForExchangingSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotDeclareWarOnUnknownWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="declareWarOnYouBecauseOfOtherWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakAllianceWithYouBecauseOfOtherWizard" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="normalGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Normal greeting">

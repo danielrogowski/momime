@@ -123,6 +123,9 @@ public enum DiplomacyTextState
 	/** Suggesting that we break our alliance with another wizard */
 	PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD,
 
+	/** We asked player 2 to declare war on player 3, but player 2 doesn't even know player 3 */
+	CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD,
+	
 	/** They agreed to break their alliance with another wizard */
 	ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD,
 	

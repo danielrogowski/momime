@@ -4692,6 +4692,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<thanksForExchangingSpell language="en">
 			<text>Very well, I accept your offer and will teach you the secret of OFFER_SPELL_NAME in exchange for you teaching me REQUEST_SPELL_NAME!</text>
 		</thanksForExchangingSpell>
+		<cannotDeclareWarOnUnknownWizard language="en">
+			<text>OUR_PLAYER_NAME, have you gone mad?  I will not declare war on a wizard I have never even met!</text>
+		</cannotDeclareWarOnUnknownWizard>
 		<declareWarOnYouBecauseOfOtherWizard language="en">
 			<text>OUR_PLAYER_NAME, I agree with THIRD_PLAYER_NAME that you are an eyesore that must be removed from this world!</text>
 		</declareWarOnYouBecauseOfOtherWizard>

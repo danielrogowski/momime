@@ -1763,9 +1763,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 	private final List<Integer> listWhoWeCanAskWizardToDeclareWarOn ()
 	{
 		// We have to be at war with the wizard
-		// They have to NOT be at war with the wizard
+		// They have to NOT be at war with the wizard and NOT have an alliance with the wizard (if they have an alliance then we should pick "propose break alliance" instead)
+		final List<PactType> unacceptablePacts = Arrays.asList (PactType.WAR, PactType.ALLIANCE);
+		
 		final List<Integer> playerIDs = ourWizardDetails.getPact ().stream ().filter
-			(p -> (p.getPactType () == PactType.WAR) && (getKnownWizardUtils ().findPactWith (talkingWizardDetails.getPact (), p.getPactWithPlayerID ()) != PactType.WAR)).map
+			(p -> (p.getPactType () == PactType.WAR) && (p.getPactWithPlayerID () != getTalkingWizardID ()) &&
+				(!unacceptablePacts.contains (getKnownWizardUtils ().findPactWith (talkingWizardDetails.getPact (), p.getPactWithPlayerID ())))).map
 			(p -> p.getPactWithPlayerID ()).collect (Collectors.toList ());
 		
 		while (playerIDs.size () > MAXIMUM_CANDIDATE_WIZARDS)
@@ -1782,7 +1785,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 		// We have to be at war with the wizard
 		// They have to have an alliance with the wizard
 		final List<Integer> playerIDs = ourWizardDetails.getPact ().stream ().filter
-			(p -> (p.getPactType () == PactType.WAR) && (getKnownWizardUtils ().findPactWith (talkingWizardDetails.getPact (), p.getPactWithPlayerID ()) == PactType.ALLIANCE)).map
+			(p -> (p.getPactType () == PactType.WAR) && (p.getPactWithPlayerID () != getTalkingWizardID ()) &&
+				(getKnownWizardUtils ().findPactWith (talkingWizardDetails.getPact (), p.getPactWithPlayerID ()) == PactType.ALLIANCE)).map
 			(p -> p.getPactWithPlayerID ()).collect (Collectors.toList ());
 
 		while (playerIDs.size () > MAXIMUM_CANDIDATE_WIZARDS)

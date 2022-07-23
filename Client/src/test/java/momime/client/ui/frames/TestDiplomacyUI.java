@@ -47,6 +47,7 @@ import momime.common.database.WizardPersonality;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.KnownWizardUtils;
 
@@ -173,12 +174,17 @@ public final class TestDiplomacyUI extends ClientTestData
 		gold.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Gold"));
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "regenerateGoldOfferText")).thenReturn (gold);
 		
+		// Year
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		gpk.setTurnNumber (10);
+		
 		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getClientDB ()).thenReturn (db);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
+		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/DiplomacyUI.xml"));

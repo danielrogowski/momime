@@ -1524,6 +1524,10 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:documentation>Reject declare war on another wizard</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_DECLARE_WAR_ON_OTHER_WIZARD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="OD"><xsd:annotation>
+				<xsd:documentation>Declaring war on you because someone else asked us to</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="PB"><xsd:annotation>
 				<xsd:documentation>Propose break alliance with another wizard</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD" /></xsd:appinfo>
@@ -1535,6 +1539,10 @@ So need a separate data item for this.</xsd:documentation>
 			<xsd:enumeration value="RB"><xsd:annotation>
 				<xsd:documentation>Reject break alliance with another wizard</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="OB"><xsd:annotation>
+				<xsd:documentation>Breaking alliance with you because someone else asked us to</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="PE"><xsd:annotation>
 				<xsd:documentation>Propose exchange spell</xsd:documentation>

@@ -4692,6 +4692,12 @@ Bonus Or +GOLD_BONUS%</text>
 		<thanksForExchangingSpell language="en">
 			<text>Very well, I accept your offer and will teach you the secret of OFFER_SPELL_NAME in exchange for you teaching me REQUEST_SPELL_NAME!</text>
 		</thanksForExchangingSpell>
+		<declareWarOnYouBecauseOfOtherWizard language="en">
+			<text>OUR_PLAYER_NAME, I agree with THIRD_PLAYER_NAME that you are an eyesore that must be removed from this world!</text>
+		</declareWarOnYouBecauseOfOtherWizard>
+		<breakAllianceWithYouBecauseOfOtherWizard language="en">
+			<text>My apologies OUR_PLAYER_NAME, but I must end our Alliance, at THIRD_PLAYER_NAME's request.</text>
+		</breakAllianceWithYouBecauseOfOtherWizard>
 		<normalGreetingPhrase variantNumber="1">
 			<textVariant language="en">
 				<text>Hail, mighty OUR_PLAYER_NAME. I bear greetings and words of wisdom.</text>

@@ -88,6 +88,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		getKnownWizardServerUtils ().meetWizard (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), false, mom);
 		
 		final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl");
+		final PlayerServerDetails otherPlayer = (getOtherPlayerID () == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getOtherPlayerID (), "RequestDiplomacyMessageImpl");
 
 		final MomPersistentPlayerPrivateKnowledge senderPriv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge talkToPlayerPriv = (MomPersistentPlayerPrivateKnowledge) talkToPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -118,6 +119,44 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
 				break;
 				
+			case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
+			{
+				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), PactType.WAR, mom);
+				getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+				
+				// Inform the 3rd party wizard, who isn't involved in the conversation
+				if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				{
+					final DiplomacyMessage msg = new DiplomacyMessage ();	
+					msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+					msg.setOtherPlayerID (getTalkToPlayerID ());
+					msg.setAction (DiplomacyAction.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD);
+					msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (-100, "RequestDiplomacyMessageImpl").getRelationScoreID ());
+					
+					otherPlayer.getConnection ().sendMessageToClient (msg);
+				}
+				break;
+			}
+
+			case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+			{
+				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), null, mom);
+				getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+				
+				// Inform the 3rd party wizard, who isn't involved in the conversation
+				if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				{
+					final DiplomacyMessage msg = new DiplomacyMessage ();	
+					msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+					msg.setOtherPlayerID (getTalkToPlayerID ());
+					msg.setAction (DiplomacyAction.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD);
+					msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (-100, "RequestDiplomacyMessageImpl").getRelationScoreID ());
+					
+					otherPlayer.getConnection ().sendMessageToClient (msg);
+				}
+				break;
+			}
+			
 			// Tributes send an automated reply without even waiting for the recipient to click anything
 			case GIVE_GOLD:
 			{

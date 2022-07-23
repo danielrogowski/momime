@@ -219,6 +219,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case BROKEN_ALLIANCE_CITY:
 			case BROKEN_ALLIANCE_UNITS:
 			case DECLARE_WAR_CITY:
+			case DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD:
+			case BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD:
 				getDiplomacyUI ().initializeTalkingWizard ();
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
@@ -228,7 +230,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().initializePortrait ();
 				getDiplomacyUI ().setVisible (true);
 				break;
-
+				
 			case BREAK_WIZARD_PACT_NICELY:
 			case BREAK_ALLIANCE_NICELY:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);

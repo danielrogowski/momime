@@ -124,5 +124,11 @@ public enum DiplomacyTextState
 	PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD,
 
 	/** They agreed to break their alliance with another wizard */
-	ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD;
+	ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD,
+	
+	/** Declaring war on you because another wizard asked us to */
+	DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD,
+	
+	/** Breaking alliance with you because another wizard asked us to */
+	BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD;
 }

@@ -650,7 +650,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 				}
 				
 				else if ((getTextState () == DiplomacyTextState.GROWN_IMPATIENT) ||
-					(getTextState () == DiplomacyTextState.BROKEN_PACT_UNITS_OR_CITY))
+					(getTextState () == DiplomacyTextState.BROKEN_PACT_UNITS_OR_CITY) ||
+					(getTextState () == DiplomacyTextState.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD) ||
+					(getTextState () == DiplomacyTextState.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD))
 				{
 					setPortraitState (DiplomacyPortraitState.DISAPPEARING);
 					initializePortrait ();
@@ -660,6 +662,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 					(getTextState () == DiplomacyTextState.ACCEPT_WIZARD_PACT) ||
 					(getTextState () == DiplomacyTextState.ACCEPT_ALLIANCE) ||
 					(getTextState () == DiplomacyTextState.ACCEPT_PEACE_TREATY) ||
+					(getTextState () == DiplomacyTextState.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD) ||
+					(getTextState () == DiplomacyTextState.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD) ||
 					(getTextState () == DiplomacyTextState.BREAK_WIZARD_PACT_OR_ALLIANCE) ||
 					(getTextState () == DiplomacyTextState.BROKEN_WIZARD_PACT_OR_ALLIANCE) ||
 					(getTextState () == DiplomacyTextState.GIVEN_GOLD) ||
@@ -822,6 +826,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 			standardPhotoDef = null;
 			talkingAnim = null;
 		}
+		
+		// A lot of the button texts include the name of the talking wizard, e.g. "Agree to X's proposal", so need to regenerate those
+		if (getFrame () != null)
+			languageChanged ();
 	}
 	
 	/**
@@ -1243,6 +1251,16 @@ public final class DiplomacyUI extends MomClientFrameUI
 					case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
 						variants = getLanguages ().getDiplomacyScreen ().getAcceptBreakAllianceWithAnotherWizardPhrase ();
 						break;
+						
+					// Declaring war on you because another wizard asked us to
+					case DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD:
+						singular = getLanguages ().getDiplomacyScreen ().getDeclareWarOnYouBecauseOfOtherWizard ();
+						break;
+
+					// Breaking alliance with you because another wizard asked us to
+					case BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD:
+						singular = getLanguages ().getDiplomacyScreen ().getBreakAllianceWithYouBecauseOfOtherWizard ();
+						break;
 				}
 		
 				if ((variants != null) && (!variants.isEmpty ()))
@@ -1390,6 +1408,16 @@ public final class DiplomacyUI extends MomClientFrameUI
 										initializeText ();
 										break;
 										
+									case DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD:
+										setTextState (DiplomacyTextState.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD);
+										initializeText ();
+										break;
+										
+									case BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD:
+										setTextState (DiplomacyTextState.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD);
+										initializeText ();
+										break;
+																				
 									default:
 										log.warn ("DiplomacyUI doesn't know what text to show after portrait appears for action " + getDiplomacyAction ());
 								}

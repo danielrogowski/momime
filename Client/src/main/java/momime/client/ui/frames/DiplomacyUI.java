@@ -364,7 +364,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 			msg.setAction (DiplomacyAction.PROPOSE_EXCHANGE_SPELL);
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 
-			// We haven't specified which spells to trade - so the server will respond with a list of spells that we know that the other wizard doesn't (and they have suitable blooks)
+			// We haven't specified which spells to trade - so the server will respond with a list of spells that we know that the other wizard doesn't (and they have suitable books)
 			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
 			initializeText ();
 		});
@@ -931,12 +931,21 @@ public final class DiplomacyUI extends MomClientFrameUI
 	
 					// Main list of choices when we are in control of the conversation, trading spells and making/breaking pacts to choose from and passing control of the conversation
 					case MAIN_CHOICES:
+					{
+						final PactType pactType = getKnownWizardUtils ().findPactWith (ourWizardDetails.getPact (), getTalkingWizardID ());
+						
+						exchangeSpellAction.setEnabled (pactType != PactType.WAR);
+						
 						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (breakTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (offerTributeAction, MomUIConstants.GOLD, getMediumFont ()));
-						componentsBelowText.add (getUtils ().createTextOnlyButton (exchangeSpellAction, MomUIConstants.GOLD, getMediumFont ()));
+						
+						componentsBelowText.add (getUtils ().createTextOnlyButton (exchangeSpellAction,
+							exchangeSpellAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
+						
 						componentsBelowText.add (getUtils ().createTextOnlyButton (endConversationAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
+					}
 		
 					// Other wizard has "main choices", so we're waiting to see what they choose
 					case WAITING_FOR_CHOICE:

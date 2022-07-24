@@ -57,6 +57,9 @@ public final class DiplomacyScreenGrid extends MoMEditorGridWithDiplomacyMessage
 		importDiplomacyMessages (list, 840, LanguageEditorDatabaseConstants.TAG_ACCEPT_DECLARE_WAR_ON_ANOTHER_WIZARD_PHRASE, language);
 		importDiplomacyMessages (list, 705, LanguageEditorDatabaseConstants.TAG_PROPOSE_BREAK_ALLIANCE_WITH_ANOTHER_WIZARD_PHRASE, language);
 		importDiplomacyMessages (list, 825, LanguageEditorDatabaseConstants.TAG_ACCEPT_BREAK_ALLIANCE_WITH_ANOTHER_WIZARD_PHRASE, language);
+		importDiplomacyMessages (list, 1005, LanguageEditorDatabaseConstants.TAG_RESPOND_TO_THREAT_IGNORE_PHRASE, language);
+		importDiplomacyMessages (list, 1050, LanguageEditorDatabaseConstants.TAG_RESPOND_TO_THREAT_SPELL_PHRASE, language);
+		importDiplomacyMessages (list, 615, LanguageEditorDatabaseConstants.TAG_RESPOND_TO_THREAT_WAR_PHRASE, language);
 	}
 	
 	/**

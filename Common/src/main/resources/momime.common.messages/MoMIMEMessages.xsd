@@ -1589,16 +1589,28 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="THREATEN" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="TI"><xsd:annotation>
-				<xsd:documentation>Threaten to attack</xsd:documentation>
+				<xsd:documentation>Ignore threat</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="IGNORE_THREAT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="TG"><xsd:annotation>
 				<xsd:documentation>Give gold becasue threatened</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="GIVE_GOLD_BECAUSE_THREATENED" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="TY"><xsd:annotation>
+				<xsd:documentation>Accept gold becasue threatened</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_GOLD_BECAUSE_THREATENED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="TS"><xsd:annotation>
 				<xsd:documentation>Give spell because threatened</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="GIVE_SPELL_BECAUSE_THREATENED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="TZ"><xsd:annotation>
+				<xsd:documentation>Accept spell because threatened</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_SPELL_BECAUSE_THREATENED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="TE"><xsd:annotation>
+				<xsd:documentation>No exchange of spells possible</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NO_SPELLS_TO_EXCHANGE_BECAUSE_THREATENED" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="TW"><xsd:annotation>
 				<xsd:documentation>Declare war because threatened</xsd:documentation>

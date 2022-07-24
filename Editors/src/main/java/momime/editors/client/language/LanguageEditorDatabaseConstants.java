@@ -76,6 +76,18 @@ public final class LanguageEditorDatabaseConstants
 
 	/** Accept that we should break alliance with another wizard */
 	public final static String TAG_ACCEPT_BREAK_ALLIANCE_WITH_ANOTHER_WIZARD_PHRASE = "acceptBreakAllianceWithAnotherWizardPhrase";
+
+	/** Respond to threat - ignore */
+	public final static String TAG_RESPOND_TO_THREAT_IGNORE_PHRASE = "respondToThreatIgnorePhrase";
+	
+	/** Respond to threat - give gold */
+	public final static String TAG_RESPOND_TO_THREAT_GOLD_PHRASE = "respondToThreatGoldPhrase";
+	
+	/** Respond to threat - give spell */
+	public final static String TAG_RESPOND_TO_THREAT_SPELL_PHRASE = "respondToThreatSpellPhrase";
+	
+	/** Respond to threat - declare war */
+	public final static String TAG_RESPOND_TO_THREAT_WAR_PHRASE = "respondToThreatWarPhrase";
 	
 	/**
 	 * Prevent instatiation of this class

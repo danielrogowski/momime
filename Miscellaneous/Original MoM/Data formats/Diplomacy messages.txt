@@ -45,7 +45,7 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	
 	585 - Declare war
 	600 - Declare war
-	615 - Declare war
+	615 - Declare war (diplomacyScreen / respondToThreatWarPhrase)
 	
 	630 - Starting diplomacy (saying hi) (diplomacyScreen / normalGreetingPhrase)
 	645 - Starting diplomacy (saying hi, but mad) (diplomacyScreen / impatientGreetingPhrase)
@@ -74,10 +74,10 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	975 - Switch off your X spell cast on Y (city curse), so nty to treaty
 	990 - Stop getting stronger, so nty to treaty
 	
-	1005 - No to threat
+	1005 - No to threat (diplomacyScreen / respondToThreatIgnorePhrase)
 	1020 - I agree to stop attacking your towns
 	1035 - I agree to stop attacking your towns and suck up by giving X gold too
-	1050 - Suck up offering a spell
+	1050 - Suck up offering a spell (diplomacyScreen / respondToThreatSpellPhrase)
 	1065 - Tired of talking to you (diplomacyScreen / grownImpatientPhrase)
 	1080 - No spells to exchange (diplomacyScreen / refuseExchangeSpellPhrase )
 	1095 - Get away from my city

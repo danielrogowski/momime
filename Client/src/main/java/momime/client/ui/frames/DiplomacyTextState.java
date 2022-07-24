@@ -133,5 +133,29 @@ public enum DiplomacyTextState
 	DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD,
 	
 	/** Breaking alliance with you because another wizard asked us to */
-	BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD;
+	BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD,
+	
+	/** Wizard threatened us and we must choose how to respond */
+	THREATENED,
+	
+	/** Ignore threat */
+	IGNORE_THREAT,
+	
+	/** Declare war because threatened */
+	DECLARE_WAR_BECAUSE_THREATENED,
+
+	/** Pick a type of tribute to offer */
+	OFFER_TRIBUTE_BECAUSE_THREATENED,
+	
+	/** Other wizard gave us gold because we threatened them */
+	GIVEN_GOLD_BECAUSE_THREATENED,
+	
+	/** Pick a spell to give to other wizard becuase they threatened us */
+	GIVE_SPELL_BECAUSE_THREATENED,
+
+	/** Other wizard gave a spell because we threatened them */
+	GIVEN_SPELL_BECAUSE_THREATENED,
+	
+	/** We tried to give other wizard a spell because they threatened us, but there's nothing we can give them */
+	NO_SPELLS_TO_EXCHANGE_BECAUSE_THREATENED;
 }

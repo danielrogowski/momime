@@ -290,8 +290,20 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Threaten to attack */
 	private Action threatenToAttackAction;
 	
+	/** Respond to threat - ignore */
+	private Action respondToThreatIgnoreAction;
+	
+	/** Respond to threat - offer tribute */ 
+	private Action respondToThreatTributeAction;
+	
+	/** Respond to threat - declare war */ 
+	private Action respondToThreatWarAction;
+	
 	/** Back to main choices */
 	private Action backToMainChoicesAction;
+	
+	/** Back to respond to threat choices */
+	private Action backToThreatenChoicesAction;
 	
 	/** Tired of talking (other wizard ends conversation on us) */
 	private Action tiredOfTalkingAction;
@@ -552,11 +564,57 @@ public final class DiplomacyUI extends MomClientFrameUI
 			initializeText ();
 		});
 		
-		threatenToAttackAction = new LoggingAction ((ev) -> {});
+		threatenToAttackAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.THREATEN);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+			initializeText ();
+			
+		});
+		
+		respondToThreatIgnoreAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setRequestSpellID (getRequestSpellID ());
+			msg.setAction (DiplomacyAction.IGNORE_THREAT);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+
+			setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+			initializeText ();
+		});
+		
+		respondToThreatTributeAction = new LoggingAction ((ev) ->
+		{
+			setTextState (DiplomacyTextState.OFFER_TRIBUTE_BECAUSE_THREATENED);
+			initializeText ();
+		});
+		
+		respondToThreatWarAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setRequestSpellID (getRequestSpellID ());
+			msg.setAction (DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+
+			setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+			initializeText ();
+		});
 		
 		backToMainChoicesAction = new LoggingAction ((ev) ->
 		{
 			setTextState (DiplomacyTextState.MAIN_CHOICES);
+			initializeText ();
+		});
+		
+		backToThreatenChoicesAction = new LoggingAction ((ev) ->
+		{
+			setTextState (DiplomacyTextState.THREATENED);
 			initializeText ();
 		});
 		
@@ -580,7 +638,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 			{
 				final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 				msg.setTalkToPlayerID (getTalkingWizardID ());
-				msg.setAction (DiplomacyAction.GIVE_GOLD);
+				msg.setAction ((getTextState () == DiplomacyTextState.OFFER_TRIBUTE) ? DiplomacyAction.GIVE_GOLD : DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED);
 				msg.setOfferGoldTier (goldTier);
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 
@@ -597,7 +655,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 		{
 			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 			msg.setTalkToPlayerID (getTalkingWizardID ());
-			msg.setAction (DiplomacyAction.GIVE_SPELL);
+			msg.setAction ((getTextState () == DiplomacyTextState.OFFER_TRIBUTE) ? DiplomacyAction.GIVE_SPELL : DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED);
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 
 			// We haven't specified which spell to give - so the server will respond with a list of spells that we know that the other wizard doesn't (and they have suitable blooks)
@@ -657,6 +715,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 					setPortraitState (DiplomacyPortraitState.DISAPPEARING);
 					initializePortrait ();
 				}
+
+				else if (getTextState () == DiplomacyTextState.NO_SPELLS_TO_EXCHANGE_BECAUSE_THREATENED)
+				{
+					setTextState (DiplomacyTextState.THREATENED);
+					initializeText ();
+				}
 				
 				else if ((getTextState () == DiplomacyTextState.ACCEPT_TALK) ||
 					(getTextState () == DiplomacyTextState.ACCEPT_WIZARD_PACT) ||
@@ -668,13 +732,17 @@ public final class DiplomacyUI extends MomClientFrameUI
 					(getTextState () == DiplomacyTextState.BROKEN_WIZARD_PACT_OR_ALLIANCE) ||
 					(getTextState () == DiplomacyTextState.CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD) ||
 					(getTextState () == DiplomacyTextState.GIVEN_GOLD) ||
+					(getTextState () == DiplomacyTextState.GIVEN_GOLD_BECAUSE_THREATENED) ||
 					(getTextState () == DiplomacyTextState.GIVEN_SPELL) ||
+					(getTextState () == DiplomacyTextState.GIVEN_SPELL_BECAUSE_THREATENED) ||
 					(getTextState () == DiplomacyTextState.THANKS_FOR_GOLD) ||
 					(getTextState () == DiplomacyTextState.THANKS_FOR_SPELL) ||
 					(getTextState () == DiplomacyTextState.GENERIC_REFUSE) ||
 					(getTextState () == DiplomacyTextState.REFUSE_EXCHANGE_SPELL) ||
 					(getTextState () == DiplomacyTextState.REJECT_EXCHANGE_SPELL) ||
-					(getTextState () == DiplomacyTextState.THANKS_FOR_EXCHANGING_SPELL))
+					(getTextState () == DiplomacyTextState.THANKS_FOR_EXCHANGING_SPELL) ||
+					(getTextState () == DiplomacyTextState.IGNORE_THREAT) ||
+					(getTextState () == DiplomacyTextState.DECLARE_WAR_BECAUSE_THREATENED))
 				{
 					if (getProposingWizardID () == getClient ().getOurPlayerID ())
 						setTextState (DiplomacyTextState.MAIN_CHOICES);
@@ -997,12 +1065,14 @@ public final class DiplomacyUI extends MomClientFrameUI
 						
 						breakWizardPactAction.setEnabled (pactType == PactType.WIZARD_PACT);
 						breakAllianceAction.setEnabled (pactType == PactType.ALLIANCE);
+						threatenToAttackAction.setEnabled (pactType == null);
 						
 						componentsBelowText.add (getUtils ().createTextOnlyButton (breakWizardPactAction,
 							breakWizardPactAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (breakAllianceAction,
 							breakAllianceAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
-						componentsBelowText.add (getUtils ().createTextOnlyButton (threatenToAttackAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (threatenToAttackAction,
+							threatenToAttackAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
 					}
@@ -1064,6 +1134,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 						
 					// Pick a type of tribute to offer
 					case OFFER_TRIBUTE:
+					case OFFER_TRIBUTE_BECAUSE_THREATENED:
 						final int goldAmount = getResourceValueUtils ().findAmountStoredForProductionType
 							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 
@@ -1079,7 +1150,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 						}
 						
 						componentsBelowText.add (getUtils ().createTextOnlyButton (offerSpellAction, MomUIConstants.GOLD, getMediumFont ()));
-						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton ((getTextState () == DiplomacyTextState.OFFER_TRIBUTE) ? backToMainChoicesAction : backToThreatenChoicesAction,
+							MomUIConstants.GOLD, getMediumFont ()));
 						
 						regenerateGoldOfferText ();						
 						break;
@@ -1108,6 +1180,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 					case PROPOSE_EXCHANGE_SPELL_THEIRS:
 					case PROPOSE_EXCHANGE_SPELL_OURS:
 					case GIVE_SPELL:
+					case GIVE_SPELL_BECAUSE_THREATENED:
 					{
 						if (getTextState () == DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_THEIRS)
 							singular = getLanguages ().getDiplomacyScreen ().getExchangeSpellTheirs ();
@@ -1135,7 +1208,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 								}
 								else
 								{
-									msg.setAction (DiplomacyAction.GIVE_SPELL);
+									msg.setAction ((getTextState () == DiplomacyTextState.GIVE_SPELL) ? DiplomacyAction.GIVE_SPELL : DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED);
 									msg.setOfferSpellID (spellID);
 								}
 								
@@ -1153,6 +1226,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 						
 						if ((getTextState () == DiplomacyTextState.GIVE_SPELL) || (getTextState () == DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_THEIRS))
 							componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));		// "Forget it" for spell tributes or initial offer
+						else if (getTextState () == DiplomacyTextState.GIVE_SPELL_BECAUSE_THREATENED)
+							componentsBelowText.add (getUtils ().createTextOnlyButton (backToThreatenChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
 						else
 							componentsBelowText.add (getUtils ().createTextOnlyButton (refuseProposalAction, MomUIConstants.GOLD, getMediumFont ()));
 
@@ -1171,6 +1246,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 						
 					// We requested a spell from the other wizard, but had nothing good to offer in return so they immedaitely declined
 					case REFUSE_EXCHANGE_SPELL:
+					case NO_SPELLS_TO_EXCHANGE_BECAUSE_THREATENED:		// Same text, but goes to different state when we click the msg
 						variants = getLanguages ().getDiplomacyScreen ().getRefuseExchangeSpellPhrase ();
 						break;
 
@@ -1275,6 +1351,37 @@ public final class DiplomacyUI extends MomClientFrameUI
 					// We asked player 2 to declare war on player 3, but player 2 doesn't even know player 3
 					case CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD:
 						singular = getLanguages ().getDiplomacyScreen ().getCannotDeclareWarOnUnknownWizard ();
+						break;
+						
+					// Wizard threatened us and we must choose how to respond
+					case THREATENED:
+						singular = getLanguages ().getDiplomacyScreen ().getThreatened ();
+						
+						// Buttons to choose how to respond
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (respondToThreatIgnoreAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (respondToThreatTributeAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (respondToThreatWarAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
+					
+					// Ignore threat
+					case IGNORE_THREAT:
+						variants = getLanguages ().getDiplomacyScreen ().getRespondToThreatIgnorePhrase ();
+						break;
+					
+					// Declare war because threatened
+					case DECLARE_WAR_BECAUSE_THREATENED:
+						variants = getLanguages ().getDiplomacyScreen ().getRespondToThreatWarPhrase ();
+						break;
+						
+					// Other wizard gave us gold because we threatened them
+					case GIVEN_GOLD_BECAUSE_THREATENED:
+						variants = getLanguages ().getDiplomacyScreen ().getRespondToThreatGoldPhrase ();
+						break;
+
+					// Other wizard gave us a spell because we threatened them
+					case GIVEN_SPELL_BECAUSE_THREATENED:
+						variants = getLanguages ().getDiplomacyScreen ().getRespondToThreatSpellPhrase ();
 						break;
 				}
 		
@@ -1728,7 +1835,23 @@ public final class DiplomacyUI extends MomClientFrameUI
 				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
 				("TALKING_PLAYER_NAME", talkingPlayerName));
 			
+			respondToThreatIgnoreAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getRespondToThreatIgnore ()).replaceAll
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
+				
+			respondToThreatTributeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getRespondToThreatTribute ()).replaceAll
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
+					
+			respondToThreatWarAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getRespondToThreatWar ()).replaceAll
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
+					
 			backToMainChoicesAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getBackToMainChoices ()).replaceAll
+				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
+				("TALKING_PLAYER_NAME", talkingPlayerName));
+			
+			backToThreatenChoicesAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getBackToThreatenChoices ()).replaceAll
 				("OUR_PLAYER_NAME", ourPlayerName).replaceAll
 				("TALKING_PLAYER_NAME", talkingPlayerName));
 			

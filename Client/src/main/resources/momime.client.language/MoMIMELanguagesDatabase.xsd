@@ -2597,8 +2597,28 @@
 						<xsd:selector xpath="threatenToAttack" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenThreatenedPK">
+						<xsd:selector xpath="threatened" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatIgnorePK">
+						<xsd:selector xpath="respondToThreatIgnore" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatTributePK">
+						<xsd:selector xpath="respondToThreatTribute" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatWarPK">
+						<xsd:selector xpath="respondToThreatWar" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenBackToMainChoicesPK">
 						<xsd:selector xpath="backToMainChoices" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBackToThreatenChoicesPK">
+						<xsd:selector xpath="backToThreatenChoices" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="diplomacyScreenOfferSpellPK">
@@ -2735,6 +2755,22 @@
 					</xsd:key>
 					<xsd:key name="diplomacyScreenAcceptBreakAllianceWithAnotherWizardPhrasePK">
 						<xsd:selector xpath="acceptBreakAllianceWithAnotherWizardPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatIgnorePhrasePK">
+						<xsd:selector xpath="respondToThreatIgnorePhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatGoldPhrasePK">
+						<xsd:selector xpath="respondToThreatGoldPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatSpellPhrasePK">
+						<xsd:selector xpath="respondToThreatSpellPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatWarPhrasePK">
+						<xsd:selector xpath="respondToThreatWarPhrase" />
 						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
     			</xsd:element>
@@ -5059,7 +5095,12 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeDeclareWarOnAnotherWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeBreakAllianceWithAnotherWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="threatenToAttack" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="threatened" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="respondToThreatIgnore" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="respondToThreatTribute" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="respondToThreatWar" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="backToMainChoices" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="backToThreatenChoices" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="receivedGold" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="receivedSpell" />
@@ -5210,6 +5251,30 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptBreakAllianceWithAnotherWizardPhrase" type="momimecommon:languageTextVariant" nxe:label="Accept break alliance with another wizard">
 				<xsd:key name="diplomacyScreenAcceptBreakAllianceWithAnotherWizardPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="respondToThreatIgnorePhrase" type="momimecommon:languageTextVariant" nxe:label="Respond to threat - ignore">
+				<xsd:key name="diplomacyScreenRespondToThreatIgnorePhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="respondToThreatGoldPhrase" type="momimecommon:languageTextVariant" nxe:label="Respond to threat - gold">
+				<xsd:key name="diplomacyScreenRespondToThreatGoldPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="respondToThreatSpellPhrase" type="momimecommon:languageTextVariant" nxe:label="Respond to threat - spell">
+				<xsd:key name="diplomacyScreenRespondToThreatSpellPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="respondToThreatWarPhrase" type="momimecommon:languageTextVariant" nxe:label="Respond to threat - war">
+				<xsd:key name="diplomacyScreenRespondToThreatWarPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />
 					<xsd:field xpath="@language" />
 				</xsd:key>

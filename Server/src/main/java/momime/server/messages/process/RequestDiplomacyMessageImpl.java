@@ -119,6 +119,11 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
 				break;
 
+			case DECLARE_WAR_BECAUSE_THREATENED:
+				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WAR, mom);
+				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+				break;
+				
 			// Player 1 asking player 2 to declare war on player 3 has no idea whether player 2 even knows who player 3 is.
 			// So if they don't know each other, send back a special reply.
 			case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
@@ -177,10 +182,11 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			
 			// Tributes send an automated reply without even waiting for the recipient to click anything
 			case GIVE_GOLD:
+			case GIVE_GOLD_BECAUSE_THREATENED:
 			{
 				final DiplomacyMessage msg = new DiplomacyMessage ();	
 				msg.setTalkFromPlayerID (getTalkToPlayerID ());
-				msg.setAction (DiplomacyAction.ACCEPT_GOLD);
+				msg.setAction ((getAction () == DiplomacyAction.GIVE_GOLD) ? DiplomacyAction.ACCEPT_GOLD : DiplomacyAction.ACCEPT_GOLD_BECAUSE_THREATENED);
 				msg.setOtherPlayerID (getOtherPlayerID ());
 				msg.setOfferGoldAmount (offerGoldAmount);			
 				
@@ -238,7 +244,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						// No valid trade, so don't even send the request to the other player
 						final DiplomacyMessage msg = new DiplomacyMessage ();	
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.NO_SPELLS_TO_EXCHANGE);		// There isn't a separate "no spells to give" for tributes
+						msg.setAction ((getAction () == DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED) ? DiplomacyAction.NO_SPELLS_TO_EXCHANGE_BECAUSE_THREATENED : DiplomacyAction.NO_SPELLS_TO_EXCHANGE);
 						msg.setOtherPlayerID (getOtherPlayerID ());
 						
 						sender.getConnection ().sendMessageToClient (msg);
@@ -261,7 +267,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 							sender.getConnection ().sendMessageToClient (msg);
 					}
 				}
-				else if (getAction () == DiplomacyAction.ACCEPT_SPELL)
+				else if (getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
 				{
 					final DiplomacyMessage msg = new DiplomacyMessage ();	
 					msg.setTalkFromPlayerID (getTalkToPlayerID ());

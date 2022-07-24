@@ -49,6 +49,8 @@ public final class TradeableSpellsMessageImpl extends TradeableSpellsMessage imp
 		
 		if (getAction () == DiplomacyAction.GIVE_SPELL)
 			getDiplomacyUI ().setTextState (DiplomacyTextState.GIVE_SPELL);
+		else if (getAction () == DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED)
+			getDiplomacyUI ().setTextState (DiplomacyTextState.GIVE_SPELL_BECAUSE_THREATENED);
 		else if (getRequestSpellID () == null)
 			getDiplomacyUI ().setTextState (DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_THEIRS);
 		else

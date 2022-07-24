@@ -4668,9 +4668,24 @@ Bonus Or +GOLD_BONUS%</text>
 		<threatenToAttack language="en">
 			<text>Threaten to Attack</text>
 		</threatenToAttack>
+		<threatened language="en">
+			<text>OUR_PLAYER_NAME!  Tell me why I should not destroy you now?</text>
+		</threatened>
+		<respondToThreatIgnore language="en">
+			<text>Ignore TALKING_PLAYER_NAME's idle threat</text>
+		</respondToThreatIgnore>
+		<respondToThreatTribute language="en">
+			<text>Try to appease TALKING_PLAYER_NAME with a tribute</text>
+		</respondToThreatTribute>
+		<respondToThreatWar language="en">
+			<text>Declare war on TALKING_PLAYER_NAME for daring to threaten you</text>
+		</respondToThreatWar>
 		<backToMainChoices language="en">
 			<text>Forget It</text>
 		</backToMainChoices>
+		<backToThreatenChoices language="en">
+			<text>Pick a different response</text>
+		</backToThreatenChoices>
 		<offerSpell language="en">
 			<text>Spells</text>
 		</offerSpell>
@@ -6395,6 +6410,203 @@ Bonus Or +GOLD_BONUS%</text>
 				<text>Wie Ihr wuenscht, OUR_PLAYER_NAME. THIRD_PLAYER_NAME gehoert nicht mehr zu meinen Verbuendeten.</text>
 			</textVariant>
 		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<respondToThreatIgnorePhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I ignore the hollow threats of a raving lunatic.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je refuse de prendre au serieux les menaces d'un fou-fourieux.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich ignoriere die leeren Drohungen von wildgewordenen Verrueckten.</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="2">
+			<textVariant language="en">
+				<text>You bluff poorly, OUR_PLAYER_NAME. Your threats do not concern me.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous ne savez pas bluffer, OUR_PLAYER_NAME. Vos menaces ne me font pas peur.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Welch' schlechte Luegen, OUR_PLAYER_NAME. Eure Drohungen stossen auf taube Ohren.</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Make your childish threats, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos menaces sont risibles, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wohlan, sprecht Eure kindischen Drohungen ruhig aus, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="4">
+			<textVariant language="en">
+				<text>You presume to threaten the mighty TALKING_PLAYER_NAME! You do not know who you are dealing with!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous vous permettez de menacer TALKING_PLAYER_NAME! Vous ne savez pas a qui vous avez affaire!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr wagt es, d. maechtigen TALKING_PLAYER_NAME zu drohen! Ihr wisst offenbar nicht, mit wem Ihr es zu tun habt!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Your threats fall on deaf ears, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos menaces tombent dans l'oreille d'un sourd, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure Drohungen stossen auf taube Ohren, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="6">
+			<textVariant language="en">
+				<text>Do not make such threats idly, OUR_PLAYER_NAME. The wrath of TALKING_PLAYER_NAME is terrible to behold.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous ne devriez pas proferer de telles menaces, OUR_PLAYER_NAME. La colere de TALKING_PLAYER_NAME est terrible.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Macht keine leeren Drohungen, OUR_PLAYER_NAME. Der Zorn von TALKING_PLAYER_NAME ist ohne gleichen!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="7">
+			<textVariant language="en">
+				<text>Don't make me laugh! Your hollow threats do not scare me!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous me faites rire! Vos vaines menaces ne me font pas peur!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Bringt mich nicht zum Lachen! Eure leeren Drohungen aengstigen mich nicht!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="8">
+			<textVariant language="en">
+				<text>You should be careful who you threaten. I do not scare easily!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous devriez faire attention lorsque vous proferez des menaces. On ne me fait pas facilement peur!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr solltet aufpassen, wem Ihr droht. Ich bin nicht leicht zu aengstigen!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="9">
+			<textVariant language="en">
+				<text>You should worry about your pathetic cities and stop making idle threats!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Pensez a vos petites villes minables et ne proferez pas de vaines menaces!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr solltet Euch lieber um Eure jaemmerlichen Staedte kuemmern, anstatt leere Drohungen auszustossen!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatGoldPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I offer GOLD_AMOUNT gold to appease the great and powerful OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</respondToThreatGoldPhrase>
+		<respondToThreatGoldPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I hope that a gift of GOLD_AMOUNT gold is sufficient reparation for my past misdeeds.</text>
+			</textVariant>
+		</respondToThreatGoldPhrase>
+		<respondToThreatSpellPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I offer the secret of SPELL_NAME to appease the great and powerful OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'offre le secret de SPELL_NAME pour apaiser le grand et puissant  OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich biete Euch das Geheimnis des Zauberspruchs SPELL_NAME, um Frieden mit d. grossen und maechtigen OUR_PLAYER_NAME zu erlangen.</text>
+			</textVariant>
+		</respondToThreatSpellPhrase>
+		<respondToThreatSpellPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I hope that a gift of the SPELL_NAME spell is sufficient reparation for my past misdeeds.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'espere que le don du sort SPELL_NAME est une reparation suffisante pour mes crimes.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich hoffe, das Geschenk des Zauberspruchs SPELL_NAME ist eine angemessene Wiedergutmachung fuer meine Vergehen in der Vergangenheit.</text>
+			</textVariant>
+		</respondToThreatSpellPhrase>
+		<respondToThreatWarPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I am tired of playing diplomatic games. Shudder, oh mighty OUR_PLAYER_NAME, for I come for you.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Toute cette diplomacie me fatigue. Tremblez, oh puissant OUR_PLAYER_NAME, car je viens vous mettre en pieces.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin diese diplomatischen Spiele leid. Erbebt in Furcht, oh OUR_PLAYER_NAME, denn ich komme, Euch zu vernichten.</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Maintaining relations with such an amateur is no longer convenient. I am mobilizing my troops and preparing for war.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne vois plus aucun avantage a rester en relation avec un amateur de votre genre, je mobilise mes troupes et je me prepare a la guerre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe kein Interesse mehr daran, Beziehungen zu einem Dilettanten zu unterhalten. Ich werde meine Truppen mobilisieren und den Krieg vorbereiten.</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>While in the past I may have promised peace, OUR_PLAYER_NAME, you have tried my patience sorely, and now you must die.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai peut-etre promis la paix dans le passe, OUR_PLAYER_NAME, mais vous avez abuse de ma patience et vous devez mourir.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Zwar versprach ich in der Vergangenheit Frieden, OUR_PLAYER_NAME, aber Ihr habt meine Geduld auf eine schwere Probe gestellt. Dafuer sollt Ihr sterben.</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I have known all along that you could not be trusted. Now we strike first!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai toujours su que l'on ne pouvait pas vous faire confiance. Nous frappons donc les premiers!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich wusste schon immer, dass man Euch nicht trauen kann. Nun werde ich den ersten Schlag tun!</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>My most sincere apologies, oh mighty OUR_PLAYER_NAME, but I must destroy you now.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Toutes mes excuses, oh puissant OUR_PLAYER_NAME, mais il faut maintenant que je vous detruise.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bitte um Vergebung und verneige mich vor Eurer Macht, oh OUR_PLAYER_NAME, aber ich muss Euch nun vernichten.</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>I have decided to destroy you, OUR_PLAYER_NAME. Prepare to die!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai decide de vous detruire, OUR_PLAYER_NAME. Preparez-vous a mourir!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe beschlossen, Euch zu vernichten, OUR_PLAYER_NAME. Bereitet Euch aufs Sterben vor!</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
 	</diplomacyScreen>
 	<helpScreen>
 		<title language="en">

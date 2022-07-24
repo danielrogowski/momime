@@ -5,16 +5,16 @@ import java.util.Iterator;
 import javax.swing.table.TableRowSorter;
 import javax.xml.namespace.QName;
 
-import momime.editors.server.ServerEditorDatabaseConstants;
-
 import org.jdom2.Element;
 
-import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.constants.XsdConstants;
 import com.ndg.xmleditor.doc.ListOfXmlDocuments;
 import com.ndg.xmleditor.grid.XmlTableModel;
 import com.ndg.xmleditor.grid.column.XmlGridColumn;
+import com.ndg.xmleditor.jdom.JdomUtils;
 import com.ndg.xmleditor.schema.ComplexTypeEx;
+
+import momime.editors.server.ServerEditorDatabaseConstants;
 
 /**
  * Special column which shows how many spells we get available or for free in our spell book by choosing a certain number of spell books at the start of the game

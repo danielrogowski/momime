@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;

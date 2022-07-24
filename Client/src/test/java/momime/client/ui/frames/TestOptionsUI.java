@@ -7,19 +7,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Marshaller;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfig;

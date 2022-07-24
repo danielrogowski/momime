@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.jdom2.Element;
 
-import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.editor.XmlEditorException;
+import com.ndg.xmleditor.jdom.JdomUtils;
 
 import momime.editors.client.language.LanguageEditorDatabaseConstants;
 import momime.editors.grid.MoMEditorGridWithDiplomacyMessagesImport;

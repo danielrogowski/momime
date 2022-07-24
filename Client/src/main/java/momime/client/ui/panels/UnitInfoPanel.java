@@ -31,9 +31,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
-import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;

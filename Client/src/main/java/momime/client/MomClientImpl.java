@@ -33,7 +33,7 @@ import com.ndg.multiplayer.sessionbase.RequestSessionListFailedReason;
 import com.ndg.multiplayer.sessionbase.SavedGamePoint;
 import com.ndg.multiplayer.sessionbase.SavedGameSession;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.audio.AudioPlayer;

@@ -30,12 +30,12 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.JPanelWithConstantRepaints;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
-import com.ndg.zorder.ZOrderGraphicsImpl;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.JPanelWithConstantRepaints;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.zorder.ZOrderGraphicsImpl;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;

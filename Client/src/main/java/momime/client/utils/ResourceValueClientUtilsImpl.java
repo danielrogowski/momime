@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.common.database.CommonDatabaseConstants;

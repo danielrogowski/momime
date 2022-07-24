@@ -19,10 +19,10 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import jakarta.xml.bind.Unmarshaller;
 import momime.client.ClientTestData;

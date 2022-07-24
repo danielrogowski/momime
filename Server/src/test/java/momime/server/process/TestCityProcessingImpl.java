@@ -28,7 +28,7 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.calculations.CityCalculations;
 import momime.common.database.Building;

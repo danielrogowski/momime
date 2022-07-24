@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.WeightedChoices;
+import com.ndg.utils.random.WeightedChoices;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;

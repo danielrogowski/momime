@@ -252,7 +252,7 @@
 	
 	<!-- Common beans -->	
 
-	<bean id="uiUtils" class="com.ndg.swing.NdgUIUtilsImpl" />
+	<bean id="uiUtils" class="com.ndg.utils.swing.NdgUIUtilsImpl" />
 
 	<bean id="objectFactoryMap" class="com.ndg.map.coordinates.ObjectFactoryMap" />	<!-- Creates Ex versions of coordinates -->
 
@@ -378,7 +378,7 @@
 
 	<bean id="pendingMovementUtils" class="momime.common.utils.PendingMovementUtilsImpl" />
 
-	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
+	<bean id="randomUtils" class="com.ndg.utils.random.RandomUtilsImpl" />
 	
 	<bean id="coordinateSystemUtils" class="com.ndg.map.CoordinateSystemUtilsImpl" />
 	

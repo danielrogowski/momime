@@ -42,8 +42,8 @@ import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.actions.LoggingAction;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.actions.LoggingAction;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;

@@ -10,7 +10,7 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;

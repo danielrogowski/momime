@@ -18,10 +18,10 @@ import javax.swing.table.TableCellRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -15,8 +14,9 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;

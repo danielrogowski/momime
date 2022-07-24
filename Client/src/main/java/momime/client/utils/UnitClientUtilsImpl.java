@@ -7,16 +7,16 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JComponent;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.ObjectUtils;
 
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.zorder.ZOrderGraphics;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.zorder.ZOrderGraphics;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.AnimationContainer;

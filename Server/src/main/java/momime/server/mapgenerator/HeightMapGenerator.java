@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 /**
  * Generates plasma fractal height maps, that are used as the basis of both the overland and combat map generators

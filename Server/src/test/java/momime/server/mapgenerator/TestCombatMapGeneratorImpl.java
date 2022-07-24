@@ -19,8 +19,8 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.random.RandomUtils;
-import com.ndg.random.RandomUtilsImpl;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.random.RandomUtilsImpl;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;

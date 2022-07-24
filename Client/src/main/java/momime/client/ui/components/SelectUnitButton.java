@@ -14,7 +14,7 @@ import javax.swing.JToggleButton;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;

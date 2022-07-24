@@ -22,20 +22,20 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.language.database.LanguageDatabaseHolder;

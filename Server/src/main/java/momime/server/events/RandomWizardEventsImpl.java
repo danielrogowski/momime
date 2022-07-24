@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;

@@ -12,7 +12,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;

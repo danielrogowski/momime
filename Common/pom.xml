@@ -28,7 +28,7 @@
 							<bindings>
 								<binding>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>META-INF/map.episode</resource>
 									</dependencyResource>
@@ -37,7 +37,7 @@
 							<catalogs>
 								<catalog>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>com.ndg.map/catalog.txt</resource>
 									</dependencyResource>
@@ -63,7 +63,7 @@
 							<bindings>
 								<binding>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>META-INF/map.episode</resource>
 									</dependencyResource>
@@ -78,7 +78,7 @@
 							<catalogs>
 								<catalog>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>com.ndg.map/catalog.txt</resource>
 									</dependencyResource>
@@ -104,7 +104,7 @@
 							<bindings>
 								<binding>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>META-INF/map.episode</resource>
 									</dependencyResource>
@@ -139,7 +139,7 @@
 							<catalogs>
 								<catalog>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>com.ndg.map/catalog.txt</resource>
 									</dependencyResource>
@@ -190,7 +190,7 @@
 							<bindings>
 								<binding>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>META-INF/map.episode</resource>
 									</dependencyResource>
@@ -205,7 +205,7 @@
 							<catalogs>
 								<catalog>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>com.ndg.map/catalog.txt</resource>
 									</dependencyResource>
@@ -232,7 +232,7 @@
 							<bindings>
 								<binding>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>META-INF/map.episode</resource>
 									</dependencyResource>
@@ -273,7 +273,7 @@
 							<catalogs>
 								<catalog>
 									<dependencyResource>
-										<groupId>com.ndg.map</groupId>
+										<groupId>com.ndg.common</groupId>
 										<artifactId>ndgmap</artifactId>
 										<resource>com.ndg.map/catalog.txt</resource>
 									</dependencyResource>
@@ -330,7 +330,7 @@
 			<version>${mom.multiplayer.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ndg.map</groupId>
+			<groupId>com.ndg.common</groupId>
 			<artifactId>ndgmap</artifactId>
 			<version>${mom.map.version}</version>
 		</dependency>

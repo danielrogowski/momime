@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;

@@ -26,7 +26,6 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -34,9 +33,10 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.sessionbase.CreateAccount;
 import com.ndg.multiplayer.sessionbase.Login;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.actions.LoggingAction;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.actions.LoggingAction;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.languages.database.KnownServer;
 import momime.client.ui.MomUIConstants;

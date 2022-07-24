@@ -11,8 +11,8 @@
 	</parent>
 
 	<properties>
-		<jre.version>11.0.12</jre.version>
-		<jre.build>7</jre.build>
+		<jre.version>11.0.16</jre.version>
+		<jre.build>8</jre.build>
 	</properties>
 	
 	<build>

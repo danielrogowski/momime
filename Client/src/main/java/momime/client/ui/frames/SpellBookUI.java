@@ -36,8 +36,8 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.actions.LoggingAction;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.actions.LoggingAction;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;

@@ -22,8 +22,8 @@ import javax.swing.SwingConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.actions.LoggingAction;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;

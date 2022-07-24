@@ -8,9 +8,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
-import com.ndg.swing.GridBagConstraintsHorizontalFill;
-import com.ndg.swing.actions.MessageDialogAction;
-import com.ndg.swing.filefilters.ExtensionFileFilter;
+import com.ndg.utils.swing.GridBagConstraintsHorizontalFill;
+import com.ndg.utils.swing.actions.MessageDialogAction;
+import com.ndg.utils.swing.filefilters.ExtensionFileFilter;
 import com.ndg.xmleditor.editor.XmlEditorException;
 
 /**

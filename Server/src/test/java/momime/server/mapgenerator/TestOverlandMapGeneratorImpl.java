@@ -31,8 +31,8 @@ import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.random.RandomUtils;
-import com.ndg.random.RandomUtilsImpl;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.random.RandomUtilsImpl;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;

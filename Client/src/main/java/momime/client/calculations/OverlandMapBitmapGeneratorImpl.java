@@ -11,7 +11,7 @@ import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfig;

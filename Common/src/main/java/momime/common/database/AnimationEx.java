@@ -3,7 +3,7 @@ package momime.common.database;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.common.MomException;
 

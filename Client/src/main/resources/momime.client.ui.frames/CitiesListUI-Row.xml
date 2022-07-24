@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/utils/swing/layoutmanagers/xmllayout">
 	<formWidth>873</formWidth>	<!-- 858, but once we get enough cities to show a scroll bar, the scroll bar ends up covering up the rush buy coins, so add +15 pixels for it -->
 	<formHeight>28</formHeight>
 	<component name="frmCitiesListRowName">

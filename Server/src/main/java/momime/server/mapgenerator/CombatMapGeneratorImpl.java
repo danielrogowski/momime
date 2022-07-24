@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.database.CombatMapElement;
 import momime.common.database.CombatMapLayerID;

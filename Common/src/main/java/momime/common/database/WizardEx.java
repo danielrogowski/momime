@@ -1,6 +1,6 @@
 package momime.common.database;
 
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 /**
  * Provides method for picking a random playlist, to minimize situations where the un-typecast BookImage class has to be referenced outside of the graphics DB package

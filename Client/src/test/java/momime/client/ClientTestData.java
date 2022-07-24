@@ -17,12 +17,12 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
-import com.ndg.random.RandomUtils;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutConstants;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
 import com.ndg.utils.XmlConstants;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutConstants;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainer;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;

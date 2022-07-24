@@ -5,15 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import momime.server.ServerTestData;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.random.RandomUtils;
-import com.ndg.random.RandomUtilsImpl;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.random.RandomUtilsImpl;
+
+import momime.server.ServerTestData;
 
 /**
  * Tests the HeightMapGenerator class

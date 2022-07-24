@@ -16,8 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.ndg.random.RandomUtils;
-import com.ndg.random.RandomUtilsImpl;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.random.RandomUtilsImpl;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;

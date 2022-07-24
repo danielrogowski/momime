@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/utils/swing/layoutmanagers/xmllayout">
 	<formWidth>640</formWidth>		<!-- 320 x 2 -->
 	<formHeight>480</formHeight>		<!-- 200 x 2.4 -->
 	<component name="frmWizardBanishedTitle">

@@ -11,9 +11,9 @@ import javax.swing.JFileChooser;
 import org.jdom2.Element;
 
 import com.ndg.archive.LbxArchiveReader;
-import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
+import com.ndg.utils.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
 

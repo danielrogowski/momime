@@ -10,7 +10,7 @@
 		<constructor-arg ref="domImplementationRegistry" />
 	</bean>
 
-	<bean id="resourceResolver" class="com.ndg.xml.XmlResourceResolver">
+	<bean id="resourceResolver" class="com.ndg.xmleditor.XmlResourceResolver">
 		<property name="domImplementationRegistry" ref="domImplementationRegistry" />
 		<property name="secondaryResourceResolver" ref="momResourceResolver" />
 	</bean>

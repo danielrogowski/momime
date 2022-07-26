@@ -321,6 +321,7 @@ public final class WizardsUI extends MomClientFrameUI
 					getDiplomacyUI ().setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
 					getDiplomacyUI ().setOtherWizardID (null);
 					getDiplomacyUI ().initializeTalkingWizard ();
+					getDiplomacyUI ().setProposingWizardID (getClient ().getOurPlayerID ());
 					getDiplomacyUI ().setVisibleRelationScoreID (null);
 					getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.MIRROR);
 					getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);

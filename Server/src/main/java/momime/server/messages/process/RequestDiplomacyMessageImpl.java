@@ -16,6 +16,7 @@ import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RelationScore;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -336,11 +337,106 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				talkToPlayer.getConnection ().sendMessageToClient (msg);
 			}
 			else
+			{
+				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+				
 				switch (getAction ())
 				{
+					// Auto accept any diplomacy requests for now
+					case INITIATE_TALKING:
+					{
+						final DiplomacyMessage msg = new DiplomacyMessage ();
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setAction (DiplomacyAction.ACCEPT_TALKING);
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						
+						sender.getConnection ().sendMessageToClient (msg);
+						break;
+					}
+						
+					// Auto deny pact requests for now
+					case PROPOSE_WIZARD_PACT:
+					{
+						final DiplomacyMessage msg = new DiplomacyMessage ();
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setAction (DiplomacyAction.REJECT_WIZARD_PACT);
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						
+						sender.getConnection ().sendMessageToClient (msg);
+						break;
+					}
+
+					case PROPOSE_ALLIANCE:
+					{
+						final DiplomacyMessage msg = new DiplomacyMessage ();
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setAction (DiplomacyAction.REJECT_ALLIANCE);
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						
+						sender.getConnection ().sendMessageToClient (msg);
+						break;
+					}
+					
+					case PROPOSE_PEACE_TREATY:
+					{
+						final DiplomacyMessage msg = new DiplomacyMessage ();
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setAction (DiplomacyAction.REJECT_PEACE_TREATY);
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						
+						sender.getConnection ().sendMessageToClient (msg);
+						break;
+					}
+					
+					case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+					{
+						final DiplomacyMessage msg = new DiplomacyMessage ();
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setOtherPlayerID (getOtherPlayerID ());
+						msg.setAction (DiplomacyAction.REJECT_DECLARE_WAR_ON_OTHER_WIZARD);
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						
+						sender.getConnection ().sendMessageToClient (msg);
+						break;
+					}
+					
+					case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+					{
+						final DiplomacyMessage msg = new DiplomacyMessage ();
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setOtherPlayerID (getOtherPlayerID ());
+						msg.setAction (DiplomacyAction.REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						
+						sender.getConnection ().sendMessageToClient (msg);
+						break;
+					}
+					
+					// Auto declare war if threatened for now
+					case THREATEN:
+					{
+						getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WAR, mom);
+						getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+
+						final DiplomacyMessage msg = new DiplomacyMessage ();
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setAction (DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED);
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						
+						sender.getConnection ().sendMessageToClient (msg);
+						break;
+					}
+					
+					// Ignore, AI doesn't need to respond to these
+					case END_CONVERSATION:
+					case GIVE_GOLD:
+					case GIVE_SPELL:
+						break;
+					
 					default:
 						throw new IOException ("AI does not know how to respond to Diplomacy action " + getAction ());
 				}
+			}
 		}
 	}
 

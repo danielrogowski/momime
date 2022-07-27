@@ -31,6 +31,7 @@ import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
+import momime.server.ai.DiplomacyAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.utils.KnownWizardServerUtils;
@@ -66,6 +67,9 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
+	
+	/** Methods for AI making decisions about diplomacy with other wizards */
+	private DiplomacyAI diplomacyAI;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -250,6 +254,21 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						
 						sender.getConnection ().sendMessageToClient (msg);
 					}
+					else if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () != null) && (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN))
+					{
+						// Player asked AI player for a spell that they know, now AI player needs to choose which spell they'd like in return
+						final String requestSpellIDInReturn = getDiplomacyAI ().chooseSpellToRequestInReturn (getRequestSpellID (), spellIDsWeCanOffer, mom.getServerDB ());
+						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+						
+						final DiplomacyMessage msg = new DiplomacyMessage ();
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setAction ((requestSpellIDInReturn == null) ? DiplomacyAction.REFUSE_EXCHANGE_SPELL : DiplomacyAction.PROPOSE_EXCHANGE_SPELL);
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						msg.setRequestSpellID (getRequestSpellID ());
+						msg.setOfferSpellID (requestSpellIDInReturn);
+						
+						sender.getConnection ().sendMessageToClient (msg);
+					}
 					else
 					{
 						final TradeableSpellsMessage msg = new TradeableSpellsMessage ();
@@ -305,9 +324,12 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				getServerSpellCalculations ().randomizeSpellsResearchableNow (talkToPlayerPriv.getSpellResearchStatus (), mom.getServerDB ());
 				getServerSpellCalculations ().randomizeSpellsResearchableNow (senderPriv.getSpellResearchStatus (), mom.getServerDB ());
 				
-				final FullSpellListMessage spellsMsg1 = new FullSpellListMessage ();
-				spellsMsg1.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
-				talkToPlayer.getConnection ().sendMessageToClient (spellsMsg1);
+				if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				{
+					final FullSpellListMessage spellsMsg1 = new FullSpellListMessage ();
+					spellsMsg1.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
+					talkToPlayer.getConnection ().sendMessageToClient (spellsMsg1);
+				}
 
 				final FullSpellListMessage spellsMsg2 = new FullSpellListMessage ();
 				spellsMsg2.getSpellResearchStatus ().addAll (senderPriv.getSpellResearchStatus ());
@@ -431,6 +453,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					case END_CONVERSATION:
 					case GIVE_GOLD:
 					case GIVE_SPELL:
+					case ACCEPT_EXCHANGE_SPELL:
 						break;
 					
 					default:
@@ -550,5 +573,21 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Methods for AI making decisions about diplomacy with other wizards
+	 */
+	public final DiplomacyAI getDiplomacyAI ()
+	{
+		return diplomacyAI;
+	}
+
+	/**
+	 * @param ai Methods for AI making decisions about diplomacy with other wizards
+	 */
+	public final void setDiplomacyAI (final DiplomacyAI ai)
+	{
+		diplomacyAI = ai;
 	}
 }

@@ -265,6 +265,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="diplomacyAI" ref="diplomacyAI" />
 	</bean>
 
 	<!-- User registry -->
@@ -1067,6 +1068,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="relationAI" class="momime.server.ai.RelationAIImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
+
+	<bean id="diplomacyAI" class="momime.server.ai.DiplomacyAIImpl" />
 	
 	<!-- Fog of War -->
 

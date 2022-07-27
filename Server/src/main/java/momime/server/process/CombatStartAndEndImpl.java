@@ -764,26 +764,32 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 						((pactType == PactType.WIZARD_PACT) && (cityName != null)) ||		// Only an attack on a city voids a wizard pact; skimishes are allowed
 						((pactType == null) && (cityName != null)))										// Only an attack on a city is an instant declaration of war
 					{
-						// Show popup about them being mad
-						final DiplomacyMessage brokenPactMessage = new DiplomacyMessage ();
-						brokenPactMessage.setTalkFromPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
-						brokenPactMessage.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (-100, "combatEnded").getRelationScoreID ());
-						brokenPactMessage.setCityName (cityName);
-						
+						// What type of pact was broken
+						final DiplomacyAction brokenPactType;
 						PactType newPactType = null;
 						if (pactType == PactType.WIZARD_PACT)
-							brokenPactMessage.setAction (DiplomacyAction.BROKEN_WIZARD_PACT_CITY);
+							brokenPactType = DiplomacyAction.BROKEN_WIZARD_PACT_CITY;
 						else if ((pactType == PactType.WIZARD_PACT) && (cityName != null))
-							brokenPactMessage.setAction (DiplomacyAction.BROKEN_ALLIANCE_CITY);
+							brokenPactType = DiplomacyAction.BROKEN_ALLIANCE_CITY;
 						else if ((pactType == null) && (cityName != null))
 						{
-							brokenPactMessage.setAction (DiplomacyAction.DECLARE_WAR_CITY);
+							brokenPactType = DiplomacyAction.DECLARE_WAR_CITY;
 							newPactType = PactType.WAR;
 						}
 						else
-							brokenPactMessage.setAction (DiplomacyAction.BROKEN_ALLIANCE_UNITS);
-							
-						attackingPlayer.getConnection ().sendMessageToClient (brokenPactMessage);
+							brokenPactType = DiplomacyAction.BROKEN_ALLIANCE_UNITS;
+
+						// Show popup about them being mad
+						if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+						{
+							final DiplomacyMessage brokenPactMessage = new DiplomacyMessage ();
+							brokenPactMessage.setTalkFromPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
+							brokenPactMessage.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (-100, "combatEnded").getRelationScoreID ());
+							brokenPactMessage.setCityName (cityName);
+							brokenPactMessage.setAction (brokenPactType);
+								
+							attackingPlayer.getConnection ().sendMessageToClient (brokenPactMessage);
+						}
 						
 						// Remove the pact
 						getKnownWizardServerUtils ().updatePact (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (), newPactType, mom);

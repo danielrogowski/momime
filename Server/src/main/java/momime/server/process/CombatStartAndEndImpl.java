@@ -32,6 +32,7 @@ import momime.common.messages.PactType;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
@@ -757,7 +758,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getServerResourceCalculations ().recalculateGlobalProductionValues (defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 
 				// If its two wizards and they had a pact, see if it is broken
-				if ((defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ())))
+				if ((defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ())) &&
+					(defWizard != null) && (defWizard.getWizardState () != WizardState.DEFEATED))
 				{
 					final PactType pactType = getKnownWizardUtils ().findPactWith (atkWizard.getPact (), defendingPlayer.getPlayerDescription ().getPlayerID ());
 					if ((pactType == PactType.ALLIANCE) ||													// Any attack anywhere voids an alliance

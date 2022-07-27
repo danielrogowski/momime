@@ -52,6 +52,7 @@ import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.messages.Pact;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.PendingSaleMessage;
@@ -1156,6 +1157,14 @@ public final class CityProcessingImpl implements CityProcessing
 								new MapCoordinates3DEx (x, y, z), mom.getSessionDescription ().getFogOfWarSetting ());
 						}
 					}
+			
+			// Clear any pacts they had with any other wizards
+			while (!defenderWizard.getPact ().isEmpty ())
+			{
+				final Pact pact = defenderWizard.getPact ().get (0);
+				getKnownWizardServerUtils ().updatePact (defendingPlayer.getPlayerDescription ().getPlayerID (), pact.getPactWithPlayerID (), null, mom);
+				getKnownWizardServerUtils ().updatePact (pact.getPactWithPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (), null, mom);
+			}
 			
 			// If it was a human player, convert them to AI and possibly end the session
 			if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)

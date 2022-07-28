@@ -743,10 +743,13 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    		final List<Integer> unitURNs = mem.getUnit ().stream ().filter (u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
 	    		
 	    		// Now look for any spells cast by somebody else either targetted directly on the location, or on a unit at the location
+    			final List<String> spellsImmuneToDispelling = db.getSpell ().stream ().filter
+       				(s -> (s.isImmuneToDispelling () != null) && (s.isImmuneToDispelling ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
+
 	    		if (((terrainData.isWarped () != null) && (terrainData.isWarped ()) &&
 	    			(db.findTileType (terrainData.getTileTypeID (), "isOverlandLocationValidTargetForSpell").getMagicRealmID () != null)) ||	// Has to be actual node, not just an aura tile
 	    				
-    				(mem.getMaintainedSpell ().stream ().anyMatch (s -> (s.getCastingPlayerID () != castingPlayerID) &&
+    				(mem.getMaintainedSpell ().stream ().anyMatch (s -> (s.getCastingPlayerID () != castingPlayerID) && (!spellsImmuneToDispelling.contains (s.getSpellID ())) &&
     					((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ()))))))
 	    			
 	    			result = TargetSpellResult.VALID_TARGET;

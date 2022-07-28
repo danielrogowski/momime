@@ -988,9 +988,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 							defendingPlayer.getConnection ().sendMessageToClient (anim);
 						
 						// Now get a list of all enchantments cast on all the units in the list by other wizards
+		    			final List<String> spellsImmuneToDispelling = mom.getServerDB ().getSpell ().stream ().filter
+	        				(s -> (s.isImmuneToDispelling () != null) && (s.isImmuneToDispelling ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
+						
 						final List<Integer> targetUnitURNs = targetUnits.stream ().map (u -> u.getUnitURN ()).collect (Collectors.toList ());
 						final List<MemoryMaintainedSpell> spellsToDispel = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
-							(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ()))).collect (Collectors.toList ());
+							(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ())) &&
+								(!spellsImmuneToDispelling.contains (s.getSpellID ()))).collect (Collectors.toList ());
 						spellsToDispel.addAll (targetSpells);
 						
 						// Is the combat taking place at a warped node?
@@ -1247,8 +1251,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 		    			(u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
 		    		
 		    		// Now look for any spells cast by somebody else either targeted directly on the location, or on a unit at the location
+	    			final List<String> spellsImmuneToDispelling = mom.getServerDB ().getSpell ().stream ().filter
+           				(s -> (s.isImmuneToDispelling () != null) && (s.isImmuneToDispelling ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
+
 		    		targetSpells = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
-		    			(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
+		    			(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (!spellsImmuneToDispelling.contains (s.getSpellID ())) &&
 		    				((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))).collect (Collectors.toList ());
 		    		
 					final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get

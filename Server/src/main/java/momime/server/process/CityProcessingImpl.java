@@ -1024,13 +1024,14 @@ public final class CityProcessingImpl implements CityProcessing
 	 * 
 	 * @param attackingPlayer Player who won the combat, who is doing the banishing
 	 * @param defendingPlayer Player who lost the combat, who is the one being banished
+	 * @param canStealSpells Whether the attacking wizard gets to steal any spells from the defending wizard as a result of banishing them
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
+	public final void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final boolean canStealSpells, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		getKnownWizardServerUtils ().meetWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
@@ -1057,8 +1058,8 @@ public final class CityProcessingImpl implements CityProcessing
 		msg.setWizardState (wizardState);
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 
-		// Things that only apply if two wizards
-		if ((getPlayerKnowledgeUtils ().isWizard (defenderWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (attackerWizard.getWizardID ())))
+		// Things that only apply if two wizards (so the defending wizard's fortress was captured)
+		if ((canStealSpells) && (getPlayerKnowledgeUtils ().isWizard (defenderWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (attackerWizard.getWizardID ())))
 		{
 			// Does the attacker get to steal any spells?
 			final List<String> stolenSpellIDs = getSpellProcessing ().stealSpells (defendingPlayer, attackingPlayer,

@@ -38,8 +38,55 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.3</b></td>
-			<td align=left><b>28 Feb 2022</b></td>
+			<td align=left><b>Current version: 1.4</b></td>
+			<td align=left><b>28 Jul 2022</b></td>
+			<td align=left>
+				<b>Diplomacy part 1:</b>
+				<ul>
+					<li>The wizards screen how has a diplomacy button enabling you to talk to other wizards, both human and AI players
+					<li>Offering gold and spell tributes
+					<li>Exchanging spells (note this works differently than original MoM in that the other wizard chooses which spell they want in return)
+					<li>Making and breaking Wizard Pacts and Alliances
+					<li>Making Peace Treaties
+					<li>Asking one wizard to declare war on another
+					<li>Asking one wizard to break their alliance with another
+					<li>Threatening to attack a wizard
+					<li>Attacking a city owned by a wizard you have a Wizard Pact with automatically breaks the Wizard Pact
+					<li>Attacking a city or any units owned by a wizard you have an Alliance with automatically breaks the Alliance
+					<li>Attacking a city owned by a wizard you do not have an Alliance or Wizard Pact with results in them automatically declaring war on you
+					<li>Starting to cast Spell of Mastery makes you meet any wizards you didn't already know, any wizards who didn't already know you meet you, and everybody declares war on you
+					<li>After you start casting Spell of Mastery, even if you subsequently cancel it, because you've made everyone aware that you have completed researching it, you can no longer request or accept any Peace Treaty, Wizard Pact or Alliance with
+						anyone and will be permanently at war with everyone until the end of the game
+				</ul>
+
+				<b>What will NOT work until diplomacy part 2 is done in version 1.5:</b>
+				<ul>
+					<li>AI players will always agree to talk to you, and never run out of patience talking to you
+					<li>AI players currently refuse all requests for Wizard Pacts, Alliances and Peace Treaties and will just stay permanently at war with you and each other
+					<li>AI players will automatically declare war on you if you threaten them, rather than making a decision from the 4 available options
+					<li>AI players will respond to requests to exchange spells with you, as long as its a fair or beneficial trade, even if they hate you, but they won't initiate a request to exchange spells
+					<li>AI players' opinion of you and each other currently isn't affected by actions taking during their turns, for example they don't get happier if you offer them tributes, and don't get mad if you cast nasty spells at them, are in their territory, or attack them
+					<li>AI players' actions on the overland map currently aren't affected by any pacts they do or don't have in place, so they will always act as if they are at war with you
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Raiders and Monsters players now automatically "meet" all wizards at the start of the game, to fix an issue with diplomatic marriage event giving a city to a wizard that raiders had never met
+					<li>Stop being able to use Dispel Magic or Disenchant Area on Chaos Channels
+					<li>Stop being able to use Dispel Magic or Disenchant Area on Web, if the unit had another enchantment/curse which was a valid dispel target to get past the targeting validation
+					<li>If a wizard is already banished and you capture their last city thereby defeating them entirely, you don't get to steal spells or MP from it as their Wizard's Fortress was not there
+				</ul>
+				
+				<b>Library upgrades:</b>
+				<ul>
+					<li>Upgraded packaged JRE to 11.0.16
+					<li>Upgraded many 3rd party libraries including some with security vulnerabilities
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.3</td>
+			<td align=left>28 Feb 2022</td>
 			<td align=left>
 				<b>New features:</b>
 				<ul>

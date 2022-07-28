@@ -3461,6 +3461,9 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	@Test
 	public final void testIsOverlandLocationValidTargetForSpell_Dispel_Nothing () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Spell being targetted
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
@@ -3488,7 +3491,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
+		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
 	}
 	
 	/**
@@ -3498,6 +3501,9 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	@Test
 	public final void testIsOverlandLocationValidTargetForSpell_Dispel_CitySpell () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Spell being targetted
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
@@ -3532,7 +3538,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
 	}
 		
 	/**
@@ -3542,6 +3548,9 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	@Test
 	public final void testIsOverlandLocationValidTargetForSpell_Dispel_UnitSpell () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Spell being targetted
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
@@ -3581,7 +3590,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
 	}
 	
 	/**

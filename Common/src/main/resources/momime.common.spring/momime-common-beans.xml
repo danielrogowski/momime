@@ -181,11 +181,12 @@
 		<constructor-arg ref="domImplementationRegistry" />
 	</bean>
 	
-	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
-		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
-		<property name="resourceResolver" ref="commonXsdResourceResolver" />
+	<bean id="schemaFactoryFactory" class="com.ndg.utils.SchemaFactoryFactory" />
+	
+	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-bean="schemaFactoryFactory" factory-method="createSchemaFactory">
+		<constructor-arg ref="commonXsdResourceResolver" />
 	</bean>
-
+	
 	<!-- Common database XMLs -->
 
 	<bean id="commonDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">

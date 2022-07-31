@@ -15,10 +15,11 @@
 		<property name="secondaryResourceResolver" ref="momResourceResolver" />
 	</bean>
 
-	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
-		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
-		<property name="resourceResolver" ref="resourceResolver" />
-	</bean>	
+	<bean id="schemaFactoryFactory" class="com.ndg.utils.SchemaFactoryFactory" />
+	
+	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-bean="schemaFactoryFactory" factory-method="createSchemaFactory">
+		<constructor-arg ref="resourceResolver" />
+	</bean>
 
 	<!-- MoM IME Language specific -->
 

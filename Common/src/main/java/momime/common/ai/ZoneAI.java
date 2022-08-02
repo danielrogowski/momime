@@ -3,7 +3,6 @@ package momime.common.ai;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.areas.storage.MapArea3D;
 
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 
@@ -18,13 +17,9 @@ public interface ZoneAI
 	/**
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
-	 * @param playerID Player whose border we want to calculate
-	 * @param separation How close our cities have to be to consider the area between them to be probably passable without getting attacked
-	 * @param db Lookup lists built over the XML database
-	 * @return 3D area marked with all the locations we consider to be our territory
+	 * @return 3D area marked with the player ID we consider as owning each tile
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
 	 */
-	public MapArea3D<Boolean> calculateFriendlyZone (final FogOfWarMemory fogOfWarMemory,
-		final CoordinateSystem overlandMapCoordinateSystem, final int playerID, final int separation, final CommonDatabase db)
+	public MapArea3D<Integer> calculateZones (final FogOfWarMemory fogOfWarMemory, final CoordinateSystem overlandMapCoordinateSystem)
 		throws RecordNotFoundException;
 }

@@ -391,8 +391,8 @@
 
 	<bean id="zoneAI" class="momime.common.ai.ZoneAIImpl">
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
-		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="heroItemUtils" class="momime.common.utils.HeroItemUtilsImpl" />

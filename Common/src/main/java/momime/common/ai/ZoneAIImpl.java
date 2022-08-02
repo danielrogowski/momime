@@ -1,26 +1,16 @@
 package momime.common.ai;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.SquareMapDirection;
-import com.ndg.map.areas.operations.BooleanMapAreaOperations2D;
-import com.ndg.map.areas.operations.BooleanMapAreaOperations3D;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
-import com.ndg.map.areas.storage.MapArea3Dto2D;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
-import momime.common.calculations.CityCalculationsImpl;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TileType;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryGridCell;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Calculates zones / national borders from what a player knows about the overland map.
@@ -30,160 +20,65 @@ import momime.common.messages.OverlandMapCityData;
  */
 public final class ZoneAIImpl implements ZoneAI
 {
-	/** Boolean operations for 2D maps */
-	private BooleanMapAreaOperations2D booleanMapAreaOperations2D;
-
-	/** Boolean operations for 3D maps */
-	private BooleanMapAreaOperations3D booleanMapAreaOperations3D;
+	/** How far out from a city do borders extend - set to match the largest visible radius from a city, from an Oracle */
+	private final static int BORDER_RADIUS = 4;
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
-	 * @param playerID Player whose border we want to calculate
-	 * @param separation How close our cities have to be to consider the area between them to be probably passable without getting attacked
-	 * @param db Lookup lists built over the XML database
-	 * @return 3D area marked with all the locations we consider to be our territory
+	 * @return 3D area marked with the player ID we consider as owning each tile
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
 	 */
 	@Override
-	public final MapArea3D<Boolean> calculateFriendlyZone (final FogOfWarMemory fogOfWarMemory,
-		final CoordinateSystem overlandMapCoordinateSystem, final int playerID, final int separation, final CommonDatabase db)
+	public final MapArea3D<Integer> calculateZones (final FogOfWarMemory fogOfWarMemory, final CoordinateSystem overlandMapCoordinateSystem)
 		throws RecordNotFoundException
 	{
-		// Make a list of all of our cities
-		final List<MapCoordinates3DEx> cityLocations = new ArrayList<MapCoordinates3DEx> ();
+		// Create areas
+		final MapArea3D<Integer> bestDistance = new MapArea3DArrayListImpl<Integer> ();
+		bestDistance.setCoordinateSystem (overlandMapCoordinateSystem);
+
+		final MapArea3D<Integer> zones = new MapArea3DArrayListImpl<Integer> ();
+		zones.setCoordinateSystem (overlandMapCoordinateSystem);
+
+		// Process all cities
 		for (int plane = 0; plane < overlandMapCoordinateSystem.getDepth (); plane++)
+		{
+			final int z = plane;
 			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
 				for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
 				{
 					final OverlandMapCityData cityData = fogOfWarMemory.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == playerID))
-						cityLocations.add (new MapCoordinates3DEx (x, y, plane));
-				}
-		
-		// Create output area
-		final MapArea3D<Boolean> zone = new MapArea3DArrayListImpl<Boolean> ();
-		zone.setCoordinateSystem (overlandMapCoordinateSystem);
-		getBooleanMapAreaOperations3D ().deselectAll (zone);
-		
-		// Mark the regular resource area of every city,
-		// draw a line between each 2 cities that are close to each other, and
-		// draw a triangle between each 3 cities that are close to each other
-		for (int index1 = 0; index1 < cityLocations.size (); index1++)
-		{
-			final MapCoordinates3DEx cityLocation1 = cityLocations.get (index1);
-			
-			// Mark this city
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation1);
-			for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-				if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
-					zone.set (coords, true);
-			
-			for (int index2 = index1 + 1; index2 < cityLocations.size (); index2++)
-			{
-				final MapCoordinates3DEx cityLocation2 = cityLocations.get (index2);
-				
-				if ((cityLocation1.getZ () == cityLocation2.getZ ()) &&
-					(getCoordinateSystemUtils ().findDistanceBetweenXCoordinates (overlandMapCoordinateSystem, cityLocation1.getX (), cityLocation2.getX ()) <= separation) &&
-					(getCoordinateSystemUtils ().findDistanceBetweenYCoordinates (overlandMapCoordinateSystem, cityLocation1.getY (), cityLocation2.getY ()) <= separation))
-				{
-					// Draw line between 2 cities
-					final MapArea3Dto2D<Boolean> zone2D = new MapArea3Dto2D<Boolean> ();
-					zone2D.setStorage (zone);
-					zone2D.setZ (cityLocation1.getZ ());
-					
-					getBooleanMapAreaOperations2D ().setLine (zone2D,
-						new MapCoordinates2DEx (cityLocation1.getX (), cityLocation1.getY ()),
-						new MapCoordinates2DEx (cityLocation2.getX (), cityLocation2.getY ()), 1, true);
-					
-					for (int index3 = index2 + 1; index3 < cityLocations.size (); index3++)
+					if (cityData != null)
 					{
-						final MapCoordinates3DEx cityLocation3 = cityLocations.get (index3);
-						
-						if ((cityLocation1.getZ () == cityLocation3.getZ ()) &&
-							(getCoordinateSystemUtils ().findDistanceBetweenXCoordinates (overlandMapCoordinateSystem, cityLocation1.getX (), cityLocation3.getX ()) <= separation) &&
-							(getCoordinateSystemUtils ().findDistanceBetweenYCoordinates (overlandMapCoordinateSystem, cityLocation1.getY (), cityLocation3.getY ()) <= separation) &&
-							(getCoordinateSystemUtils ().findDistanceBetweenXCoordinates (overlandMapCoordinateSystem, cityLocation2.getX (), cityLocation3.getX ()) <= separation) &&
-							(getCoordinateSystemUtils ().findDistanceBetweenYCoordinates (overlandMapCoordinateSystem, cityLocation2.getY (), cityLocation3.getY ()) <= separation))
-						{
-							// Draw triangle between 3 cities.
-							// In testing this I found this was pretty much never necessary - the lines between each pair plus the city radius itself almost
-							// always covers up all the area anyway, even without the triangle.  But do it just to be on the safe side.
-							final List<MapCoordinates2DEx> triangle = new ArrayList<MapCoordinates2DEx> ();
-							triangle.add (new MapCoordinates2DEx (cityLocation1.getX (), cityLocation1.getY ()));
-							triangle.add (new MapCoordinates2DEx (cityLocation2.getX (), cityLocation2.getY ()));
-							triangle.add (new MapCoordinates2DEx (cityLocation3.getX (), cityLocation3.getY ()));
-							
-							getBooleanMapAreaOperations2D ().setPolygon (zone2D, triangle, true);
-						}
+						// Make sure its a wizard who owns it (ignore raiders)
+						final KnownWizardDetails cityOwner = getKnownWizardUtils ().findKnownWizardDetails (fogOfWarMemory.getWizardDetails (), cityData.getCityOwnerID (), "calculateZones");
+						if (getPlayerKnowledgeUtils ().isWizard (cityOwner.getWizardID ()))
+							getCoordinateSystemUtils ().processCoordinatesWithinRadius (overlandMapCoordinateSystem, x, y, BORDER_RADIUS, (xc, yc, r, d, n) ->
+							{
+								final Integer currentDistance = bestDistance.get (xc, yc, z);
+								
+								if ((currentDistance == null) || (r < currentDistance))
+								{
+									zones.set (xc, yc, z, cityData.getCityOwnerID ());
+									bestDistance.set (xc, yc, z, r);
+								}
+								
+								return true;
+							});
 					}
 				}
-			}
 		}
 		
-		// Remove any area close to enemy cities, or on water tiles
-		for (int plane = 0; plane < overlandMapCoordinateSystem.getDepth (); plane++)
-			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
-				for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
-				{
-					final MemoryGridCell mc = fogOfWarMemory.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
-					final OverlandMapCityData cityData = mc.getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () != playerID))
-					{
-						final MapArea3Dto2D<Boolean> zone2D = new MapArea3Dto2D<Boolean> ();
-						zone2D.setStorage (zone);
-						zone2D.setZ (plane);
-
-						getBooleanMapAreaOperations2D ().deselectRadius (zone2D, x, y, 1);
-					}
-					else if ((mc.getTerrainData () != null) && (mc.getTerrainData ().getTileTypeID () != null))
-					{
-						final TileType tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "calculateFriendlyZone");
-						if ((tileType.isLand () == null) || (!tileType.isLand ()))
-							zone.set (x, y, plane, false);
-					}
-				}
-		
-		// Reselect our cities, in case those cells were deselected by an enemy standing next to one of them
-		for (final MapCoordinates3DEx cityLocation : cityLocations)
-			zone.set (cityLocation, true);
-
-		return zone;
-	}
-
-	/**
-	 * @return Boolean operations for 2D maps
-	 */
-	public final BooleanMapAreaOperations2D getBooleanMapAreaOperations2D ()
-	{
-		return booleanMapAreaOperations2D;
-	}
-
-	/**
-	 * @param op Boolean operations for 2D maps
-	 */
-	public final void setBooleanMapAreaOperations2D (final BooleanMapAreaOperations2D op)
-	{
-		booleanMapAreaOperations2D = op;
-	}
-	
-	/**
-	 * @return Boolean operations for 3D maps
-	 */
-	public final BooleanMapAreaOperations3D getBooleanMapAreaOperations3D ()
-	{
-		return booleanMapAreaOperations3D;
-	}
-
-	/**
-	 * @param op Boolean operations for 3D maps
-	 */
-	public final void setBooleanMapAreaOperations3D (final BooleanMapAreaOperations3D op)
-	{
-		booleanMapAreaOperations3D = op;
+		return zones;
 	}
 
 	/**
@@ -200,5 +95,37 @@ public final class ZoneAIImpl implements ZoneAI
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

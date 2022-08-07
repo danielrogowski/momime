@@ -210,6 +210,18 @@ public final class RelationAIImpl implements RelationAI
 	}
 	
 	/**
+	 * @param wizardDetails Wizard to receive bonus
+	 * @param bonus Amount of bonus
+	 */
+	@Override
+	public final void bonusToVisibleRelation (final DiplomacyWizardDetails wizardDetails, final int bonus)
+	{
+		wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () + bonus);
+		
+		if (wizardDetails.getVisibleRelation () > CommonDatabaseConstants.MAX_RELATION_SCORE)
+			wizardDetails.setVisibleRelation (CommonDatabaseConstants.MAX_RELATION_SCORE);	}
+	
+	/**
 	 * @return Player pick utils
 	 */
 	public final PlayerPickUtils getPlayerPickUtils ()

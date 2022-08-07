@@ -185,6 +185,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_GOLD_BECAUSE_THREATENED:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_GOLD);
+				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 

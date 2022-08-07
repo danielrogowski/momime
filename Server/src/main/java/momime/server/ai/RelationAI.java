@@ -6,6 +6,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.PlayerPick;
 import momime.server.MomSessionVariables;
 
@@ -39,4 +40,10 @@ public interface RelationAI
 	 * @param player AI player to verify all their visibleRelation values are within the capped range
 	 */
 	public void capVisibleRelations (final PlayerServerDetails player);
+	
+	/**
+	 * @param wizardDetails Wizard to receive bonus
+	 * @param bonus Amount of bonus
+	 */
+	public void bonusToVisibleRelation (final DiplomacyWizardDetails wizardDetails, final int bonus);
 }

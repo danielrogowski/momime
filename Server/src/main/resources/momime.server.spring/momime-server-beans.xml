@@ -266,6 +266,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="diplomacyAI" ref="diplomacyAI" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 
 	<!-- User registry -->

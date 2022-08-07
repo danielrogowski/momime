@@ -32,6 +32,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.DiplomacyAI;
+import momime.server.ai.RelationAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.utils.KnownWizardServerUtils;
@@ -70,6 +71,9 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	
 	/** Methods for AI making decisions about diplomacy with other wizards */
 	private DiplomacyAI diplomacyAI;
+	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -193,7 +197,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				msg.setTalkFromPlayerID (getTalkToPlayerID ());
 				msg.setAction ((getAction () == DiplomacyAction.GIVE_GOLD) ? DiplomacyAction.ACCEPT_GOLD : DiplomacyAction.ACCEPT_GOLD_BECAUSE_THREATENED);
 				msg.setOtherPlayerID (getOtherPlayerID ());
-				msg.setOfferGoldAmount (offerGoldAmount);			
+				msg.setOfferGoldAmount (offerGoldAmount);
+				
+				// If giving gold to an AI wizard, modify visible relation
+				if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!talkToWizard.isEverStartedCastingSpellOfMastery ()))
+				{
+					getRelationAI ().bonusToVisibleRelation (talkToWizard, getOfferGoldTier () * 5);
+					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+				}
 				
 				sender.getConnection ().sendMessageToClient (msg);
 				
@@ -589,5 +601,21 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void setDiplomacyAI (final DiplomacyAI ai)
 	{
 		diplomacyAI = ai;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

@@ -17,6 +17,8 @@ import com.ndg.multiplayer.sessionbase.PlayerType;
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RelationScore;
+import momime.common.database.Spell;
+import momime.common.database.SpellRank;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -201,11 +203,10 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				
 				// If giving gold to an AI wizard, modify visible relation
 				if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!talkToWizard.isEverStartedCastingSpellOfMastery ()))
-				{
 					getRelationAI ().bonusToVisibleRelation (talkToWizard, getOfferGoldTier () * 5);
-					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-				}
+				
+				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+				msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 				
 				sender.getConnection ().sendMessageToClient (msg);
 				
@@ -299,6 +300,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 							sender.getConnection ().sendMessageToClient (msg);
 					}
 				}
+				
+				// Proceed with spell donation
 				else if (getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
 				{
 					final DiplomacyMessage msg = new DiplomacyMessage ();	
@@ -307,6 +310,18 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					msg.setOtherPlayerID (getOtherPlayerID ());
 					msg.setOfferSpellID (getOfferSpellID ());
 					msg.setRequestSpellID (getRequestSpellID ());
+				
+					// If giving spell to an AI wizard, modify visible relation
+					if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!talkToWizard.isEverStartedCastingSpellOfMastery ()))
+					{
+						final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
+						final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
+						if (spellRank.getSpellTributeRelationBonus () != null)
+							getRelationAI ().bonusToVisibleRelation (talkToWizard, spellRank.getSpellTributeRelationBonus ());
+					}
+					
+					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 					
 					sender.getConnection ().sendMessageToClient (msg);
 					
@@ -317,9 +332,12 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					// Just in case the donated spell was one of the 8 spells available to research now
 					getServerSpellCalculations ().randomizeSpellsResearchableNow (talkToPlayerPriv.getSpellResearchStatus (), mom.getServerDB ());
 					
-					final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
-					spellsMsg.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
-					talkToPlayer.getConnection ().sendMessageToClient (spellsMsg);
+					if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+					{
+						final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+						spellsMsg.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
+						talkToPlayer.getConnection ().sendMessageToClient (spellsMsg);
+					}
 				}
 				break;
 				

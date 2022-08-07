@@ -199,6 +199,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_SPELL:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_SPELL);
+				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;

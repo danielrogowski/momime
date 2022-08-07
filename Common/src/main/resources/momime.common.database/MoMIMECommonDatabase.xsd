@@ -4115,6 +4115,11 @@ Implication is that for spells and attacks whose damage resolution is based on r
 treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
         		</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="spellTributeRelationBonus" type="momimecommon:relationChange" nxe:label="Tribute relation bonus" nxe:gridwidth="200">
+		        <xsd:annotation>
+        			<xsd:documentation>Bonus to visible relation when we give a player a tribute of a free spell.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="spellRankID" type="momimecommon:spellRankID" use="required" nxe:label="Spell Rank ID" nxe:gridwidth="100" />
 	</xsd:complexType>
@@ -6192,7 +6197,23 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="relationValue">
-		<xsd:restriction base="xsd:int" />
+	    <xsd:annotation>
+    		<xsd:documentation>+100 for a wizard we love, -100 for a wizard we hate.  Capped at these values.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:int" >
+			<xsd:minInclusive value="-100" />
+			<xsd:maxInclusive value="100" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="relationChange">
+	    <xsd:annotation>
+    		<xsd:documentation>Minimum/maximum change can be up to -200/200.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:int" >
+			<xsd:minInclusive value="-200" />
+			<xsd:maxInclusive value="200" />
+		</xsd:restriction>
 	</xsd:simpleType>
 	
 </xsd:schema>

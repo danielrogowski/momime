@@ -159,7 +159,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
 					msg.setOtherPlayerID (getTalkToPlayerID ());
 					msg.setAction (DiplomacyAction.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD);
-					msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (-100, "RequestDiplomacyMessageImpl").getRelationScoreID ());
+					msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
 					
 					otherPlayer.getConnection ().sendMessageToClient (msg);
 				}
@@ -178,7 +178,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
 					msg.setOtherPlayerID (getTalkToPlayerID ());
 					msg.setAction (DiplomacyAction.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD);
-					msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (-100, "RequestDiplomacyMessageImpl").getRelationScoreID ());
+					msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
 					
 					otherPlayer.getConnection ().sendMessageToClient (msg);
 				}

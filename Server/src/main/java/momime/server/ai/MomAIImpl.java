@@ -100,6 +100,9 @@ public final class MomAIImpl implements MomAI
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
+	
 	/**
 	 * @param player AI player whose turn to take
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -118,7 +121,14 @@ public final class MomAIImpl implements MomAI
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "aiPlayerTurn");
 
 		if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
+		{
 			getUnitAI ().reallocateHeroItems (player, mom);
+			
+			// All modifications to visible relation are done in one go, then capped at the end, so we allow them to temporarily go above 100 or below -100
+			getRelationAI ().updateVisibleRelationDueToUnitsInOurBorder (player, mom);
+			getRelationAI ().slideTowardsBaseRelation (player);
+			getRelationAI ().capVisibleRelations (player);
+		}
 		
 		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID ());
 		
@@ -842,5 +852,21 @@ public final class MomAIImpl implements MomAI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

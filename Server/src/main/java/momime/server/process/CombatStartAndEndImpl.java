@@ -789,7 +789,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 						{
 							final DiplomacyMessage brokenPactMessage = new DiplomacyMessage ();
 							brokenPactMessage.setTalkFromPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
-							brokenPactMessage.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (-100, "combatEnded").getRelationScoreID ());
+							brokenPactMessage.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "combatEnded").getRelationScoreID ());
 							brokenPactMessage.setCityName (cityName);
 							brokenPactMessage.setAction (brokenPactType);
 								

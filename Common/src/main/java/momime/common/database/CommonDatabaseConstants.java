@@ -53,6 +53,12 @@ public final class CommonDatabaseConstants
 	/** Maximum units in a map cell */
 	public final static int MAX_UNITS_PER_MAP_CELL = 9;
 	
+	/** Relation score for a wizard we love */
+	public final static int MAX_RELATION_SCORE = 100;
+	
+	/** Relation score for a wizard we hate */
+	public final static int MIN_RELATION_SCORE = -100;
+	
 	/*------------------------------------------------------
 	 * Special values the various XML fields can take
 	 *-------------------------------------------------- */

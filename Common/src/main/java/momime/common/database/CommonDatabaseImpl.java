@@ -1229,10 +1229,10 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	public final RelationScore findRelationScoreForValue (final int score, final String caller) throws RecordNotFoundException
 	{
 		int useScore = score;
-		if (useScore < -100)
-			useScore = -100;
-		if (useScore > 100)
-			useScore = 100;
+		if (useScore < CommonDatabaseConstants.MIN_RELATION_SCORE)
+			useScore = CommonDatabaseConstants.MIN_RELATION_SCORE;
+		if (useScore > CommonDatabaseConstants.MAX_RELATION_SCORE)
+			useScore = CommonDatabaseConstants.MAX_RELATION_SCORE;
 		
 		RelationScore found = null;
 		for (final RelationScore thisScore : getRelationScore ())

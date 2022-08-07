@@ -36,7 +36,7 @@ public final class ZoneAIImpl implements ZoneAI
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @return 3D area marked with the player ID we consider as owning each tile
-	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
+	 * @throws RecordNotFoundException If a wizard who owns a city can't be found
 	 */
 	@Override
 	public final MapArea3D<Integer> calculateZones (final FogOfWarMemory fogOfWarMemory, final CoordinateSystem overlandMapCoordinateSystem)

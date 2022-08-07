@@ -419,10 +419,11 @@ public final class DiplomacyUI extends MomClientFrameUI
 					setTextState (DiplomacyTextState.ACCEPT_PEACE_TREATY);
 					break;
 				
-				// Unlike other "accept proposals", its the initiating wizard doing the accepting, so they just go back to the main choice list
 				case PROPOSE_EXCHANGE_SPELL:					
 					msg.setAction (DiplomacyAction.ACCEPT_EXCHANGE_SPELL);
-					setTextState (DiplomacyTextState.MAIN_CHOICES);
+					// The player we're agreeing to trade spells with doesn't have to click "OK, I accept" - they're the one that suggested the trade in the first place.
+					// But still, wait for that reply because if its an AI player, they will convey back their improved visibleRelationScoreID as part of the response.
+					setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
 					break;
 					
 				case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:

@@ -1550,6 +1550,10 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:documentation>Accept exchange spell</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_EXCHANGE_SPELL" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="FE"><xsd:annotation>
+				<xsd:documentation>After exchange spell (goes back to initator after they agree to give the spell the other wizard wants)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="AFTER_EXCHANGE_SPELL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="RF"><xsd:annotation>
 				<xsd:documentation>Refuse exchange spell (other player immediately refuses to give us what we want, because we have nothing good to offer in return)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REFUSE_EXCHANGE_SPELL" /></xsd:appinfo>

@@ -4120,6 +4120,11 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
         			<xsd:documentation>Bonus to visible relation when we give a player a tribute of a free spell.</xsd:documentation>
         		</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="spellExchangeRelationBonus" type="momimecommon:relationChange" nxe:label="Exchange relation bonus" nxe:gridwidth="200">
+		        <xsd:annotation>
+        			<xsd:documentation>Bonus to visible relation when we exchange spells with a player, and they give us a spell of this rank.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="spellRankID" type="momimecommon:spellRankID" use="required" nxe:label="Spell Rank ID" nxe:gridwidth="100" />
 	</xsd:complexType>

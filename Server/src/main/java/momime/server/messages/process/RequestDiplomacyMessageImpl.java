@@ -344,6 +344,29 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			// Exchange spells
 			case ACCEPT_EXCHANGE_SPELL:
 			{
+				// Person we are talking with, who suggested the spell they want in return, gets ACCEPT_EXCHANGE_SPELL message.
+				// Person initating the trade to begin with gets AFTER_EXCHANGE_SPELL, though both end up showing the same msg on the client.
+				final DiplomacyMessage msg = new DiplomacyMessage ();	
+				msg.setTalkFromPlayerID (getTalkToPlayerID ());
+				msg.setAction (DiplomacyAction.AFTER_EXCHANGE_SPELL);
+				msg.setOtherPlayerID (getOtherPlayerID ());
+				msg.setOfferSpellID (getRequestSpellID ());		// Note these are reversed, as its going back to the initiator
+				msg.setRequestSpellID (getOfferSpellID ());
+			
+				// If trading spell with an AI wizard, modify visible relation
+				if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!talkToWizard.isEverStartedCastingSpellOfMastery ()))
+				{
+					final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
+					final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
+					if (spellRank.getSpellExchangeRelationBonus () != null)
+						getRelationAI ().bonusToVisibleRelation (talkToWizard, spellRank.getSpellExchangeRelationBonus ());
+				}
+				
+				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+				msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+				
+				sender.getConnection ().sendMessageToClient (msg);
+
 				// Learn the spells
 				final SpellResearchStatus researchStatus1 = getSpellUtils ().findSpellResearchStatus (talkToPlayerPriv.getSpellResearchStatus (), getOfferSpellID ());
 				final SpellResearchStatus researchStatus2 = getSpellUtils ().findSpellResearchStatus (senderPriv.getSpellResearchStatus (), getRequestSpellID ());

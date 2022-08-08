@@ -19,6 +19,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RelationScore;
 import momime.common.database.Spell;
 import momime.common.database.SpellRank;
+import momime.common.database.WizardPersonality;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -49,6 +50,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	
 	/** Amount of space in the UI to list tradeable spells */
 	private final static int MAXIMUM_TRADEABLE_SPELLS = 4;
+
+	/** Minimum relation for an AI player to agree to a peace treaty, modified by their personality type */
+	private final static int RELATION_TO_AGREE_TO_PEACE_TREATY = 0;
+
+	/** Minimum relation for an AI player to agree to a wizard pact, modified by their personality type */
+	private final static int RELATION_TO_AGREE_TO_WIZARD_PACT = 20;
+
+	/** Minimum relation for an AI player to agree to an alliance, modified by their personality type */
+	private final static int RELATION_TO_AGREE_TO_ALLIANCE = 40;
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
@@ -101,11 +111,16 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl");
 		final PlayerServerDetails otherPlayer = (getOtherPlayerID () == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getOtherPlayerID (), "RequestDiplomacyMessageImpl");
 
+		// In context of player-to-player diplomacy, sender is the player making the request and talkToPlayer is the player we forward their requests on to
+		// In context of player-to-AI diplomacy, sender is the player making the request and talkToPlayer is the AI player who is responding  
 		final MomPersistentPlayerPrivateKnowledge senderPriv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge talkToPlayerPriv = (MomPersistentPlayerPrivateKnowledge) talkToPlayer.getPersistentPlayerPrivateKnowledge ();
 
+		// Wizards' opinions of each other
 		final DiplomacyWizardDetails talkToWizard = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
-			(senderPriv.getFogOfWarMemory ().getWizardDetails (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl");
+			(senderPriv.getFogOfWarMemory ().getWizardDetails (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl (T)");
+		final DiplomacyWizardDetails senderWizard = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(talkToPlayerPriv.getFogOfWarMemory ().getWizardDetails (), sender.getPlayerDescription ().getPlayerID (), "RequestDiplomacyMessageImpl (S)");
 		
 		// Convert gold tier to the actual amount, because the sender knows their relation to the other wizard, but the receiver won't
 		final Integer offerGoldAmount = (getOfferGoldTier () == null) ? null :
@@ -202,10 +217,10 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				msg.setOfferGoldAmount (offerGoldAmount);
 				
 				// If giving gold to an AI wizard, modify visible relation
-				if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!talkToWizard.isEverStartedCastingSpellOfMastery ()))
-					getRelationAI ().bonusToVisibleRelation (talkToWizard, getOfferGoldTier () * 5);
+				if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
+					getRelationAI ().bonusToVisibleRelation (senderWizard, getOfferGoldTier () * 5);
 				
-				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
 				msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 				
 				sender.getConnection ().sendMessageToClient (msg);
@@ -271,7 +286,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					{
 						// Player asked AI player for a spell that they know, now AI player needs to choose which spell they'd like in return
 						final String requestSpellIDInReturn = getDiplomacyAI ().chooseSpellToRequestInReturn (getRequestSpellID (), spellIDsWeCanOffer, mom.getServerDB ());
-						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
 						
 						final DiplomacyMessage msg = new DiplomacyMessage ();
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
@@ -312,15 +327,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					msg.setRequestSpellID (getRequestSpellID ());
 				
 					// If giving spell to an AI wizard, modify visible relation
-					if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!talkToWizard.isEverStartedCastingSpellOfMastery ()))
+					if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
 					{
 						final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
 						final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
 						if (spellRank.getSpellTributeRelationBonus () != null)
-							getRelationAI ().bonusToVisibleRelation (talkToWizard, spellRank.getSpellTributeRelationBonus ());
+							getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellTributeRelationBonus ());
 					}
 					
-					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
 					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 					
 					sender.getConnection ().sendMessageToClient (msg);
@@ -354,15 +369,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				msg.setRequestSpellID (getOfferSpellID ());
 			
 				// If trading spell with an AI wizard, modify visible relation
-				if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!talkToWizard.isEverStartedCastingSpellOfMastery ()))
+				if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
 				{
 					final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
 					final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
 					if (spellRank.getSpellExchangeRelationBonus () != null)
-						getRelationAI ().bonusToVisibleRelation (talkToWizard, spellRank.getSpellExchangeRelationBonus ());
+						getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellExchangeRelationBonus ());
 				}
 				
-				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
 				msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 				
 				sender.getConnection ().sendMessageToClient (msg);
@@ -413,7 +428,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			}
 			else
 			{
-				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (talkToWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+				final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (talkToWizard.getWizardPersonalityID (), "RequestDiplomacyMessageImpl");
 				
 				switch (getAction ())
 				{
@@ -429,12 +445,21 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						break;
 					}
 						
-					// Auto deny pact requests for now
 					case PROPOSE_WIZARD_PACT:
 					{
+						final boolean accept = senderWizard.getVisibleRelation () >= (RELATION_TO_AGREE_TO_WIZARD_PACT + aiPersonality.getHostilityModifier ());
+						if (accept)
+						{
+							getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WIZARD_PACT, mom);
+							getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WIZARD_PACT, mom);
+							
+							if (!senderWizard.isEverStartedCastingSpellOfMastery ())
+								getRelationAI ().bonusToVisibleRelation (senderWizard, 10);
+						}
+
 						final DiplomacyMessage msg = new DiplomacyMessage ();
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.REJECT_WIZARD_PACT);
+						msg.setAction (accept ? DiplomacyAction.ACCEPT_WIZARD_PACT : DiplomacyAction.REJECT_WIZARD_PACT);
 						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 						
 						sender.getConnection ().sendMessageToClient (msg);
@@ -443,9 +468,19 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 
 					case PROPOSE_ALLIANCE:
 					{
+						final boolean accept = senderWizard.getVisibleRelation () >= (RELATION_TO_AGREE_TO_ALLIANCE + aiPersonality.getHostilityModifier ());
+						if (accept)
+						{
+							getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.ALLIANCE, mom);
+							getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.ALLIANCE, mom);
+							
+							if (!senderWizard.isEverStartedCastingSpellOfMastery ())
+								getRelationAI ().bonusToVisibleRelation (senderWizard, 20);
+						}
+						
 						final DiplomacyMessage msg = new DiplomacyMessage ();
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.REJECT_ALLIANCE);
+						msg.setAction (accept ? DiplomacyAction.ACCEPT_ALLIANCE : DiplomacyAction.REJECT_ALLIANCE);
 						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 						
 						sender.getConnection ().sendMessageToClient (msg);
@@ -454,9 +489,19 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 					case PROPOSE_PEACE_TREATY:
 					{
+						final boolean accept = senderWizard.getVisibleRelation () >= (RELATION_TO_AGREE_TO_PEACE_TREATY + aiPersonality.getHostilityModifier ());
+						if (accept)
+						{
+							getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
+							getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+							
+							if (!senderWizard.isEverStartedCastingSpellOfMastery ())
+								getRelationAI ().bonusToVisibleRelation (senderWizard, 10);
+						}
+						
 						final DiplomacyMessage msg = new DiplomacyMessage ();
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.REJECT_PEACE_TREATY);
+						msg.setAction (accept ? DiplomacyAction.ACCEPT_PEACE_TREATY : DiplomacyAction.REJECT_PEACE_TREATY);
 						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 						
 						sender.getConnection ().sendMessageToClient (msg);

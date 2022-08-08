@@ -4681,6 +4681,11 @@ Ordering of this list is very significant.
 	<xsd:complexType name="wizardPersonality" nxe:singular="Personality" nxe:plural="Personalities" nxe:submenu="Wizards">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPersonalityName" type="momimecommon:languageText" nxe:label="Name" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="hostilityModifier" type="momimecommon:relationChange" nxe:label="Hostility modifier" nxe:gridwidth="200">
+		        <xsd:annotation>
+        			<xsd:documentation>+ve values make the wizard act more hostile and less likely to form pacts; -ve values make the wizard act more peaceful</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="personalitySelectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="initialMeetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Initial meeting">
 				<xsd:key name="textVariantPK">

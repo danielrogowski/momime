@@ -452,6 +452,9 @@ public final class CommonDatabaseConstants
 	/** Spell Blast spell */
 	public final static String SPELL_ID_SPELL_BLAST = "SP058";
 	
+	/** Aura of Majesty spell */
+	public final static String SPELL_ID_AURA_OF_MAJESTY = "SP059";
+	
 	/** Flying Fortress spell */
 	public final static String SPELL_ID_FLYING_FORTRESS = "SP077";
 	

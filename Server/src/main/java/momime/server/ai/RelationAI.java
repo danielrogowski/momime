@@ -41,6 +41,11 @@ public interface RelationAI
 		throws RecordNotFoundException;
 	
 	/**
+	 * @param player AI player whose turn to take
+	 */
+	public void updateVisibleRelationDueToAuraOfMajesty (final PlayerServerDetails player);
+	
+	/**
 	 * @param player AI player to move their visible relations a little bit back towards base relation
 	 */
 	public void slideTowardsBaseRelation (final PlayerServerDetails player);

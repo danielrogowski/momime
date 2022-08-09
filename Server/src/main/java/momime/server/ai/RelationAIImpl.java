@@ -3,6 +3,7 @@ package momime.server.ai;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.ndg.map.CoordinateSystemUtils;
@@ -194,6 +195,25 @@ public final class RelationAIImpl implements RelationAI
 
 				final int bonus = (pact.getPactType () == PactType.ALLIANCE) ? 6 : 3;
 				theirWizardDetails.setVisibleRelation (theirWizardDetails.getVisibleRelation () + bonus);
+			}
+	}
+
+	/**
+	 * @param player AI player whose turn to take
+	 */
+	@Override
+	public final void updateVisibleRelationDueToAuraOfMajesty (final PlayerServerDetails player)
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		final Set<Integer> playerIDs = priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
+			(s -> s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_AURA_OF_MAJESTY)).map (s -> s.getCastingPlayerID ()).collect (Collectors.toSet ());
+		
+		for (final KnownWizardDetails w : priv.getFogOfWarMemory ().getWizardDetails ())
+			if (playerIDs.contains (w.getPlayerID ()))
+			{
+				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
+				wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () + 1);
 			}
 	}
 	

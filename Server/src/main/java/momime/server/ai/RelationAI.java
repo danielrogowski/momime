@@ -32,6 +32,15 @@ public interface RelationAI
 		throws RecordNotFoundException;
 	
 	/**
+	 * Grants a small bonus each turn we maintain a wizard pact or alliance with another wizard
+	 * 
+	 * @param player AI player whose turn to take
+	 * @throws RecordNotFoundException If we can't find our wizard record or one of the wizards we have a pact with
+	 */
+	public void updateVisibleRelationDueToPactsAndAlliances (final PlayerServerDetails player)
+		throws RecordNotFoundException;
+	
+	/**
 	 * @param player AI player to move their visible relations a little bit back towards base relation
 	 */
 	public void slideTowardsBaseRelation (final PlayerServerDetails player);

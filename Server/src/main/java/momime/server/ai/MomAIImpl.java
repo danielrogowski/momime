@@ -126,6 +126,7 @@ public final class MomAIImpl implements MomAI
 			
 			// All modifications to visible relation are done in one go, then capped at the end, so we allow them to temporarily go above 100 or below -100
 			getRelationAI ().updateVisibleRelationDueToUnitsInOurBorder (player, mom);
+			getRelationAI ().updateVisibleRelationDueToPactsAndAlliances (player);
 			getRelationAI ().slideTowardsBaseRelation (player);
 			getRelationAI ().capVisibleRelations (player);
 		}

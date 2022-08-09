@@ -23,8 +23,11 @@ import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.Pact;
+import momime.common.messages.PactType;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.server.MomSessionVariables;
@@ -54,6 +57,9 @@ public final class RelationAIImpl implements RelationAI
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @param picks Wizard's spell book picks
@@ -163,6 +169,31 @@ public final class RelationAIImpl implements RelationAI
 			{
 				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
 				wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () - unitCounts.get (wizardDetails.getPlayerID ()));
+			}
+	}
+	
+	/**
+	 * Grants a small bonus each turn we maintain a wizard pact or alliance with another wizard
+	 * 
+	 * @param player AI player whose turn to take
+	 * @throws RecordNotFoundException If we can't find our wizard record or one of the wizards we have a pact with
+	 */
+	@Override
+	public final void updateVisibleRelationDueToPactsAndAlliances (final PlayerServerDetails player)
+		throws RecordNotFoundException
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final KnownWizardDetails ourWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(priv.getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "updateVisibleRelationDueToPactsAndAlliances");
+		
+		for (final Pact pact : ourWizardDetails.getPact ())
+			if (pact.getPactType () != PactType.WAR)
+			{
+				final DiplomacyWizardDetails theirWizardDetails = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+					(priv.getFogOfWarMemory ().getWizardDetails (), pact.getPactWithPlayerID (), "updateVisibleRelationDueToPactsAndAlliances");
+
+				final int bonus = (pact.getPactType () == PactType.ALLIANCE) ? 6 : 3;
+				theirWizardDetails.setVisibleRelation (theirWizardDetails.getVisibleRelation () + bonus);
 			}
 	}
 	
@@ -283,5 +314,21 @@ public final class RelationAIImpl implements RelationAI
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

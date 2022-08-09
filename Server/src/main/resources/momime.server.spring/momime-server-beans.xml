@@ -1072,6 +1072,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="zoneAI" ref="zoneAI" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="diplomacyAI" class="momime.server.ai.DiplomacyAIImpl" />

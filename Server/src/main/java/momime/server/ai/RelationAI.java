@@ -60,4 +60,10 @@ public interface RelationAI
 	 * @param bonus Amount of bonus
 	 */
 	public void bonusToVisibleRelation (final DiplomacyWizardDetails wizardDetails, final int bonus);
+
+	/**
+	 * @param wizardDetails Wizard to receive penalty
+	 * @param penalty Amount of penalty
+	 */
+	public void penaltyToVisibleRelation (final DiplomacyWizardDetails wizardDetails, final int penalty);
 }

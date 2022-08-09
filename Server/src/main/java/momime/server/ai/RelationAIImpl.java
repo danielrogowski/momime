@@ -270,7 +270,21 @@ public final class RelationAIImpl implements RelationAI
 		wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () + bonus);
 		
 		if (wizardDetails.getVisibleRelation () > CommonDatabaseConstants.MAX_RELATION_SCORE)
-			wizardDetails.setVisibleRelation (CommonDatabaseConstants.MAX_RELATION_SCORE);	}
+			wizardDetails.setVisibleRelation (CommonDatabaseConstants.MAX_RELATION_SCORE);
+	}
+	
+	/**
+	 * @param wizardDetails Wizard to receive penalty
+	 * @param penalty Amount of penalty
+	 */
+	@Override
+	public final void penaltyToVisibleRelation (final DiplomacyWizardDetails wizardDetails, final int penalty)
+	{
+		wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () - penalty);
+		
+		if (wizardDetails.getVisibleRelation () < CommonDatabaseConstants.MIN_RELATION_SCORE)
+			wizardDetails.setVisibleRelation (CommonDatabaseConstants.MIN_RELATION_SCORE);
+	}
 	
 	/**
 	 * @return Player pick utils

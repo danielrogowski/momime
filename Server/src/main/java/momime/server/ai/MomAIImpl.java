@@ -128,6 +128,7 @@ public final class MomAIImpl implements MomAI
 			getRelationAI ().updateVisibleRelationDueToUnitsInOurBorder (player, mom);
 			getRelationAI ().updateVisibleRelationDueToPactsAndAlliances (player);
 			getRelationAI ().updateVisibleRelationDueToAuraOfMajesty (player);
+			getRelationAI ().updateVisibleRelationDueToNastyMaintainedSpells (player, mom);
 			getRelationAI ().slideTowardsBaseRelation (player);
 			getRelationAI ().capVisibleRelations (player);
 		}

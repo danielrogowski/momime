@@ -3677,6 +3677,7 @@ triggeredBySelf sets when the effect triggers *at all*.  triggerAffectsUnits set
 			<xsd:element minOccurs="0" maxOccurs="1" name="destroyBuildingChance" type="momimecommon:percentage" nxe:label="% chance of buildings being destroyed" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="dispelWeighting" type="momimecommon:weighting" nxe:label="How badly the AI wants to dispel this enemy spell" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellBlastWeighting" type="momimecommon:weighting" nxe:label="How badly the AI wants to spell blast this enemy spell" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="nastyCondition" type="momimecommon:nastyCondition" nxe:label="Condition for spell to be considered nasty" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:unitID" nxe:label="Summoned unit">
 		        <xsd:annotation>
 		        	<xsd:documentation>For summoning spells, defines all possible units that can be summoned by the spell.
@@ -5961,6 +5962,26 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 			<xsd:enumeration value="M"><xsd:annotation>
 				<xsd:documentation>Mad</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="MAD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="nastyCondition">
+        <xsd:annotation>
+        	<xsd:documentation>Condition that must be met for us to treat an opposing wizard's spell as nasty enough to harm diplomatic relations.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Always considered nasty</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ALWAYS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="H"><xsd:annotation>
+				<xsd:documentation>Only if have one of spell books listed as triggeredBySpellRealm (for things like Tranqulity, which is only nasty if you are chaos wizard)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ONLY_IF_HAVE_TRIGGER_REALM" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Only if don't have any spell books matching the realm of the spell (for Eternal Night - other death wizards love if you cast it for them - everyone else hates it)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ONLY_IF_DONT_HAVE_SPELL_REALM" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

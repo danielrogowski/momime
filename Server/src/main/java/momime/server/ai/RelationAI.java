@@ -46,6 +46,16 @@ public interface RelationAI
 	public void updateVisibleRelationDueToAuraOfMajesty (final PlayerServerDetails player);
 	
 	/**
+	 * Makes the AI player hate anyhone using endgame spells like Armageddon or Meteor Storm
+	 * 
+	 * @param player AI player whose turn to take
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we can't find the defintion for a maintained spell
+	 */
+	public void updateVisibleRelationDueToNastyMaintainedSpells (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException;
+	
+	/**
 	 * @param player AI player to move their visible relations a little bit back towards base relation
 	 */
 	public void slideTowardsBaseRelation (final PlayerServerDetails player);

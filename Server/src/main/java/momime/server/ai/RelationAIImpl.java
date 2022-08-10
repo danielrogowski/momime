@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.storage.MapArea3D;
@@ -19,8 +22,10 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
@@ -38,6 +43,9 @@ import momime.server.MomSessionVariables;
  */
 public final class RelationAIImpl implements RelationAI
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (RelationAIImpl.class);
+	
 	/** Positive base relation for each book we share in common */
 	private final static int SHARED_BOOK = 3;
 	
@@ -214,6 +222,87 @@ public final class RelationAIImpl implements RelationAI
 			{
 				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
 				wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () + 1);
+			}
+	}
+	
+	/**
+	 * Makes the AI player hate anyhone using endgame spells like Armageddon or Meteor Storm
+	 * 
+	 * @param player AI player whose turn to take
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we can't find the defintion for a maintained spell
+	 */
+	@Override
+	public final void updateVisibleRelationDueToNastyMaintainedSpells (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException
+	{
+		final KnownWizardDetails ourWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "updateVisibleRelationDueToNastyMaintainedSpells");
+		
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
+		for (final MemoryMaintainedSpell spell : priv.getFogOfWarMemory ().getMaintainedSpell ())
+			if (spell.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ())
+			{
+				final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "updateVisibleRelationDueToNastyMaintainedSpells");
+				
+				// Check conditions for spell to be considered nasty
+				final boolean nasty;
+				if (spellDef.getNastyCondition () == null)
+					nasty = false;
+				else
+					switch (spellDef.getNastyCondition ())
+					{
+						case ALWAYS:
+							nasty = true;
+							break;
+							
+						case ONLY_IF_HAVE_TRIGGER_REALM:
+							nasty = ourWizardDetails.getPick ().stream ().anyMatch (p -> spellDef.getTriggeredBySpellRealm ().contains (p.getPickID ()));
+							break;
+							
+						case ONLY_IF_DONT_HAVE_SPELL_REALM:
+							nasty = ourWizardDetails.getPick ().stream ().noneMatch (p -> spellDef.getSpellRealm ().equals (p.getPickID ()));
+							break;
+							
+						default:
+							nasty = false;
+							break;
+					}
+				
+				// Size of penalty depends on type of spell it is
+				if (nasty)
+				{
+					final int penalty;
+					switch (spellDef.getSpellBookSectionID ())
+					{
+						case OVERLAND_ENCHANTMENTS:
+							penalty = 30;
+							break;
+
+						// It has to be aimed at one of our cities
+						case CITY_CURSES:
+							final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+								(spell.getCityLocation ().getZ ()).getRow ().get (spell.getCityLocation ().getY ()).getCell ().get (spell.getCityLocation ().getX ()).getCityData ();
+							penalty = ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())) ? 20 : 0;
+							break;
+							
+						default:
+							penalty = 0;
+							break;
+					}
+					
+					// Apply penalty
+					if (penalty > 0)
+					{
+						log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " is hating on player ID " +
+							spell.getCastingPlayerID () + " for their " + spell.getSpellID () + " spell in section " + spellDef.getSpellBookSectionID ());
+						
+						final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+							(priv.getFogOfWarMemory ().getWizardDetails (), spell.getCastingPlayerID (), "updateVisibleRelationDueToNastyMaintainedSpells");
+						penaltyToVisibleRelation (wizardDetails, penalty);
+					}
+				}
 			}
 	}
 	

@@ -23,6 +23,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.DiplomacyAction;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
@@ -47,6 +48,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.MomAI;
+import momime.server.ai.RelationAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
@@ -162,6 +164,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** Process for making sure one wizard has met another wizard */
 	private KnownWizardServerUtils knownWizardServerUtils;
+
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -760,36 +765,72 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (defendingPlayer != null)
 					getServerResourceCalculations ().recalculateGlobalProductionValues (defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 
-				// If its two wizards and they had a pact, see if it is broken
+				// If a wizard attacked another wizard then they will be upset about it, and possibly change pact
 				if ((defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ())) &&
 					(defWizard != null) && (defWizard.getWizardState () != WizardState.DEFEATED))
 				{
 					final PactType pactType = getKnownWizardUtils ().findPactWith (atkWizard.getPact (), defendingPlayer.getPlayerDescription ().getPlayerID ());
+					
+					// Diplomatic penalty for what was attacked, and who won
+					int penalty = 0;
+					if (cityName == null)
+						penalty = 20;
+					else if (!wasWizardsFortress)
+						penalty = (winningPlayer == attackingPlayer) ? 60 : 40;
+					else
+						penalty = (winningPlayer == attackingPlayer) ? 200 : 80;
+
+					// Diplomatic penalty for breaking pacts and alliances
+					DiplomacyAction brokenPactType = null;
+					PactType newPactType = null;		// Only used if brokenPactType gets set
+
 					if ((pactType == PactType.ALLIANCE) ||													// Any attack anywhere voids an alliance
 						((pactType == PactType.WIZARD_PACT) && (cityName != null)) ||		// Only an attack on a city voids a wizard pact; skimishes are allowed
 						((pactType == null) && (cityName != null)))										// Only an attack on a city is an instant declaration of war
 					{
 						// What type of pact was broken
-						final DiplomacyAction brokenPactType;
-						PactType newPactType = null;
 						if (pactType == PactType.WIZARD_PACT)
+						{
 							brokenPactType = DiplomacyAction.BROKEN_WIZARD_PACT_CITY;
+							penalty = penalty + 20;
+						}
 						else if ((pactType == PactType.WIZARD_PACT) && (cityName != null))
+						{
 							brokenPactType = DiplomacyAction.BROKEN_ALLIANCE_CITY;
+							penalty = penalty + 40;
+						}
 						else if ((pactType == null) && (cityName != null))
 						{
+							// No pact was broken, so no additonal penalty
 							brokenPactType = DiplomacyAction.DECLARE_WAR_CITY;
 							newPactType = PactType.WAR;
 						}
 						else
+						{
 							brokenPactType = DiplomacyAction.BROKEN_ALLIANCE_UNITS;
-
+							penalty = penalty + 20;
+						}
+					}
+					
+					// If an AI player was attacked then they will dislike the attacker for it
+					final DiplomacyWizardDetails opinion = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+						(defPriv.getFogOfWarMemory ().getWizardDetails (), attackingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
+					
+					if (defendingPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+					{
+						log.debug ("Player ID " + attackingPlayer.getPlayerDescription ().getPlayerID () + " attacking AI player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () + " resulted in diplomatic penalty of " + penalty);
+						getRelationAI ().penaltyToVisibleRelation (opinion, penalty);
+					}
+					
+					// Any message to send or pact to change?
+					if (brokenPactType != null)
+					{
 						// Show popup about them being mad
 						if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						{
 							final DiplomacyMessage brokenPactMessage = new DiplomacyMessage ();
 							brokenPactMessage.setTalkFromPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
-							brokenPactMessage.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "combatEnded").getRelationScoreID ());
+							brokenPactMessage.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (opinion.getVisibleRelation (), "combatEnded").getRelationScoreID ());
 							brokenPactMessage.setCityName (cityName);
 							brokenPactMessage.setAction (brokenPactType);
 								
@@ -1213,5 +1254,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
 	{
 		knownWizardServerUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

@@ -991,12 +991,15 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setWizardCastAnimationPlayerID (final int playerID)
 	{
 		int n = 0;
-		for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ())
+		for (final PlayerPublicDetails player : getClient ().getPlayers ())
+		{
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 			
-			if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
+			if ((wizardDetails == null) || (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())))
 			{
 				n++;
-				if (wizardDetails.getPlayerID () == playerID)
+				if ((wizardDetails != null) && (wizardDetails.getPlayerID () == playerID))
 				{
 					// Look up the location of this wizard's gem in the XML layout
 					final XmlLayoutComponent gemLocation = getWizardsLayout ().findComponent ("frmWizardsGem" + n);
@@ -1007,6 +1010,7 @@ public final class WizardsUI extends MomClientFrameUI
 					}
 				}
 			}
+		}
 	}
 	
 	/**

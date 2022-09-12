@@ -48,6 +48,7 @@ import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -94,6 +95,7 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.ai.RelationAI;
 import momime.server.ai.SpellAI;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
@@ -257,6 +259,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Server-side only spell utils */
 	private SpellServerUtils spellServerUtils;
+	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -1424,6 +1429,23 @@ public final class SpellProcessingImpl implements SpellProcessing
 						break;
 					}
 
+					case CommonDatabaseConstants.SPELL_ID_SUBVERSION:
+					{
+						// Look for all wizards who know the target wizard
+						for (final PlayerServerDetails subversionPlayer : mom.getPlayers ())
+						{
+							final KnownWizardDetails subversionWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), subversionPlayer.getPlayerDescription ().getPlayerID (), "targetOverlandSpell (S)");
+							if (getPlayerKnowledgeUtils ().isWizard (subversionWizard.getWizardID ()))
+							{
+								final MomPersistentPlayerPrivateKnowledge subversionPriv = (MomPersistentPlayerPrivateKnowledge) subversionPlayer.getPersistentPlayerPrivateKnowledge ();
+								final KnownWizardDetails subvertedWizard = getKnownWizardUtils ().findKnownWizardDetails (subversionPriv.getFogOfWarMemory ().getWizardDetails (), targetPlayerID);
+								if (subvertedWizard != null)
+									getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) subvertedWizard, 25);
+							}
+						}
+						break;
+					}
+					
 					default:
 						throw new MomException ("No code to handle casting enemy wizard spell " + spell.getSpellID ());
 				}
@@ -2803,5 +2825,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setSpellServerUtils (final SpellServerUtils utils)
 	{
 		spellServerUtils = utils;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

@@ -300,7 +300,7 @@ public final class RelationAIImpl implements RelationAI
 						
 						final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
 							(priv.getFogOfWarMemory ().getWizardDetails (), spell.getCastingPlayerID (), "updateVisibleRelationDueToNastyMaintainedSpells");
-						penaltyToVisibleRelation (wizardDetails, penalty);
+						wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () - penalty);
 					}
 				}
 			}

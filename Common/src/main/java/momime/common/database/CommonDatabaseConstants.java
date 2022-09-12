@@ -542,6 +542,9 @@ public final class CommonDatabaseConstants
 
 	/** Drain Power spell */
 	public final static String SPELL_ID_DRAIN_POWER = "SP171";	
+
+	/** Subversion spell */
+	public final static String SPELL_ID_SUBVERSION = "SP177";
 	
 	/** Wall of Darkness spell */
 	public final static String SPELL_ID_WALL_OF_DARKNESS = "SP178";

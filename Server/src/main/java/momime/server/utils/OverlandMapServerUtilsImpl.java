@@ -28,8 +28,11 @@ import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.UnitCombatSideID;
+import momime.common.messages.DiplomacyWizardDetails;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageNode;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -37,9 +40,11 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.ai.RelationAI;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
@@ -71,6 +76,12 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	/** Sample unit method */
 	private SampleUnitUtils sampleUnitUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
+
 	/**
 	 * Sets the race for all land squares connected to x, y
 	 * @param map True terrain
@@ -200,9 +211,12 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(attackingSpirit.getUnitLocation ().getZ ()).getRow ().get (attackingSpirit.getUnitLocation ().getY ()).getCell ().get (attackingSpirit.getUnitLocation ().getX ());
 		
+		final PlayerServerDetails defendingPlayer = (tc.getTerrainData ().getNodeOwnerID () == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID
+			(mom.getPlayers (), tc.getTerrainData ().getNodeOwnerID (), "attemptToMeldWithNode (d)");
+		
 		// Succeed?
 		final boolean successful;
-		if (tc.getTerrainData ().getNodeOwnerID () == null)
+		if (defendingPlayer == null)
 			successful = true;
 		else
 		{
@@ -216,6 +230,12 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			
 			// Decide who wins
 			successful = (getRandomUtils ().nextInt (defendingStrength + attackingStrength) < attackingStrength);
+			
+			// Defending player will be annoyed at attempt to take over one of their nodes
+			final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+			final KnownWizardDetails opinionOfAttacker = getKnownWizardUtils ().findKnownWizardDetails (defendingPriv.getFogOfWarMemory ().getWizardDetails (), attackingSpirit.getOwningPlayerID ());
+			if (opinionOfAttacker != null)
+				getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) opinionOfAttacker, successful ? 30 : 15);
 		}
 		
 		// Check if successful
@@ -236,22 +256,17 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 				trans.getNewTurnMessage ().add (msg);
 			}
 			
-			if (tc.getTerrainData ().getNodeOwnerID () != null)
+			if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 			{
-				final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
-					(mom.getPlayers (), tc.getTerrainData ().getNodeOwnerID (), "attemptToMeldWithNode (d)");
-				if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-				{
-					final NewTurnMessageNode msg = new NewTurnMessageNode ();
-					msg.setMsgType (NewTurnMessageTypeID.NODE_LOST);
-					msg.setNodeLocation (attackingSpirit.getUnitLocation ());
-					msg.setUnitID (tc.getNodeSpiritUnitID ());
-					msg.setOtherUnitID (attackingSpirit.getUnitID ());
-					msg.setOtherPlayerID (attackingSpirit.getOwningPlayerID ());
-					
-					final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) defendingPlayer.getTransientPlayerPrivateKnowledge ();
-					trans.getNewTurnMessage ().add (msg);
-				}
+				final NewTurnMessageNode msg = new NewTurnMessageNode ();
+				msg.setMsgType (NewTurnMessageTypeID.NODE_LOST);
+				msg.setNodeLocation (attackingSpirit.getUnitLocation ());
+				msg.setUnitID (tc.getNodeSpiritUnitID ());
+				msg.setOtherUnitID (attackingSpirit.getUnitID ());
+				msg.setOtherPlayerID (attackingSpirit.getOwningPlayerID ());
+				
+				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) defendingPlayer.getTransientPlayerPrivateKnowledge ();
+				trans.getNewTurnMessage ().add (msg);
 			}
 			
 			// Set the type of spirit that captured it
@@ -476,5 +491,37 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
 		sampleUnitUtils = s;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

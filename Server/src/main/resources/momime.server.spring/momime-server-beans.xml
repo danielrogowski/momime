@@ -408,6 +408,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 
 	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtilsImpl">

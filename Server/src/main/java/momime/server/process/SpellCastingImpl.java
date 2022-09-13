@@ -29,6 +29,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellValidTileTypeTarget;
 import momime.common.database.UnitEx;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
@@ -48,6 +49,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
+import momime.server.ai.RelationAI;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.UnitAddLocation;
@@ -93,6 +95,9 @@ public final class SpellCastingImpl implements SpellCasting
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
 	
 	/**
 	 * Processes casting a summoning spell overland, finding where there is space for the unit to go and adding it
@@ -256,6 +261,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @param spell Which attack spell they cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
 	 * @param targetLocations Location(s) where the spell is aimed
+	 * @param penaltyToVisibleRelation How mad each wizard will get who has units affected by the attack
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Number of units that were killed
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -264,7 +270,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 */
 	@Override
 	public final int castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final String eventID, final Spell spell, final Integer variableDamage,
-		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
+		final List<MapCoordinates3DEx> targetLocations, final int penaltyToVisibleRelation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		// Pass in FOW area, though it doesn't really have any effect as we're passing isTargeting = false which turns off the check that we must be able to see the target units
@@ -306,6 +312,19 @@ public final class SpellCastingImpl implements SpellCasting
 				null, null, null, null, spell, variableDamage, castingPlayer, null, false, mom);
 			
 			unitsKilled = unitsKilled + result.getAttackingPlayerUnitsKilled () + result.getDefendingPlayerUnitsKilled ();
+			
+			// Player gets mad about their units being attacked
+			if ((penaltyToVisibleRelation > 0) && (defendingPlayer != castingPlayer))
+			{
+				final KnownWizardDetails defendingWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), entry.getKey (), "castOverlandAttackSpell");
+				if (getPlayerKnowledgeUtils ().isWizard (defendingWizard.getWizardID ()))
+				{
+					final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+					final KnownWizardDetails defendingWizardOpinionOfCaster = getKnownWizardUtils ().findKnownWizardDetails (defendingPriv.getFogOfWarMemory ().getWizardDetails (), castingPlayer.getPlayerDescription ().getPlayerID ());
+					if (defendingWizardOpinionOfCaster != null)
+						getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) defendingWizardOpinionOfCaster, penaltyToVisibleRelation);
+				}
+			}
 		}
 		
 		return unitsKilled;
@@ -615,5 +634,21 @@ public final class SpellCastingImpl implements SpellCasting
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

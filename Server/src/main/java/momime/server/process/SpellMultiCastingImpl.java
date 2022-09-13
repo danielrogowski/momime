@@ -60,7 +60,7 @@ public final class SpellMultiCastingImpl implements SpellMultiCasting
 		final AttackCitySpellResult attackCitySpellResult = new AttackCitySpellResult ();
 		
 		// The unit deaths we just send.  The buildings being destroyed control the animation popup on the client.
-		attackCitySpellResult.setUnitsKilled (getSpellCasting ().castOverlandAttackSpell (castingPlayer, eventID, spell, variableDamage, Arrays.asList (targetLocation), mom));
+		attackCitySpellResult.setUnitsKilled (getSpellCasting ().castOverlandAttackSpell (castingPlayer, eventID, spell, variableDamage, Arrays.asList (targetLocation), 0, mom));
 		
 		// Now do the buildings
 		attackCitySpellResult.setBuildingsDestroyed (getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed

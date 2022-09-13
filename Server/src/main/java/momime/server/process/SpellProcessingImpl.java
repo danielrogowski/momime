@@ -459,7 +459,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final List<MapCoordinates3DEx> unitLocations = targetUnits.stream ().map (u -> (MapCoordinates3DEx) u.getUnitLocation ()).distinct ().collect (Collectors.toList ());
 					
 						// Roll all units at once
-						getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, variableDamage, unitLocations, mom);
+						getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, variableDamage, unitLocations, 40, mom);
 					}
 				}
 			}
@@ -1279,7 +1279,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, true, mom);
 			
 			else if (kind == KindOfSpell.CORRUPTION)
+			{
 				getSpellCasting ().corruptTile (targetLocation, mom);
+				getCityProcessing ().penaltyToVisibleRelationFromNearbyCityOwner (targetLocation, maintainedSpell.getCastingPlayerID (), mom);
+			}
 			
 			else if (kind == KindOfSpell.ENCHANT_ROAD)
 			{
@@ -1318,7 +1321,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			else if (kind == KindOfSpell.CHANGE_TILE_TYPE)
+			{
 				getSpellCasting ().changeTileType (spell, targetLocation, castingPlayer.getPlayerDescription ().getPlayerID (), mom);
+				getCityProcessing ().penaltyToVisibleRelationFromNearbyCityOwner (targetLocation, maintainedSpell.getCastingPlayerID (), mom);
+			}
 			
 			else if (kind == KindOfSpell.CHANGE_MAP_FEATURE)
 			{
@@ -1342,8 +1348,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 				
 				if (found)
+				{
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+					getCityProcessing ().penaltyToVisibleRelationFromNearbyCityOwner (targetLocation, maintainedSpell.getCastingPlayerID (), mom);
+				}
 			}
 			
 			else if (kind == KindOfSpell.SPELL_BLAST)
@@ -1502,7 +1511,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			else if (kind == KindOfSpell.ATTACK_UNITS)
-				getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), mom);
+			{
+				// Are the units in a city or outside any city?  Bigger diplomatic penalty for attacking units in a city
+				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
+
+				getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), (cityData == null) ? 10 : 30, mom);
+			}
 			
 			else if (kind == KindOfSpell.WARP_NODE)
 			{
@@ -1545,6 +1560,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			// Remove the maintained spell on the server (clients would never have gotten it to begin with)
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
+			
+			// This method is overkill when we know we have the exact location of the city, but still better to reuse it
+			getCityProcessing ().penaltyToVisibleRelationFromNearbyCityOwner (targetLocation, maintainedSpell.getCastingPlayerID (), mom);
 		}
 
 		else if (spell.getBuildingID () == null)

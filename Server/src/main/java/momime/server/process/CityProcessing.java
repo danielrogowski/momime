@@ -215,4 +215,17 @@ public interface CityProcessing
 	 */
 	public void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	
+	/**
+	 * Casting player has cast something nasty (e.g. corruption) at a map location.  Looks to see if it affects any other wizard's cities.
+	 * If so, the owner of the city is going to get mad at the casting player for it.
+	 * 
+	 * @param targetLocation Location where spell was cast
+	 * @param castingPlayerID Who cast the spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we can't find the wizard who owns the city
+	 */
+	public void penaltyToVisibleRelationFromNearbyCityOwner (final MapCoordinates3DEx targetLocation, final int castingPlayerID, final MomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException;
 }

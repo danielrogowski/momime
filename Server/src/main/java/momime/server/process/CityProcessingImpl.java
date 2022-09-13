@@ -36,6 +36,7 @@ import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpellEffect;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
@@ -70,6 +71,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CityAI;
+import momime.server.ai.RelationAI;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
@@ -167,6 +169,9 @@ public final class CityProcessingImpl implements CityProcessing
 	
 	/** Process for making sure one wizard has met another wizard */
 	private KnownWizardServerUtils knownWizardServerUtils;
+	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -1284,6 +1289,44 @@ public final class CityProcessingImpl implements CityProcessing
 	}
 	
 	/**
+	 * Casting player has cast something nasty (e.g. corruption) at a map location.  Looks to see if it affects any other wizard's cities.
+	 * If so, the owner of the city is going to get mad at the casting player for it.
+	 * 
+	 * @param targetLocation Location where spell was cast
+	 * @param castingPlayerID Who cast the spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we can't find the wizard who owns the city
+	 */
+	@Override
+	public final void penaltyToVisibleRelationFromNearbyCityOwner (final MapCoordinates3DEx targetLocation, final int castingPlayerID, final MomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException
+	{
+		final MapCoordinates3DEx cityLocation = getCityServerUtils ().findCityWithinRadius (targetLocation,
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
+		if (cityLocation != null)
+		{
+			// City probably isn't owned by the person who cast the spell
+			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			
+			if (cityData.getCityOwnerID () != castingPlayerID)
+			{
+				final KnownWizardDetails cityOwnerWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), cityData.getCityOwnerID (), "penaltyToVisibleRelationFromNearbyCityOwner");
+				if (getPlayerKnowledgeUtils ().isWizard (cityOwnerWizard.getWizardID ()))
+				{
+					final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "penaltyToVisibleRelationFromNearbyCityOwner");
+					final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+					final KnownWizardDetails cityOwnerOpinionOfCaster = getKnownWizardUtils ().findKnownWizardDetails (cityOwnerPriv.getFogOfWarMemory ().getWizardDetails (), castingPlayerID);
+					if (cityOwnerOpinionOfCaster != null)
+						getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) cityOwnerOpinionOfCaster, 30);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * @return Resource value utils
 	 */
 	public final ResourceValueUtils getResourceValueUtils ()
@@ -1681,5 +1724,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
 	{
 		knownWizardServerUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

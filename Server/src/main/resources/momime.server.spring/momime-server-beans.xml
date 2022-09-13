@@ -627,6 +627,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 
 	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->
@@ -647,6 +648,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 
 	<bean id="spellMultiCasting" class="momime.server.process.SpellMultiCastingImpl">

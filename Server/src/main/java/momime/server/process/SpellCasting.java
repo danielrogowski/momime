@@ -68,6 +68,7 @@ public interface SpellCasting
 	 * @param spell Which attack spell they cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
 	 * @param targetLocations Location(s) where the spell is aimed
+	 * @param penaltyToVisibleRelation How mad each wizard will get who has units affected by the attack
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Number of units that were killed
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -75,7 +76,7 @@ public interface SpellCasting
 	 * @throws IOException If there is another kind of problem
 	 */
 	public int castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final String eventID, final Spell spell, final Integer variableDamage,
-		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
+		final List<MapCoordinates3DEx> targetLocations, final int penaltyToVisibleRelation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
 
 	/**

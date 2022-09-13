@@ -171,7 +171,7 @@ public final class SpellTriggersImpl implements SpellTriggers
 	
 			// Roll all units at once
 			if (unitLocations.size () > 0)
-				getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spellDef, spell.getVariableDamage (), unitLocations, mom);
+				getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spellDef, spell.getVariableDamage (), unitLocations, 0, mom);
 		}
 		
 		// Roll all buildings at once

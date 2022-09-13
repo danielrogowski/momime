@@ -1383,6 +1383,14 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// Charge additional MP
 					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -blastingCost);;
+					
+					// Wizards get annoyed at being targeted personally by nasty spells
+					if (spell.getNastyCondition () != null)
+					{
+						final KnownWizardDetails targetOpinionOfCaster = getKnownWizardUtils ().findKnownWizardDetails (targetPriv.getFogOfWarMemory ().getWizardDetails (), maintainedSpell.getCastingPlayerID ());
+						if (targetOpinionOfCaster != null)
+							getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) targetOpinionOfCaster, 40);
+					}
 				}
 			}
 			
@@ -1448,6 +1456,14 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					default:
 						throw new MomException ("No code to handle casting enemy wizard spell " + spell.getSpellID ());
+				}
+				
+				// Wizards get annoyed at being targeted personally by nasty spells
+				if (spell.getNastyCondition () != null)
+				{
+					final KnownWizardDetails targetOpinionOfCaster = getKnownWizardUtils ().findKnownWizardDetails (targetPriv.getFogOfWarMemory ().getWizardDetails (), maintainedSpell.getCastingPlayerID ());
+					if (targetOpinionOfCaster != null)
+						getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) targetOpinionOfCaster, 40);
 				}
 			}
 			

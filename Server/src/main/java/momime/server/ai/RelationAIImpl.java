@@ -341,7 +341,8 @@ public final class RelationAIImpl implements RelationAI
 			{
 				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
 				
-				if (wizardDetails.getVisibleRelation () < CommonDatabaseConstants.MIN_RELATION_SCORE)
+				// If they ever started casting SoM, all the bonuses etc we worked out for them are irrelevant, just set right back to -100
+				if ((wizardDetails.getVisibleRelation () < CommonDatabaseConstants.MIN_RELATION_SCORE) || (wizardDetails.isEverStartedCastingSpellOfMastery ()))
 					wizardDetails.setVisibleRelation (CommonDatabaseConstants.MIN_RELATION_SCORE);
 
 				else if (wizardDetails.getVisibleRelation () > CommonDatabaseConstants.MAX_RELATION_SCORE)
@@ -356,10 +357,14 @@ public final class RelationAIImpl implements RelationAI
 	@Override
 	public final void bonusToVisibleRelation (final DiplomacyWizardDetails wizardDetails, final int bonus)
 	{
-		wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () + bonus);
-		
-		if (wizardDetails.getVisibleRelation () > CommonDatabaseConstants.MAX_RELATION_SCORE)
-			wizardDetails.setVisibleRelation (CommonDatabaseConstants.MAX_RELATION_SCORE);
+		// This is our opinion of the wizard who did something good, so its also our record of whether they ever started casting SoM
+		if (!wizardDetails.isEverStartedCastingSpellOfMastery ())
+		{
+			wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () + bonus);
+			
+			if (wizardDetails.getVisibleRelation () > CommonDatabaseConstants.MAX_RELATION_SCORE)
+				wizardDetails.setVisibleRelation (CommonDatabaseConstants.MAX_RELATION_SCORE);
+		}
 	}
 	
 	/**

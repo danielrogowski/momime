@@ -387,10 +387,18 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 		// Each player who knows them
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), castingPlayerID);
-			if (wizardDetails != null)
-				wizardDetails.setEverStartedCastingSpellOfMastery (true);
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "setEverStartedCastingSpellOfMastery");
+			if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
+			{
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				final KnownWizardDetails opinionOfCaster = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), castingPlayerID);
+				if (opinionOfCaster != null)
+				{
+					opinionOfCaster.setEverStartedCastingSpellOfMastery (true);
+					if (player.getPlayerDescription ().getPlayerID () != castingPlayerID)
+						getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) opinionOfCaster, 200);
+				}
+			}
 		}
 	}
 	

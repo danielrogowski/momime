@@ -31,6 +31,7 @@ public interface SpellDispelling
 	 * @param targetCAEs Target CAEs that we will make rolls to try to dispel, can be left null
 	 * @param targetWarpedNode Warped node that we are trying to return to normal
 	 * @param targetVortexes Vortexes are odd in that the unit as a whole gets dispelled (killed) rather than a spell cast on the unit
+	 * @param penaltyToVisibleRelation How mad each wizard will get whose spells we are targeting for dispelling
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether dispelling any spells resulted in the death of any units
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -39,7 +40,7 @@ public interface SpellDispelling
 	 */
 	public boolean processDispelling (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer,
 		final List<MemoryMaintainedSpell> targetSpells, final List<MemoryCombatAreaEffect> targetCAEs,
-		final MapCoordinates3DEx targetWarpedNode, final List<MemoryUnit> targetVortexes, final MomSessionVariables mom)
+		final MapCoordinates3DEx targetWarpedNode, final List<MemoryUnit> targetVortexes, final int penaltyToVisibleRelation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
 	
 	/**

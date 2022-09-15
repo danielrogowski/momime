@@ -1012,7 +1012,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						// Common method does the rest
 						if (getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, spellsToDispel, targetCAEs,
-							targetWarpedNode ? combatLocation : null, targetVortexes, mom))
+							targetWarpedNode ? combatLocation : null, targetVortexes, 0, mom))
 							
 							// Its possible we dispelled Lionheart on the last enemy unit thereby winning the combat, so check to be sure
 							if (getDamageProcessor ().countUnitsInCombat (combatLocation,
@@ -1271,7 +1271,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 				
 	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null,
-	    			targetWarpedNode ? targetLocation : null, null, mom);
+	    			targetWarpedNode ? targetLocation : null, null, 25, mom);
 			}
 
 			// The only targeted overland summoning spell is Floating Island

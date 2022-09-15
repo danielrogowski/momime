@@ -739,6 +739,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 
 	<bean id="spellTriggers" class="momime.server.process.SpellTriggersImpl">

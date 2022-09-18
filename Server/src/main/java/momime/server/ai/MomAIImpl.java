@@ -131,6 +131,7 @@ public final class MomAIImpl implements MomAI
 			getRelationAI ().updateVisibleRelationDueToNastyMaintainedSpells (player, mom);
 			getRelationAI ().slideTowardsBaseRelation (player);
 			getRelationAI ().capVisibleRelations (player);
+			getRelationAI ().regainPatience (player);
 		}
 		
 		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID ());

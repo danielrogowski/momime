@@ -125,224 +125,203 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		// Convert gold tier to the actual amount, because the sender knows their relation to the other wizard, but the receiver won't
 		final Integer offerGoldAmount = (getOfferGoldTier () == null) ? null :
 			getKnownWizardUtils ().convertGoldOfferTierToAmount (talkToWizard.getMaximumGoldTribute (), getOfferGoldTier ());
-		
-		// Any updates needed on the server because of the action?
+
+		// See if we're ran out patience to hear their requests 
 		boolean proceed = true;
 		switch (getAction ())
 		{
-			case ACCEPT_WIZARD_PACT:
-				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WIZARD_PACT, mom);
-				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WIZARD_PACT, mom);
-				break;
-				
-			case ACCEPT_ALLIANCE:
-				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.ALLIANCE, mom);
-				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.ALLIANCE, mom);
-				break;
-				
-			case ACCEPT_PEACE_TREATY:
-				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
-				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
-				break;
-
-			case DECLARE_WAR_BECAUSE_THREATENED:
-				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WAR, mom);
-				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
-				break;
-				
-			// Player 1 asking player 2 to declare war on player 3 has no idea whether player 2 even knows who player 3 is.
-			// So if they don't know each other, send back a special reply.
-			case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+			// This is a bit of a special case because
+			// 1) It has a different response (reject talking) rather than the standard (grown impatient)
+			// 2) A successful pass of the patience check doesn't increase impatience by +1
+			case INITIATE_TALKING:
 			{
-				if (getKnownWizardUtils ().findKnownWizardDetails (talkToPlayerPriv.getFogOfWarMemory ().getWizardDetails (), getOtherPlayerID ()) == null)
+				final int maximumRequests = getRelationAI ().decideMaximumRequests (senderWizard.getVisibleRelation ());
+				if (senderWizard.getImpatienceLevel () >= maximumRequests)
 				{
-					final DiplomacyMessage msg = new DiplomacyMessage ();	
+					getRelationAI ().penaltyToVisibleRelation (senderWizard, 20);
+					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+					
+					final DiplomacyMessage msg = new DiplomacyMessage ();
 					msg.setTalkFromPlayerID (getTalkToPlayerID ());
-					msg.setAction (DiplomacyAction.CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD);
-					msg.setOtherPlayerID (getOtherPlayerID ());
+					msg.setAction (DiplomacyAction.REJECT_TALKING);
+					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 					
 					sender.getConnection ().sendMessageToClient (msg);
 					proceed = false;
 				}
-				
-				break;
 			}
-				
-			case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
-			{
-				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), PactType.WAR, mom);
-				getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
-				
-				// Inform the 3rd party wizard, who isn't involved in the conversation
-				if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-				{
-					final DiplomacyMessage msg = new DiplomacyMessage ();	
-					msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
-					msg.setOtherPlayerID (getTalkToPlayerID ());
-					msg.setAction (DiplomacyAction.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD);
-					msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
-					
-					otherPlayer.getConnection ().sendMessageToClient (msg);
-				}
-				break;
-			}
-
-			case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
-			{
-				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), null, mom);
-				getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
-				
-				// Inform the 3rd party wizard, who isn't involved in the conversation
-				if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-				{
-					final DiplomacyMessage msg = new DiplomacyMessage ();	
-					msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
-					msg.setOtherPlayerID (getTalkToPlayerID ());
-					msg.setAction (DiplomacyAction.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD);
-					msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
-					
-					otherPlayer.getConnection ().sendMessageToClient (msg);
-				}
-				break;
-			}
+			break;
 			
-			// Tributes send an automated reply without even waiting for the recipient to click anything
-			case GIVE_GOLD:
-			case GIVE_GOLD_BECAUSE_THREATENED:
-			{
-				final DiplomacyMessage msg = new DiplomacyMessage ();	
-				msg.setTalkFromPlayerID (getTalkToPlayerID ());
-				msg.setAction ((getAction () == DiplomacyAction.GIVE_GOLD) ? DiplomacyAction.ACCEPT_GOLD : DiplomacyAction.ACCEPT_GOLD_BECAUSE_THREATENED);
-				msg.setOtherPlayerID (getOtherPlayerID ());
-				msg.setOfferGoldAmount (offerGoldAmount);
-				
-				// If giving gold to an AI wizard, modify visible relation
-				if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
-					getRelationAI ().bonusToVisibleRelation (senderWizard, getOfferGoldTier () * 5);
-				
-				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-				msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-				
-				sender.getConnection ().sendMessageToClient (msg);
-				
-				// Give gold				
-				getResourceValueUtils ().addToAmountStored (senderPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -offerGoldAmount);
-				getServerResourceCalculations ().sendGlobalProductionValues (sender, null, false);
-				
-				getResourceValueUtils ().addToAmountStored (talkToPlayerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, offerGoldAmount);
-				getServerResourceCalculations ().sendGlobalProductionValues (talkToPlayer, null, false);
-				
-				// Further gold offers will be more expensive (there's no message for this - client triggers same update from the ACCEPT_GOLD msg sent above)
-				talkToWizard.setMaximumGoldTribute (talkToWizard.getMaximumGoldTribute () + offerGoldAmount);
-				break;
-			}
-			
-			// Breaking a wizard pact / alliance send an automated reply without even waiting for the recipient to click anything
+			// These add +1 to impatience, but will never return (grown impatient), they just aren't something we can ignore
 			case BREAK_WIZARD_PACT_NICELY:
 			case BREAK_ALLIANCE_NICELY:
-			{
-				final DiplomacyMessage msg = new DiplomacyMessage ();	
-				msg.setTalkFromPlayerID (getTalkToPlayerID ());
-				msg.setAction ((getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY) ? DiplomacyAction.BROKEN_WIZARD_PACT_NICELY : DiplomacyAction.BROKEN_ALLIANCE_NICELY);
-				msg.setOtherPlayerID (getOtherPlayerID ());
-				msg.setOfferGoldAmount (offerGoldAmount);			
-			
-				// If breaking pact/alliance with an AI wizard, modify visible relation
-				if (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
-				{
-					final int penalty = (getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY) ? 10 : 20;
-					getRelationAI ().penaltyToVisibleRelation (senderWizard, penalty);
-				}
+				senderWizard.setImpatienceLevel (senderWizard.getImpatienceLevel () + 1);
+				break;			
 				
-				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-				msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-				
-				sender.getConnection ().sendMessageToClient (msg);
-				
-				// Remove pact
-				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
-				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
-				break;
-			}
-			
-			// Generate list of tradeable spells
-			case GIVE_SPELL:
-			case GIVE_SPELL_BECAUSE_THREATENED:
+			// Normal case
+			case PROPOSE_WIZARD_PACT:
+			case PROPOSE_ALLIANCE:
+			case PROPOSE_PEACE_TREATY:
+			case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+			case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
 			case PROPOSE_EXCHANGE_SPELL:
-				if (getOfferSpellID () == null)
+			case THREATEN:
+			{
+				// PROPOSE_EXCHANGE_SPELL goes through a few stages; only do this if we're at the very initial stage
+				if (((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && ((getRequestSpellID () == null) && (getOfferSpellID () == null))) ||
+					(getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL))
 				{
-					proceed = false;
-					
-					// Do we need the list of spells they can trade to us, or we can trade to them, or both (so we can verify there's even a possible trade to do)?
-					final List<String> spellIDsWeCanOffer = getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
-						(senderPriv.getSpellResearchStatus (), talkToPlayerPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ());
-
-					final List<String> spellIDsWeCanRequest = ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () == null)) ?
-						getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
-							(talkToPlayerPriv.getSpellResearchStatus (), senderPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()) : null;
-					
-					if (((spellIDsWeCanRequest != null) && ((spellIDsWeCanRequest.isEmpty ()) || (spellIDsWeCanOffer.isEmpty ()))) ||
-						((spellIDsWeCanRequest == null) && (spellIDsWeCanOffer.isEmpty ())))
+					final int maximumRequests = getRelationAI ().decideMaximumRequests (senderWizard.getVisibleRelation ());
+					if (senderWizard.getImpatienceLevel () >= maximumRequests)
 					{
-						// No valid trade, so don't even send the request to the other player
-						final DiplomacyMessage msg = new DiplomacyMessage ();	
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction ((getAction () == DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED) ? DiplomacyAction.NO_SPELLS_TO_EXCHANGE_BECAUSE_THREATENED : DiplomacyAction.NO_SPELLS_TO_EXCHANGE);
-						msg.setOtherPlayerID (getOtherPlayerID ());
-						
-						sender.getConnection ().sendMessageToClient (msg);
-					}
-					else if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () != null) && (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN))
-					{
-						// Player asked AI player for a spell that they know, now AI player needs to choose which spell they'd like in return
-						final String requestSpellIDInReturn = getDiplomacyAI ().chooseSpellToRequestInReturn (getRequestSpellID (), spellIDsWeCanOffer, mom.getServerDB ());
+						getRelationAI ().penaltyToVisibleRelation (senderWizard, 20);
 						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
 						
 						final DiplomacyMessage msg = new DiplomacyMessage ();
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction ((requestSpellIDInReturn == null) ? DiplomacyAction.REFUSE_EXCHANGE_SPELL : DiplomacyAction.PROPOSE_EXCHANGE_SPELL);
+						msg.setAction (DiplomacyAction.GROWN_IMPATIENT);
 						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						msg.setRequestSpellID (getRequestSpellID ());
-						msg.setOfferSpellID (requestSpellIDInReturn);
 						
 						sender.getConnection ().sendMessageToClient (msg);
+						proceed = false;
 					}
-					else
+	
+					// Even if we refuse the proposal, the fact that they keep bugging still reduces patience
+					senderWizard.setImpatienceLevel (senderWizard.getImpatienceLevel () + 1);
+				}
+			}
+			break;
+
+			// Not all actions increase impatience (requests tend to, final actions don't)
+			default:
+		}
+		
+		// Any updates needed on the server because of the action?
+		if (proceed)
+			switch (getAction ())
+			{
+				case ACCEPT_WIZARD_PACT:
+					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WIZARD_PACT, mom);
+					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WIZARD_PACT, mom);
+					break;
+					
+				case ACCEPT_ALLIANCE:
+					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.ALLIANCE, mom);
+					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.ALLIANCE, mom);
+					break;
+					
+				case ACCEPT_PEACE_TREATY:
+					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
+					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+					break;
+	
+				case DECLARE_WAR_BECAUSE_THREATENED:
+					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WAR, mom);
+					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+					break;
+					
+				// Player 1 asking player 2 to declare war on player 3 has no idea whether player 2 even knows who player 3 is.
+				// So if they don't know each other, send back a special reply.
+				case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+				{
+					if (getKnownWizardUtils ().findKnownWizardDetails (talkToPlayerPriv.getFogOfWarMemory ().getWizardDetails (), getOtherPlayerID ()) == null)
 					{
-						final TradeableSpellsMessage msg = new TradeableSpellsMessage ();
+						final DiplomacyMessage msg = new DiplomacyMessage ();	
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (getAction ());
-						msg.setRequestSpellID (getRequestSpellID ());
-						msg.getTradeableSpellID ().addAll ((spellIDsWeCanRequest != null) ? spellIDsWeCanRequest : spellIDsWeCanOffer);
+						msg.setAction (DiplomacyAction.CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD);
+						msg.setOtherPlayerID (getOtherPlayerID ());
 						
-						if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () != null))
-						{
-							// Other player now needs to respond with which spell they'd like in return
-							msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
-							talkToPlayer.getConnection ().sendMessageToClient (msg);
-						}
-						else
-							sender.getConnection ().sendMessageToClient (msg);
+						sender.getConnection ().sendMessageToClient (msg);
+						proceed = false;
 					}
+					
+					break;
+				}
+					
+				case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
+				{
+					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), PactType.WAR, mom);
+					getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+					
+					// Inform the 3rd party wizard, who isn't involved in the conversation
+					if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+					{
+						final DiplomacyMessage msg = new DiplomacyMessage ();	
+						msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+						msg.setOtherPlayerID (getTalkToPlayerID ());
+						msg.setAction (DiplomacyAction.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD);
+						msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
+						
+						otherPlayer.getConnection ().sendMessageToClient (msg);
+					}
+					break;
+				}
+	
+				case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+				{
+					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), null, mom);
+					getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+					
+					// Inform the 3rd party wizard, who isn't involved in the conversation
+					if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+					{
+						final DiplomacyMessage msg = new DiplomacyMessage ();	
+						msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+						msg.setOtherPlayerID (getTalkToPlayerID ());
+						msg.setAction (DiplomacyAction.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD);
+						msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
+						
+						otherPlayer.getConnection ().sendMessageToClient (msg);
+					}
+					break;
 				}
 				
-				// Proceed with spell donation
-				else if (getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
+				// Tributes send an automated reply without even waiting for the recipient to click anything
+				case GIVE_GOLD:
+				case GIVE_GOLD_BECAUSE_THREATENED:
 				{
 					final DiplomacyMessage msg = new DiplomacyMessage ();	
 					msg.setTalkFromPlayerID (getTalkToPlayerID ());
-					msg.setAction ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) ? DiplomacyAction.PROPOSE_EXCHANGE_SPELL : DiplomacyAction.ACCEPT_SPELL);
+					msg.setAction ((getAction () == DiplomacyAction.GIVE_GOLD) ? DiplomacyAction.ACCEPT_GOLD : DiplomacyAction.ACCEPT_GOLD_BECAUSE_THREATENED);
 					msg.setOtherPlayerID (getOtherPlayerID ());
-					msg.setOfferSpellID (getOfferSpellID ());
-					msg.setRequestSpellID (getRequestSpellID ());
-				
-					// If giving spell to an AI wizard, modify visible relation
+					msg.setOfferGoldAmount (offerGoldAmount);
+					
+					// If giving gold to an AI wizard, modify visible relation
 					if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
+						getRelationAI ().bonusToVisibleRelation (senderWizard, getOfferGoldTier () * 5);
+					
+					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+					
+					sender.getConnection ().sendMessageToClient (msg);
+					
+					// Give gold				
+					getResourceValueUtils ().addToAmountStored (senderPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -offerGoldAmount);
+					getServerResourceCalculations ().sendGlobalProductionValues (sender, null, false);
+					
+					getResourceValueUtils ().addToAmountStored (talkToPlayerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, offerGoldAmount);
+					getServerResourceCalculations ().sendGlobalProductionValues (talkToPlayer, null, false);
+					
+					// Further gold offers will be more expensive (there's no message for this - client triggers same update from the ACCEPT_GOLD msg sent above)
+					talkToWizard.setMaximumGoldTribute (talkToWizard.getMaximumGoldTribute () + offerGoldAmount);
+					break;
+				}
+				
+				// Breaking a wizard pact / alliance send an automated reply without even waiting for the recipient to click anything
+				case BREAK_WIZARD_PACT_NICELY:
+				case BREAK_ALLIANCE_NICELY:
+				{
+					final DiplomacyMessage msg = new DiplomacyMessage ();	
+					msg.setTalkFromPlayerID (getTalkToPlayerID ());
+					msg.setAction ((getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY) ? DiplomacyAction.BROKEN_WIZARD_PACT_NICELY : DiplomacyAction.BROKEN_ALLIANCE_NICELY);
+					msg.setOtherPlayerID (getOtherPlayerID ());
+					msg.setOfferGoldAmount (offerGoldAmount);			
+				
+					// If breaking pact/alliance with an AI wizard, modify visible relation
+					if (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
 					{
-						final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
-						final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
-						if (spellRank.getSpellTributeRelationBonus () != null)
-							getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellTributeRelationBonus ());
+						final int penalty = (getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY) ? 10 : 20;
+						getRelationAI ().penaltyToVisibleRelation (senderWizard, penalty);
 					}
 					
 					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
@@ -350,75 +329,166 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 					sender.getConnection ().sendMessageToClient (msg);
 					
-					// Learn the spell
-					final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (talkToPlayerPriv.getSpellResearchStatus (), getOfferSpellID ());
-					researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
+					// Remove pact
+					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
+					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+					break;
+				}
+				
+				// Generate list of tradeable spells
+				case GIVE_SPELL:
+				case GIVE_SPELL_BECAUSE_THREATENED:
+				case PROPOSE_EXCHANGE_SPELL:
+					if (getOfferSpellID () == null)
+					{
+						proceed = false;
+						
+						// Do we need the list of spells they can trade to us, or we can trade to them, or both (so we can verify there's even a possible trade to do)?
+						final List<String> spellIDsWeCanOffer = getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+							(senderPriv.getSpellResearchStatus (), talkToPlayerPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ());
+	
+						final List<String> spellIDsWeCanRequest = ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () == null)) ?
+							getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+								(talkToPlayerPriv.getSpellResearchStatus (), senderPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()) : null;
+						
+						if (((spellIDsWeCanRequest != null) && ((spellIDsWeCanRequest.isEmpty ()) || (spellIDsWeCanOffer.isEmpty ()))) ||
+							((spellIDsWeCanRequest == null) && (spellIDsWeCanOffer.isEmpty ())))
+						{
+							// No valid trade, so don't even send the request to the other player
+							final DiplomacyMessage msg = new DiplomacyMessage ();	
+							msg.setTalkFromPlayerID (getTalkToPlayerID ());
+							msg.setAction ((getAction () == DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED) ? DiplomacyAction.NO_SPELLS_TO_EXCHANGE_BECAUSE_THREATENED : DiplomacyAction.NO_SPELLS_TO_EXCHANGE);
+							msg.setOtherPlayerID (getOtherPlayerID ());
+							
+							sender.getConnection ().sendMessageToClient (msg);
+						}
+						else if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () != null) && (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN))
+						{
+							// Player asked AI player for a spell that they know, now AI player needs to choose which spell they'd like in return
+							final String requestSpellIDInReturn = getDiplomacyAI ().chooseSpellToRequestInReturn (getRequestSpellID (), spellIDsWeCanOffer, mom.getServerDB ());
+							final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+							
+							final DiplomacyMessage msg = new DiplomacyMessage ();
+							msg.setTalkFromPlayerID (getTalkToPlayerID ());
+							msg.setAction ((requestSpellIDInReturn == null) ? DiplomacyAction.REFUSE_EXCHANGE_SPELL : DiplomacyAction.PROPOSE_EXCHANGE_SPELL);
+							msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+							msg.setRequestSpellID (getRequestSpellID ());
+							msg.setOfferSpellID (requestSpellIDInReturn);
+							
+							sender.getConnection ().sendMessageToClient (msg);
+						}
+						else
+						{
+							final TradeableSpellsMessage msg = new TradeableSpellsMessage ();
+							msg.setTalkFromPlayerID (getTalkToPlayerID ());
+							msg.setAction (getAction ());
+							msg.setRequestSpellID (getRequestSpellID ());
+							msg.getTradeableSpellID ().addAll ((spellIDsWeCanRequest != null) ? spellIDsWeCanRequest : spellIDsWeCanOffer);
+							
+							if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () != null))
+							{
+								// Other player now needs to respond with which spell they'd like in return
+								msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+								talkToPlayer.getConnection ().sendMessageToClient (msg);
+							}
+							else
+								sender.getConnection ().sendMessageToClient (msg);
+						}
+					}
+					
+					// Proceed with spell donation
+					else if (getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
+					{
+						final DiplomacyMessage msg = new DiplomacyMessage ();	
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setAction ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) ? DiplomacyAction.PROPOSE_EXCHANGE_SPELL : DiplomacyAction.ACCEPT_SPELL);
+						msg.setOtherPlayerID (getOtherPlayerID ());
+						msg.setOfferSpellID (getOfferSpellID ());
+						msg.setRequestSpellID (getRequestSpellID ());
+					
+						// If giving spell to an AI wizard, modify visible relation
+						if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
+						{
+							final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
+							final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
+							if (spellRank.getSpellTributeRelationBonus () != null)
+								getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellTributeRelationBonus ());
+						}
+						
+						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						
+						sender.getConnection ().sendMessageToClient (msg);
+						
+						// Learn the spell
+						final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (talkToPlayerPriv.getSpellResearchStatus (), getOfferSpellID ());
+						researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
+						
+						// Just in case the donated spell was one of the 8 spells available to research now
+						getServerSpellCalculations ().randomizeSpellsResearchableNow (talkToPlayerPriv.getSpellResearchStatus (), mom.getServerDB ());
+						
+						if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+						{
+							final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+							spellsMsg.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
+							talkToPlayer.getConnection ().sendMessageToClient (spellsMsg);
+						}
+					}
+					break;
+					
+				// Exchange spells
+				case ACCEPT_EXCHANGE_SPELL:
+				{
+					// Person we are talking with, who suggested the spell they want in return, gets ACCEPT_EXCHANGE_SPELL message.
+					// Person initating the trade to begin with gets AFTER_EXCHANGE_SPELL, though both end up showing the same msg on the client.
+					final DiplomacyMessage msg = new DiplomacyMessage ();	
+					msg.setTalkFromPlayerID (getTalkToPlayerID ());
+					msg.setAction (DiplomacyAction.AFTER_EXCHANGE_SPELL);
+					msg.setOtherPlayerID (getOtherPlayerID ());
+					msg.setOfferSpellID (getRequestSpellID ());		// Note these are reversed, as its going back to the initiator
+					msg.setRequestSpellID (getOfferSpellID ());
+				
+					// If trading spell with an AI wizard, modify visible relation
+					if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
+					{
+						final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
+						final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
+						if (spellRank.getSpellExchangeRelationBonus () != null)
+							getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellExchangeRelationBonus ());
+					}
+					
+					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+					
+					sender.getConnection ().sendMessageToClient (msg);
+	
+					// Learn the spells
+					final SpellResearchStatus researchStatus1 = getSpellUtils ().findSpellResearchStatus (talkToPlayerPriv.getSpellResearchStatus (), getOfferSpellID ());
+					final SpellResearchStatus researchStatus2 = getSpellUtils ().findSpellResearchStatus (senderPriv.getSpellResearchStatus (), getRequestSpellID ());
+					researchStatus1.setStatus (SpellResearchStatusID.AVAILABLE);
+					researchStatus2.setStatus (SpellResearchStatusID.AVAILABLE);
 					
 					// Just in case the donated spell was one of the 8 spells available to research now
 					getServerSpellCalculations ().randomizeSpellsResearchableNow (talkToPlayerPriv.getSpellResearchStatus (), mom.getServerDB ());
+					getServerSpellCalculations ().randomizeSpellsResearchableNow (senderPriv.getSpellResearchStatus (), mom.getServerDB ());
 					
 					if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
-						final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
-						spellsMsg.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
-						talkToPlayer.getConnection ().sendMessageToClient (spellsMsg);
+						final FullSpellListMessage spellsMsg1 = new FullSpellListMessage ();
+						spellsMsg1.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
+						talkToPlayer.getConnection ().sendMessageToClient (spellsMsg1);
 					}
+	
+					final FullSpellListMessage spellsMsg2 = new FullSpellListMessage ();
+					spellsMsg2.getSpellResearchStatus ().addAll (senderPriv.getSpellResearchStatus ());
+					sender.getConnection ().sendMessageToClient (spellsMsg2);
+	
+					break;
 				}
-				break;
-				
-			// Exchange spells
-			case ACCEPT_EXCHANGE_SPELL:
-			{
-				// Person we are talking with, who suggested the spell they want in return, gets ACCEPT_EXCHANGE_SPELL message.
-				// Person initating the trade to begin with gets AFTER_EXCHANGE_SPELL, though both end up showing the same msg on the client.
-				final DiplomacyMessage msg = new DiplomacyMessage ();	
-				msg.setTalkFromPlayerID (getTalkToPlayerID ());
-				msg.setAction (DiplomacyAction.AFTER_EXCHANGE_SPELL);
-				msg.setOtherPlayerID (getOtherPlayerID ());
-				msg.setOfferSpellID (getRequestSpellID ());		// Note these are reversed, as its going back to the initiator
-				msg.setRequestSpellID (getOfferSpellID ());
-			
-				// If trading spell with an AI wizard, modify visible relation
-				if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
-				{
-					final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
-					final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
-					if (spellRank.getSpellExchangeRelationBonus () != null)
-						getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellExchangeRelationBonus ());
-				}
-				
-				final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-				msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-				
-				sender.getConnection ().sendMessageToClient (msg);
-
-				// Learn the spells
-				final SpellResearchStatus researchStatus1 = getSpellUtils ().findSpellResearchStatus (talkToPlayerPriv.getSpellResearchStatus (), getOfferSpellID ());
-				final SpellResearchStatus researchStatus2 = getSpellUtils ().findSpellResearchStatus (senderPriv.getSpellResearchStatus (), getRequestSpellID ());
-				researchStatus1.setStatus (SpellResearchStatusID.AVAILABLE);
-				researchStatus2.setStatus (SpellResearchStatusID.AVAILABLE);
-				
-				// Just in case the donated spell was one of the 8 spells available to research now
-				getServerSpellCalculations ().randomizeSpellsResearchableNow (talkToPlayerPriv.getSpellResearchStatus (), mom.getServerDB ());
-				getServerSpellCalculations ().randomizeSpellsResearchableNow (senderPriv.getSpellResearchStatus (), mom.getServerDB ());
-				
-				if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-				{
-					final FullSpellListMessage spellsMsg1 = new FullSpellListMessage ();
-					spellsMsg1.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
-					talkToPlayer.getConnection ().sendMessageToClient (spellsMsg1);
-				}
-
-				final FullSpellListMessage spellsMsg2 = new FullSpellListMessage ();
-				spellsMsg2.getSpellResearchStatus ().addAll (senderPriv.getSpellResearchStatus ());
-				sender.getConnection ().sendMessageToClient (spellsMsg2);
-
-				break;
+					
+				default:
+					// This is fine, most diplomacy actions don't trigger updates 
 			}
-				
-			default:
-				// This is fine, most diplomacy actions don't trigger updates 
-		}
 		
 		// Forward the action onto human players
 		if (proceed)
@@ -443,12 +513,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				
 				switch (getAction ())
 				{
-					// Auto accept any diplomacy requests for now
+					// Impatience check was already done above, but warn player if the AI wizard only has patience to listen to 1 request
 					case INITIATE_TALKING:
 					{
+						final int maximumRequests = getRelationAI ().decideMaximumRequests (senderWizard.getVisibleRelation ());
+						final boolean patienceRunningOut = (senderWizard.getImpatienceLevel () + 1 >= maximumRequests);
+						
 						final DiplomacyMessage msg = new DiplomacyMessage ();
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.ACCEPT_TALKING);
+						msg.setAction (patienceRunningOut ? DiplomacyAction.ACCEPT_TALKING_IMPATIENT : DiplomacyAction.ACCEPT_TALKING);
 						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 						
 						sender.getConnection ().sendMessageToClient (msg);

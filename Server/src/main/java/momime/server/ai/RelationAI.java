@@ -76,4 +76,15 @@ public interface RelationAI
 	 * @param penalty Amount of penalty
 	 */
 	public void penaltyToVisibleRelation (final DiplomacyWizardDetails wizardDetails, final int penalty);
+	
+	/**
+	 * @param player AI player who will gain a little patience with all other wizards back again
+	 */
+	public void regainPatience (final PlayerServerDetails player);
+	
+	/**
+	 * @param visibleRelation Our opinion of a particular wizard 
+	 * @return Maximum number of requests they can make before we'll refuse to talk to them
+	 */
+	public int decideMaximumRequests (final int visibleRelation);
 }

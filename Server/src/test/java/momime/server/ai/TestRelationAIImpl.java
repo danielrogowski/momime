@@ -154,4 +154,103 @@ public final class TestRelationAIImpl
 		// Run method
 		assertEquals (-15, ai.calculateBaseRelation (freyaPicks, obericPicks, db));
 	}
+
+	/**
+	 * Tests the decideMaximumRequests method at -100
+	 */
+	@Test
+	public final void testDecideMaximumRequests_minus100 ()
+	{
+		assertEquals (1, new RelationAIImpl ().decideMaximumRequests (-100));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at -61
+	 */
+	@Test
+	public final void testDecideMaximumRequests_minus61 ()
+	{
+		assertEquals (1, new RelationAIImpl ().decideMaximumRequests (-61));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at -60
+	 */
+	@Test
+	public final void testDecideMaximumRequests_minus60 ()
+	{
+		assertEquals (2, new RelationAIImpl ().decideMaximumRequests (-60));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at -21
+	 */
+	@Test
+	public final void testDecideMaximumRequests_minus21 ()
+	{
+		assertEquals (2, new RelationAIImpl ().decideMaximumRequests (-21));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at -20
+	 */
+	@Test
+	public final void testDecideMaximumRequests_minus20 ()
+	{
+		assertEquals (3, new RelationAIImpl ().decideMaximumRequests (-20));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at +19
+	 */
+	@Test
+	public final void testDecideMaximumRequests_plus19 ()
+	{
+		assertEquals (3, new RelationAIImpl ().decideMaximumRequests (19));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at +20
+	 */
+	@Test
+	public final void testDecideMaximumRequests_plus20 ()
+	{
+		assertEquals (4, new RelationAIImpl ().decideMaximumRequests (20));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at +59
+	 */
+	@Test
+	public final void testDecideMaximumRequests_plus59 ()
+	{
+		assertEquals (4, new RelationAIImpl ().decideMaximumRequests (59));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at +60
+	 */
+	@Test
+	public final void testDecideMaximumRequests_plus60 ()
+	{
+		assertEquals (5, new RelationAIImpl ().decideMaximumRequests (60));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at +99
+	 */
+	@Test
+	public final void testDecideMaximumRequests_plus99 ()
+	{
+		assertEquals (5, new RelationAIImpl ().decideMaximumRequests (99));
+	}
+
+	/**
+	 * Tests the decideMaximumRequests method at +100
+	 */
+	@Test
+	public final void testDecideMaximumRequests_plus100 ()
+	{
+		assertEquals (5, new RelationAIImpl ().decideMaximumRequests (100));
+	}
 }

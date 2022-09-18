@@ -596,6 +596,13 @@ will move a little towards the original startingRelation value, but is also modi
 Each time we give a tribute, the amount we have to pay to gain the same benefit increases.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="impatienceLevel" type="momimemsgs:impatienceLevel">
+					    <xsd:annotation>
+	  						<xsd:documentation>Starts at 0.  Every time a wizard makes a diplomatic request to us, adds +1.
+Tributes are excluded, we will always accept free gifts!  Reduced by -1 each turn so we gain a little more patience to talk to them again each turn.
+What the actual cap is depends on visibleRelation - a wizard we hate gets 1 chance at a request; a wizard we love will get 5.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1706,6 +1713,13 @@ So need a separate data item for this.</xsd:documentation>
 	<xsd:simpleType name="combatURN">
 	    <xsd:annotation>
     		<xsd:documentation>Unique identifier allocated to each combat taking place in a game.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="impatienceLevel">
+	    <xsd:annotation>
+    		<xsd:documentation>Holds how many diplomatic requests a wizard has made to us.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>

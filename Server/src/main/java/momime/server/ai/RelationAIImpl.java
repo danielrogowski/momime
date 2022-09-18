@@ -381,6 +381,35 @@ public final class RelationAIImpl implements RelationAI
 	}
 	
 	/**
+	 * @param player AI player who will gain a little patience with all other wizards back again
+	 */
+	@Override
+	public final void regainPatience (final PlayerServerDetails player)
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		for (final KnownWizardDetails w : priv.getFogOfWarMemory ().getWizardDetails ())
+			if (getPlayerKnowledgeUtils ().isWizard (w.getWizardID ()))
+			{
+				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
+				if (wizardDetails.getImpatienceLevel () > 0)
+					wizardDetails.setImpatienceLevel (wizardDetails.getImpatienceLevel () - 1);
+			}
+	}
+	
+	/**
+	 * @param visibleRelation Our opinion of a particular wizard 
+	 * @return Maximum number of requests they can make before we'll refuse to talk to them
+	 */
+	@Override
+	public final int decideMaximumRequests (final int visibleRelation) {
+		int requests = (visibleRelation + 140) / 40;
+		if (requests > 5)
+			requests = 5;
+		
+		return requests;
+	}
+	
+	/**
 	 * @return Player pick utils
 	 */
 	public final PlayerPickUtils getPlayerPickUtils ()

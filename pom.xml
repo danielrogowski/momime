@@ -19,10 +19,10 @@
 	</parent>
 
 	<properties>
-		<mom.multiplayer.version>0.5.6-SNAPSHOT</mom.multiplayer.version>
-		<mom.map.version>0.5.4-SNAPSHOT</mom.map.version>
-		<mom.xmleditor.version>0.5.4-SNAPSHOT</mom.xmleditor.version>
-		<mom.ndgutils.version>0.5.4-SNAPSHOT</mom.ndgutils.version>
+		<mom.multiplayer.version>0.5.6</mom.multiplayer.version>
+		<mom.map.version>0.5.4</mom.map.version>
+		<mom.xmleditor.version>0.5.4</mom.xmleditor.version>
+		<mom.ndgutils.version>0.5.4</mom.ndgutils.version>
 	</properties>
 
 	<modules>

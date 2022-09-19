@@ -1,0 +1,53 @@
+Calc of starting relation works as per wiki (not like original MoM, but as per suggested improvements on wiki)
+
+Positive factors (none of these apply if they've ever started casting SoM)
+-----------------------------------------------------------------------------------------
++10 for forming a wizard pact
++20 for forming an alliance
++10 for a peace treaty
++15 if you agree to their request to declare war or break alliance with another wizard
++3 for each successive turn a wizard pact is maintained
++6 for each successive turn an alliance is maintained
++5,10,15,20 for gold dontations of each level
++10,20,30,40 for spell donations of each realm (10=commons, 40 = very rares)
++4,8,12,16 for spell trades, keyed by the realm of the spell that the AI player got
++1 for each turn with Aura of Majesty cast
+
+Negative factors
+--------------------
+-1 for each unit in in territory limits (a slightly wider range than the city resource area) so a stack of 9 gives -9; doubled if they are within city resource area
+-10 if you ask them to declare war or break alliance with another wizard, even if they agree
+-10 for casting something nasty on our units outside of a city (incl units guarding cleared nodes, towers, e.g. black wind, ice storm)
+-10 for breaking a wizard pact (nicely, via the diplomacy screen)
+-15 for trying but failing to take over one of their nodes
+-20 for an attacking units not in a city (incl units guarding cleared nodes, towers)
+-20 for each turn for each curse they have on one of our cities
+-20 for breaking an alliance (nicely, via the diplomacy screen)
+-20 for breaking a wizard pact with no warning by attacking one of their cities (in addition to the -40 or more penalty for attacking the city itself)
+-20 for breaking an alliance with no warning by attacking their units not in a city (in addition to the -20 for attacking units outside a city)
+-20 for spamming us with proposals after we've ran out of patience to talk to them
+-25 for casting any kind of dispelling spell overland at their units or cities (disenchant area, disjunction, spell binding) whether successful or not
+-25 with every wizard when subversion is cast on you
+-30 for each turn they maintain any particulary nasty overland enchantments (armageddon, great wasting, meteor storm, suppress magic, time stop, crusade, charm of life, planar seal,
+	Nature's wrath IF we have death or chaos books, Tranquility IF we have chaos books, Life Force IF we have death books, Eternal night UNLESS we have death books)
+-30 for casting something nasty at one of their cities (e.g. earthquake, call the void, black wind, ice storm, corruption + raise volcano + change terrain + transmute within the city radius, maybe others)
+-30 for successfully taking over one of their nodes
+-30 if you threaten them (no matter what response they pick)
+-40 for casting global attack spells (Great Unsummoning, Death Wish)
+-40 for attacking a city that isn't their capital and failing to capture it
+-40 for casting something nasty at the wizard themselves (cruel unminding + subversion)
+-40 for breaking an alliance with no warning by attacking one of their cities (in addition to the -40 or more penalty for attacking the city itself)
+-60 for capturing a city that isn't their capital
+-80 for attacking their capital and failing to capture it
+-200 for capturing their capital and banishing them
+-200 (permanently) if they start casting SoM
+
+Other factors
+----------------
+Each turn, visible relation gravitates towards starting relation by 10%, so if currently 80 and starting is 30, then diff of 50, 10% of that is 5 so changes to 75.  This stops if they've ever started casting SoM.
+
+Cut off values (modified by wizard personality hostility factor)
+-----------------
+Will agree to a peace treaty if relation >= 0
+Will agree to a wizard pact if relation >= 20
+Will agree to an alliance if relation >= 40

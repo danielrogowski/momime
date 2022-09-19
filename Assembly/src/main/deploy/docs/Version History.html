@@ -19,8 +19,6 @@
 		pretty sure things are generally fine there too, but its impossible to test all of them or very often.  If anybody has issues with running on other operating
 		systems then please let me know so I can try to make improvements.</p>
 
-	<p>It will currently <b>not</b> run on Java 17.</p>
-
 	<p>To get a game going, run the server.  There is nothing else to set up here, just get the server running, assuming it starts up successfully
 		it'll say "Listening for client connection requests on port 18250".  Then run the client, choose Connect to Server, and click 'localhost'
 		assuming you're running both on the same PC.  Enter a user ID and password - the first time you use it, tick 'This is a new account' - this
@@ -38,8 +36,61 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.4</b></td>
-			<td align=left><b>28 Jul 2022</b></td>
+			<td align=left><b>Current version: 1.5</b></td>
+			<td align=left><b>?</b></td>
+			<td align=left>
+				<b>Diplomacy part 2 (positive relations):</b>
+				<ul>
+					<li>AI wizards will like you more when you donate them gold and spells, or trade spells with them
+					<li>AI wizards will like you more each turn you maintain a wizard pact or alliance with them
+					<li>Aura of Majesty works correctly and makes other wizards like you a little bit more each turn
+				</ul>
+
+				<b>Diplomacy part 2 (negative relations):</b>
+				<ul>
+					<li>Reworked national borders to distance of 4 from each city so they are cleaner, they will now include water tiles, and better calculate disputed tiles which are within 4 tiles of cities owned by more than one wizard
+					<li>AI wizards will dislike you for leaving troops within their border
+					<li>AI wizards will dislike you for breaking a wizard pact or alliance nicely via the diplomacy screen, but the penalty is much smaller than how much they dislike you for attacking them without cancelling the wizard pact or alliance first
+					<li>AI wizards will dislike you for attacking them to varying degrees, depending on whether you attacked units outside a city, inside a city, their capital, and whether you had a wizard pact or alliance in place
+					<li>AI wizards will dislike you for keeping nasty overland enchantments cast, or curses cast on their cities
+					<li>AI wizards will dislike you for casting nasty spells directly at them (spells that are targeted on the wizards screen)
+					<li>AI wizards will dislike you for casting overland attack spells or global attack spells at their units
+					<li>AI wizards will dislike you for casting attack spells at their cities (e.g. earthquake), or casting detrimental effects near their cities (e.g. corruption)
+					<li>AI wizards will dislike you for trying to take over nodes their spirits were melded with (whether successful or not)
+					<li>AI wizards will dislike you for trying to dispel their spells overland (e.g. disjunction or disenchant area), including using Spell Binding to try to take over their overland enchantments
+					<li>Subversion works correctly and makes all wizards dislike the wizard it is cast on
+					<li>After you start casting Spell of Mastery, even if you subsequently cancel it, because you've made everyone aware that you have completed researching it, all other wizards will hate you for the rest of the game; even gold and spell tributes won't help
+				</ul>
+
+				<b>Diplomacy part 2 (AI wizard decisions):</b>
+				<ul>
+					<li>AI wizards will decide whether to agree to wizard pacts, alliances and peace treaties depending how much they like or dislike you and their personality; they will like you more for successfully forming a pact, alliance or treaty with them
+					<li>AI wizards will have limited patience in you spamming them with proposals, and soon will refuse to talk to you anymore (and further dislike you for keeping trying)
+					<li>AI wizards will respond properly to the threaten option (they will consider and propose options other than just instantly declaring war; they will also dislike you a lot for threatening them)
+				</ul>
+
+				<b>What will NOT work until diplomacy part 3 is done in version 1.6:</b>
+				<ul>
+					<li>AI wizards will respond to proposals (e.g. pacts, spell trades) you initiate, but they won't initiate proposals themselves or even initiate talking to you at all (or each other)
+					<li>Wizards pacts and alliances won't affect the behaviour of AI wizards on the overland map - so even if you have an Alliance, they will attack you anyway
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Donating a spell to an AI wizard would throw an exception
+					<li>Casting spells targeted at enemy wizards (e.g. drain power) would show the animation on the wrong wizard portrait
+				</ul>
+					
+				<b>Technical changes:</b>
+				<ul>
+					<li>Fixed issue that prevented running with JDK 17
+					<li>Removed check on JDK version that would fail if JDK reported its version as a non-integer
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.4</td>
+			<td align=left>28 Jul 2022</td>
 			<td align=left>
 				<b>Diplomacy part 1:</b>
 				<ul>

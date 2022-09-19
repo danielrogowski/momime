@@ -267,6 +267,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="diplomacyAI" ref="diplomacyAI" />
 		<property name="relationAI" ref="relationAI" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<!-- User registry -->

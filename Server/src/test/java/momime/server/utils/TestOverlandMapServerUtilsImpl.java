@@ -48,6 +48,7 @@ import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageNode;
@@ -56,6 +57,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -527,7 +529,11 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		final MomTransientPlayerPrivateKnowledge defenderTrans = new MomTransientPlayerPrivateKnowledge ();
 		
-		final PlayerServerDetails defender = new PlayerServerDetails (defenderPd, null, null, null, defenderTrans);
+		final FogOfWarMemory defenderMem = new FogOfWarMemory ();
+		final MomPersistentPlayerPrivateKnowledge defenderPriv = new MomPersistentPlayerPrivateKnowledge ();
+		defenderPriv.setFogOfWarMemory (defenderMem);
+		
+		final PlayerServerDetails defender = new PlayerServerDetails (defenderPd, null, defenderPriv, null, defenderTrans);
 		players.add (defender);
 		
 		// Session utils
@@ -555,6 +561,9 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		final RandomUtils randomUtils = mock (RandomUtils.class);
 		when (randomUtils.nextInt (3)).thenReturn (1);		// 0-1 = Attacker wins, 2 = Defender wins
 
+		// Wizard opinions of each other
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+
 		// Session variables
 		final WorldUpdates wu = mock (WorldUpdates.class);
 		
@@ -578,6 +587,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		utils.setSampleUnitUtils (sampleUnitUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		utils.attemptToMeldWithNode (xuAttackingSpirit, mom);
@@ -676,8 +686,16 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		final MomTransientPlayerPrivateKnowledge defenderTrans = new MomTransientPlayerPrivateKnowledge ();
 		
-		final PlayerServerDetails defender = new PlayerServerDetails (defenderPd, null, null, null, defenderTrans);
+		final FogOfWarMemory defenderMem = new FogOfWarMemory ();
+		final MomPersistentPlayerPrivateKnowledge defenderPriv = new MomPersistentPlayerPrivateKnowledge ();
+		defenderPriv.setFogOfWarMemory (defenderMem);
+		
+		final PlayerServerDetails defender = new PlayerServerDetails (defenderPd, null, defenderPriv, null, defenderTrans);
 		players.add (defender);
+		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defenderPd.getPlayerID (), "attemptToMeldWithNode (d)")).thenReturn (defender);
 		
 		// Units
 		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
@@ -696,6 +714,9 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		// Fix random result
 		final RandomUtils randomUtils = mock (RandomUtils.class);
 		when (randomUtils.nextInt (3)).thenReturn (2);		// 0-1 = Attacker wins, 2 = Defender wins
+		
+		// Wizard opinions of each other
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
 		// Session variables
 		final WorldUpdates wu = mock (WorldUpdates.class);
@@ -718,6 +739,8 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		utils.setRandomUtils (randomUtils);
 		utils.setSampleUnitUtils (sampleUnitUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		utils.attemptToMeldWithNode (xuAttackingSpirit, mom);

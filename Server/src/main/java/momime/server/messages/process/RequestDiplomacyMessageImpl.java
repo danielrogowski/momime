@@ -1,6 +1,7 @@
 package momime.server.messages.process;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -13,6 +14,7 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.sessionbase.PlayerType;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
@@ -87,6 +89,9 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	/** For calculating relation scores between two wizards */
 	private RelationAI relationAI;
 	
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -126,50 +131,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		final Integer offerGoldAmount = (getOfferGoldTier () == null) ? null :
 			getKnownWizardUtils ().convertGoldOfferTierToAmount (talkToWizard.getMaximumGoldTribute (), getOfferGoldTier ());
 
-		// See if we're ran out patience to hear their requests 
+		// See if we're ran out patience to hear their requests - only applicable to AI players - human players can respond however they wish
 		boolean proceed = true;
-		switch (getAction ())
-		{
-			// This is a bit of a special case because
-			// 1) It has a different response (reject talking) rather than the standard (grown impatient)
-			// 2) A successful pass of the patience check doesn't increase impatience by +1
-			case INITIATE_TALKING:
+		if (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+			switch (getAction ())
 			{
-				final int maximumRequests = getRelationAI ().decideMaximumRequests (senderWizard.getVisibleRelation ());
-				if (senderWizard.getImpatienceLevel () >= maximumRequests)
-				{
-					getRelationAI ().penaltyToVisibleRelation (senderWizard, 20);
-					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-					
-					final DiplomacyMessage msg = new DiplomacyMessage ();
-					msg.setTalkFromPlayerID (getTalkToPlayerID ());
-					msg.setAction (DiplomacyAction.REJECT_TALKING);
-					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-					
-					sender.getConnection ().sendMessageToClient (msg);
-					proceed = false;
-				}
-			}
-			break;
-			
-			// These add +1 to impatience, but will never return (grown impatient), they just aren't something we can ignore
-			case BREAK_WIZARD_PACT_NICELY:
-			case BREAK_ALLIANCE_NICELY:
-				senderWizard.setImpatienceLevel (senderWizard.getImpatienceLevel () + 1);
-				break;			
-				
-			// Normal case
-			case PROPOSE_WIZARD_PACT:
-			case PROPOSE_ALLIANCE:
-			case PROPOSE_PEACE_TREATY:
-			case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
-			case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
-			case PROPOSE_EXCHANGE_SPELL:
-			case THREATEN:
-			{
-				// PROPOSE_EXCHANGE_SPELL goes through a few stages; only do this if we're at the very initial stage
-				if (((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && ((getRequestSpellID () == null) && (getOfferSpellID () == null))) ||
-					(getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL))
+				// This is a bit of a special case because
+				// 1) It has a different response (reject talking) rather than the standard (grown impatient)
+				// 2) A successful pass of the patience check doesn't increase impatience by +1
+				case INITIATE_TALKING:
 				{
 					final int maximumRequests = getRelationAI ().decideMaximumRequests (senderWizard.getVisibleRelation ());
 					if (senderWizard.getImpatienceLevel () >= maximumRequests)
@@ -179,22 +149,58 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						
 						final DiplomacyMessage msg = new DiplomacyMessage ();
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.GROWN_IMPATIENT);
+						msg.setAction (DiplomacyAction.REJECT_TALKING);
 						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 						
 						sender.getConnection ().sendMessageToClient (msg);
 						proceed = false;
 					}
-	
-					// Even if we refuse the proposal, the fact that they keep bugging still reduces patience
-					senderWizard.setImpatienceLevel (senderWizard.getImpatienceLevel () + 1);
 				}
+				break;
+				
+				// These add +1 to impatience, but will never return (grown impatient), they just aren't something we can ignore
+				case BREAK_WIZARD_PACT_NICELY:
+				case BREAK_ALLIANCE_NICELY:
+					senderWizard.setImpatienceLevel (senderWizard.getImpatienceLevel () + 1);
+					break;			
+					
+				// Normal case
+				case PROPOSE_WIZARD_PACT:
+				case PROPOSE_ALLIANCE:
+				case PROPOSE_PEACE_TREATY:
+				case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
+				case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+				case PROPOSE_EXCHANGE_SPELL:
+				case THREATEN:
+				{
+					// PROPOSE_EXCHANGE_SPELL goes through a few stages; only do this if we're at the very initial stage
+					if (((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && ((getRequestSpellID () == null) && (getOfferSpellID () == null))) ||
+						(getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL))
+					{
+						final int maximumRequests = getRelationAI ().decideMaximumRequests (senderWizard.getVisibleRelation ());
+						if (senderWizard.getImpatienceLevel () >= maximumRequests)
+						{
+							getRelationAI ().penaltyToVisibleRelation (senderWizard, 20);
+							final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+							
+							final DiplomacyMessage msg = new DiplomacyMessage ();
+							msg.setTalkFromPlayerID (getTalkToPlayerID ());
+							msg.setAction (DiplomacyAction.GROWN_IMPATIENT);
+							msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+							
+							sender.getConnection ().sendMessageToClient (msg);
+							proceed = false;
+						}
+		
+						// Even if we refuse the proposal, the fact that they keep bugging still reduces patience
+						senderWizard.setImpatienceLevel (senderWizard.getImpatienceLevel () + 1);
+					}
+				}
+				break;
+	
+				// Not all actions increase impatience (requests tend to, final actions don't)
+				default:
 			}
-			break;
-
-			// Not all actions increase impatience (requests tend to, final actions don't)
-			default:
-		}
 		
 		// Any updates needed on the server because of the action?
 		if (proceed)
@@ -624,15 +630,80 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						break;
 					}
 					
-					// Auto declare war if threatened for now
+					// Pick random option from: Do nothing, try to buy you off with gold, try to appease you with a free spell, declare war
 					case THREATEN:
 					{
-						getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WAR, mom);
-						getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+						getRelationAI ().penaltyToVisibleRelation (senderWizard, 30);
+						relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
 
+						// Make a list of valid responses
+						final List<DiplomacyAction> responses = new ArrayList<DiplomacyAction> ();
+						responses.add (DiplomacyAction.IGNORE_THREAT);
+						responses.add (DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED);
+						
+						// Do we have enough gold to offer?
+						final int tier = 1;	// Always be cheap
+						final int goldAmount = getResourceValueUtils ().findAmountStoredForProductionType (talkToPlayerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+						final int goldOffer = getKnownWizardUtils ().convertGoldOfferTierToAmount (senderWizard.getMaximumGoldTribute (), tier + 1);
+						if (goldAmount >= goldOffer)
+							responses.add (DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED);
+						
+						// Do we have a tradeable spell to offer?
+						final List<String> spellIDsWeCanOffer = getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+							(talkToPlayerPriv.getSpellResearchStatus (), senderPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ());
+						if (!spellIDsWeCanOffer.isEmpty ())
+							responses.add (DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED);
+						
+						// Pick random response
 						final DiplomacyMessage msg = new DiplomacyMessage ();
+						
+						final DiplomacyAction response = responses.get (getRandomUtils ().nextInt (responses.size ()));
+						switch (response)
+						{
+							case DECLARE_WAR_BECAUSE_THREATENED:
+								getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WAR, mom);
+								getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+								break;
+								
+							case GIVE_GOLD_BECAUSE_THREATENED:
+								msg.setOfferGoldAmount (goldOffer);
+								
+								// Give gold				
+								getResourceValueUtils ().addToAmountStored (senderPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldOffer);
+								getServerResourceCalculations ().sendGlobalProductionValues (sender, null, false);
+								
+								getResourceValueUtils ().addToAmountStored (talkToPlayerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldOffer);
+								getServerResourceCalculations ().sendGlobalProductionValues (talkToPlayer, null, false);
+								
+								// Further gold offers will be more expensive
+								senderWizard.setMaximumGoldTribute (senderWizard.getMaximumGoldTribute () + goldOffer);
+								break;
+								
+							case GIVE_SPELL_BECAUSE_THREATENED:
+								// Learn the spell
+								final String spellID = spellIDsWeCanOffer.get (0);
+								msg.setOfferSpellID (spellID);
+								
+								final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (senderPriv.getSpellResearchStatus (), spellID);
+								researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
+								
+								// Just in case the donated spell was one of the 8 spells available to research now
+								getServerSpellCalculations ().randomizeSpellsResearchableNow (senderPriv.getSpellResearchStatus (), mom.getServerDB ());
+								
+								if (sender.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+								{
+									final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+									spellsMsg.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
+									sender.getConnection ().sendMessageToClient (spellsMsg);
+								}
+								break;
+		
+							// Do nothing
+							default:
+						}
+						
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED);
+						msg.setAction (response);
 						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 						
 						sender.getConnection ().sendMessageToClient (msg);
@@ -799,5 +870,21 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void setRelationAI (final RelationAI ai)
 	{
 		relationAI = ai;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

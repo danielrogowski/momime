@@ -169,6 +169,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case GIVE_GOLD_BECAUSE_THREATENED:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.GIVEN_GOLD_BECAUSE_THREATENED);
+				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -183,6 +185,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case GIVE_SPELL_BECAUSE_THREATENED:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.GIVEN_SPELL_BECAUSE_THREATENED);
+				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -335,6 +339,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case IGNORE_THREAT:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.IGNORE_THREAT);
+				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -342,6 +348,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case DECLARE_WAR_BECAUSE_THREATENED:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.DECLARE_WAR_BECAUSE_THREATENED);
+				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;

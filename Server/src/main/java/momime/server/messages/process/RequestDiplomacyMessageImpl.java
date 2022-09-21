@@ -292,8 +292,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					msg.setOtherPlayerID (getOtherPlayerID ());
 					msg.setOfferGoldAmount (offerGoldAmount);
 					
-					// If giving gold to an AI wizard, modify visible relation
-					if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
+					// If giving gold to an AI wizard, modify visible relation (but not for threats)
+					if ((getAction () == DiplomacyAction.GIVE_GOLD) && (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
 						getRelationAI ().bonusToVisibleRelation (senderWizard, getOfferGoldTier () * 5);
 					
 					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");

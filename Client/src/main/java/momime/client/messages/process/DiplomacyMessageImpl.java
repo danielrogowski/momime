@@ -58,6 +58,12 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 		getDiplomacyUI ().setCityName (getCityName ());
 		getDiplomacyUI ().setMeetWizardMessage (null);
 
+		if (getVisibleRelationScoreID () != null)
+		{
+			getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+			getDiplomacyUI ().updateRelationScore ();
+		}
+		
 		switch (getAction ())
 		{
 			case INITIATE_TALKING:
@@ -65,8 +71,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().setProposingWizardID (getTalkFromPlayerID ());
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				getDiplomacyUI ().setVisible (true);
@@ -77,8 +81,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_TALKING_IMPATIENT:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -123,8 +125,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_WIZARD_PACT:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_WIZARD_PACT);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -132,8 +132,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_ALLIANCE:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_ALLIANCE);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -141,8 +139,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_PEACE_TREATY:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_PEACE_TREATY);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -169,8 +165,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case GIVE_GOLD_BECAUSE_THREATENED:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.GIVEN_GOLD_BECAUSE_THREATENED);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -185,8 +179,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case GIVE_SPELL_BECAUSE_THREATENED:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.GIVEN_SPELL_BECAUSE_THREATENED);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -195,8 +187,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_GOLD_BECAUSE_THREATENED:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_GOLD);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 
@@ -209,8 +199,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_SPELL:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_SPELL);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -254,8 +242,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case AFTER_EXCHANGE_SPELL:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_EXCHANGING_SPELL);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -269,8 +255,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().initializeTalkingWizard ();
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				getDiplomacyUI ().setVisible (true);
@@ -288,8 +272,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case BROKEN_ALLIANCE_NICELY:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.BROKEN_WIZARD_PACT_OR_ALLIANCE);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -339,8 +321,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case IGNORE_THREAT:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.IGNORE_THREAT);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
@@ -348,8 +328,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case DECLARE_WAR_BECAUSE_THREATENED:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.DECLARE_WAR_BECAUSE_THREATENED);
-				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-				getDiplomacyUI ().updateRelationScore ();
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;

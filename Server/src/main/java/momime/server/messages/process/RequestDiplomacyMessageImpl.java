@@ -54,13 +54,19 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	private final static int MAXIMUM_TRADEABLE_SPELLS = 4;
 
 	/** Minimum relation for an AI player to agree to a peace treaty, modified by their personality type */
-	private final static int RELATION_TO_AGREE_TO_PEACE_TREATY = 0;
+	private final static int MINIMUM_RELATION_TO_AGREE_TO_PEACE_TREATY = 0;
 
 	/** Minimum relation for an AI player to agree to a wizard pact, modified by their personality type */
-	private final static int RELATION_TO_AGREE_TO_WIZARD_PACT = 20;
+	private final static int MINIMUM_RELATION_TO_AGREE_TO_WIZARD_PACT = 20;
 
 	/** Minimum relation for an AI player to agree to an alliance, modified by their personality type */
-	private final static int RELATION_TO_AGREE_TO_ALLIANCE = 40;
+	private final static int MINIMUM_RELATION_TO_AGREE_TO_ALLIANCE = 40;
+
+	/** Minimum relation for an AI player to agree to declaring war on another wizard, modified by their personality type */
+	private final static int MINIMUM_RELATION_TO_AGREE_TO_DECLARE_WAR = 60;
+	
+	/** Minimum relation for an AI player to agree to breaking an alliance with another wizard, modified by their personality type */
+	private final static int MINIMUM_RELATION_TO_AGREE_TO_BREAK_ALLIANCE = 60;
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
@@ -230,12 +236,21 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				// So if they don't know each other, send back a special reply.
 				case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
 				{
+					if (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+						getRelationAI ().penaltyToVisibleRelation (senderWizard, 10);
+					
 					if (getKnownWizardUtils ().findKnownWizardDetails (talkToPlayerPriv.getFogOfWarMemory ().getWizardDetails (), getOtherPlayerID ()) == null)
 					{
 						final DiplomacyMessage msg = new DiplomacyMessage ();	
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
 						msg.setAction (DiplomacyAction.CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD);
 						msg.setOtherPlayerID (getOtherPlayerID ());
+						
+						if (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+						{
+							final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+							msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						}
 						
 						sender.getConnection ().sendMessageToClient (msg);
 						proceed = false;
@@ -262,6 +277,12 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					}
 					break;
 				}
+				
+				// Just putting this here so its consistent with PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD
+				case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+					if (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+						getRelationAI ().penaltyToVisibleRelation (senderWizard, 10);
+					break;
 	
 				case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
 				{
@@ -294,10 +315,12 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 					// If giving gold to an AI wizard, modify visible relation (but not for threats)
 					if ((getAction () == DiplomacyAction.GIVE_GOLD) && (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
+					{
 						getRelationAI ().bonusToVisibleRelation (senderWizard, getOfferGoldTier () * 5);
 					
-					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+					}
 					
 					sender.getConnection ().sendMessageToClient (msg);
 					
@@ -328,10 +351,10 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					{
 						final int penalty = (getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY) ? 10 : 20;
 						getRelationAI ().penaltyToVisibleRelation (senderWizard, penalty);
-					}
 					
-					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+					}
 					
 					sender.getConnection ().sendMessageToClient (msg);
 					
@@ -419,10 +442,10 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 							final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
 							if (spellRank.getSpellTributeRelationBonus () != null)
 								getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellTributeRelationBonus ());
-						}
 						
-						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+							final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+							msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						}
 						
 						sender.getConnection ().sendMessageToClient (msg);
 						
@@ -461,10 +484,10 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
 						if (spellRank.getSpellExchangeRelationBonus () != null)
 							getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellExchangeRelationBonus ());
-					}
 					
-					final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-					msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
+						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+					}
 					
 					sender.getConnection ().sendMessageToClient (msg);
 	
@@ -536,7 +559,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						
 					case PROPOSE_WIZARD_PACT:
 					{
-						final boolean accept = senderWizard.getVisibleRelation () >= (RELATION_TO_AGREE_TO_WIZARD_PACT + aiPersonality.getHostilityModifier ());
+						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_WIZARD_PACT + aiPersonality.getHostilityModifier ());
 						if (accept)
 						{
 							getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WIZARD_PACT, mom);
@@ -560,7 +583,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 
 					case PROPOSE_ALLIANCE:
 					{
-						final boolean accept = senderWizard.getVisibleRelation () >= (RELATION_TO_AGREE_TO_ALLIANCE + aiPersonality.getHostilityModifier ());
+						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_ALLIANCE + aiPersonality.getHostilityModifier ());
 						if (accept)
 						{
 							getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.ALLIANCE, mom);
@@ -584,7 +607,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 					case PROPOSE_PEACE_TREATY:
 					{
-						final boolean accept = senderWizard.getVisibleRelation () >= (RELATION_TO_AGREE_TO_PEACE_TREATY + aiPersonality.getHostilityModifier ());
+						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_PEACE_TREATY + aiPersonality.getHostilityModifier ());
 						if (accept)
 						{
 							getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
@@ -608,10 +631,29 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 					case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
 					{
+						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_DECLARE_WAR + aiPersonality.getHostilityModifier ());
+						if (accept)
+						{
+							getKnownWizardServerUtils ().updatePact (talkToPlayer.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), PactType.WAR, mom);
+							getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+							
+							// Inform the 3rd party wizard, who isn't involved in the conversation
+							if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+							{
+								final DiplomacyMessage msg = new DiplomacyMessage ();	
+								msg.setTalkFromPlayerID (talkToPlayer.getPlayerDescription ().getPlayerID ());
+								msg.setOtherPlayerID (sender.getPlayerDescription ().getPlayerID ());
+								msg.setAction (DiplomacyAction.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD);
+								msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
+								
+								otherPlayer.getConnection ().sendMessageToClient (msg);
+							}
+						}
+						
 						final DiplomacyMessage msg = new DiplomacyMessage ();
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
 						msg.setOtherPlayerID (getOtherPlayerID ());
-						msg.setAction (DiplomacyAction.REJECT_DECLARE_WAR_ON_OTHER_WIZARD);
+						msg.setAction (accept ? DiplomacyAction.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD : DiplomacyAction.REJECT_DECLARE_WAR_ON_OTHER_WIZARD);
 						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 						
 						sender.getConnection ().sendMessageToClient (msg);
@@ -620,10 +662,29 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 					case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
 					{
+						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_BREAK_ALLIANCE + aiPersonality.getHostilityModifier ());
+						if (accept)
+						{
+							getKnownWizardServerUtils ().updatePact (talkToPlayer.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), null, mom);
+							getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+							
+							// Inform the 3rd party wizard, who isn't involved in the conversation
+							if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+							{
+								final DiplomacyMessage msg = new DiplomacyMessage ();	
+								msg.setTalkFromPlayerID (talkToPlayer.getPlayerDescription ().getPlayerID ());
+								msg.setOtherPlayerID (sender.getPlayerDescription ().getPlayerID ());
+								msg.setAction (DiplomacyAction.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD);
+								msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
+								
+								otherPlayer.getConnection ().sendMessageToClient (msg);
+							}
+						}
+						
 						final DiplomacyMessage msg = new DiplomacyMessage ();
 						msg.setTalkFromPlayerID (getTalkToPlayerID ());
 						msg.setOtherPlayerID (getOtherPlayerID ());
-						msg.setAction (DiplomacyAction.REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
+						msg.setAction (accept ? DiplomacyAction.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD : DiplomacyAction.REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
 						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 						
 						sender.getConnection ().sendMessageToClient (msg);

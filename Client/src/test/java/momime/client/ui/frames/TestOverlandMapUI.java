@@ -57,7 +57,6 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.TurnSystem;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
-import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 
 /**
@@ -194,9 +193,6 @@ public final class TestOverlandMapUI extends ClientTestData
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
 		
-		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
-		
 		// Wizard
 		final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
 		wizardDetails1.setWizardID ("WZ01");
@@ -267,7 +263,6 @@ public final class TestOverlandMapUI extends ClientTestData
 		map.setLanguageChangeMaster (langMaster);
 		map.setClient (client);
 		map.setClientConfig (config);
-		map.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		map.setOverlandMapRightHandPanel (rhp);
 		map.setSmallFont (CreateFontsForTests.getSmallFont ());
 

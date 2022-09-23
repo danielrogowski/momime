@@ -255,7 +255,7 @@ public final class WizardsUI extends MomClientFrameUI
 					msg.setLanguageText (getLanguages ().getDiplomacyScreen ().getNotYourTurn ());
 					msg.setVisible (true);
 				}
-				
+		
 				else if (getDiplomacyUI ().isVisible ())
 				{
 					final PlayerPublicDetails talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getDiplomacyUI ().getTalkingWizardID (), "WizardsUI");
@@ -265,6 +265,17 @@ public final class WizardsUI extends MomClientFrameUI
 					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getAlreadyInDiplomacy ()).replaceAll
 						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 					
+					msg.setVisible (true);					
+				}
+				
+				else if ((getKnownWizardUtils ().findKnownWizardDetails (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
+						getClient ().getOurPlayerID (), "WizardsUI").getWizardState () != WizardState.ACTIVE) ||
+					(getKnownWizardUtils ().findKnownWizardDetails (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
+						selectedWizard.getPlayerDescription ().getPlayerID (), "WizardsUI").getWizardState () != WizardState.ACTIVE))
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getDiplomacyScreen ().getTitle ());
+					msg.setLanguageText (getLanguages ().getDiplomacyScreen ().getBanished ());					
 					msg.setVisible (true);					
 				}
 				

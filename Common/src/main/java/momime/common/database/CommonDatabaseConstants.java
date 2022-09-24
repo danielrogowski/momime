@@ -20,6 +20,9 @@ public final class CommonDatabaseConstants
 	/** Namespace of the client XSD */
 	public final static String CLIENT_XSD_NAMESPACE_URI = "http://momime/client/database";
 
+	/** Path and name to locate the mod XSD file on the classpath */
+	public final static String MOD_XSD_LOCATION = "/momime.common.mod/MoMIMEMod.xsd";
+	
 	/** Path and name to locate the messages XSD file on the classpath */
 	public final static String MESSAGES_XSD_LOCATION = "/momime.common.messages/MoMIMEMessages.xsd";
 

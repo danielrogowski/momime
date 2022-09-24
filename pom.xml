@@ -15,14 +15,16 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.5.3</version>
+		<version>0.6.0-SNAPSHOT</version>
 	</parent>
 
 	<properties>
-		<mom.multiplayer.version>0.5.6</mom.multiplayer.version>
-		<mom.map.version>0.5.4</mom.map.version>
-		<mom.xmleditor.version>0.5.4</mom.xmleditor.version>
-		<mom.ndgutils.version>0.5.4</mom.ndgutils.version>
+		<mom.multiplayer.version>0.6.0-SNAPSHOT</mom.multiplayer.version>
+		<mom.map.version>0.6.0-SNAPSHOT</mom.map.version>
+		<mom.xmleditor.version>0.6.0-SNAPSHOT</mom.xmleditor.version>
+		<mom.ndgutils.version>0.6.0-SNAPSHOT</mom.ndgutils.version>
+		<mom.jre.version>17.0.4</mom.jre.version>
+		<mom.jre.build>8</mom.jre.build>
 	</properties>
 
 	<modules>

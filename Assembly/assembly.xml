@@ -34,17 +34,17 @@
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>
 			<excludes>
-				<exclude>com.ndg.momime:momime-server:jar:classpath:${project.version}</exclude>
-				<exclude>com.ndg.momime:momime-client:jar:classpath:${project.version}</exclude>
-				<exclude>com.ndg.momime:momime-editors:jar:classpath:${project.version}</exclude>
+				<exclude>com.ndg.momime:momime-server:jar:classpath</exclude>
+				<exclude>com.ndg.momime:momime-client:jar:classpath</exclude>
+				<exclude>com.ndg.momime:momime-editors:jar:classpath</exclude>
 
-				<exclude>com.ndg.momime:momime-server:jar:databases:${project.version}</exclude>
-				<exclude>com.ndg.momime:momime-client:jar:graphics:${project.version}</exclude>
-				<exclude>com.ndg.momime:momime-client:jar:languages:${project.version}</exclude>
+				<exclude>com.ndg.momime:momime-server:jar:databases</exclude>
+				<exclude>com.ndg.momime:momime-client:jar:graphics</exclude>
+				<exclude>com.ndg.momime:momime-client:jar:languages</exclude>
 
-				<exclude>com.ndg.momime:momime-server:jar:config:${project.version}</exclude>
-				<exclude>com.ndg.momime:momime-client:jar:config:${project.version}</exclude>
-				<exclude>com.ndg.momime:momime-editors:jar:config:${project.version}</exclude>
+				<exclude>com.ndg.momime:momime-server:jar:config</exclude>
+				<exclude>com.ndg.momime:momime-client:jar:config</exclude>
+				<exclude>com.ndg.momime:momime-editors:jar:config</exclude>
 				
 				<exclude>org.adoptopenjdk</exclude>
 			</excludes>

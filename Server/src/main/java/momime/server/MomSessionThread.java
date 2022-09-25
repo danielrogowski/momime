@@ -203,13 +203,26 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 				sourceAttributes.remove ("mod");
 
 			// Find matching element in target if present, otherwise create one
-			final List<Element> possibleTargetElements = target.getChildren (sourceElement.getName ()).stream ().filter
+			final List<Element> targetElementsWithName = target.getChildren (sourceElement.getName ());
+			final List<Element> possibleTargetElements = targetElementsWithName.stream ().filter
 				(t -> t.getAttributes ().stream ().collect (Collectors.toMap (a -> a.getName (), a -> a.getValue ())).equals (sourceAttributes)).collect (Collectors.toList ());
 			
 			log.debug ("Applying mod element, found " + possibleTargetElements.size () + " possible target element(s) for " + sourceElement + " - " + sourceAttributes);
 			
 			if (possibleTargetElements.isEmpty ())
-				target.addContent (sourceElement.clone ());
+			{
+				// Have to find the right place to insert it - after all the elements with the same name
+				if (targetElementsWithName.isEmpty ())
+					target.addContent (sourceElement.clone ());		// Add it at the end and hope for the best
+				else
+				{
+					// Be smarter about the insertion point
+					final Element lastTargetElementWithName =  targetElementsWithName.get (targetElementsWithName.size () - 1);
+					final int index = target.indexOf (lastTargetElementWithName);
+					
+					target.addContent (index + 1, sourceElement.clone ());
+				}
+			}
 			else if (possibleTargetElements.size () == 1)
 			{
 				final Element targetElement = possibleTargetElements.get (0);

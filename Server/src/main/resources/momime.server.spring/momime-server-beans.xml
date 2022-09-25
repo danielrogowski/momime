@@ -63,6 +63,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg ref="modSchema" />
 	</bean>
 	
+	<bean id="saxBuilder" class="org.jdom2.input.SAXBuilder" />
+	
 	<!-- Create extended versions of client to server messages which include message implementations -->
 
 	<bean id="momServerClientToServerFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
@@ -1229,7 +1231,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
 		<property name="commonDatabaseUnmarshaller" ref="commonDatabaseUnmarshaller" />
+		<property name="saxBuilder" ref="saxBuilder" />
 		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
+		<property name="pathToModXmls" value="#{serverConfig.pathToModXmls}" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 	</bean>

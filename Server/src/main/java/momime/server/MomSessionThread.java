@@ -196,6 +196,11 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		for (final Element sourceElement : source.getChildren ())
 		{
 			final Map<String, String> sourceAttributes = sourceElement.getAttributes ().stream ().collect (Collectors.toMap (a -> a.getName (), a -> a.getValue ()));
+			
+			// Force replacement of all content under this node, as if it was new
+			final boolean replace = "replace".equals (sourceAttributes.get ("mod"));
+			if (replace)
+				sourceAttributes.remove ("mod");
 
 			// Find matching element in target if present, otherwise create one
 			final List<Element> possibleTargetElements = target.getChildren (sourceElement.getName ()).stream ().filter
@@ -204,7 +209,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 			log.debug ("Applying mod element, found " + possibleTargetElements.size () + " possible target element(s) for " + sourceElement + " - " + sourceAttributes);
 			
 			if (possibleTargetElements.isEmpty ())
-				target.addContent (sourceElement);
+				target.addContent (sourceElement.clone ());
 			else if (possibleTargetElements.size () == 1)
 			{
 				final Element targetElement = possibleTargetElements.get (0);
@@ -215,8 +220,16 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 					targetElement.setText (sourceElement.getText ());
 				}
 				else
+				{
+					if (replace)
+					{
+						final List<Element> removeElements = new ArrayList<Element> (targetElement.getChildren ());
+						removeElements.forEach (c -> c.detach ());
+					}
+					
 					// Drill down into child elements
 					applyMod (targetElement, sourceElement);
+				}
 			}
 			else
 				throw new IOException ("Multiple possible target elements for " + sourceElement + " - " + sourceAttributes);

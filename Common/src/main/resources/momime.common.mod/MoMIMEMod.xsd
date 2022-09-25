@@ -2,9 +2,14 @@
 	xmlns:map="http://www.ndg.com/map" xmlns:momimecommon="http://momime/common/database" xmlns:momimemod="http://momime/common/mod" targetNamespace="http://momime/common/mod"
 	jaxb:version="3.0">
 
-	<!-- This is a copy of MoMIMECommonDatabase.xsd with all the simple types and basic complex types like languageText removed (those can be referenced from the regular XSD),
-		all foreign keys removed, and all minOccurs set to 0 so every field is optional.  Mandatory attributes are still mandatory, as we need to know keys of elements
-		so we know if they refer to elements from the main XML or are brand new elements (modding an existing unit vs adding a brand new one). -->
+	<!-- This is a copy of MoMIMECommonDatabase.xsd except:
+		1) All the simple types and basic complex types like languageText removed (those can be referenced from the regular XSD)
+		2) All foreign keys removed
+		3) All minOccurs set to 0 so every element is optional
+		4) Addition of "mod" attribute on all elements
+		
+		Mandatory attributes are still mandatory, as we need to know keys of elements, so we know if they refer
+		to elements from the main XML or are brand new elements (modding an existing unit vs adding a brand new one). -->
 	
 	<xsd:import namespace="http://www.ndg.com/map" />
 	<xsd:import namespace="http://momime/common/database" />
@@ -1000,6 +1005,7 @@
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSizePlane" type="momimemod:mapSizePlane" />
 				</xsd:sequence>
 				<xsd:attribute name="overlandMapSizeID" type="momimecommon:overlandMapSizeID" use="optional" nxe:label="Map Size ID" nxe:gridwidth="80" />
+				<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -1018,6 +1024,7 @@
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="landProportion" nxe:singular="Land proportion" nxe:plural="Land proportions" nxe:submenu="New game settings">
@@ -1034,6 +1041,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionPlane" type="momimemod:landProportionPlane" />
 		</xsd:sequence>
 		<xsd:attribute name="landProportionID" type="momimecommon:landProportionID" use="optional" nxe:label="Land Proportion ID" nxe:gridwidth="120" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="landProportionTileType" nxe:singular="Land Proportion Tile Type" nxe:plural="Land Proportion Tile Types">
@@ -1051,6 +1059,7 @@
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="landProportionPlane" nxe:singular="Land Proportion Plane" nxe:plural="Land Proportion Planes">
@@ -1067,6 +1076,7 @@
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="nodeStrength" nxe:singular="Node strength" nxe:plural="Node strengths" nxe:submenu="New game settings">
@@ -1079,6 +1089,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrengthPlane" type="momimemod:nodeStrengthPlane" />
 		</xsd:sequence>
 		<xsd:attribute name="nodeStrengthID" type="momimecommon:nodeStrengthID" use="optional" nxe:label="Node Strength ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="nodeStrengthPlane" nxe:singular="Node Strength Plane" nxe:plural="Node Strength Planes">
@@ -1096,6 +1107,7 @@
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="difficultyLevel" nxe:singular="Difficulty level" nxe:plural="Difficulty levels" nxe:submenu="New game settings">
@@ -1143,6 +1155,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelNodeStrength" type="momimemod:difficultyLevelNodeStrength" />
 		</xsd:sequence>
 		<xsd:attribute name="difficultyLevelID" type="momimecommon:difficultyLevelID" use="optional" nxe:label="Difficulty Level ID" nxe:gridwidth="140" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="difficultyLevelPlane" nxe:singular="Difficulty Level - Plane" nxe:plural="Difficulty Level - Planes">
@@ -1166,6 +1179,7 @@
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="difficultyLevelNodeStrength" nxe:singular="Difficulty Level - Node Strength" nxe:plural="Difficulty Level - Node Strengths">
@@ -1192,6 +1206,7 @@
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="fogOfWarSetting" nxe:singular="Fog of War settings" nxe:plural="Fog of War settings" nxe:submenu="New game settings">
@@ -1207,6 +1222,7 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="seeEnemyCityConstruction" type="xsd:boolean" nxe:label="See what enemy cities are constructing?" nxe:gridwidth="200" />
 		</xsd:sequence>
 		<xsd:attribute name="fogOfWarSettingID" type="momimecommon:fogOfWarSettingID" use="optional" nxe:label="Fog of War Setting ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="unitSetting" nxe:singular="Unit settings" nxe:plural="Unit settings" nxe:submenu="New game settings">
@@ -1230,6 +1246,7 @@
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="unitSettingID" type="momimecommon:unitSettingID" use="optional" nxe:label="Unit Setting ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="spellSetting" nxe:singular="Spell settings" nxe:plural="Spell settings" nxe:submenu="New game settings">
@@ -1250,6 +1267,7 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellsStolenFromFortress" type="momimecommon:spellCount" nxe:label="Nbr. spells stolen when banishing" nxe:showmaincolumn="false" />
 		</xsd:sequence>
 		<xsd:attribute name="spellSettingID" type="momimecommon:spellSettingID" use="optional" nxe:label="Spell Setting ID" nxe:gridwidth="120" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="heroItemSetting" nxe:singular="Hero Item settings" nxe:plural="Hero Item settings" nxe:submenu="New game settings">
@@ -1264,6 +1282,7 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="requireBooksForGiftEvent" type="xsd:boolean" nxe:label="Require books for gift event?" nxe:gridwidth="300" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemSettingID" type="momimecommon:heroItemSettingID" use="optional" nxe:label="Hero Item Setting ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="newGameDefaults" nxe:singular="Default new game settings" nxe:plural="Default new game settings" nxe:submenu="New game settings">
@@ -1328,6 +1347,7 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 <!-- Types used in the client side database that it sends to each client as they join a session -->
@@ -1355,6 +1375,7 @@
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:gridwidth="80" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="productionType" nxe:singular="Production Type" nxe:plural="Production Types" nxe:submenu="Cities">
@@ -1386,6 +1407,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionTypeImage" type="momimemod:productionTypeImage" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:gridwidth="110" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="productionTypeImage" nxe:singular="Production Type Image" nxe:plural="Production Type Images">
@@ -1393,6 +1415,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="1" name="productionImageFile" type="momimecommon:imageFilename" nxe:label="Production type image file" nxe:gridwidth="350" />
 		</xsd:sequence>
 		<xsd:attribute name="productionValue" type="momimecommon:productionImageValue" use="required" nxe:label="Production Type Value" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="mapFeature" nxe:singular="Map Feature" nxe:plural="Map Features" nxe:submenu="Overland Map">
@@ -1433,6 +1456,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureMagicRealm" type="momimemod:mapFeatureMagicRealm" />
 		</xsd:sequence>
 		<xsd:attribute name="mapFeatureID" type="momimecommon:mapFeatureID" use="required" nxe:label="Map Feature ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="mapFeatureMagicRealm" nxe:singular="Monster Magic Realm" nxe:plural="Monster Magic Realms">
@@ -1449,6 +1473,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="tileType" nxe:singular="Tile Type" nxe:plural="Tile Types" nxe:submenu="Overland Map">
@@ -1492,6 +1517,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeRoad" type="momimemod:tileTypeRoad" />
 		</xsd:sequence>
 		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="tileTypeFeatureChance" nxe:singular="Feature Chance" nxe:plural="Feature Chances">
@@ -1515,6 +1541,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="tileTypeAreaEffect" nxe:singular="Tile Type Area Effect" nxe:plural="Tile Type Area Effects">
@@ -1531,6 +1558,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="tileTypeMiniMap" nxe:singular="Mini map" nxe:plural="Mini map" nxe:submenu="Overland Map">
@@ -1544,6 +1572,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="tileTypeRoad" nxe:singular="Road" nxe:plural="Roads" nxe:submenu="Overland Map">
@@ -1558,6 +1587,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="1" name="roadImageFile" type="momimecommon:imageFilename" nxe:label="Road image file" nxe:gridwidth="400" />
 		</xsd:sequence>
 		<xsd:attribute name="direction" type="momimecommon:mapDirectionOrNone" use="required" nxe:label="Direction" nxe:gridwidth="70" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="pickType" nxe:singular="Type of Spell Pick" nxe:plural="Types of Spell Pick" nxe:submenu="Magic">
@@ -1588,6 +1618,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="pickTypeID" type="momimecommon:pickTypeID" use="required" nxe:label="Pick Type ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="pickTypeCountContainer" nxe:singular="Pick Type Count" nxe:plural="Pick Type Counts">
@@ -1598,6 +1629,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellCount" type="momimemod:pickTypeGrantsSpells" />
 		</xsd:sequence>
 		<xsd:attribute name="count" type="momimecommon:pickTypeCount" use="required" nxe:label="Count" nxe:gridwidth="60" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="pickTypeGrantsSpells" nxe:singular="Spell Count" nxe:plural="Spell Counts">
@@ -1615,6 +1647,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="pick" nxe:singular="Pick" nxe:plural="Picks" nxe:submenu="Magic">
@@ -1721,6 +1754,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickProductionBonus" type="momimemod:pickProductionBonus" />
 		</xsd:sequence>
 		<xsd:attribute name="pickID" type="momimecommon:pickID" use="required" nxe:label="Pick ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="pickPrerequisite" nxe:singular="Pick Pre-requisite" nxe:plural="Pick Pre-requisites">
@@ -1778,6 +1812,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="wizard" nxe:singular="Wizard" nxe:plural="Wizards" nxe:submenu="Wizards">
@@ -1849,6 +1884,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="wizardID" type="momimecommon:wizardID" use="required" nxe:label="Wizard ID" nxe:gridwidth="80" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="wizardPickCount" nxe:singular="Wizard Pick Count" nxe:plural="Wizard Pick Counts">
@@ -1859,6 +1895,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPick" type="momimemod:pickAndQuantity" />
 		</xsd:sequence>
 		<xsd:attribute name="pickCount" type="momimecommon:pickCount" use="required" nxe:label="Pick Count" nxe:gridwidth="80" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="pickAndQuantity" nxe:singular="Pick" nxe:plural="Picks">
@@ -1875,6 +1912,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="race" nxe:singular="Race" nxe:plural="Races">
@@ -1919,6 +1957,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceUnrest" type="momimemod:raceUnrest" />
 		</xsd:sequence>
 		<xsd:attribute name="raceID" type="momimecommon:raceID" use="required" nxe:label="Race ID" nxe:gridwidth="80" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="racePopulationTask" nxe:singular="Race Population Task" nxe:plural="Race Population Tasks">
@@ -1935,6 +1974,7 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="populationTaskID" type="momimecommon:populationTaskID" use="required" nxe:label="Population Task ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="raceUnrest" nxe:singular="Unrest" nxe:plural="Unrest">
@@ -1954,6 +1994,7 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="taxRate" nxe:singular="Tax Rate" nxe:plural="Tax Rates" nxe:submenu="Cities">
@@ -1965,6 +2006,7 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
 			<xsd:element minOccurs="0" maxOccurs="1" name="taxUnrestPercentage" type="momimecommon:percentage" nxe:label="Unrest %" nxe:gridwidth="80" />
 		</xsd:sequence>
 		<xsd:attribute name="taxRateID" type="momimecommon:taxRateID" use="required" nxe:label="Tax Rate ID" nxe:gridwidth="80" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="building" nxe:singular="Building" nxe:plural="Buildings" nxe:submenu="Cities">
@@ -2009,6 +2051,7 @@ e.g. to build a Farmers' Market you must have a Granary and a Marketplace.</xsd:
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingRequiresTileType" type="momimemod:buildingRequiresTileType" />
 		</xsd:sequence>
 		<xsd:attribute name="buildingID" type="momimecommon:buildingID" use="required" nxe:label="Building ID" nxe:gridwidth="80" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="buildingPopulationProductionModifier" nxe:singular="Building Population Production Modifier" nxe:plural="Building Population Production Modifiers">
@@ -2032,6 +2075,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="buildingRequiresTileType" nxe:singular="Tile Type Pre-requisite" nxe:plural="Tile Type Pre-requisites">
@@ -2048,6 +2092,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="rangedAttackType" nxe:singular="Ranged Attack Type" nxe:plural="Ranged Attack Types" nxe:submenu="Units">
@@ -2082,6 +2127,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeCombatImage" type="momimemod:rangedAttackTypeCombatImage" />
 		</xsd:sequence>
 		<xsd:attribute name="rangedAttackTypeID" type="momimecommon:rangedAttackTypeID" use="required" nxe:label="RAT ID" nxe:gridwidth="50" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="rangedAttackTypeWeaponGrade" nxe:singular="RAT Weapon Grade" nxe:plural="RAT Weapon Grades">
@@ -2095,6 +2141,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="rangedAttackTypeCombatImage" nxe:singular="RAT Combat Image" nxe:plural="RAT Combat Images">
@@ -2110,6 +2157,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 		</xsd:sequence>
 		<xsd:attribute name="rangedAttackTypeActionID" type="momimecommon:rangedAttackTypeActionID" use="required" nxe:label="Action" nxe:gridwidth="100" />
 		<xsd:attribute name="direction" type="map:mapDirection" use="required" nxe:label="Direction" nxe:gridwidth="50" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="weaponGrade" nxe:singular="Weapon Grade" nxe:plural="Weapon Grades" nxe:submenu="Units">
@@ -2126,6 +2174,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="addsToSkill" type="momimemod:addsToSkill" />
 		</xsd:sequence>
 		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="unitSkill" nxe:singular="Unit Skill" nxe:plural="Unit Skills" nxe:submenu="Units">
@@ -2288,6 +2337,7 @@ So like this, its possible to basically break skills down into multiple sub-skil
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Unit Skill ID" nxe:gridwidth="80" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="addsToSkill" nxe:singular="Adds to Skill" nxe:plural="Adds to Skills">
@@ -2392,6 +2442,7 @@ and under Resist Elements will be a negation record listing that Elemental Armou
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="unitSkillWeaponGrade" nxe:singular="Attr Weapon Grade" nxe:plural="Attr Weapon Grades">
@@ -2405,6 +2456,7 @@ and under Resist Elements will be a negation record listing that Elemental Armou
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="unitType" nxe:singular="Unit Type" nxe:plural="Unit Types" nxe:submenu="Units">
@@ -2431,6 +2483,7 @@ and under Resist Elements will be a negation record listing that Elemental Armou
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="unitTypeID" type="momimecommon:unitTypeID" use="required" nxe:label="Unit Type ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="experienceLevel" nxe:singular="Experience Level" nxe:plural="Experience Levels">
@@ -2451,6 +2504,7 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceSkillBonus" type="momimemod:unitSkillAndValue" nxe:label="Bonus to skill" nxe:plural="Bonuses to skills" />
 		</xsd:sequence>
 		<xsd:attribute name="levelNumber" type="momimecommon:experienceLevelNumber" use="required" nxe:label="Level" nxe:gridwidth="50" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="combatAction" nxe:singular="Combat Action" nxe:plural="Combat Actions" nxe:submenu="Units">
@@ -2468,6 +2522,7 @@ one of these listed skills.</xsd:documentation>
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="combatActionID" type="momimecommon:combatActionID" use="required" nxe:label="Combat Action ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="unit" nxe:singular="Unit" nxe:plural="Units" nxe:submenu="Units">
@@ -2563,6 +2618,7 @@ where a number of different heroes may be summoned at random, but some may have 
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="unitID" type="momimecommon:unitID" use="required" nxe:label="Unit ID" nxe:gridwidth="50" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="heroName" nxe:singular="Hero Name" nxe:plural="Hero Names">
@@ -2573,6 +2629,7 @@ where a number of different heroes may be summoned at random, but some may have 
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroNameLang" type="momimecommon:languageText" nxe:label="Hero Name" />
 		</xsd:sequence>
 		<xsd:attribute name="heroNameID" type="momimecommon:heroNameID" use="required" nxe:label="Hero Name ID" nxe:gridwidth="130" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="unitCanCast" nxe:singular="Unit Spell" nxe:plural="Unit Spells">
@@ -2591,6 +2648,7 @@ Heroes have entries with numberOfTimes left null for the additional spells they 
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="unitSkillAndValue" nxe:singular="Unit Skills" nxe:plural="Unit Skills">
@@ -2613,6 +2671,7 @@ don't have a value (such as Fire Immunity or Mountaineer).  By convention MoM IM
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="productionTypeAndUndoubledValue" nxe:singular="Undoubled Production" nxe:plural="Undoubled Production">
@@ -2630,6 +2689,7 @@ but kept these separate to make it totally clear when production values are reco
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="productionTypeAndDoubledValue" nxe:singular="Doubled Production" nxe:plural="Doubled Production">
@@ -2647,6 +2707,7 @@ but kept these separate to make it totally clear when production values are reco
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="unitCombatAction" nxe:singular="Unit Combat Action" nxe:plural="Unit Combat Actions">
@@ -2661,6 +2722,7 @@ but kept these separate to make it totally clear when production values are reco
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="unitCombatImage" nxe:singular="Unit Combat Image" nxe:plural="Unit Combat Images">
@@ -2678,6 +2740,7 @@ but kept these separate to make it totally clear when production values are reco
 			<xsd:element minOccurs="0" maxOccurs="1" name="flagOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Flag offset Y" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="direction" type="map:mapDirection" use="required" nxe:label="Direction" nxe:gridwidth="50" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="combatAreaEffect" nxe:singular="Combat Area Effect" nxe:plural="Combat Area Effects" nxe:submenu="Magic">
@@ -2729,6 +2792,7 @@ this value each time a dispel attempt is made (counter magic).</xsd:documentatio
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" use="required" nxe:label="Effect ID" nxe:gridwidth="80" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="spellBookSection" nxe:singular="Spell Book Section" nxe:plural="Spell Book Sections" nxe:submenu="Spells">
@@ -2738,6 +2802,7 @@ this value each time a dispel attempt is made (counter magic).</xsd:documentatio
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellTargetStackPrompt" type="momimecommon:languageText" nxe:label="Targeting stack prompt" />
 		</xsd:sequence>
 		<xsd:attribute name="spellBookSectionID" type="momimecommon:spellBookSectionID" use="required" nxe:label="Spell Book Section ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="spell" nxe:singular="Spell" nxe:plural="Spells" nxe:submenu="Spells">
@@ -2976,6 +3041,7 @@ Technically one is chosen at random when the spell is cast, however there's no s
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="spellID" type="momimecommon:spellID" use="required" nxe:label="Spell ID" nxe:gridwidth="60" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="unitSpellEffect" nxe:singular="Unit Effect" nxe:plural="Unit Effects">
@@ -3026,6 +3092,7 @@ If there are no spellValidUnitTarget records, the spell can be cast on all types
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="spellValidTileTypeTarget" nxe:singular="Valid Tile Type Target" nxe:plural="Valid Tile Type Targets">
@@ -3039,6 +3106,7 @@ Also specifies the type of terrain it gets changed to.</xsd:documentation>
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingsDestroyedChance" type="momimecommon:percentage" nxe:label="Destroys buildings %" nxe:showmaincolumn="false" />
 		</xsd:sequence>
 		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Target Tile Type" nxe:showmaincolumn="false" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="spellValidMapFeatureTarget" nxe:singular="Valid Map Feature Target" nxe:plural="Valid Map Feature Targets">
@@ -3050,6 +3118,7 @@ Also specifies the type of terrain it gets changed to.</xsd:documentation>
 			<xsd:element minOccurs="0" maxOccurs="1" name="changeBeneficial" type="xsd:boolean" nxe:label="Change is beneficial?" nxe:gridwith="150" />
 		</xsd:sequence>
 		<xsd:attribute name="mapFeatureID" type="momimecommon:mapFeatureID" use="required" nxe:label="Target Map Feature" nxe:showmaincolumn="false" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="combatTileType" nxe:singular="Combat Tile Type" nxe:plural="Combat Tile Types" nxe:submenu="Combat Map">
@@ -3080,6 +3149,7 @@ Zero value indicates the terrain in this layer has no effect on movement (e.g. h
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="combatTileTypeID" type="momimecommon:combatTileTypeID" use="required" nxe:label="Combat Tile Type ID" nxe:gridwidth="130" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="combatTileBorder" nxe:singular="Combat Tile Border" nxe:plural="Combat Tile Borders" nxe:submenu="Combat Map">
@@ -3093,6 +3163,7 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			<xsd:element minOccurs="0" maxOccurs="1" name="defenceBonus" type="momimecommon:unitSkillValue" nxe:label="Defence Bonus" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="combatTileBorderID" type="momimecommon:combatTileBorderID" use="required" nxe:label="Combat Tile Border ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="movementRateRule" nxe:singular="Movement Rate Rule" nxe:plural="Movement Rate Rules" nxe:submenu="Units">
@@ -3157,6 +3228,7 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeBasicStat" type="momimemod:unitSkillAndValue" nxe:label="Basic Stat" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemTypeID" type="momimecommon:heroItemTypeID" use="required" nxe:label="Item Type ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="heroItemSlotType" nxe:singular="Hero Item Slot Type" nxe:plural="Hero Item Slot Types" nxe:submenu="Hero items">
@@ -3193,6 +3265,7 @@ they don't currently own.  This lists, for a particular item type, the mods on a
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Slot Type ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="heroItemBonus" nxe:singular="Hero Item Bonus" nxe:plural="Hero Item Bonuses" nxe:submenu="Hero items">
@@ -3217,6 +3290,7 @@ pick both e.g. +1 and +2 attack on the same item.  However "Flaming" looks ident
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusStat" type="momimemod:heroItemBonusStat" nxe:label="Bonus Stat" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemBonusID" type="momimecommon:heroItemBonusID" use="required" nxe:label="Item Bonus ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="heroItemBonusStat" nxe:singular="Hero Item Bonus Stat" nxe:plural="Hero Item Bonus Stats">
@@ -3287,6 +3361,7 @@ This is used for stats that affect an existing attack in ways other than adding 
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="damageTypeImmunity" type="momimemod:damageTypeImmunity" nxe:label="Immunity" nxe:plural="Immunities" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="damageTypeID" type="momimecommon:damageTypeID" use="required" nxe:label="Damage Type ID" nxe:gridwidth="120" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="damageTypeImmunity" nxe:singular="Immunity" nxe:plural="Immunities">
@@ -3311,6 +3386,7 @@ Implication is that for spells and attacks whose damage resolution is based on r
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 <!-- Moved from server XSD -->
@@ -3324,6 +3400,7 @@ Implication is that for spells and attacks whose damage resolution is based on r
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="populationTaskPlural" type="momimecommon:languageText" nxe:label="Plural description" />
 		</xsd:sequence>
 		<xsd:attribute name="populationTaskID" type="momimecommon:populationTaskID" use="required" nxe:label="Population Task ID" nxe:gridwidth="120" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="citySize" nxe:singular="City Size" nxe:plural="City Sizes" nxe:submenu="Cities">
@@ -3339,6 +3416,7 @@ Implication is that for spells and attacks whose damage resolution is based on r
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeMaximum" type="momimecommon:cityPopulation" nxe:label="Maximum population" nxe:gridwidth="130" />
 		</xsd:sequence>
 		<xsd:attribute name="citySizeID" type="momimecommon:citySizeID" use="required" nxe:label="City Size ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="heroSkillType" nxe:singular="Hero Skill Type" nxe:plural="Hero Skill Types" nxe:submenu="Units">
@@ -3349,6 +3427,7 @@ Implication is that for spells and attacks whose damage resolution is based on r
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroSkillTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="90" />
 		</xsd:sequence>
 		<xsd:attribute name="heroSkillTypeID" type="momimecommon:heroSkillTypeID" use="required" nxe:label="Hero Skill Type ID" nxe:gridwidth="120" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="spellRank" nxe:singular="Spell Rank" nxe:plural="Spell Ranks" nxe:submenu="Spells">
@@ -3375,6 +3454,7 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="spellRankID" type="momimecommon:spellRankID" use="required" nxe:label="Spell Rank ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="citySpellEffect" nxe:singular="City Spell Effect" nxe:plural="City Spell Effects" nxe:submenu="Cities">
@@ -3421,6 +3501,7 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectTileType" type="momimemod:citySpellEffectTileType" />
 		</xsd:sequence>
 		<xsd:attribute name="citySpellEffectID" type="momimecommon:citySpellEffectID" use="required" nxe:label="City Spell Effect ID" nxe:gridwidth="110" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="citySpellEffectProductionModifier" nxe:singular="City Spell Effect Production Modifier" nxe:plural="City Spell Effect Production Modifiers">
@@ -3437,6 +3518,7 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="citySpellEffectTileType" nxe:singular="City Spell Effect Tile Type" nxe:plural="City Spell Effect Tile Types">
@@ -3465,6 +3547,7 @@ Used for Gaia's blessing which can change deserts into grasslands and volcanoes 
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="combatMapElement" nxe:singular="Combat Map Element" nxe:plural="Combat Map Elements" nxe:submenu="Combat Map">
@@ -3560,6 +3643,7 @@ e.g. attacking unit must have first strike and defending unit must have haste.</
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="attackResolutionStep" nxe:singular="Step" nxe:plural="Steps">
@@ -3634,6 +3718,7 @@ Ordering of this list is very significant.
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="aiUnitCategoryID" type="momimecommon:aiUnitCategoryID" use="required" nxe:label="AI unit category ID" nxe:gridwidth="120" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 <!-- Merged graphics XML, new for 0.9.9.0 -->
@@ -3666,6 +3751,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewElementSetName" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="cityViewElementSetID" type="momimecommon:cityViewElementSetID" use="required" nxe:label="City View Element Set ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="cityViewElement" nxe:singular="City View Element" nxe:plural="City View Elements" nxe:submenu="City View">
@@ -3755,6 +3841,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="smoothedTileType" type="momimemod:smoothedTileType" />
 		</xsd:sequence>
 		<xsd:attribute name="tileSetID" type="momimecommon:tileSetID" use="required" nxe:label="Tile Set ID" nxe:gridwidth="100" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="smoothingSystem" nxe:singular="Smoothing System" nxe:plural="Smoothing Systems">
@@ -3764,6 +3851,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="smoothingReduction" type="momimemod:smoothingReduction" />
 		</xsd:sequence>
 		<xsd:attribute name="smoothingSystemID" type="momimecommon:smoothingSystemID" use="required" nxe:label="Smoothing System ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="smoothingReduction" nxe:singular="Smoothing Reduction Rule" nxe:plural="Smoothing Reduction Rules">
@@ -3833,6 +3921,7 @@ Ordering of this list is very significant.
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="smoothedTile" nxe:singular="Smoothed Tile" nxe:plural="Smoothed Tiles">
@@ -3850,6 +3939,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="1" name="tileFile" type="momimecommon:imageFilename" nxe:label="Tile image file" nxe:gridwidth="430" />
 		</xsd:sequence>
 		<xsd:attribute name="bitmask" type="momimecommon:bitmask" use="required" nxe:label="Bitmask" nxe:gridwidth="80" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="event" nxe:singular="Random Event" nxe:plural="Random Events">
@@ -3902,6 +3992,7 @@ Ordering of this list is very significant.
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="eventID" type="momimecommon:eventID" use="required" nxe:label="Event ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>	
 	
 	<xsd:complexType name="wizardPersonality" nxe:singular="Personality" nxe:plural="Personalities" nxe:submenu="Wizards">
@@ -3921,6 +4012,7 @@ Ordering of this list is very significant.
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="wizardPersonalityID" type="momimecommon:wizardPersonalityID" use="required" nxe:label="Personality ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>	
 	
 	<xsd:complexType name="wizardObjective" nxe:singular="Objective" nxe:plural="Objectives" nxe:submenu="Wizards">
@@ -3935,6 +4027,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="objectiveSelectedByPick" type="momimemod:selectedByPick" nxe:label="Selected by" />
 		</xsd:sequence>
 		<xsd:attribute name="wizardObjectiveID" type="momimecommon:wizardObjectiveID" use="required" nxe:label="Objective ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="selectedByPick" nxe:singular="Selected by pick" nxe:plural="Selected by picks">
@@ -3951,6 +4044,7 @@ Ordering of this list is very significant.
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="relationScore" nxe:singular="Relation score" nxe:plural="Relation scores" nxe:submenu="Wizards">
@@ -3963,6 +4057,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="1" name="eyesRightImage" type="momimecommon:imageFilename" nxe:label="Eyes right image file" nxe:gridwidth="290" />
 		</xsd:sequence>
 		<xsd:attribute name="relationScoreID" type="momimecommon:relationScoreID" use="required" nxe:label="Relation score ID" nxe:gridwidth="150" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="animation" nxe:singular="Animation" nxe:plural="Animations">
@@ -3976,6 +4071,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="frame" type="momimemod:animationFrame" />
 		</xsd:sequence>
 		<xsd:attribute name="animationID" type="momimecommon:animationID" use="required" nxe:label="Animation ID" nxe:gridwidth="300" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>	
 
 	<xsd:complexType name="animationFrame" nxe:singular="Animation frame" nxe:plural="Animation frames">
@@ -3992,6 +4088,18 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="audioFile" type="momimecommon:imageFilename" nxe:label="Music file" nxe:gridwidth="500" />
 		</xsd:sequence>
 		<xsd:attribute name="playListID" type="momimecommon:playListID" use="required" nxe:label="Play list ID" nxe:gridwidth="200" />
+		<xsd:attribute name="mod" type="momimemod:modInstruction" use="optional" nxe:label="Mod instruction" nxe:gridWidth="120" />
 	</xsd:complexType>
+
+<!-- Simple types -->
+
+	<xsd:simpleType name="modInstruction">
+        <xsd:annotation>
+        	<xsd:documentation>Can override default behaviour of how mod element nodes are applied to the main XML .</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="replace" />
+		</xsd:restriction>
+	</xsd:simpleType>
 	
 </xsd:schema>

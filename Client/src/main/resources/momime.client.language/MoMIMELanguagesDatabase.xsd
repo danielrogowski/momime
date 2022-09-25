@@ -1423,6 +1423,10 @@
 						<xsd:selector xpath="title" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="newGameScreenChooseModsPK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="newGameScreenDifficultyPK">
 						<xsd:selector xpath="difficulty" />
 						<xsd:field xpath="@language" />

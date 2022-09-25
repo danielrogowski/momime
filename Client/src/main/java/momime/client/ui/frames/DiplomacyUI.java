@@ -797,10 +797,6 @@ public final class DiplomacyUI extends MomClientFrameUI
 		if (getOverlandMapRightHandPanel () != null)
 			getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		
-		// Unblock the message that caused this
-		if (getMeetWizardMessage () != null)
-			getClient ().finishCustomDurationMessage (getMeetWizardMessage ());
-		
 		// Stop animation timer
 		if ((timer != null) && (timer.isRunning ()))
 		{
@@ -814,6 +810,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 			getMusicPlayer ().setShuffle (true);
 			getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC, AnimationContainer.GRAPHICS_XML);
 		}
+		
+		// Unblock the message that caused this
+		if (getMeetWizardMessage () != null)
+			getClient ().finishCustomDurationMessage (getMeetWizardMessage ());
+		
+		log.debug ("setVisibleFalse completed; DiplomacyUI closed down");
 	}
 	
 	/**
@@ -1449,6 +1451,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 	 */
 	public final void initializePortrait ()
 	{
+		log.debug ("initializePortrait to " + getPortraitState ());
+		
 		if (contentPane != null)
 		{
 			// If there's an old timer running then stop it

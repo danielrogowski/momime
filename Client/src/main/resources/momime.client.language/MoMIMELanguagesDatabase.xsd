@@ -3684,6 +3684,7 @@
 	<xsd:complexType name="newGameScreen" nxe:submenu="New game UI" nxe:singular="New game" nxe:plural="New game">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="chooseMods" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="difficulty" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="humanOpponents" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiOpponents" />

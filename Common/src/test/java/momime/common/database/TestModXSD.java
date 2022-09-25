@@ -31,6 +31,6 @@ public final class TestModXSD
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
 		
-		schemaFactory.newSchema (xsdResource);
+		schemaFactory.newSchema (xsdResource).newValidator ();
 	}
 }

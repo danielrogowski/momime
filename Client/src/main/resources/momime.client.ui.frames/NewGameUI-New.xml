@@ -8,6 +8,12 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmNewGameChooseMods">
+		<left>300</left>
+		<top>10</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmNewGameHumanOpponents">
 		<left>20</left>
 		<top>60</top>

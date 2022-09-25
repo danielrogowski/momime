@@ -51,6 +51,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg value="${configDir}MoMIMEServerConfig.xml" />
 	</bean>
 	
+	<!-- Mod XMLs -->
+
+	<bean id="modSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg type="java.net.URL" value="/momime.common.mod/MoMIMEMod.xsd" />
+	</bean>
+	
+	<bean id="validatorFactory" class="com.ndg.utils.ValidatorFactory" />
+	
+	<bean id="modValidator" class="javax.xml.validation.Validator" factory-bean="validatorFactory" factory-method="newValidator">
+		<constructor-arg ref="modSchema" />
+	</bean>
+	
 	<!-- Create extended versions of client to server messages which include message implementations -->
 
 	<bean id="momServerClientToServerFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
@@ -318,7 +330,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
 		<constructor-arg value="#{serverConfig.pathToServerXmlDatabases}" />
+		<constructor-arg value="#{serverConfig.pathToModXmls}" />
 		<constructor-arg ref="commonDatabaseUnmarshaller" />
+		<constructor-arg ref="modValidator" />
 	</bean>
 	
 	<bean id="momServer" class="momime.server.MomServer" init-method="start">

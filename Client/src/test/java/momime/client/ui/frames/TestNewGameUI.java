@@ -145,6 +145,7 @@ public final class TestNewGameUI extends ClientTestData
 		heroItemSettings.getHeroItemSettingDescription ().add (createLanguageText (Language.ENGLISH, "Open"));
 		newGameDB.getHeroItemSetting ().add (heroItemSettings);
 		
+		dbs.getModName ().add ("Awesome mod");
 		return dbs;
 	}
 	

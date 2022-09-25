@@ -3,18 +3,19 @@ package momime.server.database;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import momime.client.database.AvailableDatabase;
 import momime.client.database.NewGameDatabase;
 import momime.common.MomException;
@@ -82,48 +83,62 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 
 	/**
 	 * Finds all the compatible (i.e. correct namespace) XML databases on the server and extracts a small portion of each needed for setting up new games
-	 * @param xmlFolder Folder in which to look for server XML files, e.g. F:\Workspaces\Delphi\Master of Magic\XML Files\Server\
+	 * 
+	 * @param xmlDatabasesFolder Folder in which to look for server XML files, e.g. F:\Workspaces\Delphi\Master of Magic\XML Files\Server\
+	 * @param xmlModsFolder Folder in which to look for server XML mod files
 	 * @param commonDatabaseUnmarshaller JAXB Unmarshaller for loading database XML files
+	 * @param modValidator Validator used to validate mod XMLs
 	 * @return Info extracted from all available XML databases
 	 * @throws JAXBException If there is a problem creating the server XML unmarshaller
 	 * @throws MomException If there are no compatible server XML databases
 	 * @throws IOException If there is a problem reading the XML databases
 	 */
 	@Override
-	public final NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Unmarshaller commonDatabaseUnmarshaller)
+	public final NewGameDatabaseMessage buildNewGameDatabase (final File xmlDatabasesFolder, final File xmlModsFolder, final Unmarshaller commonDatabaseUnmarshaller, final Validator modValidator)
 		throws JAXBException, MomException, IOException
 	{
 		// First put the list of all compatibly named XML databases in a string list, so we can sort it before we start trying to load them in and check them
 		// Strip the suffix off each one as we add it
-		log.info ("Generating list of all available server XML files in \"" + xmlFolder + "\"...");
-		final File [] xmlFiles = xmlFolder.listFiles (new SuffixFilenameFilter (SERVER_XML_FILE_EXTENSION));
+		log.info ("Generating list of all available server XML files in \"" + xmlDatabasesFolder + "\"...");
+		final File [] xmlFiles = xmlDatabasesFolder.listFiles (new SuffixFilenameFilter (SERVER_XML_FILE_EXTENSION));
 		if (xmlFiles == null)
-			throw new MomException ("Unable to search folder \"" + xmlFolder + "\" for server XML files - check path specified in config file is valid");
+			throw new MomException ("Unable to search folder \"" + xmlDatabasesFolder + "\" for server XML files - check path specified in config file is valid");
 
-		final List<String> xmlFilenames = new ArrayList<String> ();
+		final List<String> xmlDatabases  = new ArrayList<String> ();
 		for (final File thisFile : xmlFiles)
 		{
 			String thisFilename = thisFile.getName ();
 			thisFilename = thisFilename.substring (0, thisFilename.length () - SERVER_XML_FILE_EXTENSION.length ());
 
-			log.debug ("buildNewGameDatabase found suitably named XML file \"" + thisFilename + "\"");
+			log.debug ("buildNewGameDatabase found suitably named database XML file \"" + thisFilename + "\"");
 
-			xmlFilenames.add (thisFilename);
+			xmlDatabases.add (thisFilename);
 		}
-
-		// Sort the filenames
-		Collections.sort (xmlFilenames);
 		
-		// Put them into a map
-		final Map<String, File> map = new HashMap<String, File> ();
-		for (final String thisFilename : xmlFilenames)
+		// Search for mods in the same way
+		log.info ("Generating list of all mod XML files in \"" + xmlModsFolder + "\"...");
+		final File [] xmlModFiles = xmlModsFolder.listFiles (new SuffixFilenameFilter (SERVER_XML_FILE_EXTENSION));
+		if (xmlModFiles == null)
+			throw new MomException ("Unable to search folder \"" + xmlModsFolder + "\" for mod XML files - check path specified in config file is valid");
+
+		final List<String> xmlMods  = new ArrayList<String> ();
+		for (final File thisFile : xmlModFiles)
 		{
-			final File thisFile = new File (xmlFolder, thisFilename + SERVER_XML_FILE_EXTENSION);
-			map.put (thisFilename, thisFile);
+			String thisFilename = thisFile.getName ();
+			thisFilename = thisFilename.substring (0, thisFilename.length () - SERVER_XML_FILE_EXTENSION.length ());
+
+			log.debug ("buildNewGameDatabase found suitably named mod XML file \"" + thisFilename + "\"");
+
+			xmlMods.add (thisFilename);
 		}
+
+		// Put them into a map
+		final Map<String, File> databasesMap = xmlDatabases.stream ().collect (Collectors.toMap (f -> f, f -> new File (xmlDatabasesFolder, f + SERVER_XML_FILE_EXTENSION)));
+		final Map<String, File> modsMap = xmlMods.stream ().collect (Collectors.toMap (f -> f, f -> new File (xmlModsFolder, f + SERVER_XML_FILE_EXTENSION)));
 		
 		// Call other method to do the guts of the work
-		final NewGameDatabaseMessage msg = buildNewGameDatabase (map, commonDatabaseUnmarshaller);
+		final NewGameDatabaseMessage msg = buildNewGameDatabase (databasesMap, commonDatabaseUnmarshaller);
+		msg.getNewGameDatabase ().getModName ().addAll (checkModsAreValid (modsMap, modValidator));
 		return msg;
 	}
 	
@@ -174,5 +189,38 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 
 		log.info ("Found " + newGameDatabase.getMomimeXmlDatabase ().size () + " compatible server XML file(s)");
 		return msg;
+	}
+	
+	/**
+	 * Checks to make sure candidate mod files match the schema
+	 * 
+	 * @param xmlFiles Map of mod names to URLs to locate them
+	 * @param modValidator Validator used to validate mod XMLs
+	 * @return List of which mods are valid
+	 */
+	final List<String> checkModsAreValid (final Map<String, File> xmlFiles, final Validator modValidator)
+	{
+		final List<String> validXmlFiles = new ArrayList<String> ();
+		
+		for (final Entry<String, File> thisXmlFile : xmlFiles.entrySet ())
+			try
+			{
+				modValidator.validate (new StreamSource (thisXmlFile.getValue ()));
+				
+				// Passes validation
+				validXmlFiles.add (thisXmlFile.getKey ());
+			}
+			catch (final Exception e)
+			{
+				String msg = e.getMessage ();
+				if ((msg == null) && (e.getCause () != null) && (e.getCause ().getMessage () != null))
+					msg = e.getCause ().getMessage ();
+				
+				log.warn ("Mod XML \"" + thisXmlFile.getKey () + "\" can't be used because of: " + msg);
+			}
+		
+		validXmlFiles.sort (null);
+		
+		return validXmlFiles;
 	}
 }

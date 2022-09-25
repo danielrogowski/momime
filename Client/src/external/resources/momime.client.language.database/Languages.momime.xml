@@ -2186,6 +2186,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<title language="pl">
 			<text>Nowa Gra</text>
 		</title>
+		<chooseMods language="en">
+			<text>Choose Mods</text>
+		</chooseMods>
 		<difficulty language="en">
 			<text>Difficulty</text>
 		</difficulty>

@@ -22,7 +22,7 @@ This includes the session description and all knowledge structures - i.e. any ru
 		<xsd:complexContent>
 			<xsd:extension base="mps:sessionDescription">
 		        <xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="xmlDatabaseName" type="xsd:normalizedString" />		<!-- should be of type filename, but no import on client XSD yet.. expect needed later -->
+					<xsd:element minOccurs="1" maxOccurs="1" name="xmlDatabaseName" type="xsd:normalizedString" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="aiPlayerCount" type="xsd:unsignedShort" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="turnSystem" type="momimemsgs:turnSystem" />
 					
@@ -39,6 +39,7 @@ This includes the session description and all knowledge structures - i.e. any ru
 					<!--  Special debug options -->
 
 					<xsd:element minOccurs="0" maxOccurs="1" name="disableFogOfWar" type="xsd:boolean" />					
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="modName" type="xsd:normalizedString" />
 		        </xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

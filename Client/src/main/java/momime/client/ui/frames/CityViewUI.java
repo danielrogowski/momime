@@ -1239,10 +1239,10 @@ public final class CityViewUI extends MomClientFrameUI
 			final OverlandMapCityData cityData = mc.getCityData ();
 	
 			Integer productionCost = null;
-			if (cityData.getCurrentlyConstructingBuildingID () != null)
+			if ((cityData != null) && (cityData.getCurrentlyConstructingBuildingID () != null))
 				productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "recheckRushBuyEnabled").getProductionCost ();
 	
-			if (cityData.getCurrentlyConstructingUnitID () != null)
+			if ((cityData != null) && (cityData.getCurrentlyConstructingUnitID () != null))
 				productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "recheckRushBuyEnabled").getProductionCost ();
 			
 			if (productionCost != null)

@@ -5407,7 +5407,9 @@ However we still need to record negative skill modification values, e.g. True Li
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="spellResearchCost">
-		<xsd:restriction base="xsd:unsignedShort" />
+		<xsd:restriction base="xsd:int">
+			<xsd:minInclusive value="0"></xsd:minInclusive>
+		</xsd:restriction>
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="savingThrowModifier">

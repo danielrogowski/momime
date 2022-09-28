@@ -31,6 +31,18 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>unpack-server-mods</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/unpack/server/mods</outputDirectory>
+							<includeClassifiers>mods</includeClassifiers>
+							<excludes>META-INF/**</excludes>
+						</configuration>
+					</execution>
+					<execution>
 						<id>unpack-client-graphics</id>
 						<phase>process-sources</phase>
 						<goals>
@@ -242,6 +254,12 @@
 			<artifactId>momime-client</artifactId>
 			<version>${project.version}</version>
 			<classifier>languages</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-mods</artifactId>
+			<version>${project.version}</version>
+			<classifier>mods</classifier>
 		</dependency>
 		
 		<dependency>

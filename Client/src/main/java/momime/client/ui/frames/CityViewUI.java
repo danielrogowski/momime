@@ -1137,7 +1137,7 @@ public final class CityViewUI extends MomClientFrameUI
 		notOursPanel.setVisible ((!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) || (cityData.getCityPopulation () < 1000));
 		production.setVisible (!notOursPanel.isVisible ());
 		changeConstructionAction.setEnabled (!notOursPanel.isVisible ());
-		renameButton.setVisible (!notOursPanel.isVisible ());
+		renameButton.setVisible (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ()));
 		
 		// Can we see what this city is constructing?
 		cannotSeeConstructionPanel.setVisible ((!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) &&

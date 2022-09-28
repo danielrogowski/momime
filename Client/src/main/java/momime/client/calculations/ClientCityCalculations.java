@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.Building;
@@ -67,4 +68,14 @@ public interface ClientCityCalculations
 	 * @throws IOException If there is a problem
 	 */
 	public void showRushBuyPrompt (final MapCoordinates3DEx cityLocation) throws IOException;
+
+	/**
+	 * @param cityLocation Location of city to check
+	 * @return Number of turns it will take to finish current construction project; null if set to Housing, Trade Goods, generating no production or a value cannot be calculated for some other reason
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
+	 */
+	public Integer calculateProductionTurnsRemaining (final MapCoordinates3DEx cityLocation)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 }

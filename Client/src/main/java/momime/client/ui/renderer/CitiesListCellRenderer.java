@@ -155,6 +155,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/** Label showing what's currently being constructed in the city */
 	private JLabel cityCurrentlyConstructing;
 	
+	/** Label showing how many turns what's currently being constructed in the city is going to take */
+	private JLabel cityCurrentlyConstructingTurns;
+	
 	/**
 	 * Loads the background image for the panel
 	 * @throws IOException If there is a problem
@@ -199,6 +202,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		
 		rushBuyIcon = getUtils ().createImage (rushBuyImage);
 		add (rushBuyIcon, "frmCitiesListRowRushBuy");
+		
+		cityCurrentlyConstructingTurns = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		add (cityCurrentlyConstructingTurns, "frmCitiesListRowCurrentlyConstructingTurns");
 	}
 
 	/**
@@ -291,6 +297,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 			
 			// Check if we can rush buy it
 			rushBuyIcon.setVisible (isRushBuyAllowed (city));
+			
+			// Turns to complete construction
+			cityCurrentlyConstructingTurns.setText ((city.getConstructionTurns () == null) ? "" : city.getConstructionTurns ().toString ());
 		}
 		catch (final Exception e)
 		{

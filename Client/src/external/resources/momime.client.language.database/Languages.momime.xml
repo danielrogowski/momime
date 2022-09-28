@@ -3895,6 +3895,12 @@ Bonus Or +GOLD_BONUS%</text>
 		<production language="en">
 			<text>Producing</text>
 		</production>
+		<productionTurn language="en">
+			<text>NUMBER_OF_TURNS Turn</text>
+		</productionTurn>
+		<productionTurns language="en">
+			<text>NUMBER_OF_TURNS Turns</text>
+		</productionTurns>
 		<rushBuy language="en">
 			<text>Buy</text>
 		</rushBuy>
@@ -4485,6 +4491,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<cityConstructing language="en">
 			<text>Constructing</text>
 		</cityConstructing>
+		<cityConstructingTurns language="en">
+			<text>Turns</text>
+		</cityConstructingTurns>
 	</citiesListScreen>
 	<heroItemsScreen>
 		<title language="en">

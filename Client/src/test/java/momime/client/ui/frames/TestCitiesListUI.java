@@ -21,6 +21,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.calculations.ClientCityCalculations;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -132,6 +133,7 @@ public final class TestCitiesListUI extends ClientTestData
 		citiesListScreenLang.getCityEnchantments ().add (createLanguageText (Language.ENGLISH, "Ench"));
 		citiesListScreenLang.getCitySell ().add (createLanguageText (Language.ENGLISH, "Sell"));
 		citiesListScreenLang.getCityConstructing ().add (createLanguageText (Language.ENGLISH, "Constructing"));
+		citiesListScreenLang.getCityConstructingTurns ().add (createLanguageText (Language.ENGLISH, "Turns"));
 
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		when (lang.getSimple ()).thenReturn (simpleLang);
@@ -216,6 +218,8 @@ public final class TestCitiesListUI extends ClientTestData
 		city5Data.setCurrentlyConstructingBuildingID ("BL02");
 		
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final ClientCityCalculations clientCityCalculations = mock (ClientCityCalculations.class);
+		
 		int cityNumber = 0;
 		for (final OverlandMapCityData cityData : new OverlandMapCityData [] {city1Data, city2Data, city3Data, city4Data, city5Data})
 		{
@@ -231,6 +235,8 @@ public final class TestCitiesListUI extends ClientTestData
 			when (unitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 				(fow.getBuilding (), fow.getMap (), new MapCoordinates3DEx (x, y, z), ourWizard.getPick (), mapSize, db)).thenReturn (cityNumber % 4); 
 			
+			when (clientCityCalculations.calculateProductionTurnsRemaining (new MapCoordinates3DEx (x, y, z))).thenReturn ((x == 0) ? null : (x / 5));
+					
 			// Enchantments and curses
 			final int enchantmentCount = cityNumber / 2;
 			final int curseCount = cityNumber % 2;
@@ -297,6 +303,7 @@ public final class TestCitiesListUI extends ClientTestData
 		cities.setWizardClientUtils (wizardClientUtils);
 		cities.setMemoryBuildingUtils (memoryBuildingUtils);
 		cities.setUnitCalculations (unitCalculations);
+		cities.setClientCityCalculations (clientCityCalculations);
 		cities.setCitiesListCellRenderer (renderer);
 		
 		// Display form		

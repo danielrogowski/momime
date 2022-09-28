@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/utils/swing/layoutmanagers/xmllayout">
-	<formWidth>873</formWidth>	<!-- 858, but once we get enough cities to show a scroll bar, the scroll bar ends up covering up the rush buy coins, so add +15 pixels for it -->
+	<formWidth>911</formWidth>	<!-- 896, but once we get enough cities to show a scroll bar, the scroll bar ends up covering up the rush buy coins, so add +15 pixels for it -->
 	<formHeight>28</formHeight>
 	<component name="frmCitiesListRowName">
 		<left>4</left>
@@ -70,6 +70,14 @@
 		<left>844</left>
 		<top>4</top>
 		<width>10</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowCurrentlyConstructingTurns">
+		<left>870</left>
+		<top>4</top>
+		<width>16</width>
 		<height>18</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>

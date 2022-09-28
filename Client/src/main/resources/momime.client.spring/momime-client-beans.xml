@@ -1785,6 +1785,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="citiesListCellRenderer" ref="citiesListCellRenderer" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="clientCityCalculations" ref="clientCityCalculations" />
 	</bean>
 	
 	<bean id="heroItemsLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

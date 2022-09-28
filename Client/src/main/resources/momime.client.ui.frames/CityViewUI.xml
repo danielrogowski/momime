@@ -54,6 +54,12 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>1.0</verticalAlignment>
 	</component>
+	<component name="frmCityProductionTurns">
+		<left>572</left>
+		<top>255</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
 	<component name="frmCityUnits">
 		<left>8</left>
 		<top>426</top>

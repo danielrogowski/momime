@@ -28,6 +28,9 @@ public final class CitiesListEntry
 	
 	/** Number of enemy spells cast on this city */ 
 	private final int curseCount;
+	
+	/** Number of turns remaining for construction */
+	private final Integer constructionTurns;
 
 	/**
 	 * @param aCityData All of the non calculated elements can be read straight from here
@@ -36,9 +39,10 @@ public final class CitiesListEntry
 	 * @param aWeaponGradeImageFile Weapon grade of units constructed at this city
 	 * @param anEnchantmentCount Number of our spells cast on this city
 	 * @param aCurseCount Number of enemy spells cast on this city
+	 * @param aConstructionTurns Number of turns remaining for construction
 	 */
 	public CitiesListEntry (final OverlandMapCityData aCityData, final MapCoordinates3DEx aCityLocation, final boolean aCapital,
-		final String aWeaponGradeImageFile, final int anEnchantmentCount, final int aCurseCount)
+		final String aWeaponGradeImageFile, final int anEnchantmentCount, final int aCurseCount, final Integer aConstructionTurns)
 	{
 		cityData = aCityData;
 		cityLocation = aCityLocation;
@@ -46,6 +50,7 @@ public final class CitiesListEntry
 		weaponGradeImageFile = aWeaponGradeImageFile;
 		enchantmentCount = anEnchantmentCount;
 		curseCount = aCurseCount;
+		constructionTurns = aConstructionTurns;
 	}
 
 	/**
@@ -158,5 +163,13 @@ public final class CitiesListEntry
 	public final Integer getProductionSoFar ()
 	{
 		return cityData.getProductionSoFar ();
+	}
+
+	/**
+	 * @return Number of turns remaining for construction
+	 */
+	public final Integer getConstructionTurns ()
+	{
+		return constructionTurns;
 	}
 }

@@ -1747,6 +1747,14 @@
 						<xsd:selector xpath="production" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="cityScreenProductionTurnPK">
+						<xsd:selector xpath="productionTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenProductionTurnsPK">
+						<xsd:selector xpath="productionTurns" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="cityScreenRushBuyPK">
 						<xsd:selector xpath="rushBuy" />
 						<xsd:field xpath="@language" />
@@ -2357,6 +2365,10 @@
 					</xsd:key>
 					<xsd:key name="citiesListScreenCityConstructingPK">
 						<xsd:selector xpath="cityConstructing" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCityConstructingTurnsPK">
+						<xsd:selector xpath="cityConstructingTurns" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
@@ -4764,6 +4776,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buildings" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="units" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="production" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionTurns" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rushBuy" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="changeConstruction" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rename" />
@@ -5003,6 +5017,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityEnchantments" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="citySell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityConstructing" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityConstructingTurns" />
 		</xsd:sequence>
     </xsd:complexType>
 	

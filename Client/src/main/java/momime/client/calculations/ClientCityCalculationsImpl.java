@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -867,7 +868,67 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			msg.setVisible (true);
 		}
 	}
+	
+	/**
+	 * @param cityLocation Location of city to check
+	 * @return Number of turns it will take to finish current construction project; null if set to Housing, Trade Goods, generating no production or a value cannot be calculated for some other reason
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
+	 */
+	@Override
+	public final Integer calculateProductionTurnsRemaining (final MapCoordinates3DEx cityLocation)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		Integer productionTurnsRemaining = null;
 		
+		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		if (cityData != null)
+		{
+			if ((cityData.getCurrentlyConstructingBuildingID () != null) || (cityData.getCurrentlyConstructingUnitID () != null))
+			{
+				// How much does what we're constructing cost?
+				Integer productionCost = null;
+				if (cityData.getCurrentlyConstructingBuildingID () != null)
+				{
+					final Building building = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "calculateProductionTurnsRemaining");
+					productionCost = building.getProductionCost ();
+				}
+
+				else if (cityData.getCurrentlyConstructingUnitID () != null)
+				{
+					final UnitEx unit = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "calculateProductionTurnsRemaining");
+					productionCost = unit.getProductionCost ();
+				}
+				
+				if (productionCost != null)
+				{
+					if (cityData.getProductionSoFar () != null)
+						productionCost = productionCost - cityData.getProductionSoFar ();
+					
+					// How much production do we generate each turn?
+					final int productionEachTurn = getCityCalculations ().calculateSingleCityProduction (getClient ().getPlayers (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), cityLocation,
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+						getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, getClient ().getClientDB (),
+						CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+						
+					if (productionEachTurn > 0)
+					{
+						// Even if we've rush bought it, show 1 not 0
+						if (productionCost <= 0)
+							productionTurnsRemaining = 1;
+						else
+							productionTurnsRemaining = (productionCost + productionEachTurn - 1) / productionEachTurn;
+					}
+				}
+			}
+		}
+		
+		return productionTurnsRemaining;
+	}
+	
 	/**
 	 * @return Multiplayer client
 	 */

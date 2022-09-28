@@ -30,27 +30,27 @@ public final class TestCitiesListSorter
 		final OverlandMapCityData city1Data = new OverlandMapCityData ();
 		city1Data.setCityName ("Capital");
 		city1Data.setCityPopulation (1234);
-		final CitiesListEntry city1 = new CitiesListEntry (city1Data, null, true, null, 0, 0);
+		final CitiesListEntry city1 = new CitiesListEntry (city1Data, null, true, null, 0, 0, 0);
 
 		final OverlandMapCityData city2Data = new OverlandMapCityData ();
 		city2Data.setCityName ("Zerolle");
 		city2Data.setCityPopulation (2345);
-		final CitiesListEntry city2 = new CitiesListEntry (city2Data, null, false, null, 0, 0);
+		final CitiesListEntry city2 = new CitiesListEntry (city2Data, null, false, null, 0, 0, 0);
 
 		final OverlandMapCityData city3Data = new OverlandMapCityData ();
 		city3Data.setCityName ("Weedy");
 		city3Data.setCityPopulation (4567);
-		final CitiesListEntry city3 = new CitiesListEntry (city3Data, null, false, null, 0, 0);
+		final CitiesListEntry city3 = new CitiesListEntry (city3Data, null, false, null, 0, 0, 0);
 		
 		final OverlandMapCityData city4Data = new OverlandMapCityData ();
 		city4Data.setCityName ("Ymraag");
 		city4Data.setCityPopulation (3456);
-		final CitiesListEntry city4 = new CitiesListEntry (city4Data, null, false, null, 0, 0);
+		final CitiesListEntry city4 = new CitiesListEntry (city4Data, null, false, null, 0, 0, 0);
 		
 		final OverlandMapCityData city5Data = new OverlandMapCityData ();
 		city5Data.setCityName ("Xylon");
 		city5Data.setCityPopulation (3456);
-		final CitiesListEntry city5 = new CitiesListEntry (city5Data, null, false, null, 0, 0);
+		final CitiesListEntry city5 = new CitiesListEntry (city5Data, null, false, null, 0, 0, 0);
 
 		final List<CitiesListEntry> cities = new ArrayList<CitiesListEntry> ();
 		cities.add (city1);

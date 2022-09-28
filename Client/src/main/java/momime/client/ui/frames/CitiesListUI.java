@@ -37,6 +37,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.MiniMapBitmapGenerator;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.renderer.CitiesListCellRenderer;
@@ -118,6 +119,9 @@ public final class CitiesListUI extends MomClientFrameUI
 	
 	/** City construction project column heading */
 	private JLabel cityConstructingHeading;
+
+	/** City construction project turns remaining column heading */
+	private JLabel cityConstructingTurnsHeading;
 	
 	/** Items in the cities list box */
 	private DefaultListModel<CitiesListEntry> citiesItems; 
@@ -130,6 +134,9 @@ public final class CitiesListUI extends MomClientFrameUI
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Client city calculations */
+	private ClientCityCalculations clientCityCalculations;
 	
 	/** Minimap panel */
 	private JPanel miniMapPanel;
@@ -191,6 +198,9 @@ public final class CitiesListUI extends MomClientFrameUI
 		
 		cityConstructingHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (cityConstructingHeading, "frmCitiesListHeadingCurrentlyConstructing");
+
+		cityConstructingTurnsHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		contentPane.add (cityConstructingTurnsHeading, "frmCitiesListHeadingCurrentlyConstructingTurns");
 		
 		final JButton okButton = getUtils ().createImageButton (okAction, MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getLargeFont (),
 			buttonNormal, buttonPressed, buttonNormal);
@@ -323,8 +333,10 @@ public final class CitiesListUI extends MomClientFrameUI
 							final int curseCount = (int) getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
 								(s -> (cityLocation.equals (s.getCityLocation ())) && (s.getCastingPlayerID () != getClient ().getOurPlayerID ())).count ();
 							
+							final Integer constructionTurns = getClientCityCalculations ().calculateProductionTurnsRemaining (cityLocation);
+							
 							cities.add (new CitiesListEntry (cityData, cityLocation, cityLocation.equals (fortressLocation),
-								weaponGradeImageFile, enchantmentCount, curseCount));
+								weaponGradeImageFile, enchantmentCount, curseCount, constructionTurns));
 						}
 					}
 			
@@ -387,13 +399,14 @@ public final class CitiesListUI extends MomClientFrameUI
 		getFrame ().setTitle (titleText);
 
 		// Column headings
-		cityNameHeading.setText				(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityName ()));
-		cityPopulationHeading.setText			(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityPopulation ()));
-		cityUnitsHeading.setText					(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityUnits ()));
-		cityWeaponGradeHeading.setText	(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityWeaponGrade ()));
-		cityEnchantmentsHeading.setText		(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityEnchantments ()));
-		citySellHeading.setText					(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCitySell ()));
-		cityConstructingHeading.setText		(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityConstructing ()));
+		cityNameHeading.setText					(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityName ()));
+		cityPopulationHeading.setText				(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityPopulation ()));
+		cityUnitsHeading.setText						(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityUnits ()));
+		cityWeaponGradeHeading.setText		(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityWeaponGrade ()));
+		cityEnchantmentsHeading.setText			(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityEnchantments ()));
+		citySellHeading.setText						(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCitySell ()));
+		cityConstructingHeading.setText			(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityConstructing ()));
+		cityConstructingTurnsHeading.setText	(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityConstructingTurns ()));
 		
 		// Buttons
 		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
@@ -589,5 +602,21 @@ public final class CitiesListUI extends MomClientFrameUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Client city calculations
+	 */
+	public final ClientCityCalculations getClientCityCalculations ()
+	{
+		return clientCityCalculations;
+	}
+
+	/**
+	 * @param calc Client city calculations
+	 */
+	public final void setClientCityCalculations (final ClientCityCalculations calc)
+	{
+		clientCityCalculations = calc;
 	}
 }

@@ -238,6 +238,9 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Production label */
 	private JLabel production;
 
+	/** Production number of turns label*/
+	private JLabel productionTurns;
+	
 	/** Rush buy action */
 	private Action rushBuyAction;
 	
@@ -497,6 +500,9 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		production = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (production, "frmCityProductionLabel");
+
+		productionTurns = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (productionTurns, "frmCityProductionTurns");
 
 		units = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (units, "frmCityUnits");
@@ -1208,6 +1214,18 @@ public final class CityViewUI extends MomClientFrameUI
 					currentPopulationAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCityScreen ().getPopulationAndGrowth ()).replaceAll
 						("POPULATION", cityPopulation).replaceAll ("GROWTH_RATE", getTextUtils ().intToStrPlusMinus (cityGrowth)));
 				}
+				
+				// Turns until construction completed
+				Integer turns = null;
+				if ((getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) && (cityData.getCityPopulation () >= 1000))
+					turns = getClientCityCalculations ().calculateProductionTurnsRemaining (getCityLocation ());
+				
+				if (turns != null)
+					productionTurns.setText (getLanguageHolder ().findDescription
+						((turns == 1) ? getLanguages ().getCityScreen ().getProductionTurn () : getLanguages ().getCityScreen ().getProductionTurns ()).replaceAll
+							("NUMBER_OF_TURNS", turns.toString ()));
+				
+				productionTurns.setVisible (turns != null);
 			}
 			catch (final IOException e)
 			{

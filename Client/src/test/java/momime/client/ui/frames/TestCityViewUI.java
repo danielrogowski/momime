@@ -23,6 +23,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -131,6 +132,7 @@ public final class TestCityViewUI extends ClientTestData
 		cityScreenLang.getBuildings ().add (createLanguageText (Language.ENGLISH, "Buildings"));
 		cityScreenLang.getUnits ().add (createLanguageText (Language.ENGLISH, "Units"));
 		cityScreenLang.getProduction ().add (createLanguageText (Language.ENGLISH, "Producing"));
+		cityScreenLang.getProductionTurns ().add (createLanguageText (Language.ENGLISH, "NUMBER_OF_TURNS Turns"));
 		
 		cityScreenLang.getRushBuy ().add (createLanguageText (Language.ENGLISH, "Buy"));
 		cityScreenLang.getChangeConstruction ().add (createLanguageText (Language.ENGLISH, "Change"));
@@ -254,6 +256,10 @@ public final class TestCityViewUI extends ClientTestData
 		cityGrowthBreakdown.setCappedTotal (70);
 		when (calc.calculateCityGrowthRate (players, fow, new MapCoordinates3DEx (20, 10, 0), maxCitySize, difficultyLevel, db)).thenReturn (cityGrowthBreakdown);
 		
+		final ClientCityCalculations clientCityCalculations = mock (ClientCityCalculations.class);
+		if (ourCity)
+			when (clientCityCalculations.calculateProductionTurnsRemaining (new MapCoordinates3DEx (20, 10, 0))).thenReturn (17);
+		
 		// Display at least some landscape
 		final CityViewElement landscape = new CityViewElement ();
 		landscape.setLocationX (0);
@@ -307,6 +313,7 @@ public final class TestCityViewUI extends ClientTestData
 		cityView.setCityViewPanel (panel);
 		cityView.setClient (client);
 		cityView.setCityCalculations (calc);
+		cityView.setClientCityCalculations (clientCityCalculations);
 		cityView.setCityProductionCalculations (prod);
 		cityView.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		cityView.setWizardClientUtils (wizardClientUtils);

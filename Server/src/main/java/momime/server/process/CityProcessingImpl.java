@@ -24,6 +24,7 @@ import com.ndg.utils.random.RandomUtils;
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
@@ -172,6 +173,9 @@ public final class CityProcessingImpl implements CityProcessing
 	
 	/** For calculating relation scores between two wizards */
 	private RelationAI relationAI;
+	
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -442,22 +446,9 @@ public final class CityProcessingImpl implements CityProcessing
 						// Use calculated values to determine construction rate
 						if ((cityData.getCurrentlyConstructingBuildingID () != null) || (cityData.getCurrentlyConstructingUnitID () != null))
 						{
-							// Check if we're constructing a building or a unit
-							Building building = null;
-							Integer productionCost = null;
-							if (cityData.getCurrentlyConstructingBuildingID () != null)
-							{
-								building = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "progressConstructionProjects");
-								productionCost = building.getProductionCost ();
-							}
-
-							Unit unit = null;
-							if (cityData.getCurrentlyConstructingUnitID () != null)
-							{
-								unit = mom.getServerDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "progressConstructionProjects");
-								productionCost = unit.getProductionCost ();
-							}
-
+							final Integer productionCost = getCityProductionCalculations ().calculateProductionCost
+								(mom.getPlayers (), priv.getFogOfWarMemory (), cityLocation, priv.getTaxRateID (),
+									mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), mom.getServerDB (), null);
 							if (productionCost != null)
 							{
 								final int productionThisTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
@@ -471,6 +462,15 @@ public final class CityProcessingImpl implements CityProcessing
 									// Is it finished?
 									if (cityData.getProductionSoFar () >= productionCost)
 									{
+										// Check if we're constructing a building or a unit
+										Building building = null;
+										if (cityData.getCurrentlyConstructingBuildingID () != null)
+											building = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "progressConstructionProjects");
+
+										Unit unit = null;
+										if (cityData.getCurrentlyConstructingUnitID () != null)
+											unit = mom.getServerDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "progressConstructionProjects");
+										
 										// Did we construct a building?
 										if (building != null)
 										{
@@ -1740,5 +1740,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setRelationAI (final RelationAI ai)
 	{
 		relationAI = ai;
+	}
+
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
 	}
 }

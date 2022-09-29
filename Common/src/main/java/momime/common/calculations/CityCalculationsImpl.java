@@ -1383,7 +1383,13 @@ public final class CityCalculationsImpl implements CityCalculations
 				copyMapFeature.setMapFeatureID (thisMapFeature.getMapFeatureID ());
 				copyMapFeature.setCount (thisMapFeature.getCount ());
 				copyMapFeature.setRaceMineralBonusMultiplier (thisMapFeature.getRaceMineralBonusMultiplier ());
-				copyMapFeature.setBuildingMineralPercentageBonus (thisMapFeature.getBuildingMineralPercentageBonus ());
+				
+				// Bit of a hack, but Miners' Guilds give +50% mineral bonus to just about everything... except Iron Ore and Coal where its doubled
+				// To model this properly would require being able to specify different percentage bonuses for different production types
+				if (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_COST_REDUCTION))
+					copyMapFeature.setBuildingMineralPercentageBonus (thisMapFeature.getBuildingMineralPercentageBonus () * 2);
+				else
+					copyMapFeature.setBuildingMineralPercentageBonus (thisMapFeature.getBuildingMineralPercentageBonus ());
 				
 				// Deal with multipliers
 				copyMapFeature.setDoubleUnmodifiedProductionAmountEachFeature (thisProduction.getDoubledProductionValue ());
@@ -1494,11 +1500,11 @@ public final class CityCalculationsImpl implements CityCalculations
 				case MUST_BE_EXACT_MULTIPLE:
 					// We've already dealt with the situation where the value is an exact multiple above, so to have reached here it
 					// must have been supposed to be an exact multiple but wasn't
-					throw new MomException ("calculateAllCityProductions: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
+					throw new MomException ("halveAddPercentageBonusAndCapProduction: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
 						"\" which is not a multiple of 2 = " + thisProduction.getDoubleProductionAmountBeforePercentages ());
 
 				default:
-					throw new MomException ("calculateAllCityProductions: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
+					throw new MomException ("halveAddPercentageBonusAndCapProduction: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
 						"\" which has an unknown rounding direction");
 			}
 

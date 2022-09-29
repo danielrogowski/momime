@@ -2124,7 +2124,12 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cannotEndTurnDueToLackOfProduction" type="momimecommon:languageText" nxe:label="Cannot end turn due to lack of production" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="roundingDirectionID" type="momimecommon:roundingDirectionID" nxe:label="Rounding Direction for production from Cities" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="productionAmountBucketID" type="momimecommon:productionAmountBucketID" nxe:label="Default bucket" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="percentage" type="xsd:boolean" nxe:label="Percentage?" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="displayAsPercentage" type="xsd:boolean" nxe:label="Percentage?" nxe:gridwidth="80">
+		        <xsd:annotation><xsd:documentation>No effect on calculation.  Just controls whether we display a % next to the value in the surveyor.</xsd:documentation></xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="displayNegated" type="xsd:boolean" nxe:label="Negate?" nxe:gridwidth="80">
+		        <xsd:annotation><xsd:documentation>No effect on calculation.  Just controls whether we negate the value to display it in the surveyor.</xsd:documentation></xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevelMultiplierApplies" type="xsd:boolean" nxe:label="AI Difficulty Level Multiplier applies?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="enforceProduction" type="momimecommon:enforceProductionID" nxe:label="Enforce?" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="accumulatesInto" type="momimecommon:productionTypeID" nxe:label="Accumulates Into" nxe:showmaincolumn="false">
@@ -3257,6 +3262,12 @@ nodes/lairs/towers, however they can still be created from summoning spells (who
 This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="productionCostCanBeReduced" type="xsd:boolean" nxe:label="Cost can be reduced?" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:documentation>Iron Ore and Coal don't affect all units that can be constructed in cities.  According to the wiki,
+Shamans, Priests, Magicians, Warlocks, Triremes, Galleys and Warships are unaffected, so every unit that can be constructed in a city EXCEPT these need this set to true.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="rangedAttackType" type="momimecommon:rangedAttackTypeID" nxe:label="Ranged Type" nxe:gridwidth="100">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -3265,7 +3276,11 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="transportCapacity" type="momimecommon:transportCapacity" nxe:label="Transport Capacity" nxe:gridwidth="120" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="nonCombatUnit" type="xsd:boolean" nxe:label="Non-combat unit?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="nonCombatUnit" type="xsd:boolean" nxe:label="Non-combat unit?" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:documentation>Flag for units that never participate in any kind of combat, regardless of the terrain.  Only used for Floating Islands.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="hiringFame" type="momimecommon:fame" nxe:label="Req'd Fame" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickType" type="momimecommon:heroSkillTypeID" nxe:label="Hero Random Pick Type" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickCount" type="momimecommon:heroRandomPickCount" nxe:label="Hero Random Picks" nxe:gridwidth="150" />

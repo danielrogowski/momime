@@ -30,6 +30,8 @@ import momime.client.languages.database.Simple;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.CitiesListCellRenderer;
 import momime.client.utils.WizardClientUtils;
+import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
@@ -46,6 +48,7 @@ import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -218,7 +221,9 @@ public final class TestCitiesListUI extends ClientTestData
 		city5Data.setCurrentlyConstructingBuildingID ("BL02");
 		
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		final ClientCityCalculations clientCityCalculations = mock (ClientCityCalculations.class);
+		final CityProductionCalculations cityProductionCalculations = mock (CityProductionCalculations.class);
 		
 		int cityNumber = 0;
 		for (final OverlandMapCityData cityData : new OverlandMapCityData [] {city1Data, city2Data, city3Data, city4Data, city5Data})
@@ -267,13 +272,16 @@ public final class TestCitiesListUI extends ClientTestData
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, terrain, fow.getBuilding ())).thenReturn (fortress);
 		
-		// Client		
+		// Client
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPlayerID ()).thenReturn (1);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CitiesListUI.xml"));
@@ -283,6 +291,8 @@ public final class TestCitiesListUI extends ClientTestData
 
 		// Renderer
 		final CitiesListCellRenderer renderer = new CitiesListCellRenderer ();
+		renderer.setCityProductionCalculations (cityProductionCalculations);
+		renderer.setCityCalculations (cityCalculations);
 		renderer.setLanguageHolder (langHolder);
 		renderer.setClient (client);
 		renderer.setUtils (utils);

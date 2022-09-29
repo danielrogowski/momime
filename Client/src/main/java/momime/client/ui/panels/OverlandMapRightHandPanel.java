@@ -1196,8 +1196,11 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 						final ProductionTypeEx productionType = getClient ().getClientDB ().findProductionType (mapFeatureProduction.getProductionTypeID (), "surveyorLocationOrLanguageChanged");
 						final String productionTypeDescription = getLanguageHolder ().findDescription (productionType.getProductionTypeDescription ());
 						
-						effects.add (getTextUtils ().halfIntToStrPlusMinus (mapFeatureProduction.getDoubledProductionValue ()) +
-							(productionType.isPercentage () ? "% " : " ") + (productionTypeDescription));
+						int value = mapFeatureProduction.getDoubledProductionValue ();
+						if (productionType.isDisplayNegated ())
+							value = -value;
+						
+						effects.add (getTextUtils ().halfIntToStrPlusMinus (value) + (productionType.isDisplayAsPercentage () ? "% " : " ") + (productionTypeDescription));
 					}
 				
 				// Fixed effects of feature

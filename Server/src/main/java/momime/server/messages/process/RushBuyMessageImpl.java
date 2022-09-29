@@ -1,10 +1,20 @@
 package momime.server.messages.process;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryGridCell;
@@ -15,14 +25,6 @@ import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Message client sends to server when they want to rush buy the current construction project in a particular city
@@ -44,19 +46,24 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		
 		Integer productionCost = null;
 		final MemoryGridCell tc;
@@ -68,17 +75,10 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		
 			// Check if we're constructing a building or a unit
-			final String buildingID = (tc.getCityData () == null) ? null : tc.getCityData ().getCurrentlyConstructingBuildingID ();
-			final String unitID = (tc.getCityData () == null) ? null : tc.getCityData ().getCurrentlyConstructingUnitID ();
-			
-			if (buildingID != null)
-				productionCost = mom.getServerDB ().findBuilding (buildingID, "RushBuyMessageImpl").getProductionCost ();
-
-			else if (unitID != null)
-				productionCost = mom.getServerDB ().findUnit (unitID, "RushBuyMessageImpl").getProductionCost ();
+			productionCost = getCityProductionCalculations ().calculateProductionCost
+				(mom.getPlayers (), priv.getFogOfWarMemory (), (MapCoordinates3DEx) getCityLocation (), priv.getTaxRateID (),
+					mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), mom.getServerDB (), null);
 		}
-		
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		
 		int rushBuyCost = 0;
 		final String msg;
@@ -195,5 +195,21 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
 	}
 }

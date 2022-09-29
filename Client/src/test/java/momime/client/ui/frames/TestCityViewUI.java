@@ -40,7 +40,6 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityProductionCalculations;
-import momime.common.database.Building;
 import momime.common.database.CitySize;
 import momime.common.database.CityViewElement;
 import momime.common.database.CommonDatabase;
@@ -150,16 +149,6 @@ public final class TestCityViewUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Client DB
-		if (ourCity)
-		{
-			final Building granary = new Building ();
-			granary.setProductionCost (200);
-			when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (granary);
-		}
-		
-		when (db.getMostExpensiveConstructionCost ()).thenReturn (1000);
-		
 		// City data
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC01");
@@ -208,6 +197,13 @@ public final class TestCityViewUI extends ClientTestData
 			when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Jafar");
 		}
 				
+		// Production cost
+		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
+		if (ourCity)
+			when (prod.calculateProductionCost (players, fow, new MapCoordinates3DEx (20, 10, 0), "TR01", sd, null, db, null)).thenReturn (200);
+		
+		when (db.getMostExpensiveConstructionCost ()).thenReturn (1000);
+		
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setSeeEnemyCityConstruction (seeEnemyCityConstruction);
@@ -225,8 +221,6 @@ public final class TestCityViewUI extends ClientTestData
 		when (client.getPlayers ()).thenReturn (players);
 		
 		// City production
-		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		
 		final int maxCitySize = 20;
 		
 		final CityProductionBreakdown maxCitySizeProd = new CityProductionBreakdown ();

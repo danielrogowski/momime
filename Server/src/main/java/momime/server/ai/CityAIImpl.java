@@ -34,7 +34,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
-import momime.common.database.Unit;
 import momime.common.database.WizardObjective;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
@@ -605,19 +604,10 @@ public final class CityAIImpl implements CityAI
 						final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
 						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
 						{
-							final Integer productionCost;
-							if (cityData.getCurrentlyConstructingBuildingID () != null)
-							{
-								final Building buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "checkForRushBuying");
-								productionCost = buildingDef.getProductionCost ();
-							}
-							else if (cityData.getCurrentlyConstructingUnitID () != null)
-							{
-								final Unit unitDef = mom.getServerDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "checkForRushBuying");
-								productionCost = unitDef.getProductionCost ();
-							}
-							else
-								productionCost = null;
+							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+							final Integer productionCost = getCityProductionCalculations ().calculateProductionCost
+								(mom.getPlayers (), priv.getFogOfWarMemory (), cityLocation, priv.getTaxRateID (),
+									mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), mom.getServerDB (), null);
 							
 							// Does it even have a production cost?  (Can't rush buy Trade Goods)
 							if (productionCost != null)
@@ -628,7 +618,6 @@ public final class CityAIImpl implements CityAI
 								if (goldStored > rushBuyCost + 20)
 								{
 									// Found something we could rush buy - now how much production does this city generate by itself?
-									final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 									final int thisProductionPerTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
 										cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
 										mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),

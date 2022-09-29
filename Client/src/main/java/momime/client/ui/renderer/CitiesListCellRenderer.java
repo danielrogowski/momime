@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.utils.swing.GridBagConstraintsNoFill;
 import com.ndg.utils.swing.NdgUIUtils;
 import com.ndg.utils.swing.actions.LoggingAction;
@@ -49,7 +50,9 @@ import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
+import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
@@ -124,6 +127,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
+	
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
 	
 	/** Background image */
 	private BufferedImage background;
@@ -312,16 +318,18 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/**
 	 * @param city City to test
 	 * @return Whether rush buy should be enabled for this city or not
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	private final boolean isRushBuyAllowed (final CitiesListEntry city) throws RecordNotFoundException
+	private final boolean isRushBuyAllowed (final CitiesListEntry city)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		// Name of what's currently being constructed
-		Integer productionCost = null;
-		if (city.getCurrentlyConstructingBuildingID () != null)
-			productionCost = getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "isRushBuyAllowed").getProductionCost ();
-		else
-			productionCost = getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "isRushBuyAllowed").getProductionCost ();
+		final Integer productionCost = getCityProductionCalculations ().calculateProductionCost (getClient ().getPlayers (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), city.getCityLocation (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+			getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), getClient ().getClientDB (), null);
 		
 		// Check if we can rush buy it
 		boolean rushBuyEnabled = false;
@@ -832,5 +840,21 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void setResourceValueUtils (final ResourceValueUtils r)
 	{
 		resourceValueUtils = r;
+	}
+
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
 	}
 }

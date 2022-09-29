@@ -18,6 +18,7 @@ import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitEx;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
@@ -232,6 +233,67 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		Collections.sort (productionValues.getProductionType (), new CityProductionBreakdownSorter ());
 		
 		return productionValues;
+	}
+	
+	/**
+	 * @param players Players list
+	 * @param mem Player's knowledge about the city and surrounding terrain
+	 * @param cityLocation Location of the city to calculate for
+	 * @param taxRateID Tax rate to use for the calculation
+	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param db Lookup lists built over the XML database
+	 * @param overrideUnitID Return the production cost of this unit, instead of what's actually being constructed in the city; usually pass null
+	 * @return Production cost of whatever is being constructed in the city at the moment; null if constructing Housing or Trade Goods
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
+	 */
+	@Override
+	public final Integer calculateProductionCost (final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem,
+		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID, final CommonDatabase db, final String overrideUnitID)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		Integer productionCost = null;
+		
+		final OverlandMapCityData cityData =  mem.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		if (cityData != null)
+		{
+			final String buildingID = (overrideUnitID == null) ? cityData.getCurrentlyConstructingBuildingID () : null;
+			final String unitID = (overrideUnitID == null) ? cityData.getCurrentlyConstructingUnitID () : overrideUnitID;
+			
+			if (buildingID != null)
+			{
+				final Building building = db.findBuilding (buildingID, "calculateProductionCost");
+				productionCost = building.getProductionCost ();
+			}
+
+			else if (unitID != null)
+			{
+				final UnitEx unit = db.findUnit (unitID, "calculateProductionCost");
+				productionCost = unit.getProductionCost ();
+				
+				// Only certain units get benefit from Coal and Iron Ore
+				if ((productionCost != null) && (unit.isProductionCostCanBeReduced () != null) && (unit.isProductionCostCanBeReduced ()))
+				{
+					// See if any Coal or Iron Ore nearby
+					int unitCostReductionPercentage = getCityCalculations ().calculateSingleCityProduction
+						(players, mem, cityLocation, taxRateID, sd, conjunctionEventID, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_COST_REDUCTION);
+					
+					if (unitCostReductionPercentage > 0)
+					{
+						// Cap at 50%
+						if (unitCostReductionPercentage > 50)
+							unitCostReductionPercentage = 50;
+						
+						final int reduction = (productionCost * unitCostReductionPercentage) / 100;
+						productionCost = productionCost - reduction;
+					}
+				}
+			}
+		}		
+		
+		return productionCost;
 	}
 
 	/**

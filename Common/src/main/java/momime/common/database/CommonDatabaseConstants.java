@@ -133,6 +133,9 @@ public final class CommonDatabaseConstants
 	/** Food for max city size */
 	public final static String PRODUCTION_TYPE_ID_FOOD = "RE06";
 
+	/** Coal and Iron Ore making unit construction cheaper */
+	public final static String PRODUCTION_TYPE_ID_UNIT_COST_REDUCTION = "RE07";
+	
 	/** Bonus added to map features, i.e. Miners" guild */
 	public final static String PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER = "RE08";
 

@@ -38,4 +38,22 @@ public interface CityProductionCalculations
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
 		final boolean includeProductionAndConsumptionFromPopulation, final boolean calculatePotential, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
+	
+	/**
+	 * @param players Players list
+	 * @param mem Player's knowledge about the city and surrounding terrain
+	 * @param cityLocation Location of the city to calculate for
+	 * @param taxRateID Tax rate to use for the calculation
+	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param db Lookup lists built over the XML database
+	 * @param overrideUnitID Return the production cost of this unit, instead of what's actually being constructed in the city; usually pass null
+	 * @return Production cost of whatever is being constructed in the city at the moment; null if constructing Housing or Trade Goods
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
+	 */
+	public Integer calculateProductionCost (final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem,
+		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID, final CommonDatabase db, final String overrideUnitID)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 }

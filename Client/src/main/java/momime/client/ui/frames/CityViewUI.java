@@ -37,6 +37,7 @@ import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.utils.swing.GridBagConstraintsNoFill;
 import com.ndg.utils.swing.actions.LoggingAction;
@@ -660,12 +661,10 @@ public final class CityViewUI extends MomClientFrameUI
 					if (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ()))
 					{
 						// How many coins does it take to draw this (round up)
-						Integer productionCost = null;
-						if (cityData.getCurrentlyConstructingBuildingID () != null)
-							productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionProgressPanel").getProductionCost ();
-	
-						if (cityData.getCurrentlyConstructingUnitID () != null)
-							productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "constructionProgressPanel").getProductionCost ();
+						final Integer productionCost = getCityProductionCalculations ().calculateProductionCost (getClient ().getPlayers (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCityLocation (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+							getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), getClient ().getClientDB (), null);
 						
 						if (productionCost != null)
 						{
@@ -1244,10 +1243,11 @@ public final class CityViewUI extends MomClientFrameUI
 	}
 	
 	/**
-	 *  
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we can't find the building or unit being constructed
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public final void recheckRushBuyEnabled () throws RecordNotFoundException
+	public final void recheckRushBuyEnabled () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		boolean rushBuyEnabled = false;
 		if (!notOursPanel.isVisible ())
@@ -1256,12 +1256,10 @@ public final class CityViewUI extends MomClientFrameUI
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 			final OverlandMapCityData cityData = mc.getCityData ();
 	
-			Integer productionCost = null;
-			if ((cityData != null) && (cityData.getCurrentlyConstructingBuildingID () != null))
-				productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "recheckRushBuyEnabled").getProductionCost ();
-	
-			if ((cityData != null) && (cityData.getCurrentlyConstructingUnitID () != null))
-				productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "recheckRushBuyEnabled").getProductionCost ();
+			final Integer productionCost = getCityProductionCalculations ().calculateProductionCost (getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCityLocation (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+				getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), getClient ().getClientDB (), null);
 			
 			if (productionCost != null)
 			{

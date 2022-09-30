@@ -605,6 +605,12 @@
 		<kickedText language="en">
 			<text>Another player logged onto the server with your player name and password, so you have been kicked.</text>
 		</kickedText>
+		<playerLeftSessionEndingTitle language="en">
+			<text>Player Left</text>
+		</playerLeftSessionEndingTitle>
+		<playerLeftSessionEndingText language="en">
+			<text>PLAYER_NAME has left the game, so closing down.  It has been saved at the start of the first player's turn and can be reloaded later</text>
+		</playerLeftSessionEndingText>
 		<createAccountFailed>
 			<title language="en">
 				<text>Create Account Failed</text>
@@ -3661,6 +3667,18 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<planeShiftFailedText language="en">
 			<text>The selected unit(s) cannot Planar Travel at this location.</text>
 		</planeShiftFailedText>
+		<leaveSessionTitle language="en">
+			<text>Leave Game.</text>
+		</leaveSessionTitle>
+		<leaveSessionNoHumanPlayers language="en">
+			<text>Are you sure you want to leave this game?  It has already been saved at the start of the first player's turn and can be reloaded later.</text>
+		</leaveSessionNoHumanPlayers>
+		<leaveSessionOneHumanPlayer language="en">
+			<text>Are you sure you want to leave this game?  The other player will be kicked out of the game too.  It has already been saved at the start of the first player's turn and can be reloaded later.</text>
+		</leaveSessionOneHumanPlayer>
+		<leaveSessionManyHumanPlayers language="en">
+			<text>Are you sure you want to leave this game?  The other PLAYER_COUNT players will be kicked out of the game too.  It has already been saved at the start of the first player's turn and can be reloaded later.</text>
+		</leaveSessionManyHumanPlayers>
 		<mapButtonBar>
 			<game language="en">
 				<text>Game</text>

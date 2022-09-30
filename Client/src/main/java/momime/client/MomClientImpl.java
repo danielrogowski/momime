@@ -25,6 +25,7 @@ import com.ndg.multiplayer.sessionbase.CreateAccountFailedReason;
 import com.ndg.multiplayer.sessionbase.DeleteSavedGameFailedReason;
 import com.ndg.multiplayer.sessionbase.JoinFailedReason;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
+import com.ndg.multiplayer.sessionbase.LeaveSession;
 import com.ndg.multiplayer.sessionbase.LeaveSessionFailedReason;
 import com.ndg.multiplayer.sessionbase.LoadGameFailedReason;
 import com.ndg.multiplayer.sessionbase.LoginFailedReason;
@@ -409,6 +410,21 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 					getCreateArtifactUI ().setVisible (false);
 					getHeroItemsUI ().setVisible (false);
 					getHistoryUI ().setVisible (false);
+				}
+				else
+				{
+					// Someone else left so the session is still dead - inform the player and leave too.
+					// Our windows will get closed out when this method triggers again with our own player ID.
+					final PlayerPublicDetails playerLeft = getMultiplayerSessionUtils ().findPlayerWithID (getPlayers (), playerID, "beforePlayerLeft");
+					
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getMultiplayer ().getPlayerLeftSessionEndingTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getMultiplayer ().getPlayerLeftSessionEndingText ()).replaceAll
+						("PLAYER_NAME", playerLeft.getPlayerDescription ().getPlayerName ()));
+					
+					msg.setVisible (true);
+					
+					getServerConnection ().sendMessageToServer (new LeaveSession ());
 				}
 			}
 

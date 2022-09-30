@@ -43,6 +43,7 @@ import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.utils.swing.GridBagConstraintsNoFill;
 import com.ndg.utils.swing.actions.LoggingAction;
 
@@ -315,7 +316,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		final BufferedImage calculatorButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/calculatorPressed.png");
 		
 		// Actions
-		gameAction = new LoggingAction ((ev) -> {});
 		spellsAction = new LoggingAction ((ev) -> getSpellBookUI ().setVisible (true));
 		citiesAction = new LoggingAction ((ev) -> getCitiesListUI ().setVisible (true));
 		magicAction = new LoggingAction ((ev) -> getMagicSlidersUI ().setVisible (true));
@@ -323,6 +323,33 @@ public final class OverlandMapUI extends MomClientFrameUI
 		messagesAction = new LoggingAction ((ev) -> getNewTurnMessagesUI ().setVisible (true));
 		chatAction = new LoggingAction ((ev) -> {});
 
+		gameAction = new LoggingAction ((ev) ->
+		{
+			final long otherHumanPlayersCount = getClient ().getPlayers ().stream ().filter
+				(p -> (!p.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (p.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)).count ();
+			
+			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+			msg.setLanguageTitle (getLanguages ().getOverlandMapScreen ().getLeaveSessionTitle ());
+			msg.setLeaveSession (true);
+			
+			switch ((int) otherHumanPlayersCount)
+			{
+				case 0:
+					msg.setLanguageText (getLanguages ().getOverlandMapScreen ().getLeaveSessionNoHumanPlayers ());
+					break;
+					
+				case 1:
+					msg.setLanguageText (getLanguages ().getOverlandMapScreen ().getLeaveSessionOneHumanPlayer ());
+					break;
+					
+				default:
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getLeaveSessionManyHumanPlayers ()).replaceAll
+						("PLAYER_COUNT", Long.valueOf (otherHumanPlayersCount).toString ()));
+			}
+			
+			msg.setVisible (true);
+		});
+		
 		armiesAction = new LoggingAction ((ev) ->
 		{
 			final ArmyListUI armyListUI = getPrototypeFrameCreator ().createArmyList ();

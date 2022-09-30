@@ -83,6 +83,14 @@
 						<xsd:selector xpath="kickedText" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="multiplayerPlayerLeftSessionEndingTitlePK">
+						<xsd:selector xpath="playerLeftSessionEndingTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="multiplayerPlayerLeftSessionEndingTextPK">
+						<xsd:selector xpath="playerLeftSessionEndingText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			
     			<xsd:element minOccurs="0" maxOccurs="1" name="unitName" type="momimelangs:unitName">
@@ -1711,6 +1719,22 @@
 						<xsd:selector xpath="planeShiftFailedText" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="overlandMapScreenLeaveSessionTitlePK">
+						<xsd:selector xpath="leaveSessionTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="overlandMapScreenLeaveSessionNoHumanPlayersPK">
+						<xsd:selector xpath="leaveSessionNoHumanPlayers" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="overlandMapScreenLeaveSessionOneHumanPlayerPK">
+						<xsd:selector xpath="leaveSessionOneHumanPlayer" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="overlandMapScreenLeaveSessionManyHumanPlayersPK">
+						<xsd:selector xpath="leaveSessionManyHumanPlayers" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="nameCityScreen" type="momimelangs:nameCityScreen">
 					<xsd:key name="nameCityScreenTitlePK">
@@ -2975,6 +2999,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deleteSavedGameText" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="kickedTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="kickedText" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="playerLeftSessionEndingTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="playerLeftSessionEndingText" />
    			<xsd:element minOccurs="0" maxOccurs="1" name="createAccountFailed" type="momimelangs:createAccountFailed">
 				<xsd:key name="createAccountFailedTitlePK">
 					<xsd:selector xpath="title" />
@@ -4561,6 +4587,10 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planeShiftFailedTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planeShiftFailedText" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveSessionTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveSessionNoHumanPlayers" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveSessionOneHumanPlayer" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveSessionManyHumanPlayers" />
    			<xsd:element minOccurs="0" maxOccurs="1" name="mapButtonBar" type="momimelangs:mapButtonBar">
 				<xsd:key name="mapButtonBarGamePK">
 					<xsd:selector xpath="game" />

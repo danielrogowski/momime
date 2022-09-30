@@ -911,6 +911,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="musicPlayer" ref="musicPlayer" />
 	</bean>
 	

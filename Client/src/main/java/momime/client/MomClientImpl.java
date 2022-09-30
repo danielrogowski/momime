@@ -43,6 +43,7 @@ import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.NewGameDatabase;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.dialogs.CastCombatSpellFromUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.RazeCityUI;
@@ -187,6 +188,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
 	
 	/** List of all city views currently open, keyed by coordinates.toString () */
 	private Map<String, CityViewUI> cityViews = new HashMap<String, CityViewUI> (); 
@@ -448,6 +452,8 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 						getMainMenuUI ().playMusic ();
 						getMainMenuUI ().setVisible (true);
 					}
+					
+					getPlayerColourImageGenerator ().clearCache ();
 				}
 				else
 					getNewGameUI ().updateWaitPanelPlayersList ();
@@ -1413,6 +1419,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+	
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param gen Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
+	{
+		playerColourImageGenerator = gen;
 	}
 	
 	/**

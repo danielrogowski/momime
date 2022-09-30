@@ -54,6 +54,15 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	private KnownWizardUtils knownWizardUtils;
 	
 	/**
+	 * Clears the cache between games
+	 */
+	@Override
+	public final void clearCache ()
+	{
+		modifiedImages.clear ();
+	}
+	
+	/**
 	 * @param unitDef Unit to get the image for
 	 * @param playerID Player ID
 	 * @return Overland image for this unit, with the correct flag colour already drawn on; background square is not included

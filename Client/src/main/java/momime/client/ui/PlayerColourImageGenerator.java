@@ -13,6 +13,11 @@ import momime.common.database.UnitEx;
 public interface PlayerColourImageGenerator
 {
 	/**
+	 * Clears the cache between games
+	 */
+	public void clearCache ();
+	
+	/**
 	 * @param unitDef Unit to get the image for
 	 * @param playerID Player ID
 	 * @return Overland image for this unit, with the correct flag colour already drawn on; background square is not included

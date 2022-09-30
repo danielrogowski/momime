@@ -284,35 +284,32 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 		// Does the magic realm of the cast spell trigger an affect from any overland enchantments?  e.g. casting Death/Chaos spells while Nature's Wrath in effect
 		boolean passesCounteringAttempts = true;
-		if (spell.getSpellRealm () != null)
-		{
-			final int unmodifiedOverlandCastingCost = getSpellUtils ().getUnmodifiedOverlandCastingCost (spell, heroItem, variableDamage, castingWizard.getPick (), mom.getServerDB ());
-			
-			// Don't trigger the same spell multiple times, even if multiple enemy wizards have it cast
-			// Copy list, as have seen a ConcurrentModificationException here
-			final Set<String> triggeredSpells = new HashSet<String> (); 
-			final List<MemoryMaintainedSpell> copyOfSpells = new ArrayList<MemoryMaintainedSpell> (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
-			
-			for (final MemoryMaintainedSpell triggerSpell : copyOfSpells)
-				if (!triggeredSpells.contains (triggerSpell.getSpellID ()))
+		final int unmodifiedOverlandCastingCost = getSpellUtils ().getUnmodifiedOverlandCastingCost (spell, heroItem, variableDamage, castingWizard.getPick (), mom.getServerDB ());
+		
+		// Don't trigger the same spell multiple times, even if multiple enemy wizards have it cast
+		// Copy list, as have seen a ConcurrentModificationException here
+		final Set<String> triggeredSpells = new HashSet<String> (); 
+		final List<MemoryMaintainedSpell> copyOfSpells = new ArrayList<MemoryMaintainedSpell> (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+		
+		for (final MemoryMaintainedSpell triggerSpell : copyOfSpells)
+			if (!triggeredSpells.contains (triggerSpell.getSpellID ()))
+			{
+				final Spell triggerSpellDef = mom.getServerDB ().findSpell (triggerSpell.getSpellID (), "castOverlandNow");
+				if ((triggerSpellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
+						
+					// Any spell with a dispel power defined can also be triggered with an empty spell realm list (for Suppress Magic)
+					(((spell.getSpellRealm () != null) && (triggerSpellDef.getTriggeredBySpellRealm ().contains (spell.getSpellRealm ()))) ||
+						((triggerSpellDef.getTriggeredBySpellRealm ().size () == 0) && (triggerSpellDef.getTriggerDispelPower () != null))) &&
+					
+					((triggerSpell.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) ||
+						((triggerSpellDef.isTriggeredBySelf () != null) && (triggerSpellDef.isTriggeredBySelf ()))))
 				{
-					final Spell triggerSpellDef = mom.getServerDB ().findSpell (triggerSpell.getSpellID (), "castOverlandNow");
-					if ((triggerSpellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
-							
-						// Any spell with a dispel power defined can also be triggered with an empty spell realm list (for Suppress Magic)
-						((triggerSpellDef.getTriggeredBySpellRealm ().contains (spell.getSpellRealm ())) ||
-							((triggerSpellDef.getTriggeredBySpellRealm ().size () == 0) && (triggerSpellDef.getTriggerDispelPower () != null))) &&
-						
-						((triggerSpell.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) ||
-							((triggerSpellDef.isTriggeredBySelf () != null) && (triggerSpellDef.isTriggeredBySelf ()))))
-					{
-						triggeredSpells.add (triggerSpell.getSpellID ());
-						
-						if (!getSpellTriggers ().triggerSpell (triggerSpell, castingPlayer, spell, unmodifiedOverlandCastingCost, mom))
-							passesCounteringAttempts = false;
-					}
+					triggeredSpells.add (triggerSpell.getSpellID ());
+					
+					if (!getSpellTriggers ().triggerSpell (triggerSpell, castingPlayer, spell, unmodifiedOverlandCastingCost, mom))
+						passesCounteringAttempts = false;
 				}
-		}
+			}
 		
 		if (passesCounteringAttempts)
 		{

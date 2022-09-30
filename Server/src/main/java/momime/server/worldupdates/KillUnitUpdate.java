@@ -115,195 +115,199 @@ public final class KillUnitUpdate implements WorldUpdate
 		
 		if (result == WorldUpdateResult.DONE)
 		{
-			final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "KillUnitUpdate (tu)");
-
-			final String unitMagicRealmID = mom.getServerDB ().findUnit (trueUnit.getUnitID (), "KillUnitUpdate").getUnitMagicRealm ();
-			final boolean isHero = unitMagicRealmID.equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
-			
-			// If the unit was a hero dying in combat, move any items they had into the pool for the winner of the combat to claim
-			final CombatDetails combatDetails = (trueUnit.getCombatLocation () == null) ? null :
-				getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), (MapCoordinates3DEx) trueUnit.getCombatLocation (), "KillUnitUpdate");
-			
-			if ((trueUnit.getCombatLocation () != null) && (untransmittedAction != KillUnitActionID.PERMANENT_DAMAGE))
-				trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
-				{
-					combatDetails.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
-					slot.setHeroItem (null);
-				});
-			
-			// Check which players could see the unit
-			for (final PlayerServerDetails player : mom.getPlayers ())
+			final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+			if (trueUnit == null)
+				log.warn ("KillUnitUpdate tried to kill Unit URN " + getUnitURN () + " but its true copy has already been removed");
+			else
 			{
-				if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (trueUnit, player, mom))
-				{
-					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-					
-					// Remove unit from players' memory on server - this doesn't suffer from the issue described below so we can just do it
-					getPendingMovementUtils ().removeUnitFromAnyPendingMoves (priv.getPendingMovement (), trueUnit.getUnitURN ());
-					
-					// Map the transmittedAction to a unit status
-					final UnitStatusID newStatusInPlayersMemoryOnServer;
-					final UnitStatusID newStatusInPlayersMemoryOnClient;
-					
-					switch (untransmittedAction)
-					{
-						// Heroes are killed outright on the clients (even if ours, and just dismissing him and may resummon him later), but return to 'Generated' status on the server below
-						case PERMANENT_DAMAGE:
-						case DISMISS:
-							newStatusInPlayersMemoryOnServer = null;
-							newStatusInPlayersMemoryOnClient = null;
-							break;
-							
-						// If its our unit or hero dying from lack of production then the client still needs the unit object left around temporarily while it sorts the NTM out.
-						// But anybody else's units dying from lack of production can just be removed.
-					    case LACK_OF_PRODUCTION:
-							newStatusInPlayersMemoryOnServer = null;
-							if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
-								newStatusInPlayersMemoryOnClient = UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION;
-							else
-								newStatusInPlayersMemoryOnClient = null;
-							break;
-						
-						// If we're not involved in the combat, then units are remove immediately from the client.
-						// If its somebody else's hero dying, then they're remove immediately from the client.
-						// If its a regular unit dying in a combat we're involved in, or our own hero dying, then we might raise/animate dead it, so mark those as dead but don't remove them.
-					    case HEALABLE_COMBAT_DAMAGE:
-							if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
-								newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
-							else if (isHero)
-								newStatusInPlayersMemoryOnServer = null;
-							else if ((player.getPlayerDescription ().getPlayerID ().equals (combatDetails.getAttackingPlayerID ())) ||
-										(player.getPlayerDescription ().getPlayerID ().equals (combatDetails.getDefendingPlayerID ())))
-								newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
-							else
-								newStatusInPlayersMemoryOnServer = null;
-							
-							newStatusInPlayersMemoryOnClient = newStatusInPlayersMemoryOnServer;
-					    	break;
-					    	
-					    // As above, but immediately remove regular units even if we own them
-					    case HEALABLE_OVERLAND_DAMAGE:
-					    	if (isHero && (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
-								newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
-					    	else
-					    		newStatusInPlayersMemoryOnServer = null;
-
-							newStatusInPlayersMemoryOnClient = newStatusInPlayersMemoryOnServer;
-					    	break;
-					    	
-					    default:
-					    	throw new MomException ("killUnitOnServerAndClients doesn't know what unit status to convert " + untransmittedAction + " into");
-					}
-
-					// If still in combat, only set to DEAD in player's memory on server, rather than removing entirely
-					if (newStatusInPlayersMemoryOnServer == null)
-					{
-						log.debug ("Removing unit URN " + trueUnit.getUnitURN () + " from player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory on server");
-						getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
-					}
-					else
-					{
-						log.debug ("Marking unit URN " + trueUnit.getUnitURN () + " as " + newStatusInPlayersMemoryOnServer + " in player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory on server");
-						getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "KillUnitUpdate (mu)").setStatus (newStatusInPlayersMemoryOnServer);
-					}
-					
-					if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-					{
-						// New status has to be set per player depending on who can see it
-						log.debug ("Telling client to mark unit URN " + trueUnit.getUnitURN () + " as " + newStatusInPlayersMemoryOnClient + " in player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory");
-
-						final KillUnitMessage msg = new KillUnitMessage ();
-						msg.setUnitURN (trueUnit.getUnitURN ());
-						msg.setNewStatus (newStatusInPlayersMemoryOnClient);
-						
-						player.getConnection ().sendMessageToClient (msg);
-					}
-				}
-			}
-
-			// Now update server's true memory
-			switch (untransmittedAction)
-			{
-				// Complete remove unit
-				case PERMANENT_DAMAGE:
-					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory");
-					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-					break;
-
-				// Dismissed heroes go back to Generated
-				// Heroes dismissed by lack of production go back to Generated
-				case DISMISS:
-				case LACK_OF_PRODUCTION:
-					if (isHero)
-					{
-						log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated in server's true memory (dismissed or lack of production)");
-						trueUnit.setStatus (UnitStatusID.GENERATED);
-					}
-					else
-					{
-						log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory (dismissed or lack of production)");
-						getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-					}
-					break;
-					
-				// Killed by taking damage in combat.
-				// All units killed by combat damage are kept around for the moment, since one of the players in the combat may Raise Dead them.
-				// Heroes are kept at DEAD even after the combat ends, in case the player resurrects them.
-				case HEALABLE_COMBAT_DAMAGE:
-					log.debug ("Marking unit with unit URN " + trueUnit.getUnitURN () + " as dead in server's true memory (combat damage)");
-					trueUnit.setStatus (UnitStatusID.DEAD);
-					break;
-
-				// Killed by taking damage overland.
-				// As above except we only need to mark heroes as DEAD, since there's no way to resurrect regular units on the overland map.
-				case HEALABLE_OVERLAND_DAMAGE:
-					if (isHero)
-					{
-						log.debug ("Marking hero with unit URN " + trueUnit.getUnitURN () + " as dead in server's true memory (overland damage)");
-						trueUnit.setStatus (UnitStatusID.DEAD);
-					}
-					else
-					{
-						log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory (overland damage)");
-						getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-					}
-					break;
-					
-				default:
-					throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when action = " + untransmittedAction);
-			}
-			
-			// If the unit died overland, recheck the remaining units at the location (if it died in combat, this is deferred until the combat ends)
-			if (trueUnit.getCombatLocation () == null)
-			{
-				// Was the unit in a city?  If so recalculate the city; if not recalculate the unit stack
-				// Units can have no location, for example generated heroes that were never actually used
-				if (trueUnit.getUnitLocation () != null)
-				{
-					final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-						(trueUnit.getUnitLocation ().getZ ()).getRow ().get (trueUnit.getUnitLocation ().getY ()).getCell ().get (trueUnit.getUnitLocation ().getX ());
-					
-					if (tc.getCityData () != null)
-					{
-						// Units other than summoned units help reduce unrest if they are in a city
-						if (!mom.getServerDB ().findPick (unitMagicRealmID, "KillUnitUpdate").getUnitTypeID ().equals (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED))
-							if (mom.getWorldUpdates ().recalculateCity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
-								result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
-					}
-					else
-					{
-						if (mom.getWorldUpdates ().recheckTransportCapacity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
-							result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
-					}
-				}
-			
-				// Unit probably had some upkeep
-				if (mom.getWorldUpdates ().recalculateProduction (trueUnit.getOwningPlayerID ()))
-					result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+				final String unitMagicRealmID = mom.getServerDB ().findUnit (trueUnit.getUnitID (), "KillUnitUpdate").getUnitMagicRealm ();
+				final boolean isHero = unitMagicRealmID.equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 				
-				// Unit might have been the only one who could see certain areas of the map
-				if (mom.getWorldUpdates ().recalculateFogOfWar (trueUnit.getOwningPlayerID ()))
-					result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+				// If the unit was a hero dying in combat, move any items they had into the pool for the winner of the combat to claim
+				final CombatDetails combatDetails = (trueUnit.getCombatLocation () == null) ? null :
+					getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), (MapCoordinates3DEx) trueUnit.getCombatLocation (), "KillUnitUpdate");
+				
+				if ((trueUnit.getCombatLocation () != null) && (untransmittedAction != KillUnitActionID.PERMANENT_DAMAGE))
+					trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
+					{
+						combatDetails.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
+						slot.setHeroItem (null);
+					});
+				
+				// Check which players could see the unit
+				for (final PlayerServerDetails player : mom.getPlayers ())
+				{
+					if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (trueUnit, player, mom))
+					{
+						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+						
+						// Remove unit from players' memory on server - this doesn't suffer from the issue described below so we can just do it
+						getPendingMovementUtils ().removeUnitFromAnyPendingMoves (priv.getPendingMovement (), trueUnit.getUnitURN ());
+						
+						// Map the transmittedAction to a unit status
+						final UnitStatusID newStatusInPlayersMemoryOnServer;
+						final UnitStatusID newStatusInPlayersMemoryOnClient;
+						
+						switch (untransmittedAction)
+						{
+							// Heroes are killed outright on the clients (even if ours, and just dismissing him and may resummon him later), but return to 'Generated' status on the server below
+							case PERMANENT_DAMAGE:
+							case DISMISS:
+								newStatusInPlayersMemoryOnServer = null;
+								newStatusInPlayersMemoryOnClient = null;
+								break;
+								
+							// If its our unit or hero dying from lack of production then the client still needs the unit object left around temporarily while it sorts the NTM out.
+							// But anybody else's units dying from lack of production can just be removed.
+						    case LACK_OF_PRODUCTION:
+								newStatusInPlayersMemoryOnServer = null;
+								if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
+									newStatusInPlayersMemoryOnClient = UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION;
+								else
+									newStatusInPlayersMemoryOnClient = null;
+								break;
+							
+							// If we're not involved in the combat, then units are remove immediately from the client.
+							// If its somebody else's hero dying, then they're remove immediately from the client.
+							// If its a regular unit dying in a combat we're involved in, or our own hero dying, then we might raise/animate dead it, so mark those as dead but don't remove them.
+						    case HEALABLE_COMBAT_DAMAGE:
+								if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
+									newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
+								else if (isHero)
+									newStatusInPlayersMemoryOnServer = null;
+								else if ((player.getPlayerDescription ().getPlayerID ().equals (combatDetails.getAttackingPlayerID ())) ||
+											(player.getPlayerDescription ().getPlayerID ().equals (combatDetails.getDefendingPlayerID ())))
+									newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
+								else
+									newStatusInPlayersMemoryOnServer = null;
+								
+								newStatusInPlayersMemoryOnClient = newStatusInPlayersMemoryOnServer;
+						    	break;
+						    	
+						    // As above, but immediately remove regular units even if we own them
+						    case HEALABLE_OVERLAND_DAMAGE:
+						    	if (isHero && (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
+									newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
+						    	else
+						    		newStatusInPlayersMemoryOnServer = null;
+	
+								newStatusInPlayersMemoryOnClient = newStatusInPlayersMemoryOnServer;
+						    	break;
+						    	
+						    default:
+						    	throw new MomException ("killUnitOnServerAndClients doesn't know what unit status to convert " + untransmittedAction + " into");
+						}
+	
+						// If still in combat, only set to DEAD in player's memory on server, rather than removing entirely
+						if (newStatusInPlayersMemoryOnServer == null)
+						{
+							log.debug ("Removing unit URN " + trueUnit.getUnitURN () + " from player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory on server");
+							getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
+						}
+						else
+						{
+							log.debug ("Marking unit URN " + trueUnit.getUnitURN () + " as " + newStatusInPlayersMemoryOnServer + " in player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory on server");
+							getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "KillUnitUpdate (mu)").setStatus (newStatusInPlayersMemoryOnServer);
+						}
+						
+						if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+						{
+							// New status has to be set per player depending on who can see it
+							log.debug ("Telling client to mark unit URN " + trueUnit.getUnitURN () + " as " + newStatusInPlayersMemoryOnClient + " in player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory");
+	
+							final KillUnitMessage msg = new KillUnitMessage ();
+							msg.setUnitURN (trueUnit.getUnitURN ());
+							msg.setNewStatus (newStatusInPlayersMemoryOnClient);
+							
+							player.getConnection ().sendMessageToClient (msg);
+						}
+					}
+				}
+	
+				// Now update server's true memory
+				switch (untransmittedAction)
+				{
+					// Complete remove unit
+					case PERMANENT_DAMAGE:
+						log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory");
+						getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+						break;
+	
+					// Dismissed heroes go back to Generated
+					// Heroes dismissed by lack of production go back to Generated
+					case DISMISS:
+					case LACK_OF_PRODUCTION:
+						if (isHero)
+						{
+							log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated in server's true memory (dismissed or lack of production)");
+							trueUnit.setStatus (UnitStatusID.GENERATED);
+						}
+						else
+						{
+							log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory (dismissed or lack of production)");
+							getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+						}
+						break;
+						
+					// Killed by taking damage in combat.
+					// All units killed by combat damage are kept around for the moment, since one of the players in the combat may Raise Dead them.
+					// Heroes are kept at DEAD even after the combat ends, in case the player resurrects them.
+					case HEALABLE_COMBAT_DAMAGE:
+						log.debug ("Marking unit with unit URN " + trueUnit.getUnitURN () + " as dead in server's true memory (combat damage)");
+						trueUnit.setStatus (UnitStatusID.DEAD);
+						break;
+	
+					// Killed by taking damage overland.
+					// As above except we only need to mark heroes as DEAD, since there's no way to resurrect regular units on the overland map.
+					case HEALABLE_OVERLAND_DAMAGE:
+						if (isHero)
+						{
+							log.debug ("Marking hero with unit URN " + trueUnit.getUnitURN () + " as dead in server's true memory (overland damage)");
+							trueUnit.setStatus (UnitStatusID.DEAD);
+						}
+						else
+						{
+							log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory (overland damage)");
+							getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+						}
+						break;
+						
+					default:
+						throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when action = " + untransmittedAction);
+				}
+				
+				// If the unit died overland, recheck the remaining units at the location (if it died in combat, this is deferred until the combat ends)
+				if (trueUnit.getCombatLocation () == null)
+				{
+					// Was the unit in a city?  If so recalculate the city; if not recalculate the unit stack
+					// Units can have no location, for example generated heroes that were never actually used
+					if (trueUnit.getUnitLocation () != null)
+					{
+						final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+							(trueUnit.getUnitLocation ().getZ ()).getRow ().get (trueUnit.getUnitLocation ().getY ()).getCell ().get (trueUnit.getUnitLocation ().getX ());
+						
+						if (tc.getCityData () != null)
+						{
+							// Units other than summoned units help reduce unrest if they are in a city
+							if (!mom.getServerDB ().findPick (unitMagicRealmID, "KillUnitUpdate").getUnitTypeID ().equals (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED))
+								if (mom.getWorldUpdates ().recalculateCity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
+									result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+						}
+						else
+						{
+							if (mom.getWorldUpdates ().recheckTransportCapacity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
+								result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+						}
+					}
+				
+					// Unit probably had some upkeep
+					if (mom.getWorldUpdates ().recalculateProduction (trueUnit.getOwningPlayerID ()))
+						result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+					
+					// Unit might have been the only one who could see certain areas of the map
+					if (mom.getWorldUpdates ().recalculateFogOfWar (trueUnit.getOwningPlayerID ()))
+						result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+				}
 			}
 		}
 		

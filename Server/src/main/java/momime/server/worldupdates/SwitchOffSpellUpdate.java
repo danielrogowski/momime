@@ -159,37 +159,6 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 					if (mom.getWorldUpdates ().removeCombatAreaEffect (trueCAE.getCombatAreaEffectURN ()))
 						result = WorldUpdateResult.REDO_BECAUSE_EARLIER_UPDATES_ADDED;
 			}
-			
-			// The only spells with a citySpellEffectID that can be cast in combat are Wall of Fire / Wall of Darkness.
-			// If these get cancelled, we need to regnerate the combat map.
-			else	if (((spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)) &&
-				spellDef.getCombatCastingCost () != null)
-			{
-				final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-					((MapCoordinates3DEx) trueSpell.getCityLocation (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
-				if (combatPlayers.bothFound ())
-				{
-					final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
-					final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
-				
-					final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
-						(MapCoordinates3DEx) trueSpell.getCityLocation (), "SwitchOffSpellUpdate");
-					
-					getCombatMapGenerator ().regenerateCombatTileBorders (combatDetails.getCombatMap (), mom.getServerDB (),
-						mom.getGeneralServerKnowledge ().getTrueMap (), (MapCoordinates3DEx) trueSpell.getCityLocation ());
-					
-					// Send the updated map
-					final UpdateCombatMapMessage combatMapMsg = new UpdateCombatMapMessage ();
-					combatMapMsg.setCombatLocation (trueSpell.getCityLocation ());
-					combatMapMsg.setCombatTerrain (combatDetails.getCombatMap ());
-					
-					if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-						attackingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
-
-					if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-						defendingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
-				}
-			}
 		}
 		
 		
@@ -214,6 +183,38 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 					// Update on client
 					if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						player.getConnection ().sendMessageToClient (msg);
+				}
+			}
+			
+			// The only spells with a citySpellEffectID that can be cast in combat are Wall of Fire / Wall of Darkness.
+			// If these get cancelled, we need to regenerate the combat map.
+			// Can only do this after the spell is removed, or regenerating the combat map will still see the spell existing.
+			if (((spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)) &&
+				(spellDef.getCombatCastingCost () != null) && (trueSpell.getCitySpellEffectID () != null))
+			{
+				final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
+					((MapCoordinates3DEx) trueSpell.getCityLocation (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
+				if (combatPlayers.bothFound ())
+				{
+					final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
+					final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
+				
+					final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
+						(MapCoordinates3DEx) trueSpell.getCityLocation (), "SwitchOffSpellUpdate");
+					
+					getCombatMapGenerator ().regenerateCombatTileBorders (combatDetails.getCombatMap (), mom.getServerDB (),
+						mom.getGeneralServerKnowledge ().getTrueMap (), (MapCoordinates3DEx) trueSpell.getCityLocation ());
+					
+					// Send the updated map
+					final UpdateCombatMapMessage combatMapMsg = new UpdateCombatMapMessage ();
+					combatMapMsg.setCombatLocation (trueSpell.getCityLocation ());
+					combatMapMsg.setCombatTerrain (combatDetails.getCombatMap ());
+					
+					if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+						attackingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
+
+					if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+						defendingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
 				}
 			}
 			

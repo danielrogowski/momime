@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -19,6 +21,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -26,6 +29,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.AddsToSkill;
+import momime.common.database.AddsToSkillValueType;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -1543,6 +1547,65 @@ public final class TestExpandUnitDetailsUtilsImpl
 		assertEquals (1, modifiedSkillValues.get ("US005").getComponents ().get (UnitSkillComponent.HERO_ITEMS));		// Adds a skill we didn't have
 	}
 
+	/**
+	 * Tests the addPenaltiesFromHeroItems method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddPenaltiesFromHeroItems () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final HeroItemType heroItemType = new HeroItemType ();
+		heroItemType.getHeroItemTypeAttackType ().add ("US001");
+		
+		when (db.findHeroItemType ("IT01", "addPenaltiesFromHeroItems")).thenReturn (heroItemType);
+		
+		final HeroItemBonusStat doomAttack = new HeroItemBonusStat ();
+		doomAttack.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_DOOM_ATTACK);
+		
+		final HeroItemBonus heroItemBonus = new HeroItemBonus ();
+		heroItemBonus.getHeroItemBonusStat ().add (doomAttack);
+		when (db.findHeroItemBonus ("IB01", "addPenaltiesFromHeroItems")).thenReturn (heroItemBonus);
+		
+		// Unit we are calculating stats for
+		final MemoryUnitHeroItemSlot slot1 = new MemoryUnitHeroItemSlot ();
+		
+		final NumberedHeroItem item = new NumberedHeroItem ();
+		item.setHeroItemTypeID ("IT01");
+		item.getHeroItemChosenBonus ().add ("IB01");
+		
+		final MemoryUnitHeroItemSlot slot2 = new MemoryUnitHeroItemSlot ();
+		slot2.setHeroItem (item);
+
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.getHeroItemSlot ().add (slot1);
+		unit.getHeroItemSlot ().add (slot2);
+		
+		final MinimalUnitDetails mu = mock (MinimalUnitDetails.class);
+		when (mu.getMemoryUnit ()).thenReturn (unit);
+		
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		
+		// Set up object to test
+		final UnitDetailsUtils unitDetailsUtils = mock (UnitDetailsUtils.class);
+
+		final ExpandUnitDetailsUtilsImpl utils = new ExpandUnitDetailsUtilsImpl ();
+		utils.setUnitDetailsUtils (unitDetailsUtils);
+		
+		// Run method
+		utils.addPenaltiesFromHeroItems (mu, modifiedSkillValues, "US001", null, null, db);
+		
+		// Verify method was called - this isn't straightforward since we can't compare the AddsToSkill object so need to capture it and compare afterwards
+		final ArgumentCaptor<AddsToSkill> captureAddsToSkill = ArgumentCaptor.forClass (AddsToSkill.class);
+		
+		verify (unitDetailsUtils).addSkillPenalty (eq (mu), captureAddsToSkill.capture (), isNull (), eq (modifiedSkillValues), eq ("US001"), isNull (), isNull ());
+		assertEquals ("US001", captureAddsToSkill.getValue ().getAddsToSkillID ());
+		assertEquals (AddsToSkillValueType.DIVIDE, captureAddsToSkill.getValue ().getAddsToSkillValueType ());
+		assertEquals (2, captureAddsToSkill.getValue ().getAddsToSkillValue ());
+	}
+	
 	/**
 	 * Tests the addPenaltiesFromOtherSkills method
 	 * @throws Exception If there is a problem

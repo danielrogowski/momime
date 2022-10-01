@@ -108,6 +108,7 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 				break;
 				
 			case DISPEL_SPELLS:
+				// Every other dispel spell has a custom slider for the dispel power; only spell binding has a fixed power (no max specified)
 				if ((spell.getOverlandMaxDamage () == null) && (spell.getCombatMaxDamage () == null))
 					kind = KindOfSpell.SPELL_BINDING;
 				else if (spell.getAttackSpellCombatTarget () == null)

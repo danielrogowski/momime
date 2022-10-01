@@ -1,8 +1,10 @@
 package momime.common.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
+import momime.common.database.DamageTypeImmunity;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillComponent;
@@ -316,6 +320,88 @@ public final class TestExpandedUnitDetailsImpl
 	}
 	
 	/**
+	 * Tests the isUnitImmuneToDamageType method
+	 */
+	@Test
+	public final void testIsUnitImmuneToDamageType ()
+	{
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageTypeImmunity immunity = new DamageTypeImmunity ();
+			immunity.setUnitSkillID ("US00" + n);
+			damageType.getDamageTypeImmunity ().add (immunity);
+		}
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US002", null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertTrue (xu.isUnitImmuneToDamageType (damageType));
+	}
+	
+	/**
+	 * Tests the isUnitImmuneToDamageType method when the unit doesn't have any of the necessary skills
+	 */
+	@Test
+	public final void testIsUnitImmuneToDamageType_NoSkill ()
+	{
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageTypeImmunity immunity = new DamageTypeImmunity ();
+			immunity.setUnitSkillID ("US00" + n);
+			damageType.getDamageTypeImmunity ().add (immunity);
+		}
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US004", null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertFalse (xu.isUnitImmuneToDamageType (damageType));
+	}
+	
+	/**
+	 * Tests the isUnitImmuneToDamageType method when the immunity only grants a boost to 50 defence, and not complete immunity
+	 */
+	@Test
+	public final void testIsUnitImmuneToDamageType_DefenceBoostOnly ()
+	{
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageTypeImmunity immunity = new DamageTypeImmunity ();
+			immunity.setUnitSkillID ("US00" + n);
+			
+			if (n == 2)
+				immunity.setBoostsDefenceTo (50);
+			
+			damageType.getDamageTypeImmunity ().add (immunity);
+		}
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US002", null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertFalse (xu.isUnitImmuneToDamageType (damageType));
+	}
+	
+	/**
 	 * Tests the calculateFullRangedAttackAmmo method
 	 * Its a bit of a dumb test, since its only returning the value straight out of getModifiedSkillValue, but including it to be complete and as a pretest for giveUnitFullRangedAmmoAndMana
 	 * @throws Exception If there is a problem
@@ -335,6 +421,85 @@ public final class TestExpandedUnitDetailsImpl
 		
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, ammo);
 		assertEquals (5, unit.calculateFullRangedAttackAmmo ());
+	}
+	
+	/**
+	 * Test the canCastSpells method on a hero who can cast spells
+	 */
+	@Test
+	public final void testCanCastSpells_HeroCaster ()
+	{
+		// Unit definition
+		final UnitEx unitDefinition = new UnitEx ();
+		unitDefinition.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, unitDefinition, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertTrue (xu.canCastSpells ());
+	}
+	
+	/**
+	 * Test the canCastSpells method on a hero who can't cast spells, but is using an item that grants +spell skill
+	 */
+	@Test
+	public final void testCanCastSpells_HeroNonCaster ()
+	{
+		// Unit definition
+		final UnitEx unitDefinition = new UnitEx ();
+		unitDefinition.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, unitDefinition, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertFalse (xu.canCastSpells ());
+	}
+	
+	/**
+	 * Test the canCastSpells method on a regular unit who can cast spells
+	 */
+	@Test
+	public final void testCanCastSpells_UnitCaster ()
+	{
+		// Unit definition
+		final UnitEx unitDefinition = new UnitEx ();
+		unitDefinition.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, unitDefinition, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertTrue (xu.canCastSpells ());
+	}
+	
+	/**
+	 * Test the canCastSpells method on a regular unit who can't cast spells
+	 */
+	@Test
+	public final void testCanCastSpells_UnitNonCaster ()
+	{
+		// Unit definition
+		final UnitEx unitDefinition = new UnitEx ();
+		unitDefinition.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, unitDefinition, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertFalse (xu.canCastSpells ());
 	}
 	
 	/**

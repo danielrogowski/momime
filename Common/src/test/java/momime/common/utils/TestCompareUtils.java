@@ -45,6 +45,19 @@ public final class TestCompareUtils
 	}
 	
 	/**
+	 * Tests the safeBooleanCompare method
+	 */
+	@Test
+	public final void testSafeBooleanCompare ()
+	{
+		assertTrue (CompareUtils.safeBooleanCompare (null, null));
+		assertTrue (CompareUtils.safeBooleanCompare (true, true));
+		assertFalse (CompareUtils.safeBooleanCompare (null, true));
+		assertFalse (CompareUtils.safeBooleanCompare (false, null));
+		assertFalse (CompareUtils.safeBooleanCompare (false, true));
+	}
+	
+	/**
 	 * Tests the safeOverlandMapCoordinatesCompare method
 	 */
 	@Test

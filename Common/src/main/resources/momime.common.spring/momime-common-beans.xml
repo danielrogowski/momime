@@ -327,6 +327,7 @@
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />
@@ -366,6 +367,11 @@
 	</bean>
 	
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
+	</bean>
+	
+	<bean id="unitVisibilityUtils" class="momime.common.utils.UnitVisibilityUtilsImpl">
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
@@ -408,7 +414,7 @@
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="movementUtils" ref="movementUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 	</bean>
 

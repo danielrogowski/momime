@@ -1015,7 +1015,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
@@ -1085,7 +1085,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="combatSpellAI" class="momime.server.ai.CombatSpellAIImpl">
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="spellQueueing" ref="spellQueueing" />

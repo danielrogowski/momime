@@ -39,7 +39,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.DamageTypeCalculations;
 import momime.server.knowledge.CombatDetails;
@@ -59,8 +59,8 @@ public final class CombatAIImpl implements CombatAI
 	/** Only ranged attacks */
 	private final static List<CombatMovementType> RANGED_ATTACKS = Arrays.asList (CombatMovementType.RANGED_UNIT, CombatMovementType.RANGED_UNIT_AND_WALL);
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -272,7 +272,7 @@ public final class CombatAIImpl implements CombatAI
 
 				// Make sure we can actually see it
 				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, Arrays.asList (attacker), attackSkillID, attackFromMagicRealmID, players, mem, db);
-				if (getUnitUtils ().canSeeUnitInCombat (xu, attacker.getOwningPlayerID (), players, mem, db, combatMapCoordinateSystem))
+				if (getUnitVisibilityUtils ().canSeeUnitInCombat (xu, attacker.getOwningPlayerID (), players, mem, db, combatMapCoordinateSystem))
 				{
 					final DamageType damageType = getDamageTypeCalculations ().determineSkillDamageType (attacker, attackSkillID, db);
 					
@@ -478,19 +478,19 @@ public final class CombatAIImpl implements CombatAI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Methods dealing with checking whether we can see units or not
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
 	{
-		return unitUtils;
+		return unitVisibilityUtils;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param u Methods dealing with checking whether we can see units or not
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
-		unitUtils = utils;
+		unitVisibilityUtils = u;
 	}
 	
 	/**

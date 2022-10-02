@@ -96,7 +96,7 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 
 /**
  * Screen for displaying the overland map, including the buttons and side panels and so on that appear in the same frame
@@ -172,8 +172,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
 	/** Zone AI */
 	private ZoneAI zoneAI;
@@ -1391,7 +1391,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null) && ((unit.getUnitLocation ().getZ () == mapViewPlane) ||
 				(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 					(unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))) &&
-				(getUnitUtils ().canSeeUnitOverland (unit, getClient ().getOurPlayerID (),
+				(getUnitVisibilityUtils ().canSeeUnitOverland (unit, getClient ().getOurPlayerID (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
 			{
 				// If this is a map cell where we've got units selected to move, make sure we show one of the units that's moving
@@ -1939,19 +1939,19 @@ public final class OverlandMapUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Methods dealing with checking whether we can see units or not
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
 	{
-		return unitUtils;
+		return unitVisibilityUtils;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param u Methods dealing with checking whether we can see units or not
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
-		unitUtils = utils;
+		unitVisibilityUtils = u;
 	}
 	
 	/**

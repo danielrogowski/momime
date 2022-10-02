@@ -23,6 +23,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 
 /**
  * Server breaks down client move requests into a series of directions and sends them back to the client
@@ -46,6 +47,9 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
+	
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
 	/** Client config, containing the scale setting */
 	private MomImeClientConfig clientConfig;
@@ -140,7 +144,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 			final MemoryUnit u = getUnitUtils ().findUnitURN (thisUnitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "MoveUnitStackOverlandMessageImpl.start");
 			u.setUnitLocation (null);
 			
-			if ((unitToDraw == null) && (getUnitUtils ().canSeeUnitOverland (u, getClient ().getOurPlayerID (),
+			if ((unitToDraw == null) && (getUnitVisibilityUtils ().canSeeUnitOverland (u, getClient ().getOurPlayerID (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
 				
 				unitToDraw = u;
@@ -360,6 +364,22 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		unitClientUtils = util;
 	}
 
+	/**
+	 * @return Methods dealing with checking whether we can see units or not
+	 */
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
+	{
+		return unitVisibilityUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with checking whether we can see units or not
+	 */
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
+	{
+		unitVisibilityUtils = u;
+	}
+	
 	/**
 	 * @return Cities list
 	 */

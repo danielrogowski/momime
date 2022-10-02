@@ -101,6 +101,7 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 
 /**
  * Combat UI.  Note there's only one of these - I played with the idea of allowing multiple combats going on at once (for simultaneous
@@ -229,6 +230,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -582,7 +586,7 @@ public final class CombatUI extends MomClientFrameUI
 							if (unit != null)
 								try
 								{
-									if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
+									if (getUnitVisibilityUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
 										getClient ().getSessionDescription ().getCombatMapSize ()))
 									{
@@ -747,7 +751,7 @@ public final class CombatUI extends MomClientFrameUI
 								((unit.getOverlays () != null) && (unit.getOverlays ().size () > 0))))
 								try
 								{
-									if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
+									if (getUnitVisibilityUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
 										getClient ().getSessionDescription ().getCombatMapSize ()))
 									{
@@ -2471,5 +2475,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Methods dealing with checking whether we can see units or not
+	 */
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
+	{
+		return unitVisibilityUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with checking whether we can see units or not
+	 */
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
+	{
+		unitVisibilityUtils = u;
 	}
 }

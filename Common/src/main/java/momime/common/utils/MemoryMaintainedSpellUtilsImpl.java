@@ -86,6 +86,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
+	
 	/**
 	 * Searches for a maintained spell in a list
 	 *
@@ -368,7 +371,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	
     	// Same deal if we can clearly see the map cell, but the unit is invisible
     	else if ((combatLocation == null) && (isTargeting) && (kind != KindOfSpell.RAISE_DEAD) &&
-    		(!getUnitUtils ().canSeeUnitOverland (targetUnit.getMemoryUnit (), castingPlayerID, mem.getMaintainedSpell (), db)))
+    		(!getUnitVisibilityUtils ().canSeeUnitOverland (targetUnit.getMemoryUnit (), castingPlayerID, mem.getMaintainedSpell (), db)))
     		result = TargetSpellResult.INVISIBLE;
     	
     	// For anything other than raise dead-type spell, target unit must be alive
@@ -1181,5 +1184,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Methods dealing with checking whether we can see units or not
+	 */
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
+	{
+		return unitVisibilityUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with checking whether we can see units or not
+	 */
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
+	{
+		unitVisibilityUtils = u;
 	}
 }

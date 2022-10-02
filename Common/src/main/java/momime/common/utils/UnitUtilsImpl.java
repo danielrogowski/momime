@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -32,7 +30,6 @@ import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.NumberedHeroItem;
@@ -44,14 +41,11 @@ import momime.common.messages.UnitStatusID;
  */
 public final class UnitUtilsImpl implements UnitUtils
 {
-	/** Coordinate system utils */
-	private CoordinateSystemUtils coordinateSystemUtils;
-	
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
-	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
 	/**
 	 * @param unitURN Unit URN to search for
@@ -388,7 +382,7 @@ public final class UnitUtilsImpl implements UnitUtils
 
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () != exceptPlayerID) && (thisUnit.getUnitLocation () != null) &&
 				(thisUnit.getUnitLocation ().getX () == x) && (thisUnit.getUnitLocation ().getY () == y) && (thisUnit.getUnitLocation ().getZ () == plane) &&
-				(canSeeUnitOverland (thisUnit, ourPlayerID, mem.getMaintainedSpell (), db)))
+				(getUnitVisibilityUtils ().canSeeUnitOverland (thisUnit, ourPlayerID, mem.getMaintainedSpell (), db)))
 
 				found = thisUnit;
 		}
@@ -510,7 +504,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		if (mu != null)
 		{
 			xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null, players, mem, db);
-			if (!canSeeUnitInCombat (xu, ourPlayerID, players, mem, db, combatMapCoordinateSystem))
+			if (!getUnitVisibilityUtils ().canSeeUnitInCombat (xu, ourPlayerID, players, mem, db, combatMapCoordinateSystem))
 				xu = null;
 		}
 		
@@ -642,108 +636,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 	
 	/**
-	 * Whether a unit can be seen *at all* in combat.  So this isn't simply asking whether it has the Invisibility skill and whether we have
-	 * True Sight or Immunity to Illusions to negate it.  Even if a unit is invisible, we can still see it if we have one of our units adjacent to it.
-	 * 
-	 * So for a unit to be completely hidden in combat it must:
-	 * 1) not be ours AND
-	 * 2) be invisible (either natively, from Invisibility spell, or from Mass Invisible CAE) AND
-	 * 3) we must have no unit with True Sight or Immunity to Illusions AND
-	 * 4) we must have no unit adjacent to it
-	 * 
-	 * @param xu Unit present on the combat map
-	 * @param ourPlayerID Our player ID
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @return Whether we can see it or its completely hidden
-	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
-	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
-	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
-	 */
-	@Override
-	public final boolean canSeeUnitInCombat (final ExpandedUnitDetails xu, final int ourPlayerID,
-		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db,
-		final CoordinateSystem combatMapCoordinateSystem)
-		throws MomException, RecordNotFoundException, PlayerNotFoundException
-	{
-		boolean invisible = false;
-		if (xu.getOwningPlayerID () != ourPlayerID)
-		{
-			// expandUnitDetails takes care of granting invisibility spell from Mass Invisibility CAE, so we don't need to check for that here
-			for (final String invisibilitySkillkID : CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY)
-				if (xu.hasModifiedSkill (invisibilitySkillkID))
-					invisible = true;
-			
-			if (invisible)
-			{
-				final List<String> skillsThatNegateInvisibility = db.findUnitSkill
-					(CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY.get (0), "canSeeUnitInCombat").getNegatedBySkill ().stream ().filter
-						(n -> n.getNegatedByUnitID () == NegatedByUnitID.ENEMY_UNIT).map (n -> n.getNegatedBySkillID ()).collect (Collectors.toList ());
-				
-				// Look through our units who are also in the combat looking for one which has True Sight or Immunity to Illusions or is adjacent to the enemy unit
-				final Iterator<MemoryUnit> iter = mem.getUnit ().iterator ();
-				while ((invisible) && (iter.hasNext ()))
-				{
-					final MemoryUnit thisUnit = iter.next ();
-					if ((thisUnit.getOwningPlayerID () == ourPlayerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
-						(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) &&
-						(xu.getCombatLocation ().equals (thisUnit.getCombatLocation ())))
-					{
-						// Check for adjacency first since its quicker
-						if (getCoordinateSystemUtils ().determineStep2DDistanceBetween (combatMapCoordinateSystem,
-							xu.getCombatPosition (), (MapCoordinates2DEx) thisUnit.getCombatPosition ()) <= 1)
-							
-							invisible = false;
-						else
-						{
-							final ExpandedUnitDetails ourXU = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
-							for (final String negatingSkillID : skillsThatNegateInvisibility)
-								if (ourXU.hasModifiedSkill (negatingSkillID))
-									invisible = false;
-						}
-					}
-				}
-			}
-		}
-		
-		return !invisible;
-	}
-	
-	/**
-	 * Needed to test whether to draw units on the overland map.  Calling expandUnitDetails continually is too
-	 * expensive so need a quicker way to check whether units are invisible or not.
-	 * 
-	 * @param mu Unit to test
-	 * @param ourPlayerID Our player ID
-	 * @param spells Known spells
-	 * @param db Lookup lists built over the XML database
-	 * @return Whether the unit should be visible on the overland map
-	 */
-	@Override
-	public final boolean canSeeUnitOverland (final MemoryUnit mu, final int ourPlayerID, final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
-	{
-		final boolean visible;
-		
-		if (mu.getOwningPlayerID () == ourPlayerID)
-			visible = true;
-		
-		else if (mu.getUnitHasSkill ().stream ().anyMatch (s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)))
-			visible = false;
-		
-		else if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells,
-			null, null, mu.getUnitURN (), CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL, null, null) != null)
-			
-			visible = false;
-		else
-			visible = mu.getHeroItemSlot ().stream ().filter (s -> s.getHeroItem () != null).noneMatch
-				(s -> s.getHeroItem ().getHeroItemChosenBonus ().contains (db.getInvisibilityHeroItemBonusID ()));
-		
-		return visible;
-	}
-	
-	/**
 	 * @param xu Unit to test
 	 * @param unitSpellEffects List of unit skills to test
 	 * @param db Lookup lists built over the XML database
@@ -801,38 +693,6 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		return result;
 	}
-	
-	/**
-	 * @return Coordinate system utils
-	 */
-	public final CoordinateSystemUtils getCoordinateSystemUtils ()
-	{
-		return coordinateSystemUtils;
-	}
-
-	/**
-	 * @param utils Coordinate system utils
-	 */
-	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
-	{
-		coordinateSystemUtils = utils;
-	}
-
-	/**
-	 * @return MemoryMaintainedSpell utils
-	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
-	{
-		return memoryMaintainedSpellUtils;
-	}
-
-	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
-	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
-	{
-		memoryMaintainedSpellUtils = spellUtils;
-	}
 
 	/**
 	 * @return expandUnitDetails method
@@ -848,5 +708,21 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods dealing with checking whether we can see units or not
+	 */
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
+	{
+		return unitVisibilityUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with checking whether we can see units or not
+	 */
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
+	{
+		unitVisibilityUtils = u;
 	}
 }

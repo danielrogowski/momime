@@ -27,7 +27,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 
 /**
  * Methods dealing with unit movement
@@ -58,8 +58,8 @@ public final class UnitMovementImpl implements UnitMovement
 	/** Movement utils */
 	private MovementUtils movementUtils;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
@@ -305,7 +305,7 @@ public final class UnitMovementImpl implements UnitMovement
 					if ((thisUnit == unitBeingMoved.getMemoryUnit ()) || (xu.getOwningPlayerID () == unitBeingMoved.getControllingPlayerID ()))
 						ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
 					
-					else if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getControllingPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
+					else if (getUnitVisibilityUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getControllingPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
 					{
 						enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = getUnitCalculations ().determineCombatActionID (xu, false, db);
 						
@@ -528,19 +528,19 @@ public final class UnitMovementImpl implements UnitMovement
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Methods dealing with checking whether we can see units or not
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
 	{
-		return unitUtils;
+		return unitVisibilityUtils;
 	}
 
 	/**
-	 * @param util Unit utils
+	 * @param u Methods dealing with checking whether we can see units or not
 	 */
-	public final void setUnitUtils (final UnitUtils util)
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
-		unitUtils = util;
+		unitVisibilityUtils = u;
 	}
 
 	/**

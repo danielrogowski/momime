@@ -93,7 +93,7 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SampleUnitUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 
 /**
  * City screen, so you can view current buildings, production and civilians, examine
@@ -146,8 +146,8 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Variable replacer for outputting skill descriptions */
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
@@ -871,7 +871,7 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		int x = 0;
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) && (getUnitUtils ().canSeeUnitOverland
+			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) && (getUnitVisibilityUtils ().canSeeUnitOverland
 				(mu, getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
 			{
 				if (x < CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
@@ -1541,19 +1541,19 @@ public final class CityViewUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Methods dealing with checking whether we can see units or not
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
 	{
-		return unitUtils;
+		return unitVisibilityUtils;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param u Methods dealing with checking whether we can see units or not
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
-		unitUtils = utils;
+		unitVisibilityUtils = u;
 	}
 	
 	/**

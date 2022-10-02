@@ -27,7 +27,7 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 import momime.server.MomSessionVariables;
 import momime.server.knowledge.CombatDetails;
 import momime.server.process.SpellQueueing;
@@ -48,8 +48,8 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -177,7 +177,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 						combatCastingUnit, null, xu, true, mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (),
 						mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 							
-							(getUnitUtils ().canSeeUnitInCombat (xu, player.getPlayerDescription ().getPlayerID (), mom.getPlayers (),
+							(getUnitVisibilityUtils ().canSeeUnitInCombat (xu, player.getPlayerDescription ().getPlayerID (), mom.getPlayers (),
 								mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ())))
 					{
 						if (targetCount == null)
@@ -294,19 +294,19 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Methods dealing with checking whether we can see units or not
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
 	{
-		return unitUtils;
+		return unitVisibilityUtils;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param u Methods dealing with checking whether we can see units or not
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
-		unitUtils = utils;
+		unitVisibilityUtils = u;
 	}
 
 	/**

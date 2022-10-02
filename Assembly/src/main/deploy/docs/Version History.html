@@ -10,7 +10,7 @@
 	<p>This is an open source Java-based Multiplayer Client/Server rewrite of Microprose/Simtex's classic
 		game 'Master of Magic'.  The project is now hosted <a href="http://sourceforge.net/projects/momime">on SourceForge</a>.</p>
 
-	<p>It needs Java 11 to run, so two versions are provided to download.  The "with JRE" version is larger but can be just unzipped and ran.
+	<p>It needs Java 17 to run, so two versions are provided to download.  The "with JRE" version is larger but can be just unzipped and ran.
 		The "without JRE" version requires that you download the JRE or JDK yourself separately and set your PATH statement to include the location of java.exe.
 		For either version, on Windows, I suggest you <b>do not</b> unzip it into "C:\Program Files" or similar, or
 		MoM IME will have problems with lacking permission to update its config files and save games.</p>
@@ -36,8 +36,39 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.5</b></td>
-			<td align=left><b>23 Sep 2022</b></td>
+			<td align=left><b>Current version: 1.5.1</b></td>
+			<td align=left><b>3 Oct 2022</b></td>
+			<td align=left>
+				<b>New features:</b>
+				<ul>
+					<li>Ability to create data mod XML files, and select which mod(s) are applied when creating a new game
+					<li>Created very simple mod to make Spell of Mastery more expensive as an example
+					<li>Single city screen and cities screen both now show the number of turns until current construction is completed
+					<li>Unit cost reduction from Iron Ore and Coal now works
+					<li>Game button now works, leaving the game and returning to the main menu
+					<li>If another player leaves the game nicely (via Game button rather than just closing the client, disconnect or getting an exception) then informs you and returns you to the main menu too
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed client hanging if two AI wizards meet you between you hitting next turn and the start of your next turn
+					<li>Fixed non-fatal error in log if you had city screen open when a city was reduced to ruins by rampaging monsters
+					<li>Outposts can be renamed before they grow into Hamlets
+					<li>If a hero had Chain Mail or Plate Mail, then the defence bonus from the basic item type might wipe out the defence bonus of a different item they were using in a different slot instead of them all being added together
+					<li>Dispelling a Wall of Fire or Wall of Darkness in combat by Disenchant Area/True would stop it having any effect, but would fail to remove the graphics for it
+					<li>Suppress Magic would not attempt to dispel overland Arcane spells
+					<li>Being in one game, leave and then joining/creating a new game without closing the client would cache various images using the flag colours from the previous game
+				</ul>
+					
+				<b>Technical changes:</b>
+				<ul>
+					<li>Updated to JDK 17
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.5</td>
+			<td align=left>23 Sep 2022</td>
 			<td align=left>
 				<b>Diplomacy part 2 (positive relations):</b>
 				<ul>

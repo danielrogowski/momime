@@ -10,7 +10,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,12 +26,15 @@ import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.NegatedBySkill;
+import momime.common.database.NegatedByUnitID;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -317,6 +323,137 @@ public final class TestUnitUtilsImpl
 
 		assertEquals ("US001", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
 		assertEquals (5, unit.getUnitHasSkill ().get (1).getUnitSkillValue ().intValue ());
+	}
+	
+	/**
+	 * Tests the isSkillNegated method when its negated by another of our own skills (e.g. Stone Skin is negated by Iron Skin)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsSkillNegated_Ours () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final NegatedBySkill negatedBy = new NegatedBySkill ();
+		negatedBy.setNegatedBySkillID ("US002");
+		negatedBy.setNegatedByUnitID (NegatedByUnitID.OUR_UNIT);
+		
+		final UnitSkillEx negatedSkill = new UnitSkillEx ();
+		negatedSkill.getNegatedBySkill ().add (negatedBy);
+		when (db.findUnitSkill ("US001", "isSkillNegated")).thenReturn (negatedSkill);
+		
+		// Our skills
+		final Map<String, Object> ourSkillValues = new HashMap<String, Object> ();
+		ourSkillValues.put ("US002", null);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertTrue (utils.isSkillNegated ("US001", ourSkillValues, null, db));
+	}
+	
+	/**
+	 * Tests the isSkillNegated method when its negated by another of our own skills, but we don't have that skill
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsSkillNegated_Ours_DontHaveNecessarySkill () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final NegatedBySkill negatedBy = new NegatedBySkill ();
+		negatedBy.setNegatedBySkillID ("US002");
+		negatedBy.setNegatedByUnitID (NegatedByUnitID.OUR_UNIT);
+		
+		final UnitSkillEx negatedSkill = new UnitSkillEx ();
+		negatedSkill.getNegatedBySkill ().add (negatedBy);
+		when (db.findUnitSkill ("US001", "isSkillNegated")).thenReturn (negatedSkill);
+		
+		// Our skills
+		final Map<String, Object> ourSkillValues = new HashMap<String, Object> ();
+		ourSkillValues.put ("US003", null);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isSkillNegated ("US001", ourSkillValues, null, db));
+	}
+	
+	/**
+	 * Tests the isSkillNegated method when its negated by an enemy unit skill (e.g First Strike is negated by Negate First Strike)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsSkillNegated_Enemy () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final NegatedBySkill negatedBy = new NegatedBySkill ();
+		negatedBy.setNegatedBySkillID ("US002");
+		negatedBy.setNegatedByUnitID (NegatedByUnitID.ENEMY_UNIT);
+		
+		final UnitSkillEx negatedSkill = new UnitSkillEx ();
+		negatedSkill.getNegatedBySkill ().add (negatedBy);
+		when (db.findUnitSkill ("US001", "isSkillNegated")).thenReturn (negatedSkill);
+		
+		// Our skills
+		final Map<String, Object> ourSkillValues = new HashMap<String, Object> ();
+		ourSkillValues.put ("US002", null);
+		
+		// Enemy units
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (xu1.hasModifiedSkill ("US002")).thenReturn (false);
+
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (xu2.hasModifiedSkill ("US002")).thenReturn (true);
+		
+		final List<ExpandedUnitDetails> enemyUnits = Arrays.asList (xu1, xu2);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertTrue (utils.isSkillNegated ("US001", ourSkillValues, enemyUnits, db));
+	}
+	
+	/**
+	 * Tests the isSkillNegated method when its negated by an enemy unit skill, but they don't have it
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsSkillNegated_Enemy_DontHaveNecessarySkill () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final NegatedBySkill negatedBy = new NegatedBySkill ();
+		negatedBy.setNegatedBySkillID ("US002");
+		negatedBy.setNegatedByUnitID (NegatedByUnitID.ENEMY_UNIT);
+		
+		final UnitSkillEx negatedSkill = new UnitSkillEx ();
+		negatedSkill.getNegatedBySkill ().add (negatedBy);
+		when (db.findUnitSkill ("US001", "isSkillNegated")).thenReturn (negatedSkill);
+		
+		// Our skills
+		final Map<String, Object> ourSkillValues = new HashMap<String, Object> ();
+		ourSkillValues.put ("US002", null);
+		
+		// Enemy units
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (xu1.hasModifiedSkill ("US002")).thenReturn (false);
+
+		final List<ExpandedUnitDetails> enemyUnits = Arrays.asList (xu1);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isSkillNegated ("US001", ourSkillValues, enemyUnits, db));
 	}
 	
 	/**
@@ -908,6 +1045,75 @@ public final class TestUnitUtilsImpl
 		assertEquals (u6, utils.findFirstAliveEnemyAtLocation (units, 2, 3, 1, 4));
 	}
 
+	/**
+	 * Tests the listAliveEnemiesAtLocation method
+	 */
+	@Test
+	public final void testListAliveEnemiesAtLocation ()
+	{
+		// Put into a list units that meet every criteria except one
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		// Null location
+		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setOwningPlayerID (5);
+		u1.setStatus (UnitStatusID.ALIVE);
+		units.add (u1);
+
+		// Wrong location
+		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setOwningPlayerID (5);
+		u2.setStatus (UnitStatusID.ALIVE);
+		u2.setUnitLocation (new MapCoordinates3DEx (2, 3, 0));
+		units.add (u2);
+
+		// Wrong player (i.e. player matches)
+		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setOwningPlayerID (4);
+		u3.setStatus (UnitStatusID.ALIVE);
+		u3.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		units.add (u3);
+
+		// Null status
+		final MemoryUnit u4 = new MemoryUnit ();
+		u4.setOwningPlayerID (5);
+		u4.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		units.add (u4);
+
+		// Unit is dead
+		final MemoryUnit u5 = new MemoryUnit ();
+		u5.setOwningPlayerID (5);
+		u5.setStatus (UnitStatusID.DEAD);
+		u5.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		units.add (u5);
+
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		assertEquals (0, utils.listAliveEnemiesAtLocation (units, 2, 3, 1, 4).size ());
+
+		// Now add one that actually matches
+		final MemoryUnit u6 = new MemoryUnit ();
+		u6.setOwningPlayerID (5);
+		u6.setStatus (UnitStatusID.ALIVE);
+		u6.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		units.add (u6);
+
+		final List<MemoryUnit> list1 = utils.listAliveEnemiesAtLocation (units, 2, 3, 1, 4);
+		assertEquals (1, list1.size ());
+		assertSame (u6, list1.get (0));
+
+		// Add second matching unit
+		final MemoryUnit u7 = new MemoryUnit ();
+		u7.setOwningPlayerID (5);
+		u7.setStatus (UnitStatusID.ALIVE);
+		u7.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		units.add (u7);
+
+		final List<MemoryUnit> list2 = utils.listAliveEnemiesAtLocation (units, 2, 3, 1, 4);
+		assertEquals (2, list2.size ());
+		assertSame (u6, list2.get (0));
+		assertSame (u7, list2.get (1));
+	}
+	
 	/**
 	 * Tests the countAliveEnemiesAtLocation method
 	 */

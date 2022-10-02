@@ -19,6 +19,7 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
+import momime.common.database.CitySpellEffect;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
@@ -612,6 +613,118 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertEquals ("B", listThree.get (0));
 		assertEquals ("C", listThree.get (1));
 		assertEquals ("D", listThree.get (2));
+	}
+	
+	/**
+	 * Tests the isCityProtectedAgainstSpellRealm method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityProtectedAgainstSpellRealm () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.getProtectsAgainstSpellRealm ().add ("MB01");
+		when (db.findCitySpellEffect ("SE001", "isCityProtectedAgainstSpellRealm")).thenReturn (effect);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final MemoryMaintainedSpell protectionSpell = new MemoryMaintainedSpell ();
+		protectionSpell.setCityLocation (new MapCoordinates3DEx (20, 11, 1));
+		protectionSpell.setCitySpellEffectID ("SE001");
+		protectionSpell.setCastingPlayerID (3);
+		spells.add (protectionSpell);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Run method
+		assertTrue (utils.isCityProtectedAgainstSpellRealm (new MapCoordinates3DEx (20, 11, 1), "MB01", 2, spells, db));
+	}
+	
+	/**
+	 * Tests the isCityProtectedAgainstSpellRealm method when the protection is against a different magic realm
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityProtectedAgainstSpellRealm_WrongMagicRealm () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.getProtectsAgainstSpellRealm ().add ("MB01");
+		when (db.findCitySpellEffect ("SE001", "isCityProtectedAgainstSpellRealm")).thenReturn (effect);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final MemoryMaintainedSpell protectionSpell = new MemoryMaintainedSpell ();
+		protectionSpell.setCityLocation (new MapCoordinates3DEx (20, 11, 1));
+		protectionSpell.setCitySpellEffectID ("SE001");
+		protectionSpell.setCastingPlayerID (3);
+		spells.add (protectionSpell);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isCityProtectedAgainstSpellRealm (new MapCoordinates3DEx (20, 11, 1), "MB02", 2, spells, db));
+	}
+	
+	/**
+	 * Tests the isCityProtectedAgainstSpellRealm method when the protection is at a different location
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityProtectedAgainstSpellRealm_DifferentLocation () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final MemoryMaintainedSpell protectionSpell = new MemoryMaintainedSpell ();
+		protectionSpell.setCityLocation (new MapCoordinates3DEx (20, 11, 1));
+		protectionSpell.setCitySpellEffectID ("SE001");
+		protectionSpell.setCastingPlayerID (3);
+		spells.add (protectionSpell);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isCityProtectedAgainstSpellRealm (new MapCoordinates3DEx (20, 12, 1), "MB01", 2, spells, db));
+	}
+	
+	/**
+	 * Tests the isCityProtectedAgainstSpellRealm method when the protection was cast by ourselves, e.g. we can cast Chaos Ward and then still cast Wall of Fire afterwards
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityProtectedAgainstSpellRealm_OurOwnProtection () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final MemoryMaintainedSpell protectionSpell = new MemoryMaintainedSpell ();
+		protectionSpell.setCityLocation (new MapCoordinates3DEx (20, 11, 1));
+		protectionSpell.setCitySpellEffectID ("SE001");
+		protectionSpell.setCastingPlayerID (3);
+		spells.add (protectionSpell);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isCityProtectedAgainstSpellRealm (new MapCoordinates3DEx (20, 11, 1), "MB01", 3, spells, db));
 	}
 	
 	/**

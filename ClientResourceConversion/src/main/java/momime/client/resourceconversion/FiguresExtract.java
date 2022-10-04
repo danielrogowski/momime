@@ -6,12 +6,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.graphics.ImageCache;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.CommonXsdResourceResolver;
+import momime.common.database.MomDatabase;
 
 /**
  * Extracts images of all the figures from the original LBX files
@@ -21,12 +34,41 @@ public final class FiguresExtract
 	/** Location of MoM IME Client project sources */
 	private final static String CLIENT_PROJECT_ROOT = "W:\\EclipseHome\\SF\\MoMIME\\Client";
 	
+	/** Location of XML to read/update */
+	private final static File XML_LOCATION = new File ("W:\\EclipseHome\\SF\\MoMIME\\Server\\src\\external\\resources\\momime.server.database\\Original Master of Magic 1.31 rules.momime.xml");
+	
 	/** Cache for locating files and handling archives */
 	private ImageCache cache;
 	
 	/**
+	 * @param db Database to update
+	 * @param baseFilename Base filename - the original image converted as-is from the LBXes, which is what we expect to find already present in the database
+	 * @param shadowlessFilename Shadowless filename if we generated one; null means the base image had no shadow pixels in it
+	 * @param shadowFilename Shadow filename
+	 */
+	private final void updateXml (final MomDatabase db, final String baseFilename, final String shadowlessFilename, final String shadowFilename)
+	{
+		db.getUnit ().forEach (u -> u.getUnitCombatAction ().forEach (a -> a.getUnitCombatImage ().stream ().filter (i -> baseFilename.equals (i.getUnitCombatImageFile ())).forEach (i ->
+		{
+			i.setUnitCombatShadowlessImageFile (shadowlessFilename);
+			i.setUnitCombatShadowImageFile (shadowFilename);
+			i.setShadowOffsetX (0);
+			i.setShadowOffsetY (0);
+		})));
+		
+		db.getAnimation ().forEach (a -> a.getFrame ().stream ().filter (f -> baseFilename.equals (f.getImageFile ())).forEach (f ->
+		{
+			f.setShadowlessImageFile (shadowlessFilename);
+			f.setShadowImageFile (shadowFilename);
+			a.setShadowOffsetX (0);
+			a.setShadowOffsetY (0);
+		}));
+	}
+	
+	/**
 	 * Converts a single image
 	 * 
+	 * @param db Database to update
 	 * @param imageFile Name of image file (probably .LBX)
 	 * @param subFileNumber Number of the sub file within the archive
 	 * @param frameNumber Number of the frame within the subfile
@@ -34,7 +76,7 @@ public final class FiguresExtract
 	 * @return Unit image with original shadow removed
 	 * @throws IOException If there is a problem
 	 */
-	private final BufferedImage convertImage (final String imageFile, final Integer subFileNumber, final int frameNumber, final String destName) throws IOException
+	private final BufferedImage convertImage (final MomDatabase db, final String imageFile, final Integer subFileNumber, final int frameNumber, final String destName) throws IOException
 	{
 		// Read image
 		final BufferedImage image = cache.findOrLoadImage (imageFile, subFileNumber, frameNumber);
@@ -54,7 +96,7 @@ public final class FiguresExtract
 
 		// See if file already exists; if so see if its identical, in which case no point overwriting it
 		boolean identical = false;
-		final File destFile = new File (CLIENT_PROJECT_ROOT + "\\src\\main\\resources\\momime.client.graphics\\" + destName + (shadowRemoved ? "-shadow-removed" : "") + ".png");
+		final File destFile = new File (CLIENT_PROJECT_ROOT + "\\src\\main\\resources\\momime.client.graphics\\" + destName + (shadowRemoved ? "-shadowless" : "") + ".png");
 		if (destFile.exists ())
 		{
 			// This can't read the PNGs if read from a File, but somehow works if read from the classpath
@@ -81,7 +123,10 @@ public final class FiguresExtract
 		
 		// Output image
 		if (identical)
+		{
 			System.out.println (imageFile + ", " + subFileNumber + ", " + frameNumber + " -> " + subFileNumber + "-" + frameNumber + " -> " + destFile + " (existing file was identical so left it alone)");
+			updateXml (db, "/momime.client.graphics/" + destName.replace ('\\', '/') + ".png", null, "/momime.client.graphics/" + destName.replace ('\\', '/') + "-shadow.png");
+		}
 		else			
 		{
 			destFile.getParentFile ().mkdirs ();
@@ -89,6 +134,8 @@ public final class FiguresExtract
 				throw new IOException ("Failed to save PNG file");
 			
 			System.out.println (imageFile + ", " + subFileNumber + ", " + frameNumber + " -> " + subFileNumber + "-" + frameNumber + " -> " + destFile);
+			updateXml (db, "/momime.client.graphics/" + destName.replace ('\\', '/') + ".png", "/momime.client.graphics/" + destName.replace ('\\', '/') + "-shadowless.png",
+				"/momime.client.graphics/" + destName.replace ('\\', '/') + "-shadow.png");
 		}
 		
 		return image;
@@ -254,6 +301,19 @@ public final class FiguresExtract
 			}
 		};
 		
+		// Read XML
+		final URL xsdResource = getClass ().getResource (CommonDatabaseConstants.COMMON_XSD_LOCATION);
+
+		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
+		
+		final Schema schema = schemaFactory.newSchema (xsdResource);
+
+		final Unmarshaller unmarshaller = JAXBContext.newInstance (MomDatabase.class).createUnmarshaller ();		
+		unmarshaller.setSchema (schema);
+		
+		final MomDatabase db = (MomDatabase) unmarshaller.unmarshal (XML_LOCATION);
+
 		for (int unitNo = 1; unitNo <= 198; unitNo++)
 		{
 			String s = Integer.valueOf (unitNo).toString ();
@@ -278,7 +338,7 @@ public final class FiguresExtract
 					System.out.println (unitID + " direction " + d + " is in " + lbxName + " sub file " + subFileNumber);
 	
 					final String imageName = "units\\" + unitID + "\\d" + d + "-" + frameName;
-					final BufferedImage image = convertImage (lbxName, subFileNumber, frameNumber, imageName);
+					final BufferedImage image = convertImage (db, lbxName, subFileNumber, frameNumber, imageName);
 					images.put (d, image);
 					
 					generateShadow (image, imageName, d);
@@ -296,7 +356,7 @@ public final class FiguresExtract
 					System.out.println (unitID + " direction " + d + " is in " + lbxName + " sub file " + subFileNumber);
 	
 					final String imageName = "units\\" + unitID + "\\d" + d + "-" + frameName;
-					convertImage (lbxName, subFileNumber, frameNumber, imageName);
+					convertImage (db, lbxName, subFileNumber, frameNumber, imageName);
 					
 					// Use the image from the unit facing sideways to generate the shadow from
 					final int d2 = (d <= 4) ? 3 : 7;
@@ -307,6 +367,13 @@ public final class FiguresExtract
 				frameNumber++;
 			}
 		}
+		
+		// Save XML back out
+		final Marshaller marshaller = JAXBContext.newInstance (MomDatabase.class).createMarshaller ();		
+		marshaller.setSchema (schema);
+		marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		
+		marshaller.marshal (db, XML_LOCATION);
 		
 		System.out.println ("All done!");
 	} 

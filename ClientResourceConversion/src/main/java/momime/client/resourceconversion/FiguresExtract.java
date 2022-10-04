@@ -1,5 +1,6 @@
 package momime.client.resourceconversion;
 
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,9 +29,10 @@ public final class FiguresExtract
 	 * @param subFileNumber Number of the sub file within the archive
 	 * @param frameNumber Number of the frame within the subfile
 	 * @param destName Folder and name appropriate to call the saved .png
+	 * @return Unit image with original shadow removed
 	 * @throws IOException If there is a problem
 	 */
-	private final void convertImage (final String imageFile, final Integer subFileNumber, final int frameNumber, final String destName) throws IOException
+	private final BufferedImage convertImage (final String imageFile, final Integer subFileNumber, final int frameNumber, final String destName) throws IOException
 	{
 		// Read image
 		final BufferedImage image = cache.findOrLoadImage (imageFile, subFileNumber, frameNumber);
@@ -86,6 +88,131 @@ public final class FiguresExtract
 			
 			System.out.println (imageFile + ", " + subFileNumber + ", " + frameNumber + " -> " + subFileNumber + "-" + frameNumber + " -> " + destFile);
 		}
+		
+		return image;
+	}
+	
+	/**
+	 * @param x X coordinate within shadow
+	 * @param y Y coordinate within shadow
+	 * @param width Width of shadow image
+	 * @param height Height of shadow image
+	 * @return Coordinates to read from original image
+	 */
+	private final Point2D.Double convertShadowCoordinates (final int x, final int y, final int width, final int height)
+	{
+		double dx = x - 2;
+		double dy = y + 1;
+
+		// Turn it upside down
+		dy = height - dy;
+		
+		// Halve the height of it
+		dy = dy * 2;
+		
+		// Skew it to the right
+		dx = dx + dy;
+		
+		// Now it'll be much too far to the left
+		dx = dx - (width / 2);
+		
+		// Source image is half the size
+		dx = dx / 2;
+		dy = dy / 2;
+		
+		return new Point2D.Double (dx, dy);
+	}
+	
+	/**
+	 * @param image Image to read from
+	 * @param x X coordinate to read
+	 * @param y Y coordinate to read
+	 * @return 0 if pixel is transparent; 0xFF is pixel is solid
+	 */
+	private final double readPixel (final BufferedImage image, final int x, final int y)
+	{
+		final int c;
+		
+		if ((x < 0) || (y < 0) || (x >= image.getWidth ()) || (y >= image.getHeight ()))
+			c = 0;
+		else
+			c = image.getRGB (x, y);
+		
+		return (c == 0) ? 0 : 0xFF;
+	}
+	
+	/**
+	 * @param image Image to read from
+	 * @param x X coordinate to read
+	 * @param y Y coordinate to read
+	 * @return Value averaged between the 4 neighbouring pixels
+	 */
+	private final double antialias (final BufferedImage image, final double x, final double y)
+	{
+		final double c;
+		final int intX = (int) Math.floor (x);
+		final int intY = (int) Math.floor (y);
+		
+		if (intX == x)
+		{
+			if (intY == y)
+				c = readPixel (image, intX, intY);
+			else
+			{
+				final double c1 = readPixel (image, intX, intY);
+				final double c2 = readPixel (image, intX, intY + 1);
+				final double ry = y - intY;
+				c = ((1 - ry) * c1) + (ry * c2);
+			}
+		}
+		else
+		{
+			if (intY == y)
+			{
+				final double c1 = readPixel (image, intX, intY);
+				final double c2 = readPixel (image, intX + 1, intY);
+				final double rx = x - intX;
+				c = ((1 - rx) * c1) + (rx * c2);
+			}
+			else
+			{
+				final double c1 = readPixel (image, intX, intY);
+				final double c2 = readPixel (image, intX + 1, intY);
+				final double c3 = readPixel (image, intX, intY + 1);
+				final double c4 = readPixel (image, intX + 1, intY + 1);
+				final double rx = x - intX;
+				final double ry = y - intY;
+				c = ((1 - rx) * (1 - ry) * c1) + (rx * (1 - ry) * c2) + ((1 - rx) * ry * c3) + (rx * ry * c4);
+			}
+		}
+		
+		return c;
+	}
+	
+	/**
+	 * @param image Unit image with original shadow removed
+	 * @param destName Folder and name appropriate to call the saved .png
+	 * @throws IOException If there is a problem
+	 */
+	private final void generateShadow (final BufferedImage image, final String destName) throws IOException
+	{
+		// Make the shadow images 2x size, since everything in CombatUI is shown double size anyway, and then can generate smoother looking shadows
+		// Also we need to make it significantly larger to accomodate the skews
+		final BufferedImage shadow = new BufferedImage (image.getWidth () * 4, image.getHeight (), BufferedImage.TYPE_INT_ARGB);
+		for (int y = 0; y < shadow.getHeight (); y++)
+			for (int x = 0; x < shadow.getWidth (); x++)
+			{
+				final Point2D.Double coords = convertShadowCoordinates (x, y, shadow.getWidth (), shadow.getHeight ());
+				final double c = antialias (image, coords.getX (), coords.getY ());
+				
+				// Want 0x80000000 for full shadow
+				final int c2 = ((int) (c / 2)) << 24;
+				shadow.setRGB (x, y, c2);
+			}
+		
+		final File destFile = new File (CLIENT_PROJECT_ROOT + "\\src\\main\\resources\\momime.client.graphics\\" + destName + "-shadow.png");
+		if (!ImageIO.write (shadow, "png", destFile))
+			throw new IOException ("Failed to save shadow PNG file");
 	}
 	
 	/**
@@ -95,8 +222,8 @@ public final class FiguresExtract
 	private final void run () throws Exception
 	{
 		// Set up cache the same way as in ImageCacheAndFormatsDemo
-		cache = new ImageCache () {
-
+		cache = new ImageCache ()
+		{
 			@Override
 			public final InputStream getFileAsInputStream (final String fileName) throws IOException
 			{
@@ -132,7 +259,12 @@ public final class FiguresExtract
 				for (final String frameName : new String [] {"move-frame1", "stand", "move-frame3", "attack"})
 				{
 					final String imageName = "units\\" + unitID + "\\d" + d + "-" + frameName;
-					convertImage (lbxName, subFileNumber, frameNumber, imageName);
+					final BufferedImage image = convertImage (lbxName, subFileNumber, frameNumber, imageName);
+					
+					// Only do the 4 easy directions for now
+					if ((d - 1) % 2 == 0)
+						generateShadow (image, imageName);
+					
 					frameNumber++;
 				}
 			}

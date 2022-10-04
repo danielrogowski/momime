@@ -35,10 +35,22 @@ public final class FiguresExtract
 		// Read image
 		final BufferedImage image = cache.findOrLoadImage (imageFile, subFileNumber, frameNumber);
 		
-		// See if file already exists
+		// Remove the shadows from the original image
+		boolean shadowRemoved = false;
+		for (int y = 0; y < image.getHeight (); y++)
+			for (int x = 0; x < image.getWidth (); x++)
+			{
+				final int c = image.getRGB (x, y);
+				if (c == 0x80000000)
+				{
+					image.setRGB (x, y, 0);
+					shadowRemoved = true;
+				}
+			}
+
+		// See if file already exists; if so see if its identical, in which case no point overwriting it
 		boolean identical = false;
-		
-		final File destFile = new File (CLIENT_PROJECT_ROOT + "\\src\\main\\resources\\momime.client.graphics\\" + destName + ".png");
+		final File destFile = new File (CLIENT_PROJECT_ROOT + "\\src\\main\\resources\\momime.client.graphics\\" + destName + (shadowRemoved ? "-shadow-removed" : "") + ".png");
 		if (destFile.exists ())
 		{
 			// This can't read the PNGs if read from a File, but somehow works if read from the classpath

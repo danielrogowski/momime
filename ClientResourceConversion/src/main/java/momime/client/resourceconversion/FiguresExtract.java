@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -95,31 +97,45 @@ public final class FiguresExtract
 	/**
 	 * @param x X coordinate within shadow
 	 * @param y Y coordinate within shadow
-	 * @param width Width of shadow image
 	 * @param height Height of shadow image
+	 * @param d Direction the unit is facing
 	 * @return Coordinates to read from original image
 	 */
-	private final Point2D.Double convertShadowCoordinates (final int x, final int y, final int width, final int height)
+	private final Point2D.Double convertShadowCoordinates (final int x, final int y, final int height, final int d)
 	{
-		double dx = x - 2;
+		double dx = x + 2;
 		double dy = y + 1;
 
-		// Turn it upside down
-		dy = height - dy;
+		// Doing this manually in PSP, would start with the image and perform operations to produce the shadow image
+		// But here we're starting with shadow coordinates, and need to work backwards to the coordinates of the original image, so have to do all the operations in reverse
+		
+		// Extra processing for diagonal directions
+		if (d % 2 == 0)
+		{
+			// Skew it up/down
+			final double skew = ((d == 2) || (d == 6)) ? 0.4 : -0.4;
+			dy = dy + (dx * skew);
+			
+			if (skew > 0)
+				dy = dy - (height / 2);
+			
+			// Make it a bit narrower
+			dx = dx * 4d / 3d;
+		}
+
+		// Skew it to the right
+		dx = dx - (dy * 2);
 		
 		// Halve the height of it
 		dy = dy * 2;
 		
-		// Skew it to the right
-		dx = dx + dy;
-		
-		// Now it'll be much too far to the left
-		dx = dx - (width / 2);
+		// Turn it upside down
+		dy = height - dy;
 		
 		// Source image is half the size
 		dx = dx / 2;
 		dy = dy / 2;
-		
+
 		return new Point2D.Double (dx, dy);
 	}
 	
@@ -192,17 +208,18 @@ public final class FiguresExtract
 	/**
 	 * @param image Unit image with original shadow removed
 	 * @param destName Folder and name appropriate to call the saved .png
+	 * @param d Direction the unit is facing
 	 * @throws IOException If there is a problem
 	 */
-	private final void generateShadow (final BufferedImage image, final String destName) throws IOException
+	private final void generateShadow (final BufferedImage image, final String destName, final int d) throws IOException
 	{
 		// Make the shadow images 2x size, since everything in CombatUI is shown double size anyway, and then can generate smoother looking shadows
 		// Also we need to make it significantly larger to accomodate the skews
-		final BufferedImage shadow = new BufferedImage (image.getWidth () * 4, image.getHeight (), BufferedImage.TYPE_INT_ARGB);
+		final BufferedImage shadow = new BufferedImage (image.getWidth () * 4, (image.getHeight () * 11) / 5, BufferedImage.TYPE_INT_ARGB);
 		for (int y = 0; y < shadow.getHeight (); y++)
 			for (int x = 0; x < shadow.getWidth (); x++)
 			{
-				final Point2D.Double coords = convertShadowCoordinates (x, y, shadow.getWidth (), shadow.getHeight ());
+				final Point2D.Double coords = convertShadowCoordinates (x, y, image.getHeight () * 2, d);
 				final double c = antialias (image, coords.getX (), coords.getY ());
 				
 				// Want 0x80000000 for full shadow
@@ -245,28 +262,49 @@ public final class FiguresExtract
 			
 			final String unitID = "UN" + s;
 			
-			for (int d = 1; d <= 8; d++)
+			int frameNumber = 0;
+			for (final String frameName : new String [] {"move-frame1", "stand", "move-frame3", "attack"})
 			{
-				// This gets the images numbered the same as the LBX subfiles, so 0..7 = each direction of unit 1, 8..15 = each direction of unit 2 and so on
-				final int figuresIndex = ((unitNo - 1) * 8) + (d - 1);
-				final int lbxIndex = (figuresIndex / 120) + 1;
-				final int subFileNumber = figuresIndex % 120;
-				
-				final String lbxName = (lbxIndex < 10) ? ("FIGURES" + lbxIndex + ".LBX") : ("FIGURE" + lbxIndex + ".LBX");
-				System.out.println (unitID + " direction " + d + " is in " + lbxName + " sub file " + subFileNumber);
-
-				int frameNumber = 0;
-				for (final String frameName : new String [] {"move-frame1", "stand", "move-frame3", "attack"})
+				// Do the 4 easy directions first, and put the shadowless images in a map
+				final Map<Integer, BufferedImage> images = new HashMap<Integer, BufferedImage> ();
+				for (int d = 1; d <= 8; d = d + 2)
 				{
+					// This gets the images numbered the same as the LBX subfiles, so 0..7 = each direction of unit 1, 8..15 = each direction of unit 2 and so on
+					final int figuresIndex = ((unitNo - 1) * 8) + (d - 1);
+					final int lbxIndex = (figuresIndex / 120) + 1;
+					final int subFileNumber = figuresIndex % 120;
+					
+					final String lbxName = (lbxIndex < 10) ? ("FIGURES" + lbxIndex + ".LBX") : ("FIGURE" + lbxIndex + ".LBX");
+					System.out.println (unitID + " direction " + d + " is in " + lbxName + " sub file " + subFileNumber);
+	
 					final String imageName = "units\\" + unitID + "\\d" + d + "-" + frameName;
 					final BufferedImage image = convertImage (lbxName, subFileNumber, frameNumber, imageName);
+					images.put (d, image);
 					
-					// Only do the 4 easy directions for now
-					if ((d - 1) % 2 == 0)
-						generateShadow (image, imageName);
-					
-					frameNumber++;
+					generateShadow (image, imageName, d);
 				}
+				
+				// Then do the 4 diagonals
+				for (int d = 2; d <= 8; d = d + 2)
+				{
+					// Still have to call convertImage to generate a shadowless main image, even though we then don't use it for generating the shadow
+					final int figuresIndex = ((unitNo - 1) * 8) + (d - 1);
+					final int lbxIndex = (figuresIndex / 120) + 1;
+					final int subFileNumber = figuresIndex % 120;
+					
+					final String lbxName = (lbxIndex < 10) ? ("FIGURES" + lbxIndex + ".LBX") : ("FIGURE" + lbxIndex + ".LBX");
+					System.out.println (unitID + " direction " + d + " is in " + lbxName + " sub file " + subFileNumber);
+	
+					final String imageName = "units\\" + unitID + "\\d" + d + "-" + frameName;
+					convertImage (lbxName, subFileNumber, frameNumber, imageName);
+					
+					// Use the image from the unit facing sideways to generate the shadow from
+					final int d2 = (d <= 4) ? 3 : 7;
+					final BufferedImage image = images.get (d2);
+					generateShadow (image, imageName, d);
+				}
+				
+				frameNumber++;
 			}
 		}
 		

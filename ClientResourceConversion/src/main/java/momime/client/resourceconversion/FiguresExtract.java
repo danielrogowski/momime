@@ -52,16 +52,12 @@ public final class FiguresExtract
 		{
 			i.setUnitCombatShadowlessImageFile (shadowlessFilename);
 			i.setUnitCombatShadowImageFile (shadowFilename);
-			i.setShadowOffsetX (0);
-			i.setShadowOffsetY (0);
 		})));
 		
 		db.getAnimation ().forEach (a -> a.getFrame ().stream ().filter (f -> baseFilename.equals (f.getImageFile ())).forEach (f ->
 		{
 			f.setShadowlessImageFile (shadowlessFilename);
 			f.setShadowImageFile (shadowFilename);
-			a.setShadowOffsetX (0);
-			a.setShadowOffsetY (0);
 		}));
 	}
 	

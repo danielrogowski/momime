@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -67,7 +68,13 @@ public final class LineUpShadows
 	private MomDatabase db;
 	
 	/** Map of animations so they can be found faster */
-	private Map<String, Animation> animations;
+	private Map<String, Animation> animationsMap;
+	
+	/** Map of units so they can be found faster */
+	private Map<String, Unit> unitsMap;
+	
+	/** Map of raceIDs to the first unit in that race (usually spearmen) */
+	private Map<String, Unit> firstUnitOfEachRace;
 	
 	/** Index into unit list of unit to display */
 	private int unitIndex;
@@ -117,7 +124,14 @@ public final class LineUpShadows
 		marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		
 		db = (MomDatabase) unmarshaller.unmarshal (XML_LOCATION);
-		animations = db.getAnimation ().stream ().collect (Collectors.toMap (a -> a.getAnimationID (), a -> a));
+		animationsMap = db.getAnimation ().stream ().collect (Collectors.toMap (a -> a.getAnimationID (), a -> a));
+		unitsMap = db.getUnit().stream ().collect (Collectors.toMap (u -> u.getUnitID (), u -> u));
+		
+		// Find first unit of each race
+		firstUnitOfEachRace = new HashMap<String, Unit> ();
+		for (final Unit unitDef : db.getUnit ())
+			if ((unitDef.getUnitRaceID () != null) && (!firstUnitOfEachRace.containsKey (unitDef.getUnitRaceID ())))
+				firstUnitOfEachRace.put (unitDef.getUnitRaceID (), unitDef);
 		
 		// Unit to display
 		selectUnitIndex (0);
@@ -133,6 +147,10 @@ public final class LineUpShadows
 		previousUnit = new MessageDialogAction ("Prev", (ev) ->
 		{
 			selectUnitIndex (unitIndex - 1);
+
+			// Floating island
+			if (currentUnit.getUnitID ().equals ("UN191"))
+				selectUnitIndex (unitIndex - 1);
 			
 			previousUnit.setEnabled (unitIndex > 0);
 			nextUnit.setEnabled (true);
@@ -142,6 +160,10 @@ public final class LineUpShadows
 		nextUnit = new MessageDialogAction ("Next", (ev) ->
 		{
 			selectUnitIndex (unitIndex + 1);
+
+			// Floating island
+			if (currentUnit.getUnitID ().equals ("UN191"))
+				selectUnitIndex (unitIndex + 1);
 			
 			previousUnit.setEnabled (true);
 			nextUnit.setEnabled ((unitIndex + 1) < db.getUnit ().size ());
@@ -159,6 +181,13 @@ public final class LineUpShadows
 			final int d = DIRECTIONS.indexOf (spinner.getValue ());
 			final UnitShadowOffset offset = currentUnit.getUnitShadowOffset ().get (d);
 			offset.setShadowOffsetY (offset.getShadowOffsetY () + 1);
+		});
+
+		final Action down10Action = new MessageDialogAction ("vv", (ev) ->
+		{
+			final int d = DIRECTIONS.indexOf (spinner.getValue ());
+			final UnitShadowOffset offset = currentUnit.getUnitShadowOffset ().get (d);
+			offset.setShadowOffsetY (offset.getShadowOffsetY () + 10);
 		});
 		
 		final Action leftAction = new MessageDialogAction ("<", (ev) ->
@@ -184,6 +213,7 @@ public final class LineUpShadows
 		buttonsPanel.add (spinner, getUtils ().createConstraintsNoFill (2, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		buttonsPanel.add (new JButton (upAction), getUtils ().createConstraintsNoFill (4, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		buttonsPanel.add (new JButton (downAction), getUtils ().createConstraintsNoFill (4, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		buttonsPanel.add (new JButton (down10Action), getUtils ().createConstraintsNoFill (5, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		buttonsPanel.add (new JButton (leftAction), getUtils ().createConstraintsNoFill (3, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		buttonsPanel.add (new JButton (rightAction), getUtils ().createConstraintsNoFill (5, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		buttonsPanel.add (new JButton (saveAction), getUtils ().createConstraintsNoFill (6, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
@@ -268,7 +298,7 @@ public final class LineUpShadows
 		
 		// Frame
 		final JFrame frame = new JFrame ();
-		frame.setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation (WindowConstants.EXIT_ON_CLOSE);
 		frame.setContentPane (contentPane);
 		frame.pack ();
 		frame.setLocationRelativeTo (null);
@@ -285,17 +315,59 @@ public final class LineUpShadows
 		unitIndex = newIndex;
 		currentUnit = db.getUnit ().get (unitIndex);
 		walkAction = currentUnit.getUnitCombatAction ().stream ().filter (a -> a.getCombatActionID ().equals ("WALK")).findAny ().orElse (null);
-		walkAnimations = walkAction.getUnitCombatImage ().stream ().map (i -> animations.get (i.getUnitCombatAnimation ())).collect (Collectors.toList ());
+		walkAnimations = walkAction.getUnitCombatImage ().stream ().map (i -> animationsMap.get (i.getUnitCombatAnimation ())).collect (Collectors.toList ());
 		meleeAction = currentUnit.getUnitCombatAction ().stream ().filter (a -> a.getCombatActionID ().equals ("MELEE")).findAny ().orElse (null);
-		meleeAnimations = meleeAction.getUnitCombatImage ().stream ().map (i -> animations.get (i.getUnitCombatAnimation ())).collect (Collectors.toList ());
+		meleeAnimations = (meleeAction == null) ? null : meleeAction.getUnitCombatImage ().stream ().map (i -> animationsMap.get (i.getUnitCombatAnimation ())).collect (Collectors.toList ());
 		
-		if (currentUnit.getUnitShadowOffset ().isEmpty ())
-			for (int d = 1; d <= 8; d++)
+		if ((currentUnit.getUnitShadowOffset ().isEmpty ()) && (!currentUnit.getUnitID ().equals ("UN191")))
+		{
+			final String unitName = currentUnit.getUnitName ().get (0).getText ();
+			
+			// Default shadow offsets from another unit
+			final String copyFromUnitID;
+			if ((unitName.toLowerCase ().contains ("cavalry")) || (unitName.toLowerCase ().contains ("centaurs")) || (unitName.toLowerCase ().contains ("nightmares")) ||
+				(unitName.toLowerCase ().contains ("wolf riders")) || (unitName.toLowerCase ().contains ("elven lords")) || (unitName.toLowerCase ().contains ("paladins")) ||
+				(unitName.toLowerCase ().contains ("horse")) || (unitName.toLowerCase ().contains ("hound")) || (unitName.toLowerCase ().contains ("death knights")) ||
+				(unitName.toLowerCase ().contains ("unicorns")))
+				
+				copyFromUnitID = "UN001";		// First hero - since all horses should line up the same
+			else if (unitName.toLowerCase ().contains ("settlers"))
+				copyFromUnitID = "UN045";
+			else if (unitName.toLowerCase ().contains ("doom drakes"))
+				copyFromUnitID = "UN018";		// Draconian hero
+			else if (unitName.toLowerCase ().contains ("colossus"))
+				copyFromUnitID = "UN082";		// Golem
+			else if (unitName.toLowerCase ().contains ("giant"))
+				copyFromUnitID = "UN158";		// Fire Giant
+			else if (unitName.toLowerCase ().contains ("sky drake"))
+				copyFromUnitID = "UN165";		// Great Drake
+			else if ((currentUnit.getUnitRaceID () != null) && (firstUnitOfEachRace.containsKey (currentUnit.getUnitRaceID ())) &&
+				(firstUnitOfEachRace.get (currentUnit.getUnitRaceID ()).getUnitShadowOffset ().size () == 8))
+				copyFromUnitID = firstUnitOfEachRace.get (currentUnit.getUnitRaceID ()).getUnitID ();		// Try to find spearmen of the right race
+			else
+				copyFromUnitID = "UN040";		// Barbarian Spearmen - first infantry figure
+
+			final Unit copyFromUnit = unitsMap.get (copyFromUnitID);
+			if ((copyFromUnit == null) || (copyFromUnit.getUnitShadowOffset ().size () < 8))
 			{
-				final UnitShadowOffset newOffset = new UnitShadowOffset ();
-				newOffset.setDirection (d);
-				currentUnit.getUnitShadowOffset ().add (newOffset);
+				// No data to copy from
+				for (int d = 1; d <= 8; d++)
+				{
+					final UnitShadowOffset newOffset = new UnitShadowOffset ();
+					newOffset.setDirection (d);
+					currentUnit.getUnitShadowOffset ().add (newOffset);
+				}
 			}
+			else
+				for (final UnitShadowOffset src : copyFromUnit.getUnitShadowOffset ())
+				{
+					final UnitShadowOffset dest = new UnitShadowOffset ();
+					dest.setDirection (src.getDirection ());
+					dest.setShadowOffsetX (src.getShadowOffsetX ());
+					dest.setShadowOffsetY (src.getShadowOffsetY ());
+					currentUnit.getUnitShadowOffset ().add (dest);
+				}
+		}
 	}
 
 	/**

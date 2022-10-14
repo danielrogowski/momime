@@ -88,6 +88,8 @@ public final class AnimationControllerImpl implements AnimationController
 	 * 
 	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png
 	 * @param secondaryImageName Secondary image to draw on top of the primary image
+	 * @param shadowlessImageName Copy of imageResourceName but with shadow removed
+	 * @param shadowImageName Separate shadow image
 	 * @param secondaryOffsetX X offset to position the secondary image
 	 * @param secondaryOffsetY Y offset to position the secondary image
 	 * @param animationID AnimationID from the graphics XML file
@@ -97,7 +99,7 @@ public final class AnimationControllerImpl implements AnimationController
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
-	final AnimationFrame getImageOrAnimationFrameName (final String imageResourceName, final String secondaryImageName,
+	final AnimationFrame getImageOrAnimationFrameName (final String imageResourceName, final String secondaryImageName, final String shadowlessImageName, final String shadowImageName,
 		final Integer secondaryOffsetX, final Integer secondaryOffsetY, final String animationID, final boolean registeredAnimation, final AnimationContainer container)
 		throws MomException, IOException
 	{
@@ -114,6 +116,8 @@ public final class AnimationControllerImpl implements AnimationController
 			frame = new AnimationFrame ();
 			frame.setImageFile (imageResourceName);
 			frame.setImageFlag (secondaryImageName);
+			frame.setShadowlessImageFile (shadowlessImageName);
+			frame.setShadowImageFile (shadowImageName);
 			frame.setFlagOffsetX (secondaryOffsetX);
 			frame.setFlagOffsetY (secondaryOffsetY);
 		}
@@ -165,7 +169,7 @@ public final class AnimationControllerImpl implements AnimationController
 	public final BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation,
 		final AnimationContainer container) throws MomException, IOException
 	{
-		return getUtils ().loadImage (getImageOrAnimationFrameName (imageResourceName, null, null, null, animationID, registeredAnimation, container).getImageFile ());
+		return getUtils ().loadImage (getImageOrAnimationFrameName (imageResourceName, null, null, null, null, null, animationID, registeredAnimation, container).getImageFile ());
 	}
 
 	/**
@@ -184,6 +188,7 @@ public final class AnimationControllerImpl implements AnimationController
 		throws MomException, IOException
 	{
 		return getImageOrAnimationFrameName (unitCombatImage.getUnitCombatImageFile (), unitCombatImage.getUnitCombatImageFlag (),
+			unitCombatImage.getUnitCombatShadowlessImageFile (), unitCombatImage.getUnitCombatShadowImageFile (),
 			unitCombatImage.getFlagOffsetX (), unitCombatImage.getFlagOffsetY (), unitCombatImage.getUnitCombatAnimation (), registeredAnimation, container);
 	}
 	

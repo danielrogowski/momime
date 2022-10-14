@@ -137,6 +137,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/** True to use the full terrain tileset so e.g. ridges and dark areas run together; false to use only "blocky" combat tiles */
 	private JCheckBox combatSmoothTerrain;
 
+	/** True to use new shadow model for combat units */
+	private JCheckBox newShadows;
+	
 	/** True to view all Units, Buildings and Spell URNs */
 	private JCheckBox debugShowURNs;
 
@@ -241,6 +244,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		combatSmoothTerrain = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
 		contentPane.add (combatSmoothTerrain, "frmOptionsSmoothCombatTerrain");
 
+		newShadows = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
+		contentPane.add (newShadows, "frmOptionsNewShadows");
+		
 		debugShowURNs = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
 		contentPane.add (debugShowURNs, "frmOptionsShowURNs");
 		
@@ -283,6 +289,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandShowEnemyBorders.setSelected		(getClientConfig ().isOverlandShowEnemyBorders ());
 		overlandAnimateUnitsMoving.setSelected		(getClientConfig ().isOverlandAnimateUnitsMoving ());
 		combatSmoothTerrain.setSelected				(getClientConfig ().isCombatSmoothTerrain ());
+		newShadows.setSelected							(getClientConfig ().isNewShadows ());
 		showHeroPortraits.setSelected						(getClientConfig ().isShowHeroPortraits ());
 		debugShowURNs.setSelected						(getClientConfig ().isDebugShowURNs ());
 		debugShowEdgesOfMap.setSelected			(getClientConfig ().isDebugShowEdgesOfMap ());
@@ -433,6 +440,16 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			}
 		});
 
+		newShadows.addItemListener (new ItemListener ()
+		{
+			@Override
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
+			{
+				getClientConfig ().setNewShadows (newShadows.isSelected ());
+				saveConfigFile ();
+			}
+		});
+		
 		debugShowURNs.addItemListener (new ItemListener ()
 		{
 			@Override
@@ -535,6 +552,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandShowEnemyBorders.setText	(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowEnemyBorders ()));
 		overlandAnimateUnitsMoving.setText	(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getAnimateUnitsMoving ()));
 		combatSmoothTerrain.setText				(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getSmoothTerrain ()));
+		newShadows.setText							(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getNewShadows ()));
 		debugShowURNs.setText						(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowUnitURNs ()));
 		debugShowEdgesOfMap.setText			(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowEdgesOfMap ()));
 		chooseLanguageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getChooseLanguage ()));

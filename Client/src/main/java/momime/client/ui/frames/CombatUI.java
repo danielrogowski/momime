@@ -41,6 +41,7 @@ import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
+import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.languages.database.Shortcut;
@@ -233,6 +234,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Methods dealing with checking whether we can see units or not */
 	private UnitVisibilityUtils unitVisibilityUtils;
+	
+	/** Client config, containing the scale setting */
+	private MomImeClientConfig clientConfig;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -618,7 +622,8 @@ public final class CombatUI extends MomClientFrameUI
 										// Draw unit
 										getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
 											getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
-											getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours (), null);
+											getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours (), null,
+											getClientConfig ().isNewShadows ());
 									}
 								}
 								catch (final Exception e)
@@ -635,7 +640,7 @@ public final class CombatUI extends MomClientFrameUI
 						final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), !teleporting, getClient ().getClientDB ());
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
 							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours (),
-							getUnitMoving ().getMergingRatio ());
+							getUnitMoving ().getMergingRatio (), getClientConfig ().isNewShadows ());
 					}
 					catch (final Exception e)
 					{
@@ -2491,5 +2496,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
 		unitVisibilityUtils = u;
+	}
+
+	/**
+	 * @return Client config, containing various combat map settings
+	 */	
+	public final MomImeClientConfig getClientConfig ()
+	{
+		return clientConfig;
+	}
+
+	/**
+	 * @param config Client config, containing various combat map settings
+	 */
+	public final void setClientConfig (final MomImeClientConfig config)
+	{
+		clientConfig = config;
 	}
 }

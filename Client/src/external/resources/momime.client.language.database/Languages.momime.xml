@@ -4063,6 +4063,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<combatMap language="pl">
 			<text>Mapa Walki</text>
 		</combatMap>
+		<newShadows language="en">
+			<text>Show updated unit shadows</text>
+		</newShadows>
 		<debug language="en">
 			<text>Debug Options</text>
 		</debug>

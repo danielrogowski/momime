@@ -582,11 +582,11 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 					zOrderGraphics.setGraphics (g);
 					
 					final int y = 40;
-					unitUtils.drawUnitFigures ("UN106", 1, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN075", 1, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN035", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN197", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN037", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null, null);
+					unitUtils.drawUnitFigures ("UN106", 1, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false);
+					unitUtils.drawUnitFigures ("UN075", 1, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false);
+					unitUtils.drawUnitFigures ("UN035", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false);
+					unitUtils.drawUnitFigures ("UN197", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false);
+					unitUtils.drawUnitFigures ("UN037", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null, null, false);
 				}
 				catch (final IOException e)
 				{

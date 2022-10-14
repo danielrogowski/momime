@@ -79,6 +79,7 @@ public final class TestOptionsUI extends ClientTestData
 		optionsScreenLang.getShowOurBorder ().add (createLanguageText (Language.ENGLISH, "Show border of territory that we control"));
 		optionsScreenLang.getShowEnemyBorders ().add (createLanguageText (Language.ENGLISH, "Show borders of territory that others wizards control"));
 		optionsScreenLang.getAnimateUnitsMoving ().add (createLanguageText (Language.ENGLISH, "Animate units moving"));
+		optionsScreenLang.getNewShadows ().add (createLanguageText (Language.ENGLISH, "Show updated unit shadows"));
 		
 		optionsScreenLang.getShowUnitURNs ().add (createLanguageText (Language.ENGLISH, "Show Unit, Building and Spell URNs"));
 		optionsScreenLang.getShowEdgesOfMap ().add (createLanguageText (Language.ENGLISH, "Show edges of map"));

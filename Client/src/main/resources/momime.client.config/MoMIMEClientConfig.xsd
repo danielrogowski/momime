@@ -45,6 +45,11 @@
 						<xsd:documentation>True to use the full terrain tileset so e.g. ridges and dark areas run together; false to use only "blocky" combat tiles.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
+				<xsd:element minOccurs="1" maxOccurs="1" name="newShadows" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>True use new separate shadow images; false to use original unit images that have shadows as part of the image.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
 				
 				<!-- Unit info display options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="showHeroPortraits" type="xsd:boolean" />

@@ -13,6 +13,7 @@
 	<overlandShowEnemyBorders>false</overlandShowEnemyBorders>
 	<overlandAnimateUnitsMoving>true</overlandAnimateUnitsMoving>
 	<combatSmoothTerrain>true</combatSmoothTerrain>
+	<newShadows>false</newShadows>
 	<showHeroPortraits>true</showHeroPortraits>
 	<displayUnitSkillsAsAttributes>A</displayUnitSkillsAsAttributes>
 	<debugShowURNs>false</debugShowURNs>

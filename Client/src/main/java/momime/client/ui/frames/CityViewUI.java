@@ -733,7 +733,7 @@ public final class CityViewUI extends MomClientFrameUI
 					{
 						zOrderGraphics.setGraphics (g);
 						final String movingActionID = getUnitCalculations ().determineCombatActionID (sampleUnit, true, getClient ().getClientDB ());
-						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, zOrderGraphics, (constructionPanel.getWidth () - 60) / 2, 28, true, true, 0, null, null);
+						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, zOrderGraphics, (constructionPanel.getWidth () - 60) / 2, 28, true, true, 0, null, null, false);
 					}
 				}
 				catch (final Exception e)

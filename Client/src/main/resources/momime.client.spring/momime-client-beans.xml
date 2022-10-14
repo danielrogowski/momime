@@ -1569,6 +1569,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
+		<property name="clientConfig" ref="clientConfig" />
 	</bean>
 
 	<bean id="castCombatSpellFromUI" class="momime.client.ui.dialogs.CastCombatSpellFromUI">

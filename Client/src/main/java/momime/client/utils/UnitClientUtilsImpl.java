@@ -44,6 +44,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatActionEx;
 import momime.common.database.UnitCombatImage;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitShadowOffset;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -487,6 +488,11 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (imageName, false, frame.getImageFlag (),
 			frame.getFlagOffsetX (), frame.getFlagOffsetY (), playerID, shadingColours);
 		
+		final BufferedImage shadowImage = ((newShadows) && (frame.getShadowImageFile () != null)) ? getUtils ().loadImage (frame.getShadowImageFile ()) : null;
+		
+		// This needs to be done properly with a map, rather than assuming the directions are listed in the correct order
+		final UnitShadowOffset shadowOffset = unit.getUnitShadowOffset ().get (direction - 1);
+		
 		// Draw the figure in each position
 		for (final int [] position : figurePositions)
 		{
@@ -497,17 +503,28 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			
 			// TileRelativeX, Y in the graphics XML indicates the position of the unit's feet, so need to adjust according to the unit size
 			if ((mergingRatio == null) || (mergingRatio == 0d))
+			{
+				if (shadowImage != null)
+					g.drawImage (shadowImage,
+						position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2) + shadowOffset.getShadowOffsetX (),
+						position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + shadowOffset.getShadowOffsetY (), 0);
+
 				g.drawStretchedImage (image,
 					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
 					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight,
 					imageWidth, imageHeight, baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
+			}
 			else
+			{
+				// Need to draw partial shadow here
+				
 				g.drawStretchedClippedImage (image,
 					0, 0, image.getWidth (), (int) (image.getHeight () * (1d - mergingRatio)),
 					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
 					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + ((int) (imageHeight * mergingRatio)),
 					imageWidth, (int) (imageHeight * (1d - mergingRatio)),
 					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
+			}
 		}
 	}
 

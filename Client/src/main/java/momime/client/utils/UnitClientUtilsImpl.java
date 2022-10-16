@@ -496,33 +496,35 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Draw the figure in each position
 		for (final int [] position : figurePositions)
 		{
-			// Last array element tells us what to multiply the image size up by
+			// Last array element tells us what to multiply the image size up by; shadows are multiplied in X direction but not y
 			final int mult = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
-			final int imageWidth = image.getWidth () * mult;
-			final int imageHeight = image.getHeight () * mult;
+			final int doubleWidth = image.getWidth () * mult;
+			final int doubleHeight = image.getHeight () * mult;
+			final int figureX = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (doubleWidth / 2);
+			final int figureY = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - doubleHeight;
 			
 			// TileRelativeX, Y in the graphics XML indicates the position of the unit's feet, so need to adjust according to the unit size
 			if ((mergingRatio == null) || (mergingRatio == 0d))
 			{
 				if (shadowImage != null)
-					g.drawImage (shadowImage,
-						position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2) + shadowOffset.getShadowOffsetX (),
-						position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + shadowOffset.getShadowOffsetY (), 0);
+					g.drawStretchedImage (shadowImage, figureX + shadowOffset.getShadowOffsetX (), figureY + shadowOffset.getShadowOffsetY (),
+						doubleWidth, shadowImage.getHeight (), 0);
 
-				g.drawStretchedImage (image,
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight,
-					imageWidth, imageHeight, baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
+				g.drawStretchedImage (image, figureX, figureY, doubleWidth, doubleHeight,
+					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
 			}
 			else
 			{
-				// Need to draw partial shadow here
-				
+				if (shadowImage != null)
+					g.drawStretchedClippedImage (shadowImage,
+						0, 0, shadowImage.getWidth (), (int) (shadowImage.getHeight () * (1d - mergingRatio)),
+						figureX + shadowOffset.getShadowOffsetX (), figureY  + shadowOffset.getShadowOffsetY () + ((int) (shadowImage.getHeight () * mergingRatio)),
+						doubleWidth, (int) (shadowImage.getHeight () * (1d - mergingRatio)), 0);
+
 				g.drawStretchedClippedImage (image,
 					0, 0, image.getWidth (), (int) (image.getHeight () * (1d - mergingRatio)),
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + ((int) (imageHeight * mergingRatio)),
-					imageWidth, (int) (imageHeight * (1d - mergingRatio)),
+					figureX, figureY + ((int) (doubleHeight * mergingRatio)),
+					doubleWidth, (int) (doubleHeight * (1d - mergingRatio)),
 					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
 			}
 		}

@@ -140,11 +140,12 @@ public final class FiguresExtract
 	}
 	
 	/**
+	 * @param unitID Which unit the image is from
 	 * @param image Unit image with original shadow removed
 	 * @param destName Folder and name appropriate to call the saved .png
 	 * @throws IOException If there is a problem
 	 */
-	private final void generateShadow (final BufferedImage image, final String destName) throws IOException
+	private final void generateShadow (final String unitID, final BufferedImage image, final String destName) throws IOException
 	{
 		// Make the shadow same size as the original image - CombatUI stretches it out to twice width when it draws it but no need to store it like that
 		final BufferedImage shadow = new BufferedImage (image.getWidth (), image.getHeight (), BufferedImage.TYPE_INT_ARGB);
@@ -154,7 +155,12 @@ public final class FiguresExtract
 				final int c = image.getRGB (x, y);
 				
 				// 0 is fully transparent; black borders on units usually aren't completely black (see first entry in MOM_PALETTE)
-				if ((c != 0) && (c != 0xFF000000) && (c != 0xFF080404))
+				// except on Doom Bats, which have genuinely black parts and no outline
+				if ((c == 0) || ((!unitID.equals ("UN162")) && ((c == 0xFF000000) || (c == 0xFF080404))))
+				{
+					// Transparent
+				}
+				else
 					shadow.setRGB (x, y, 0x80000000);
 			}
 		
@@ -284,7 +290,7 @@ public final class FiguresExtract
 					final BufferedImage image = convertImage (db, lbxName, subFileNumber, frameNumber, imageName, shadowName);
 					
 					if (standardShadowName == null)
-						generateShadow (image, shadowName);
+						generateShadow (unitID, image, shadowName);
 				}
 				
 				frameNumber++;

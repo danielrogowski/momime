@@ -1,14 +1,13 @@
 package momime.client.resourceconversion;
 
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.xml.XMLConstants;
@@ -25,6 +24,7 @@ import jakarta.xml.bind.Unmarshaller;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.MomDatabase;
+import momime.common.database.Unit;
 
 /**
  * Extracts images of all the figures from the original LBX files
@@ -65,17 +65,19 @@ public final class FiguresExtract
 	 * Converts a single image
 	 * 
 	 * @param db Database to update
-	 * @param imageFile Name of image file (probably .LBX)
+	 * @param lbxName Name of .LBX file
 	 * @param subFileNumber Number of the sub file within the archive
 	 * @param frameNumber Number of the frame within the subfile
 	 * @param destName Folder and name appropriate to call the saved .png
+	 * @param shadowName Name of shadow file - not that we create it here, but need it to update the XML
 	 * @return Unit image with original shadow removed
 	 * @throws IOException If there is a problem
 	 */
-	private final BufferedImage convertImage (final MomDatabase db, final String imageFile, final Integer subFileNumber, final int frameNumber, final String destName) throws IOException
+	private final BufferedImage convertImage (final MomDatabase db, final String lbxName, final Integer subFileNumber, final int frameNumber, final String destName, final String shadowName)
+		throws IOException
 	{
 		// Read image
-		final BufferedImage image = cache.findOrLoadImage (imageFile, subFileNumber, frameNumber);
+		final BufferedImage image = cache.findOrLoadImage (lbxName, subFileNumber, frameNumber);
 		
 		// Remove the shadows from the original image
 		boolean shadowRemoved = false;
@@ -83,7 +85,7 @@ public final class FiguresExtract
 			for (int x = 0; x < image.getWidth (); x++)
 			{
 				final int c = image.getRGB (x, y);
-				if (c == 0x80000000)
+				if (c == 0x80000000)		// This is what LbxImageReader generates for shadows
 				{
 					image.setRGB (x, y, 0);
 					shadowRemoved = true;
@@ -120,8 +122,8 @@ public final class FiguresExtract
 		// Output image
 		if (identical)
 		{
-			System.out.println (imageFile + ", " + subFileNumber + ", " + frameNumber + " -> " + subFileNumber + "-" + frameNumber + " -> " + destFile + " (existing file was identical so left it alone)");
-			updateXml (db, "/momime.client.graphics/" + destName.replace ('\\', '/') + ".png", null, "/momime.client.graphics/" + destName.replace ('\\', '/') + "-shadow.png");
+			System.out.println (lbxName + ", " + subFileNumber + ", " + frameNumber + " -> " + subFileNumber + "-" + frameNumber + " -> " + destFile + " (existing file was identical so left it alone)");
+			updateXml (db, "/momime.client.graphics/" + destName.replace ('\\', '/') + ".png", null, "/momime.client.graphics/" + shadowName.replace ('\\', '/') + ".png");
 		}
 		else			
 		{
@@ -129,150 +131,85 @@ public final class FiguresExtract
 			if (!ImageIO.write (image, "png", destFile))
 				throw new IOException ("Failed to save PNG file");
 			
-			System.out.println (imageFile + ", " + subFileNumber + ", " + frameNumber + " -> " + subFileNumber + "-" + frameNumber + " -> " + destFile);
+			System.out.println (lbxName + ", " + subFileNumber + ", " + frameNumber + " -> " + subFileNumber + "-" + frameNumber + " -> " + destFile);
 			updateXml (db, "/momime.client.graphics/" + destName.replace ('\\', '/') + ".png", "/momime.client.graphics/" + destName.replace ('\\', '/') + "-shadowless.png",
-				"/momime.client.graphics/" + destName.replace ('\\', '/') + "-shadow.png");
+				"/momime.client.graphics/" + shadowName.replace ('\\', '/') + ".png");
 		}
 		
 		return image;
 	}
 	
 	/**
-	 * @param x X coordinate within shadow
-	 * @param y Y coordinate within shadow
-	 * @param height Height of shadow image
-	 * @param d Direction the unit is facing
-	 * @return Coordinates to read from original image
-	 */
-	private final Point2D.Double convertShadowCoordinates (final int x, final int y, final int height, final int d)
-	{
-		double dx = x + 2;
-		double dy = y + 1;
-
-		// Doing this manually in PSP, would start with the image and perform operations to produce the shadow image
-		// But here we're starting with shadow coordinates, and need to work backwards to the coordinates of the original image, so have to do all the operations in reverse
-		
-		// Extra processing for diagonal directions
-		if (d % 2 == 0)
-		{
-			// Skew it up/down
-			final double skew = ((d == 2) || (d == 6)) ? 0.4 : -0.4;
-			dy = dy + (dx * skew);
-			
-			if (skew > 0)
-				dy = dy - (height / 2);
-			
-			// Make it a bit narrower
-			dx = dx * 4d / 3d;
-		}
-
-		// Skew it to the right
-		dx = dx - (dy * 2);
-		
-		// Halve the height of it
-		dy = dy * 2;
-		
-		// Turn it upside down
-		dy = height - dy;
-		
-		// Source image is half the size
-		dx = dx / 2;
-		dy = dy / 2;
-
-		return new Point2D.Double (dx, dy);
-	}
-	
-	/**
-	 * @param image Image to read from
-	 * @param x X coordinate to read
-	 * @param y Y coordinate to read
-	 * @return 0 if pixel is transparent; 0xFF is pixel is solid
-	 */
-	private final double readPixel (final BufferedImage image, final int x, final int y)
-	{
-		final int c;
-		
-		if ((x < 0) || (y < 0) || (x >= image.getWidth ()) || (y >= image.getHeight ()))
-			c = 0;
-		else
-			c = image.getRGB (x, y);
-		
-		return (c == 0) ? 0 : 0xFF;
-	}
-	
-	/**
-	 * @param image Image to read from
-	 * @param x X coordinate to read
-	 * @param y Y coordinate to read
-	 * @return Value averaged between the 4 neighbouring pixels
-	 */
-	private final double antialias (final BufferedImage image, final double x, final double y)
-	{
-		final double c;
-		final int intX = (int) Math.floor (x);
-		final int intY = (int) Math.floor (y);
-		
-		if (intX == x)
-		{
-			if (intY == y)
-				c = readPixel (image, intX, intY);
-			else
-			{
-				final double c1 = readPixel (image, intX, intY);
-				final double c2 = readPixel (image, intX, intY + 1);
-				final double ry = y - intY;
-				c = ((1 - ry) * c1) + (ry * c2);
-			}
-		}
-		else
-		{
-			if (intY == y)
-			{
-				final double c1 = readPixel (image, intX, intY);
-				final double c2 = readPixel (image, intX + 1, intY);
-				final double rx = x - intX;
-				c = ((1 - rx) * c1) + (rx * c2);
-			}
-			else
-			{
-				final double c1 = readPixel (image, intX, intY);
-				final double c2 = readPixel (image, intX + 1, intY);
-				final double c3 = readPixel (image, intX, intY + 1);
-				final double c4 = readPixel (image, intX + 1, intY + 1);
-				final double rx = x - intX;
-				final double ry = y - intY;
-				c = ((1 - rx) * (1 - ry) * c1) + (rx * (1 - ry) * c2) + ((1 - rx) * ry * c3) + (rx * ry * c4);
-			}
-		}
-		
-		return c;
-	}
-	
-	/**
 	 * @param image Unit image with original shadow removed
 	 * @param destName Folder and name appropriate to call the saved .png
-	 * @param d Direction the unit is facing
 	 * @throws IOException If there is a problem
 	 */
-	private final void generateShadow (final BufferedImage image, final String destName, final int d) throws IOException
+	private final void generateShadow (final BufferedImage image, final String destName) throws IOException
 	{
-		// Make the shadow images 2x size, since everything in CombatUI is shown double size anyway, and then can generate smoother looking shadows
-		// Also we need to make it significantly larger to accomodate the skews
-		final BufferedImage shadow = new BufferedImage (image.getWidth () * 4, (image.getHeight () * 11) / 5, BufferedImage.TYPE_INT_ARGB);
+		// Make the shadow same size as the original image - CombatUI stretches it out to twice width when it draws it but no need to store it like that
+		final BufferedImage shadow = new BufferedImage (image.getWidth (), image.getHeight (), BufferedImage.TYPE_INT_ARGB);
 		for (int y = 0; y < shadow.getHeight (); y++)
 			for (int x = 0; x < shadow.getWidth (); x++)
 			{
-				final Point2D.Double coords = convertShadowCoordinates (x, y, image.getHeight () * 2, d);
-				final double c = antialias (image, coords.getX (), coords.getY ());
+				final int c = image.getRGB (x, y);
 				
-				// Want 0x80000000 for full shadow
-				final int c2 = ((int) (c / 2)) << 24;
-				shadow.setRGB (x, y, c2);
+				// 0 is fully transparent; black borders on units usually aren't completely black (see first entry in MOM_PALETTE)
+				if ((c != 0) && (c != 0xFF000000) && (c != 0xFF080404))
+					shadow.setRGB (x, y, 0x80000000);
 			}
 		
-		final File destFile = new File (CLIENT_PROJECT_ROOT + "\\src\\main\\resources\\momime.client.graphics\\" + destName + "-shadow.png");
+		final File destFile = new File (CLIENT_PROJECT_ROOT + "\\src\\main\\resources\\momime.client.graphics\\" + destName + ".png");
 		if (!ImageIO.write (shadow, "png", destFile))
 			throw new IOException ("Failed to save shadow PNG file");
+	}
+	
+	/**
+	 * @param unitDef Unit definition
+	 * @return Standard shadow name if we don't want to generate a shadow; null if we want to use algorithm to generate a shadow 
+	 */
+	private final String getStandardShadowName (final Unit unitDef)
+	{
+		final String unitName = unitDef.getUnitName ().get (0).getText ();
+		final String shadowName;
+		
+		// Exception as the one flying hero so doesn't use a standard horse shadow
+		if (unitDef.getUnitID ().equals ("UN018"))
+			shadowName = null;
+		
+		else if ((unitName.toLowerCase ().contains ("cavalry")) || (unitName.toLowerCase ().contains ("centaurs")) || (unitName.toLowerCase ().contains ("nightmares")) ||
+			(unitName.toLowerCase ().contains ("wolf riders")) || (unitName.toLowerCase ().contains ("elven lords")) || (unitName.toLowerCase ().contains ("paladins")) ||
+			(unitName.toLowerCase ().contains ("horse")) || (unitName.toLowerCase ().contains ("hound")) || (unitName.toLowerCase ().contains ("death knights")) ||
+			(unitName.toLowerCase ().contains ("unicorns")) || (unitDef.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
+			
+			shadowName = "narrow";
+
+		else if ((unitName.toLowerCase ().contains ("settlers")) || (unitName.toLowerCase ().contains ("warship")))
+			shadowName = "wide";
+		
+		else if ((unitName.toLowerCase ().contains ("trireme")) || (unitName.toLowerCase ().contains ("galley")) || (unitName.toLowerCase ().contains ("ship")))
+			shadowName = "long";
+		
+		else if ((unitName.toLowerCase ().contains ("catapult")) || (unitName.toLowerCase ().contains ("cannon")))
+			shadowName = "square";
+
+		else if ((unitName.toLowerCase ().contains ("basilisk")) || (unitName.toLowerCase ().contains ("hydra")) || (unitName.toLowerCase ().contains ("behemoth")) ||
+			(unitName.toLowerCase ().contains ("stag beetle")) || (unitName.toLowerCase ().contains ("dragon turtle")))
+			
+			shadowName = "huge";
+
+		else if ((unitName.toLowerCase ().contains ("mammoth")))
+			shadowName = "fat";
+
+		else if ((unitName.toLowerCase ().contains ("spider")))
+			shadowName = "round";
+		
+		else if ((unitName.toLowerCase ().contains ("nagas")) || (unitName.toLowerCase ().contains ("bear")))
+			shadowName = "short";
+		
+		else
+			shadowName = null;
+			
+		return shadowName;
 	}
 	
 	/**
@@ -309,7 +246,8 @@ public final class FiguresExtract
 		unmarshaller.setSchema (schema);
 		
 		final MomDatabase db = (MomDatabase) unmarshaller.unmarshal (XML_LOCATION);
-
+		final Map<String, Unit> unitsMap = db.getUnit().stream ().collect (Collectors.toMap (u -> u.getUnitID (), u -> u));
+		
 		for (int unitNo = 1; unitNo <= 198; unitNo++)
 		{
 			String s = Integer.valueOf (unitNo).toString ();
@@ -317,13 +255,13 @@ public final class FiguresExtract
 				s = "0" + s;
 			
 			final String unitID = "UN" + s;
+			final Unit unitDef = unitsMap.get (unitID);
+			final String standardShadowName = getStandardShadowName (unitDef);
 			
 			int frameNumber = 0;
 			for (final String frameName : new String [] {"move-frame1", "stand", "move-frame3", "attack"})
 			{
-				// Do the 4 easy directions first, and put the shadowless images in a map
-				final Map<Integer, BufferedImage> images = new HashMap<Integer, BufferedImage> ();
-				for (int d = 1; d <= 8; d = d + 2)
+				for (int d = 1; d <= 8; d++)
 				{
 					// This gets the images numbered the same as the LBX subfiles, so 0..7 = each direction of unit 1, 8..15 = each direction of unit 2 and so on
 					final int figuresIndex = ((unitNo - 1) * 8) + (d - 1);
@@ -334,30 +272,19 @@ public final class FiguresExtract
 					System.out.println (unitID + " direction " + d + " is in " + lbxName + " sub file " + subFileNumber);
 	
 					final String imageName = "units\\" + unitID + "\\d" + d + "-" + frameName;
-					final BufferedImage image = convertImage (db, lbxName, subFileNumber, frameNumber, imageName);
-					images.put (d, image);
+					final String shadowName;
+					if (standardShadowName == null)
+						shadowName = imageName + "-shadow";
+					else
+					{
+						final int d2 = (d <= 4) ? d : (d - 4);
+						shadowName = "shadows\\" + standardShadowName + "-d" + d2;
+					}
 					
-					generateShadow (image, imageName, d);
-				}
-				
-				// Then do the 4 diagonals
-				for (int d = 2; d <= 8; d = d + 2)
-				{
-					// Still have to call convertImage to generate a shadowless main image, even though we then don't use it for generating the shadow
-					final int figuresIndex = ((unitNo - 1) * 8) + (d - 1);
-					final int lbxIndex = (figuresIndex / 120) + 1;
-					final int subFileNumber = figuresIndex % 120;
+					final BufferedImage image = convertImage (db, lbxName, subFileNumber, frameNumber, imageName, shadowName);
 					
-					final String lbxName = (lbxIndex < 10) ? ("FIGURES" + lbxIndex + ".LBX") : ("FIGURE" + lbxIndex + ".LBX");
-					System.out.println (unitID + " direction " + d + " is in " + lbxName + " sub file " + subFileNumber);
-	
-					final String imageName = "units\\" + unitID + "\\d" + d + "-" + frameName;
-					convertImage (db, lbxName, subFileNumber, frameNumber, imageName);
-					
-					// Use the image from the unit facing sideways to generate the shadow from
-					final int d2 = (d <= 4) ? 3 : 7;
-					final BufferedImage image = images.get (d2);
-					generateShadow (image, imageName, d);
+					if (standardShadowName == null)
+						generateShadow (image, shadowName);
 				}
 				
 				frameNumber++;

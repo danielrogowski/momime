@@ -270,7 +270,8 @@ public final class LineUpShadows
 							if (frame.getShadowImageFile () != null)
 							{
 								final BufferedImage shadowImage = getUtils ().loadImage (frame.getShadowImageFile ());
-								g.drawImage (shadowImage, (x * 100) + offset.getShadowOffsetX (), (y * 100) + offset.getShadowOffsetY (), null);
+								g.drawImage (shadowImage, (x * 100) + offset.getShadowOffsetX (), (y * 100) + offset.getShadowOffsetY (),
+									shadowImage.getWidth () * 2, shadowImage.getHeight (), null);
 							}
 							
 							final String imageFilename = (frame.getShadowlessImageFile () != null) ? frame.getShadowlessImageFile () : frame.getImageFile ();							
@@ -279,7 +280,8 @@ public final class LineUpShadows
 						}
 						catch (final IOException e)
 						{
-							e.printStackTrace ();
+							// Likely its a missing image, don't print entire stack trace
+							System.out.println (e.getMessage ());
 						}
 					
 					x++;
@@ -328,7 +330,7 @@ public final class LineUpShadows
 			if ((unitName.toLowerCase ().contains ("cavalry")) || (unitName.toLowerCase ().contains ("centaurs")) || (unitName.toLowerCase ().contains ("nightmares")) ||
 				(unitName.toLowerCase ().contains ("wolf riders")) || (unitName.toLowerCase ().contains ("elven lords")) || (unitName.toLowerCase ().contains ("paladins")) ||
 				(unitName.toLowerCase ().contains ("horse")) || (unitName.toLowerCase ().contains ("hound")) || (unitName.toLowerCase ().contains ("death knights")) ||
-				(unitName.toLowerCase ().contains ("unicorns")))
+				(unitName.toLowerCase ().contains ("unicorns")) || (unitIndex < 35))
 				
 				copyFromUnitID = "UN001";		// First hero - since all horses should line up the same
 			else if (unitName.toLowerCase ().contains ("settlers"))
@@ -341,6 +343,8 @@ public final class LineUpShadows
 				copyFromUnitID = "UN158";		// Fire Giant
 			else if (unitName.toLowerCase ().contains ("sky drake"))
 				copyFromUnitID = "UN165";		// Great Drake
+			else if ((unitName.toLowerCase ().contains ("galley")) || (unitName.toLowerCase ().contains ("ship")))
+				copyFromUnitID = "UN036";		// Trieme
 			else if ((currentUnit.getUnitRaceID () != null) && (firstUnitOfEachRace.containsKey (currentUnit.getUnitRaceID ())) &&
 				(firstUnitOfEachRace.get (currentUnit.getUnitRaceID ()).getUnitShadowOffset ().size () == 8))
 				copyFromUnitID = firstUnitOfEachRace.get (currentUnit.getUnitRaceID ()).getUnitID ();		// Try to find spearmen of the right race

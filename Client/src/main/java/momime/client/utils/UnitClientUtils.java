@@ -33,9 +33,6 @@ public interface UnitClientUtils
 	/** Array column index in output from calcUnitFigurePositions for the y coord excluding the offsetY value */
 	public final static int CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET = 3;
 	
-	/** Array column index in output from calcUnitFigurePositions for the size to multiply the unit images up by */
-	public final static int CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER = 4;
-	
 	/**
 	 * Note the generated unit names are obviously very dependant on the selected language, but the names themselves don't get notified
 	 * to update themselves when the language changes.  It is the responsibility of whatever is calling this method to register itself to be

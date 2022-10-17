@@ -732,13 +732,13 @@ public final class CombatUI extends MomClientFrameUI
 						// Draw each missile
 						for (final int [] position : getAttackAnim ().getCurrent ())
 						{
-							final int imageWidth = ratImage.getWidth () * position [2];
-							final int imageHeight = ratImage.getHeight () * position [2];
+							final int doubleWidth = ratImage.getWidth () * 2;
+							final int doubleHeight = ratImage.getHeight () * 2;
 							
-							final int currentX = position [0] - (imageWidth / 2);
-							final int currentY = position [1] - imageHeight;
+							final int currentX = position [0] - (doubleWidth / 2);
+							final int currentY = position [1] - doubleHeight;
 							
-							g.drawImage (ratImage, currentX, currentY, imageWidth, imageHeight, null);
+							g.drawImage (ratImage, currentX, currentY, doubleWidth, doubleHeight, null);
 						}
 					}
 					catch (final Exception e)

@@ -426,7 +426,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final int fudgeY = (totalFigureCount <= 2) ? 4 : 6;
 		
 		// Get the positions of the n times
-		final int [] [] result = new int [aliveFigureCount] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER+1];
+		final int [] [] result = new int [aliveFigureCount] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET+1];
 		final CombatTileFigurePositionsGfx positions = getGraphicsDB ().findFigureCount (totalFigureCount, "calcUnitFigurePositions");
 		for (int n = 0; n < aliveFigureCount; n++)
 		{
@@ -437,7 +437,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET] = (position.getTileRelativeY () * 2) + (fudgeY * 2);
 			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] = offsetX + result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET];
 			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] = offsetY + result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET];
-			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER] = 2;
 		}
 		
 		return result;
@@ -499,9 +498,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		for (final int [] position : figurePositions)
 		{
 			// Last array element tells us what to multiply the image size up by; shadows are multiplied in X direction but not y
-			final int mult = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
-			final int doubleWidth = image.getWidth () * mult;
-			final int doubleHeight = image.getHeight () * mult;
+			final int doubleWidth = image.getWidth () * 2;
+			final int doubleHeight = image.getHeight () * 2;
 			final int figureX = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (doubleWidth / 2);
 			int figureY = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - doubleHeight;
 			

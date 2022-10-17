@@ -374,12 +374,11 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			if (tickNumber >= RANGED_ATTACK_LAUNCH_TICKS)
 			{
 				final double ratio = Math.min (1.0, (double) tickNumber / (tickCount - RANGED_ATTACK_LAUNCH_TICKS));
-				current = new int [start.length] [3];
+				current = new int [start.length] [2];
 				for (int n = 0; n < start.length; n++)
 				{
 					current [n] [0] = start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] + (int) ((endX - start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET]) * ratio);
 					current [n] [1] = start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] + (int) ((endY - start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET]) * ratio);
-					current [n] [2] = start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
 				}
 			}
 			

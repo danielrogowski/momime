@@ -1367,7 +1367,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					final int blastingCost = targetPriv.getManaSpentOnCastingCurrentSpell ();
 
-					// Remove on client
+					// Remove on client of the player who got blasted
 					if (targetPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						final NewTurnMessageSpellBlast ntm = new NewTurnMessageSpellBlast ();
@@ -1391,7 +1391,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 					targetPriv.setManaSpentOnCastingCurrentSpell (0);
 					
 					// Charge additional MP
-					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -blastingCost);;
+					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -blastingCost);
+					
+					// On the caster's client, show that the targeted wizard is now casting nothing (if they don't have Detect Magic in effect, method will check this and do nothing)
+					getSpellCasting ().sendOverlandCastingInfo (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, castingPlayer.getPlayerDescription ().getPlayerID (), mom);
 					
 					// Wizards get annoyed at being targeted personally by nasty spells
 					if (spell.getNastyCondition () != null)

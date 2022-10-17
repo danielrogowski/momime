@@ -489,7 +489,11 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (imageName, false, frame.getImageFlag (),
 			frame.getFlagOffsetX (), frame.getFlagOffsetY (), playerID, shadingColours);
 		
-		final BufferedImage shadowImage = ((newShadows) && (frame.getShadowImageFile () != null)) ? getUtils ().loadImage (frame.getShadowImageFile ()) : null;
+		final BufferedImage shadowImage;
+		if ((newShadows) && (frame.getShadowImageFile () != null))
+			shadowImage = getPlayerColourImageGenerator ().getModifiedImage (frame.getShadowImageFile (), false, null, null, null, null, shadingColours);
+		else
+			shadowImage = null;
 		
 		// This needs to be done properly with a map, rather than assuming the directions are listed in the correct order
 		final UnitShadowOffset shadowOffset = newShadows ? unit.getUnitShadowOffset ().get (direction - 1) : null;

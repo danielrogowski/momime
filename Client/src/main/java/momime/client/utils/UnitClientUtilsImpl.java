@@ -493,7 +493,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final BufferedImage shadowImage = ((newShadows) && (frame.getShadowImageFile () != null)) ? getUtils ().loadImage (frame.getShadowImageFile ()) : null;
 		
 		// This needs to be done properly with a map, rather than assuming the directions are listed in the correct order
-		final UnitShadowOffset shadowOffset = unit.getUnitShadowOffset ().get (direction - 1);
+		final UnitShadowOffset shadowOffset = newShadows ? unit.getUnitShadowOffset ().get (direction - 1) : null;
 		
 		// Draw the figure in each position
 		for (final int [] position : figurePositions)

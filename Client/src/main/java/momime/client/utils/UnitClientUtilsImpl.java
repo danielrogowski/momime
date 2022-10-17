@@ -37,6 +37,7 @@ import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AnimationFrame;
+import momime.common.database.CombatAction;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.LanguageText;
@@ -461,12 +462,13 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @param newShadows Whether new shadows option is switched on in client config
+	 * @param newShadowsUnitAdjustY Adjusts Y position a unit is drawn at if it is flying (its shadow stays in the same place)
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final String unitID, final int playerID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
-		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio, final boolean newShadows) throws IOException
+		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio, final boolean newShadows, final int newShadowsUnitAdjustY) throws IOException
 	{
 		// Draw sample tile
 		if (sampleTileImageFile != null)
@@ -513,6 +515,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					g.drawStretchedImage (shadowImage, figureX + shadowOffset.getShadowOffsetX (), figureY + shadowOffset.getShadowOffsetY (),
 						doubleWidth, shadowImage.getHeight (), 0);
 
+				if (newShadows)
+					figureY = figureY + newShadowsUnitAdjustY;
+				
 				g.drawStretchedImage (image, figureX, figureY, doubleWidth, doubleHeight,
 					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
 			}
@@ -524,6 +529,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 						figureX + shadowOffset.getShadowOffsetX (), figureY  + shadowOffset.getShadowOffsetY () + ((int) (shadowImage.getHeight () * mergingRatio)),
 						doubleWidth, (int) (shadowImage.getHeight () * (1d - mergingRatio)), 0);
 
+				if (newShadows)
+					figureY = figureY + newShadowsUnitAdjustY;
+				
 				g.drawStretchedClippedImage (image,
 					0, 0, image.getWidth (), (int) (image.getHeight () * (1d - mergingRatio)),
 					figureX, figureY + ((int) (doubleHeight * mergingRatio)),
@@ -566,6 +574,11 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				sampleTileImageFile = getUnitCalculations ().findPreferredMovementSkillGraphics (unit, getClient ().getClientDB ()).getSampleTileImageFile ();
 			else
 				sampleTileImageFile = null; 
+
+			// Is it flying?  Can't rely on the combatActionID being passed in as that might say MELEE or RANGED when making an attack, but we still need to know if its flying
+			final String standingCombatActionID = getUnitCalculations ().determineCombatActionID (unit, false, getClient ().getClientDB ());
+			final CombatAction combatAction = getClient ().getClientDB ().findCombatAction (standingCombatActionID, "drawUnitFigures");
+			final int newShadowsUnitAdjustY = (combatAction.getNewShadowsUnitAdjustY () == null) ? 0 : combatAction.getNewShadowsUnitAdjustY ();
 			
 			// Call other version now that we have all the necessary values
 			int fullFigureCount = unit.getFullFigureCount ();
@@ -578,7 +591,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			}			
 			
 			drawUnitFigures (unit.getUnitID (), unit.getOwningPlayerID (), fullFigureCount, aliveFigureCount, combatActionID,
-				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours, mergingRatio, newShadows);
+				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours, mergingRatio, newShadows, newShadowsUnitAdjustY);
 		}
 	}
 	

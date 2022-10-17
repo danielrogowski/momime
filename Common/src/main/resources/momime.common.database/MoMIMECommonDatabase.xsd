@@ -3219,6 +3219,11 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatActionDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="450" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="defaultActionSoundFile" type="momimecommon:imageFilename" nxe:label="Default action sound file" nxe:gridwidth="450" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="newShadowsUnitAdjustY" type="momimecommon:pixelCoordinate" nxe:label="New shadow adjust Y" nxe:gridwidth="200">
+				<xsd:annotation>
+					<xsd:documentation>When using new shadows, units by default all look like they're at ground level.  If a unit has this combat action, adjust height by this value.  Used to make flying units look like they're flying.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="canOnlyBeAttackedByUnitsWithSkill" type="momimecommon:unitSkillID" nxe:label="Can only be attacked by skill">
 				<xsd:annotation>
 					<xsd:documentation>Units with combatActionID=FLY in combat can only be attacked by other units with combatActionID=FLY, or who have

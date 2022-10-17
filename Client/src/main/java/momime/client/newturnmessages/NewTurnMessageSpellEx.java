@@ -11,6 +11,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -27,6 +29,7 @@ import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.client.utils.WizardClientUtils;
 import momime.common.database.LanguageText;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryUnit;
@@ -104,6 +107,12 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -206,6 +215,9 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 						}
 						else if (getTargetedPlayerID () != null)
 						{
+							final PlayerPublicDetails targetedPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTargetedPlayerID ());
+							if (targetedPlayer != null)
+								target = getWizardClientUtils ().getPlayerName (targetedPlayer);
 						}
 
 						// Do we know name for the target?
@@ -702,5 +714,37 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

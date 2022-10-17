@@ -708,6 +708,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype">

@@ -426,7 +426,7 @@ public final class SpellCastingImpl implements SpellCasting
 				if ((thisTileType.isMineralDestroyed () != null) && (thisTileType.isMineralDestroyed ()) && (terrainData.getMapFeatureID () != null))
 				{
 					// Minerals are destroyed, but not lairs
-					final MapFeatureEx mapFeature = mom.getServerDB ().findMapFeature (terrainData.getMapFeatureID (), "targetOverlandSpell");
+					final MapFeatureEx mapFeature = mom.getServerDB ().findMapFeature (terrainData.getMapFeatureID (), "changeTileType");
 					if (mapFeature.getMapFeatureMagicRealm ().size () == 0)
 						terrainData.setMapFeatureID (null);
 				}

@@ -56,6 +56,7 @@ import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.ConnectToServerUI;
 import momime.client.ui.frames.CreateArtifactUI;
 import momime.client.ui.frames.DamageCalculationsUI;
+import momime.client.ui.frames.DiplomacyUI;
 import momime.client.ui.frames.HeroItemInfoUI;
 import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.HistoryUI;
@@ -164,6 +165,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** UI for screen showing power base history for each wizard */
 	private HistoryUI historyUI;
+	
+	/** Diplomacy UI */
+	private DiplomacyUI diplomacyUI;
 	
 	/** Music player */
 	private AudioPlayer musicPlayer;
@@ -394,26 +398,27 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 					final List<Integer> offersToClose = getOffers ().keySet ().stream ().collect (Collectors.toList ());
 					offersToClose.forEach (o -> getOffers ().get (o).close ());
 					
-					getOverlandMapUI ().setVisible (false);
-					getTaxRateUI ().setVisible (false);
-					getMagicSlidersUI ().setVisible (false);
-					getAlchemyUI ().setVisible (false);
-					getSpellBookUI ().setVisible (false);
-					getQueuedSpellsUI ().setVisible (false);
-					getCitiesListUI ().setVisible (false);
-					getNewTurnMessagesUI ().setVisible (false);
-					getSelectAdvisorUI ().setVisible (false);
+					getOverlandMapUI ().closedown ();
+					getTaxRateUI ().closedown ();
+					getMagicSlidersUI ().closedown ();
+					getAlchemyUI ().closedown ();
+					getSpellBookUI ().closedown ();
+					getQueuedSpellsUI ().closedown ();
+					getCitiesListUI ().closedown ();
+					getNewTurnMessagesUI ().closedown ();
+					getSelectAdvisorUI ().closedown ();
 					
-					getCombatUI ().setVisible (false);
+					getCombatUI ().closedown ();
 					getCastCombatSpellFromUI ().setVisible (false);
 					getRazeCityUI ().setVisible (false);
-					getDamageCalculationsUI ().setVisible (false);
+					getDamageCalculationsUI ().closedown ();
 					getVariableManaUI ().setVisible (false);
 					
-					getWizardsUI ().setVisible (false);
-					getCreateArtifactUI ().setVisible (false);
-					getHeroItemsUI ().setVisible (false);
-					getHistoryUI ().setVisible (false);
+					getWizardsUI ().closedown ();
+					getCreateArtifactUI ().closedown ();
+					getHeroItemsUI ().closedown ();
+					getHistoryUI ().closedown ();
+					getDiplomacyUI ().closedown ();
 				}
 				else
 				{
@@ -1280,6 +1285,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setHistoryUI (final HistoryUI h)
 	{
 		historyUI = h;
+	}
+
+	/**
+	 * @return Diplomacy UI
+	 */
+	public final DiplomacyUI getDiplomacyUI ()
+	{
+		return diplomacyUI;
+	}
+
+	/**
+	 * @param ui Diplomacy UI
+	 */
+	public final void setDiplomacyUI (final DiplomacyUI ui)
+	{
+		diplomacyUI = ui;
 	}
 	
 	/**

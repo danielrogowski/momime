@@ -8,9 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -246,36 +243,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		// This anim never finishes - if we close the window or click exit, it immediately shuts down the JVM and so it doesn't matter
 		// If we proceed to start a game, this main menu frame is merely hidden and not disposed so it can be reused later, so the anim just also becomes hidden
 		getAnim ().registerRepaintTrigger (ANIM_MAIN_MENU_TITLE, contentPane, AnimationContainer.GRAPHICS_XML);
-
-		// Resize the areas above+below the image as the size of the window changes
-		final ComponentListener onResize = new ComponentAdapter ()
-		{
-			@Override
-			public final void componentResized (@SuppressWarnings ("unused") final ComponentEvent ev)
-			{
-				final int edge = Math.min (contentPane.getWidth () / 4, contentPane.getHeight () / 3);
-				final int imgWidth = edge * 4;
-				final int imgHeight = edge * 3;
-				final int topBorder = (contentPane.getHeight () - imgHeight) / 2;
-				
-				final int titleHeight = (imgHeight * 41) / 200; 
-
-				// Adjust gap above labels
-				final Dimension newLabelsSpace = new Dimension (imgWidth - 10, topBorder + titleHeight);
-				labelsGap.setMinimumSize (newLabelsSpace);
-				labelsGap.setPreferredSize (newLabelsSpace);
-				labelsGap.setMaximumSize (newLabelsSpace);
-				
-				// Adjust gap below buttons
-				final Dimension newButtonsSpace = new Dimension (imgWidth - 10, topBorder);
-				buttonsGap.setMinimumSize (newButtonsSpace);
-				buttonsGap.setPreferredSize (newButtonsSpace);
-				buttonsGap.setMaximumSize (newButtonsSpace);
-			}
-		};
-		
-		contentPane.addComponentListener (onResize);
-		getFrame ().addComponentListener (onResize);
 
 		// Start title screen music
 		playMusic ();

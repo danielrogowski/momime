@@ -39,6 +39,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.config.WindowID;
 import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
@@ -606,7 +607,8 @@ public final class HeroItemsUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
-		
+		setWindowID (WindowID.HERO_ITEMS);
+
 		getFrame ().setShape (new Polygon
 			(new int [] {0, 798, 798, 570, 570, 182, 182, 0},
 			new int [] {0, 0, 304, 304, 394, 394, 304, 304},

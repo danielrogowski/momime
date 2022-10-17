@@ -39,6 +39,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.MiniMapBitmapGenerator;
+import momime.client.config.WindowID;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.renderer.CitiesListCellRenderer;
 import momime.client.ui.renderer.CitiesListEntry;
@@ -277,7 +278,8 @@ public final class CitiesListUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
-		
+		setWindowID (WindowID.CITIES);
+
 		final int w = getCitiesListLayout ().getFormWidth ();
 		getFrame ().setShape (new Polygon
 			(new int [] {10, 6, 6, 10, 0, 0,		w, w, w-10, w-6, w-6, w-10,		w-10, w-6, w-6, w-10, w, w,		0, 0, 10, 6, 6, 10},

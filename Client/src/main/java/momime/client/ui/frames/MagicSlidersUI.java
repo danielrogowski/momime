@@ -32,6 +32,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.config.WindowID;
 import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.MagicSlider;
@@ -539,6 +540,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
+		setWindowID (WindowID.MAGIC_SLIDERS);
 		
 		// Shortcut keys
 		contentPane.getActionMap ().put (Shortcut.ALCHEMY, alchemyAction);

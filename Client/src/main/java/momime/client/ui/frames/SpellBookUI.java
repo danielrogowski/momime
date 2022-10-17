@@ -41,6 +41,7 @@ import com.ndg.utils.swing.actions.LoggingAction;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
+import momime.client.config.WindowID;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.HideableComponent;
@@ -337,7 +338,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				pageTurnTimer.stop ();				
 			
 			pageTurnFrame = 0;
-			contentPane.repaint ();
+		contentPane.repaint ();
 			
 			pageTurnTimer = new Timer ((int) (1000 / pageTurnAnim.getAnimationSpeed ()), (ev2) ->
 			{
@@ -636,6 +637,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
+		setWindowID (WindowID.SPELL_BOOK);
 
 		// Set custom shape
 		getFrame ().setShape (new Polygon

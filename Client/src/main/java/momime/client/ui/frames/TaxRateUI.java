@@ -21,6 +21,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.config.WindowID;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
 import momime.common.database.TaxRate;
@@ -60,7 +61,7 @@ public final class TaxRateUI extends MomClientFrameUI
 	
 	/** List of buttons for each taxRateID */
 	private final List<JButton> taxRateButtons = new ArrayList<JButton> ();
-	
+
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -88,7 +89,8 @@ public final class TaxRateUI extends MomClientFrameUI
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
 		setCloseOnClick (true);
-	
+		setWindowID (WindowID.TAX_RATE);
+
 		getFrame ().setShape (new Polygon
 			(new int [] {0, SelectAdvisorUI.BORDER_WIDTH, SelectAdvisorUI.BORDER_WIDTH, background.getWidth () - SelectAdvisorUI.BORDER_WIDTH, background.getWidth () - SelectAdvisorUI.BORDER_WIDTH, background.getWidth (), background.getWidth (), background.getWidth () - 2, background.getWidth () - 2, background.getWidth (), background.getWidth (), background.getWidth () - SelectAdvisorUI.BORDER_WIDTH, background.getWidth () - SelectAdvisorUI.BORDER_WIDTH, SelectAdvisorUI.BORDER_WIDTH, SelectAdvisorUI.BORDER_WIDTH, 0, 0, 2, 2, 0}, 
 			new int [] {0, 0, 2, 2, 0, 0, SelectAdvisorUI.TOP_HEIGHT, SelectAdvisorUI.TOP_HEIGHT, background.getHeight () - SelectAdvisorUI.BOTTOM_HEIGHT, background.getHeight () - SelectAdvisorUI.BOTTOM_HEIGHT, background.getHeight (), background.getHeight (), background.getHeight () - 2, background.getHeight () - 2, background.getHeight (), background.getHeight (), background.getHeight () - SelectAdvisorUI.BOTTOM_HEIGHT, background.getHeight () - SelectAdvisorUI.BOTTOM_HEIGHT, SelectAdvisorUI.TOP_HEIGHT, SelectAdvisorUI.TOP_HEIGHT},

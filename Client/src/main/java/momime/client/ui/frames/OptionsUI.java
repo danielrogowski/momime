@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +22,9 @@ import com.ndg.utils.swing.actions.LoggingAction;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
-import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.config.MomImeClientConfig;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.LanguageVariableUI;
 import momime.client.language.database.LanguageOptionEx;
@@ -65,15 +62,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 	
-	/** Complete client config, so we can edit various settings */
-	private MomImeClientConfig clientConfig;
-	
-	/** Marshaller for saving client config */
-	private Marshaller clientConfigMarshaller;
-	
-	/** Location to save updated client config */
-	private String clientConfigLocation;
-
 	/** Where to look for language XML files */
 	private String pathToLanguageXmlFiles;
 	
@@ -602,21 +590,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	}
 	
 	/**
-	 * After any change to the config options, we resave out the config XML immediately
-	 */
-	private final void saveConfigFile ()
-	{
-		try
-		{
-			getClientConfigMarshaller ().marshal (getClientConfig (), new File (getClientConfigLocation ()));
-		}
-		catch (final Exception e)
-		{
-			log.error (e, e);
-		}
-	}
-
-	/**
 	 * Remember that we need to tell the listener when the user changes the selected language
 	 * @param listener Screen on which to call the .languageChanged () method
 	 */
@@ -730,54 +703,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	public final void setUnitClientUtils (final UnitClientUtils util)
 	{
 		unitClientUtils = util;
-	}
-
-	/**
-	 * @return Complete client config, so we can edit various settings
-	 */
-	public final MomImeClientConfig getClientConfig ()
-	{
-		return clientConfig;
-	}
-
-	/**
-	 * @param cfg Complete client config, so we can edit various settings
-	 */
-	public final void setClientConfig (final MomImeClientConfig cfg)
-	{
-		clientConfig = cfg;
-	}
-
-	/**
-	 * @return Marshaller for saving client config
-	 */
-	public final Marshaller getClientConfigMarshaller ()
-	{
-		return clientConfigMarshaller;
-	}
-
-	/**
-	 * @param marsh Marshaller for saving client config
-	 */
-	public final void setClientConfigMarshaller (final Marshaller marsh)
-	{
-		clientConfigMarshaller = marsh;
-	}
-
-	/**
-	 * @return Location to save updated client config
-	 */
-	public final String getClientConfigLocation ()
-	{
-		return clientConfigLocation;
-	}
-
-	/**
-	 * @param loc Location to save updated client config
-	 */
-	public final void setClientConfigLocation (final String loc)
-	{
-		clientConfigLocation = loc;
 	}
 
 	/**

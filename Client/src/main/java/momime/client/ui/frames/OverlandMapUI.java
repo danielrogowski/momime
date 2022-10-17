@@ -50,7 +50,7 @@ import com.ndg.utils.swing.actions.LoggingAction;
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.config.MomImeClientConfig;
+import momime.client.config.WindowID;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.languages.database.Month;
@@ -165,9 +165,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
-
-	/** Client config, containing various overland map settings */
-	private MomImeClientConfig clientConfig;
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -859,6 +856,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().pack ();
 		getFrame ().setMinimumSize (getFrame ().getSize ());
+		setWindowID (WindowID.OVERLAND_MAP);
+		setPersistVisibility (false);
 		
 		// Capture mouse clicks on the scenery panel
 		sceneryPanel.addMouseListener (new MouseAdapter ()
@@ -1904,22 +1903,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils csu)
 	{
 		coordinateSystemUtils = csu;
-	}
-
-	/**
-	 * @return Client config, containing various overland map settings
-	 */	
-	public final MomImeClientConfig getClientConfig ()
-	{
-		return clientConfig;
-	}
-
-	/**
-	 * @param config Client config, containing various overland map settings
-	 */
-	public final void setClientConfig (final MomImeClientConfig config)
-	{
-		clientConfig = config;
 	}
 
 	/**

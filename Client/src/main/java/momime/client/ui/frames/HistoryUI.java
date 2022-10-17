@@ -26,6 +26,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.config.WindowID;
 import momime.client.languages.database.Month;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
@@ -216,6 +217,7 @@ public final class HistoryUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
+		setWindowID (WindowID.HISTORY);
 	}
 	
 	/**

@@ -24,6 +24,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.calculations.damage.DamageCalculationText;
+import momime.client.config.WindowID;
 import momime.client.ui.MomUIConstants;
 
 /**
@@ -108,6 +109,7 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
+		setWindowID (WindowID.DAMAGE_CALCULATIONS);
 	}
 	
 	/**

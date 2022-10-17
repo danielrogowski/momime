@@ -46,6 +46,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
+import momime.client.config.WindowID;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -780,6 +781,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		getFrame ().addMouseListener (diplomacyMouseAdapter);
+		setWindowID (WindowID.DIPLOMACY);
+		setPersistVisibility (false);
 		
 		// Set up dialog with values that should've been set before making it visible
 		updateRelationScore ();

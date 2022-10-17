@@ -41,7 +41,7 @@ import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.config.MomImeClientConfig;
+import momime.client.config.WindowID;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.languages.database.Shortcut;
@@ -234,9 +234,6 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Methods dealing with checking whether we can see units or not */
 	private UnitVisibilityUtils unitVisibilityUtils;
-	
-	/** Client config, containing the scale setting */
-	private MomImeClientConfig clientConfig;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -1061,6 +1058,8 @@ public final class CombatUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		getFrame ().setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
+		setWindowID (WindowID.COMBAT);
+		setPersistVisibility (false);
 		
 		// Shortcut keys
 		contentPane.getActionMap ().put (Shortcut.COMBAT_TOGGLE_AUTO,								autoAction);
@@ -2496,21 +2495,5 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
 		unitVisibilityUtils = u;
-	}
-
-	/**
-	 * @return Client config, containing various combat map settings
-	 */	
-	public final MomImeClientConfig getClientConfig ()
-	{
-		return clientConfig;
-	}
-
-	/**
-	 * @param config Client config, containing various combat map settings
-	 */
-	public final void setClientConfig (final MomImeClientConfig config)
-	{
-		clientConfig = config;
 	}
 }

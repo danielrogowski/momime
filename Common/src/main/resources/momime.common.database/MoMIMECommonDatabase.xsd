@@ -3291,6 +3291,12 @@ Shamans, Priests, Magicians, Warlocks, Triremes, Galleys and Warships are unaffe
 			<xsd:element minOccurs="0" maxOccurs="1" name="freeAtStartCount" type="momimecommon:freeAtStartCount" nxe:label="Nbr. Free at Start" nxe:gridwidth="130" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSummonImageFile" type="momimecommon:imageFilename" nxe:label="Summoning image file" nxe:gridwidth="350" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroPortraitImageFile" type="momimecommon:imageFilename" nxe:label="Hero Portrait image file" nxe:gridwidth="320" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="newShadowsUnitOffsetY" type="momimecommon:pixelCoordinate" nxe:label="New shadow offset Y" nxe:gridwidth="200">
+				<xsd:annotation>
+					<xsd:documentation>When using new shadows, shadows have been adjusted on naturally flying units to make them look like they're on the ground, like when they get webbed.
+This makes them look weird while flying though as they're no longer in the correct placement within the combat tile.  So this adjustment will move them down so they're level with ground based units.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPrerequisite" type="momimecommon:buildingID" nxe:label="Building pre-requisite">
 		        <xsd:annotation>
 		        	<xsd:documentation>Lists the buildings that we need to have in a city in order to build a particular unit, e.g. that we need a Sawmill to build Bowmen.</xsd:documentation>

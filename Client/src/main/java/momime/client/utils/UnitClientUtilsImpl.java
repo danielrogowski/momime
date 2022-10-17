@@ -501,7 +501,10 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			final int doubleWidth = image.getWidth () * mult;
 			final int doubleHeight = image.getHeight () * mult;
 			final int figureX = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (doubleWidth / 2);
-			final int figureY = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - doubleHeight;
+			int figureY = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - doubleHeight;
+			
+			if ((newShadows) && (unit.getNewShadowsUnitOffsetY () != null))
+				figureY = figureY + unit.getNewShadowsUnitOffsetY ();
 			
 			// TileRelativeX, Y in the graphics XML indicates the position of the unit's feet, so need to adjust according to the unit size
 			if ((mergingRatio == null) || (mergingRatio == 0d))

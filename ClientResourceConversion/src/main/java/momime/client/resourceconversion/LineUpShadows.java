@@ -204,6 +204,22 @@ public final class LineUpShadows
 			offset.setShadowOffsetX (offset.getShadowOffsetX () + 1);
 		});
 		
+		final Action offsetUpAction = new MessageDialogAction ("^", (ev) ->
+		{
+			if (currentUnit.getNewShadowsUnitOffsetY () == null)
+				currentUnit.setNewShadowsUnitOffsetY (0);
+
+			currentUnit.setNewShadowsUnitOffsetY (currentUnit.getNewShadowsUnitOffsetY () - 1);
+		});
+		
+		final Action offsetDownAction = new MessageDialogAction ("v", (ev) ->
+		{
+			if (currentUnit.getNewShadowsUnitOffsetY () == null)
+				currentUnit.setNewShadowsUnitOffsetY (0);
+
+			currentUnit.setNewShadowsUnitOffsetY (currentUnit.getNewShadowsUnitOffsetY () + 1);
+		});
+		
 		final Action saveAction = new MessageDialogAction ("Save", (ev) -> marshaller.marshal (db, XML_LOCATION));
 		
 		// Panel
@@ -216,7 +232,9 @@ public final class LineUpShadows
 		buttonsPanel.add (new JButton (down10Action), getUtils ().createConstraintsNoFill (5, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		buttonsPanel.add (new JButton (leftAction), getUtils ().createConstraintsNoFill (3, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		buttonsPanel.add (new JButton (rightAction), getUtils ().createConstraintsNoFill (5, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		buttonsPanel.add (new JButton (saveAction), getUtils ().createConstraintsNoFill (6, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		buttonsPanel.add (new JButton (offsetUpAction), getUtils ().createConstraintsNoFill (6, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		buttonsPanel.add (new JButton (offsetDownAction), getUtils ().createConstraintsNoFill (6, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		buttonsPanel.add (new JButton (saveAction), getUtils ().createConstraintsNoFill (7, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		final JPanelWithConstantRepaints imagesPanel = new JPanelWithConstantRepaints ()
 		{
@@ -224,6 +242,7 @@ public final class LineUpShadows
 			public final void paintComponent (final Graphics g)
 			{
 				super.paintComponent (g);
+				g.setColor (Color.WHITE);
 				
 				int x = 0;
 				for (int d = 0; d < 8; d++)
@@ -267,16 +286,25 @@ public final class LineUpShadows
 							}
 
 							// Note shadow images are already doubled in size, and the offsets shouldn't be doubled either
+							int baseY = y * 100;
+							if (currentUnit.getNewShadowsUnitOffsetY () != null)
+								baseY = baseY + currentUnit.getNewShadowsUnitOffsetY ();
+							
 							if (frame.getShadowImageFile () != null)
 							{
 								final BufferedImage shadowImage = getUtils ().loadImage (frame.getShadowImageFile ());
-								g.drawImage (shadowImage, (x * 100) + offset.getShadowOffsetX (), (y * 100) + offset.getShadowOffsetY (),
+								g.drawImage (shadowImage, (x * 100) + offset.getShadowOffsetX (), baseY + offset.getShadowOffsetY (),
 									shadowImage.getWidth () * 2, shadowImage.getHeight (), null);
 							}
 							
-							final String imageFilename = (frame.getShadowlessImageFile () != null) ? frame.getShadowlessImageFile () : frame.getImageFile ();							
-							final Image image = getUtils ().doubleSize (getUtils ().loadImage (imageFilename));
-							g.drawImage (image, x * 100, y * 100, null);
+							final String imageFilename = (frame.getShadowlessImageFile () != null) ? frame.getShadowlessImageFile () : frame.getImageFile ();
+							final BufferedImage originalImage = getUtils ().loadImage (imageFilename);
+							final Image image = getUtils ().doubleSize (originalImage);
+							g.drawImage (image, x * 100, baseY, null);
+							
+							// Circle should be in the centre of the base of the unit
+							final int r = 4;
+							g.drawOval ((x * 100) + originalImage.getWidth () - (r / 2), (y * 100) + 47 - (r / 2), r, r);
 						}
 						catch (final IOException e)
 						{

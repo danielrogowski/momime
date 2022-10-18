@@ -155,7 +155,7 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 			getFrame ().pack ();
 			getFrame ().setLocationRelativeTo (null);
 			
-			if (getWindowID () != null)
+			if ((getWindowID () != null) && (getClientConfig () != null))
 			{
 				// Restore window back to its saved position
 				final WindowPosition windowPos = findWindowPosition ();

@@ -4641,7 +4641,7 @@ public final class NewGameUI extends MomClientFrameUI
 	    difficultyLevel.setTowerTreasureMaximum							(Integer.parseInt (towersTreasureMax.getText ()));
 	    difficultyLevel.setRaiderCityStartSizeMin								(Integer.parseInt (raiderCityStartSizeMin.getText ()));
 	    difficultyLevel.setRaiderCityStartSizeMax								(Integer.parseInt (raiderCityStartSizeMax.getText ()));
-	    difficultyLevel.setRaiderCityGrowthCap									(Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
+	    difficultyLevel.setRaiderCityGrowthCap									(Integer.parseInt (raiderCitySizeCap.getText ()));
 	    difficultyLevel.setWizardCityStartSize									(Integer.parseInt (wizardCityStartSize.getText ()));
 	    difficultyLevel.setCityMaxSize												(Integer.parseInt (maxCitySize.getText ()));
 	    difficultyLevel.setEventMinimumTurnNumber							(Integer.parseInt (eventMinimumTurnNumber.getText ()));

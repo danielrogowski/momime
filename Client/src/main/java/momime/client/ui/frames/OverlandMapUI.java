@@ -373,7 +373,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		
 		// Initialize the frame
 		getFrame ().setTitle ("Overland Map");
-		getFrame ().setDefaultCloseOperation (WindowConstants.EXIT_ON_CLOSE);
+		getFrame ().setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
 		
 		// Initialize the content pane
 		contentPane = new JPanel ();

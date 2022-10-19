@@ -11,6 +11,7 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -99,19 +100,28 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		final CoordinateSystem sys = continentalRace.getCoordinateSystem ();
 
 		// Set centre tile
-		continentalRace.set (x, y, plane, raceID);
+		final List<MapCoordinates2DEx> coordsLeftToCheck = new ArrayList<MapCoordinates2DEx> ();
+		coordsLeftToCheck.add (new MapCoordinates2DEx (x, y));
 
-		// Now branch out in every direction from here
-		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
+		// Keep going until nowhere left to check
+		while (!coordsLeftToCheck.isEmpty ())
 		{
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
-			if (getCoordinateSystemUtils ().move3DCoordinates (sys, coords, d))
+			final MapCoordinates2DEx coords = coordsLeftToCheck.get (0);
+			coordsLeftToCheck.remove (0);
+			continentalRace.set (coords.getX (), coords.getY (), plane, raceID);
+		
+			// Now branch out in every direction from here
+			for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
 			{
-				final OverlandMapTerrainData terrain = map.getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				final TileType tileType = db.findTileType (terrain.getTileTypeID (), "setContinentalRace");
-				
-				if ((tileType.isLand () != null) && (tileType.isLand ()) && (continentalRace.get (coords) == null))
-					setContinentalRace (map, continentalRace, coords.getX (), coords.getY (), plane, raceID, db);
+				final MapCoordinates2DEx newCoords = new MapCoordinates2DEx (coords);
+				if (getCoordinateSystemUtils ().move2DCoordinates (sys, newCoords, d))
+				{
+					final OverlandMapTerrainData terrain = map.getPlane ().get (plane).getRow ().get (newCoords.getY ()).getCell ().get (newCoords.getX ()).getTerrainData ();
+					final TileType tileType = db.findTileType (terrain.getTileTypeID (), "setContinentalRace");
+					
+					if ((tileType.isLand () != null) && (tileType.isLand ()) && (continentalRace.get (newCoords.getX (), newCoords.getY (), plane) == null) && (!coordsLeftToCheck.contains (newCoords)))
+						coordsLeftToCheck.add (newCoords);
+				}
 			}
 		}
 	}

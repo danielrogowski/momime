@@ -251,14 +251,15 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 	 */
 	final void saveConfigFile ()
 	{
-		try
-		{
-			getClientConfigMarshaller ().marshal (getClientConfig (), new File (getClientConfigLocation ()));
-		}
-		catch (final Exception e)
-		{
-			log.error (e, e);
-		}
+		if (getClientConfigLocation () != null)
+			try
+			{
+				getClientConfigMarshaller ().marshal (getClientConfig (), new File (getClientConfigLocation ()));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
 	}
 	
 	/**

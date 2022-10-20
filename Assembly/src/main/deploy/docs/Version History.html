@@ -36,8 +36,32 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.5.1</b></td>
-			<td align=left><b>3 Oct 2022</b></td>
+			<td align=left><b>Current version: 1.5.2</b></td>
+			<td align=left><b>20 Oct 2022</b></td>
+			<td align=left>
+				<b>New features:</b>
+				<ul>
+					<li>Separated shadows of units in combat into separate images, so that units that can naturally fly but get webbed actually look like they're now forced to walk around on the ground, and
+						units that can't naturally fly (e.g. spearmen) and have flight cast on them actually look like they're flying.  Note you have to explicitly switch on this new setting in the options screen, it defaults to using the shadows from the original MoM.
+					<li>Client remembers which windows you had open and their location (and size for the overland map) and will restore them the same way next time you are in a game
+					<li>Blocked quitting the client by closing the overland map window, so you have to leave the game first by clicking the Game button, then exit from the main menu
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>The special cap on the size raider cities can grow was being set incorrectly at the start of the game, severly cripping raiders' ability to grow, especially on "Recommended" difficulty level where this cap was supposed to be disabled
+					<li>Units not normally allowed on land (Air ships and regular ships with Flight or Wraith Form cast on them) in a land combat will now crash and die if they are webbed or the spell granting their Flight / Wraith Form gets switched off or dispelled,
+						in the same way that land units with Flight / Wraith Form will drown and die if webbed or dispelled in a water combat
+					<li>Fixed error if a combat is started and none of the defenders can participate (attacking a Floating Island)
+					<li>After picking a target for spells aimed directly at enemy wizards (for example Drain Power, Spell Blast), the scroll will say the name of who you cast it on rather than just that you "chose a target"
+					<li>If you Spell Blast an enemy wizard's spell while you have Detect Magic active, the label showing the spell they are currently casting will update to None to show that it worked
+					<li>Reworked code that decides the likely race for each continent of land, which blew up with a stack overflow error if you tried to create really massive continents
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.5.1</td>
+			<td align=left>3 Oct 2022</td>
 			<td align=left>
 				<b>New features:</b>
 				<ul>

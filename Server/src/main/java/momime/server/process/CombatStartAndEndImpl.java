@@ -263,8 +263,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			endImmediately = defendingPlayer;
 		}
 		
-		// Are there any defenders (attacking an empty city) - if not then bypass the combat entirely
-		else if (defendingPlayer == null)
+		// Are there any defenders (attacking an empty city, or attacking a floating island) - if not then bypass the combat entirely
+		else if ((defendingPlayer == null) || ((defenderSummary != null) && (defenderSummary.getUnitCount () == 0)))
 		{
 			log.debug ("Combat ending before it starts (no defenders)");
 			

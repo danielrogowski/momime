@@ -3864,6 +3864,12 @@ Zero value indicates the terrain in this layer has no effect on movement (e.g. h
 					<xsd:documentation>Presence of this tile on any layer indicates this tile is part of the 4x4 area inside the city.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="land" type="xsd:boolean" nxe:label="Is Solid Land?" nxe:gridwidth="80">
+				<xsd:annotation>
+					<xsd:documentation>This is only set on combat tiles in the terrain layer.  For those its mandatory to put true or false here.
+Determines whether land-only spells like Cracks Call or Earth to Mud can be used on that tile.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileTypeRequiresSkill" type="momimecommon:unitSkillID">
 		        <xsd:annotation>
 		        	<xsd:documentation>Combat tile type is impassable unless unit has one of these skills.  Used for water+cloud tiles.</xsd:documentation>

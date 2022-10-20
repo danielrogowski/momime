@@ -3795,6 +3795,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final CombatTileType combatTileType = new CombatTileType ();
+		combatTileType.setLand (true);
 		when (db.findCombatTileType ("CTL01", "isCombatLocationValidTargetForSpell")).thenReturn (combatTileType);
 
 		// Spell being targetted

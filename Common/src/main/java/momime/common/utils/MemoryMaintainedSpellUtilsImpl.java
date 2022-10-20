@@ -534,7 +534,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    				final MomCombatTile tile = combatTerrain.getRow ().get (targetUnit.getCombatPosition ().getY ()).getCell ().get (targetUnit.getCombatPosition ().getX ());
 	    				final String combatTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN);
 	    				final CombatTileType combatTileType = db.findCombatTileType (combatTileTypeID, "isUnitValidTargetForSpell");
-	    				if (combatTileType.getCombatTileTypeRequiresSkill ().isEmpty ())
+	    				
+	    				if (combatTileType.isLand () == null)
+	    					throw new MomException ("Combat tile types in the terrain layer must specify land true/false, but value is missing for " + combatTileTypeID);
+	    				
+	    				if (combatTileType.isLand ())
 	    	    			result = TargetSpellResult.VALID_TARGET;
 	    				else
 	    					result = TargetSpellResult.INVALID_TILE_TYPE;
@@ -891,7 +895,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    		case EARTH_TO_MUD:
 	    			final String combatTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN);
 	    			final CombatTileType combatTileType = db.findCombatTileType (combatTileTypeID, "isCombatLocationValidTargetForSpell");
-	    			result = (combatTileType.getCombatTileTypeRequiresSkill ().size () == 0);
+	    			
+    				if (combatTileType.isLand () == null)
+    					throw new MomException ("Combat tile types in the terrain layer must specify land true/false, but value is missing for " + combatTileTypeID);
+
+	    			result = combatTileType.isLand ();
 	    			break;
 	    
 	    		// Must be targeted at particular types of wall locations

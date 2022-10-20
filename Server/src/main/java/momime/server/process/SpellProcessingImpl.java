@@ -693,7 +693,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					areaBridge.setCoordinateSystem (mom.getSessionDescription ().getCombatMapSize ());
 					
 					final Set<String> muddableTiles = mom.getServerDB ().getCombatTileType ().stream ().filter
-						(tt -> tt.getCombatTileTypeRequiresSkill ().isEmpty ()).map (tt -> tt.getCombatTileTypeID ()).collect (Collectors.toSet ());
+						(tt -> (tt.isLand () != null) && (tt.isLand ())).map (tt -> tt.getCombatTileTypeID ()).collect (Collectors.toSet ());
 					
 					getCombatMapOperations ().processCellsWithinRadius (areaBridge, targetLocation.getX (), targetLocation.getY (),
 						spell.getSpellRadius (), (tile) ->

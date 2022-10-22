@@ -334,6 +334,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 					{
 						// Disjunction type spell that targets an overland enchantment rather than something on the map
 						case DISPEL_OVERLAND_ENCHANTMENTS:
+						case SPELL_BINDING:
 						{
 							getMagicSlidersUI ().setTargetingSpell (spell);
 							getMagicSlidersUI ().setVisible (true);

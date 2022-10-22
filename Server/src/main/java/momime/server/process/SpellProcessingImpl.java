@@ -1244,7 +1244,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final List<MemoryMaintainedSpell> targetSpells;
 				boolean targetWarpedNode = false;
 				
-				if (kind == KindOfSpell.DISPEL_OVERLAND_ENCHANTMENTS)
+				if ((kind == KindOfSpell.DISPEL_OVERLAND_ENCHANTMENTS) || (kind == KindOfSpell.SPELL_BINDING))
 				{
 					// Disjunction is easy - just targeted at one single spell, and we've already got it
 					targetSpells = Arrays.asList (targetSpell);

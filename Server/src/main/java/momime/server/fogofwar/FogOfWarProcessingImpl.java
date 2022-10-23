@@ -659,6 +659,11 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 					final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (thisUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 					if (trueUnit == null)
 						needToRemoveUnit = true;
+					
+					// Heroes exist in the true units list even if they've been dismissed and gone back to generated, so we still want to remove the unit if the status is anything other than "alive"
+					else if (trueUnit.getStatus () != UnitStatusID.ALIVE)
+						needToRemoveUnit = true;
+					
 					else
 						// We don't need to worry about checking whether or not we can see where the unit has moved to - we already know that we can't
 						// because if we could see it, we'd have already dealt with it and updated our memory of the unit in the 'add' section above

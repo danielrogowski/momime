@@ -91,9 +91,10 @@ public interface UnitUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return True if this combat area effect affects this unit
 	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws MomException If the combat area "affects" code is unrecognized
 	 */
 	public boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final CommonDatabase db)
-		throws RecordNotFoundException;
+		throws RecordNotFoundException, MomException;
 
 	/**
 	 * @param units Unit stack

@@ -2,6 +2,7 @@ package momime.common.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,13 +20,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
+import momime.common.database.AddsToSkill;
 import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.GenerateTestData;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
 import momime.common.database.Pick;
@@ -35,10 +40,16 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillEx;
+import momime.common.database.UnitSpecialOrder;
+import momime.common.database.UnitSpellEffect;
 import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.ConfusionEffect;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MemoryUnitHeroItemSlot;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 
@@ -457,11 +468,33 @@ public final class TestUnitUtilsImpl
 	}
 	
 	/**
-	 * Tests the doesCombatAreaEffectApplyToUnit method on an available unit and a CAE with affects players = blank
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * Tests the doesCombatAreaEffectApplyToUnit method on Magic Vortex, which CAEs never apply to
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsBlank () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Vortex () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitsThatMoveThroughOtherUnits ()).thenReturn (Arrays.asList ("UN002"));
+
+		// Create test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN002");
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Even though CAE is global and for the right player, with affects blank it shouldn't apply
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (unit, null, db));
+	}
+	
+	/**
+	 * Tests the doesCombatAreaEffectApplyToUnit method on an available unit and a CAE with affects players = blank
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsBlank () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -487,10 +520,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the doesCombatAreaEffectApplyToUnit method on an available unit and a CAE with affects players = all
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsAll () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsAll () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -532,10 +565,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the doesCombatAreaEffectApplyToUnit method on an available unit and a CAE with affects players = caster
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsCaster () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsCaster () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -577,10 +610,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the doesCombatAreaEffectApplyToUnit method on an available unit and a CAE with affects players = both
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsBothInCombat () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsBothInCombat () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -624,10 +657,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the doesCombatAreaEffectApplyToUnit method on an available unit and a CAE with affects players = opponent
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsOpponent () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsOpponent () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -669,10 +702,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the doesCombatAreaEffectApplyToUnit method on a real unit and a CAE with affects players = blank
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsBlank () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsBlank () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -698,10 +731,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the doesCombatAreaEffectApplyToUnit method on a real unit and a CAE with affects players = all
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsAll () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsAll () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -762,10 +795,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the doesCombatAreaEffectApplyToUnit method on a real unit and a CAE with affects players = caster
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsCaster () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsCaster () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -826,10 +859,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the doesCombatAreaEffectApplyToUnit method on a real unit and a CAE with affects players = both
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsBothInCombat () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsBothInCombat () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -892,10 +925,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the doesCombatAreaEffectApplyToUnit method on a real unit and a CAE with affects players = opponent
-	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsOpponent () throws RecordNotFoundException
+	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsOpponent () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -1042,7 +1075,78 @@ public final class TestUnitUtilsImpl
 		u6.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u6);
 
-		assertEquals (u6, utils.findFirstAliveEnemyAtLocation (units, 2, 3, 1, 4));
+		assertSame (u6, utils.findFirstAliveEnemyAtLocation (units, 2, 3, 1, 4));
+	}
+	
+	/**
+	 * Tests the findFirstAliveEnemyWeCanSeeAtLocation method
+	 */
+	@Test
+	public final void testFindFirstAliveEnemyWeCanSeeAtLocation ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Put into a list units that meet every criteria except one
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final UnitVisibilityUtils unitVisibilityUtils = mock (UnitVisibilityUtils.class);
+		
+		// Null location
+		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setOwningPlayerID (5);
+		u1.setStatus (UnitStatusID.ALIVE);
+		mem.getUnit ().add (u1);
+
+		// Wrong location
+		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setOwningPlayerID (5);
+		u2.setStatus (UnitStatusID.ALIVE);
+		u2.setUnitLocation (new MapCoordinates3DEx (2, 3, 0));
+		mem.getUnit ().add (u2);
+
+		// Wrong player (i.e. player matches)
+		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setOwningPlayerID (4);
+		u3.setStatus (UnitStatusID.ALIVE);
+		u3.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		mem.getUnit ().add (u3);
+
+		// Null status
+		final MemoryUnit u4 = new MemoryUnit ();
+		u4.setOwningPlayerID (5);
+		u4.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		mem.getUnit ().add (u4);
+
+		// Unit is dead
+		final MemoryUnit u5 = new MemoryUnit ();
+		u5.setOwningPlayerID (5);
+		u5.setStatus (UnitStatusID.DEAD);
+		u5.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		mem.getUnit ().add (u5);
+		
+		// Unit is invisible
+		final MemoryUnit u6 = new MemoryUnit ();
+		u6.setOwningPlayerID (5);
+		u6.setStatus (UnitStatusID.ALIVE);
+		u6.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		mem.getUnit ().add (u6);
+		
+		when (unitVisibilityUtils.canSeeUnitOverland (u6, 4, mem.getMaintainedSpell (), db)).thenReturn (false);
+		
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setUnitVisibilityUtils (unitVisibilityUtils);
+		assertNull (utils.findFirstAliveEnemyWeCanSeeAtLocation (4, mem, 2, 3, 1, 4, db));
+		
+		// Now add one that actually matches
+		final MemoryUnit u7 = new MemoryUnit ();
+		u7.setOwningPlayerID (5);
+		u7.setStatus (UnitStatusID.ALIVE);
+		u7.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
+		mem.getUnit ().add (u7);
+		
+		when (unitVisibilityUtils.canSeeUnitOverland (u7, 4, mem.getMaintainedSpell (), db)).thenReturn (true);
+
+		assertSame (u7, utils.findFirstAliveEnemyWeCanSeeAtLocation (4, mem, 2, 3, 1, 4, db));
 	}
 
 	/**
@@ -1186,12 +1290,14 @@ public final class TestUnitUtilsImpl
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitsThatMoveThroughOtherUnits ()).thenReturn (Arrays.asList ("UN001"));
 		
 		// Put into a list units that meet every criteria except one
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Unit is dead
 		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setUnitID ("UN002");
 		u1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u1.setCombatPosition (new MapCoordinates2DEx (14, 7));
 		u1.setCombatSide (UnitCombatSideID.ATTACKER);
@@ -1202,6 +1308,7 @@ public final class TestUnitUtilsImpl
 		
 		// Wrong combat location
 		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setUnitID ("UN002");
 		u2.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		u2.setCombatPosition (new MapCoordinates2DEx (14, 7));
 		u2.setCombatSide (UnitCombatSideID.ATTACKER);
@@ -1212,6 +1319,7 @@ public final class TestUnitUtilsImpl
 		
 		// Wrong combat position
 		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setUnitID ("UN002");
 		u3.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u3.setCombatPosition (new MapCoordinates2DEx (15, 7));
 		u3.setCombatSide (UnitCombatSideID.ATTACKER);
@@ -1228,8 +1336,9 @@ public final class TestUnitUtilsImpl
 		final MapCoordinates2DEx pos = new MapCoordinates2DEx (14, 7);
 		assertNull (utils.findAliveUnitInCombatAt (units, loc, pos, db, false));
 		
-		// Add one that matches
+		// Add a vortex that matches, may be returned or not depending on last param
 		final MemoryUnit u4 = new MemoryUnit ();
+		u4.setUnitID ("UN001");
 		u4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u4.setCombatPosition (new MapCoordinates2DEx (14, 7));
 		u4.setCombatSide (UnitCombatSideID.ATTACKER);
@@ -1237,9 +1346,486 @@ public final class TestUnitUtilsImpl
 		u4.setStatus (UnitStatusID.ALIVE);
 		
 		units.add (u4);
+
+		assertNull (utils.findAliveUnitInCombatAt (units, loc, pos, db, false));
+		assertSame (u4, utils.findAliveUnitInCombatAt (units, loc, pos, db, true));
 		
-		// Show that we find it
-		assertSame (u4, utils.findAliveUnitInCombatAt (units, loc, pos, db, false));
+		// Add a real unit that matches, will be returned in preference to the vortex
+		final MemoryUnit u5 = new MemoryUnit ();
+		u5.setUnitID ("UN002");
+		u5.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u5.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u5.setCombatSide (UnitCombatSideID.ATTACKER);
+		u5.setCombatHeading (1);
+		u5.setStatus (UnitStatusID.ALIVE);
+		
+		units.add (u5);
+		
+		assertSame (u5, utils.findAliveUnitInCombatAt (units, loc, pos, db, false));
+		assertSame (u5, utils.findAliveUnitInCombatAt (units, loc, pos, db, true));
+	}
+	
+	/**
+	 * Tests the findAliveUnitInCombatWeCanSeeAt method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testFindAliveUnitInCombatWeCanSeeAt () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitsThatMoveThroughOtherUnits ()).thenReturn (Arrays.asList ("UN001"));
+		
+		// Put into a list units that meet every criteria except one
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+
+		final ExpandUnitDetails expandUnitDetails = mock (ExpandUnitDetails.class);
+		final UnitVisibilityUtils unitVisibilityUtils = mock (UnitVisibilityUtils.class);
+		
+		// Unit is dead
+		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setUnitID ("UN002");
+		u1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u1.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u1.setCombatSide (UnitCombatSideID.ATTACKER);
+		u1.setCombatHeading (1);
+		u1.setStatus (UnitStatusID.DEAD);
+		
+		mem.getUnit ().add (u1);
+		
+		// Wrong combat location
+		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setUnitID ("UN002");
+		u2.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
+		u2.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u2.setCombatSide (UnitCombatSideID.ATTACKER);
+		u2.setCombatHeading (1);
+		u2.setStatus (UnitStatusID.ALIVE);
+		
+		mem.getUnit ().add (u2);
+		
+		// Wrong combat position
+		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setUnitID ("UN002");
+		u3.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u3.setCombatPosition (new MapCoordinates2DEx (15, 7));
+		u3.setCombatSide (UnitCombatSideID.ATTACKER);
+		u3.setCombatHeading (1);
+		u3.setStatus (UnitStatusID.ALIVE);
+		
+		mem.getUnit ().add (u3);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setExpandUnitDetails (expandUnitDetails);
+		utils.setUnitVisibilityUtils (unitVisibilityUtils);
+		
+		// Should get a null
+		final MapCoordinates3DEx loc = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates2DEx pos = new MapCoordinates2DEx (14, 7);
+		assertNull (utils.findAliveUnitInCombatWeCanSeeAt (loc, pos, 4, players, mem, db, sys, false));
+		
+		// Unit is invisible
+		final MemoryUnit u4 = new MemoryUnit ();
+		u4.setUnitID ("UN002");
+		u4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u4.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u4.setCombatSide (UnitCombatSideID.ATTACKER);
+		u4.setCombatHeading (1);
+		u4.setStatus (UnitStatusID.ALIVE);
+		
+		mem.getUnit ().add (u4);
+
+		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
+		when (expandUnitDetails.expandUnitDetails (u4, null, null, null, players, mem, db)).thenReturn (xu4);
+		when (unitVisibilityUtils.canSeeUnitInCombat (xu4, 4, players, mem, db, sys)).thenReturn (false);
+		
+		assertNull (utils.findAliveUnitInCombatWeCanSeeAt (loc, pos, 4, players, mem, db, sys, false));
+		assertNull (utils.findAliveUnitInCombatWeCanSeeAt (loc, pos, 4, players, mem, db, sys, true));
+		
+		// Vortex is invisible
+		final MemoryUnit u5 = new MemoryUnit ();
+		u5.setUnitID ("UN001");
+		u5.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u5.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u5.setCombatSide (UnitCombatSideID.ATTACKER);
+		u5.setCombatHeading (1);
+		u5.setStatus (UnitStatusID.ALIVE);
+		
+		mem.getUnit ().add (u5);
+		
+		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
+		when (expandUnitDetails.expandUnitDetails (u5, null, null, null, players, mem, db)).thenReturn (xu5);
+		when (unitVisibilityUtils.canSeeUnitInCombat (xu5, 4, players, mem, db, sys)).thenReturn (false);
+
+		assertNull (utils.findAliveUnitInCombatWeCanSeeAt (loc, pos, 4, players, mem, db, sys, false));
+		assertNull (utils.findAliveUnitInCombatWeCanSeeAt (loc, pos, 4, players, mem, db, sys, true));
+		
+		// Add a vortex that matches, may be returned or not depending on last param
+		final MemoryUnit u6 = new MemoryUnit ();
+		u6.setUnitID ("UN001");
+		u6.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u6.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u6.setCombatSide (UnitCombatSideID.ATTACKER);
+		u6.setCombatHeading (1);
+		u6.setStatus (UnitStatusID.ALIVE);
+		
+		mem.getUnit ().add (u6);
+		
+		final ExpandedUnitDetails xu6 = mock (ExpandedUnitDetails.class);
+		when (expandUnitDetails.expandUnitDetails (u6, null, null, null, players, mem, db)).thenReturn (xu6);
+		when (unitVisibilityUtils.canSeeUnitInCombat (xu6, 4, players, mem, db, sys)).thenReturn (true);
+
+		assertNull (utils.findAliveUnitInCombatWeCanSeeAt (loc, pos, 4, players, mem, db, sys, false));
+		assertSame (xu6, utils.findAliveUnitInCombatWeCanSeeAt (loc, pos, 4, players, mem, db, sys, true));
+		
+		// Add a real unit that matches, will be returned in preference to the vortex
+		final MemoryUnit u7 = new MemoryUnit ();
+		u7.setUnitID ("UN002");
+		u7.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u7.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u7.setCombatSide (UnitCombatSideID.ATTACKER);
+		u7.setCombatHeading (1);
+		u7.setStatus (UnitStatusID.ALIVE);
+		
+		mem.getUnit ().add (u7);
+
+		final ExpandedUnitDetails xu7 = mock (ExpandedUnitDetails.class);
+		when (expandUnitDetails.expandUnitDetails (u7, null, null, null, players, mem, db)).thenReturn (xu7);
+		when (unitVisibilityUtils.canSeeUnitInCombat (xu7, 4, players, mem, db, sys)).thenReturn (true);
+		
+		assertSame (xu7, utils.findAliveUnitInCombatWeCanSeeAt (loc, pos, 4, players, mem, db, sys, false));
+		assertSame (xu7, utils.findAliveUnitInCombatWeCanSeeAt (loc, pos, 4, players, mem, db, sys, true));
+	}
+
+	/**
+	 * Tests the copyUnitValues method including movement fields
+	 */
+	@Test
+	public final void testCopyUnitValues_includeMovementFields ()
+	{
+		// Source object
+		final MemoryUnit source = new MemoryUnit ();
+		source.setDoubleOverlandMovesLeft (1);
+		source.setDoubleCombatMovesLeft (2);
+		source.setSpecialOrder (UnitSpecialOrder.BUILD_ROAD);
+		
+		// AvailableUnit fields
+		source.setOwningPlayerID (3);
+		source.setUnitID ("UN001");
+		source.setWeaponGrade (4);
+		source.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+
+		// AvailableUnit - skills list
+		final UnitSkillAndValue srcSkill = new UnitSkillAndValue ();
+		srcSkill.setUnitSkillID ("US001");
+		srcSkill.setUnitSkillValue (5);
+		source.getUnitHasSkill ().add (srcSkill);
+
+		// MemoryUnit fields
+		source.setUnitURN (6);
+		source.setHeroNameID ("HN01");
+		source.setUnitName ("Bob");
+		source.setAmmoRemaining (7);
+		
+		source.setManaRemaining (8);
+		source.setStatus (UnitStatusID.ALIVE);
+		source.setWasSummonedInCombat (true);
+		source.setCombatHeading (9);
+		source.setCombatSide (UnitCombatSideID.ATTACKER);
+		source.setConfusionEffect (ConfusionEffect.OWNER_CONTROLLED);
+
+		source.getFixedSpellsRemaining ().add (10);
+		source.getHeroItemSpellChargesRemaining ().add (11);
+		
+		source.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
+		source.setCombatPosition (new MapCoordinates2DEx (5, 7));
+		
+		// MemoryUnit - hero item slots list
+		final NumberedHeroItem srcItem = new NumberedHeroItem ();
+		srcItem.setHeroItemURN (12);
+		srcItem.setHeroItemName ("Sword");
+		srcItem.setHeroItemTypeID ("IT01");
+		srcItem.setHeroItemImageNumber (13);
+		srcItem.setSpellID ("SP001");
+		srcItem.setSpellChargeCount (14);
+		
+		srcItem.getHeroItemChosenBonus ().add ("IB01");
+		
+		final MemoryUnitHeroItemSlot srcItemSlot = new MemoryUnitHeroItemSlot ();
+		srcItemSlot.setHeroItem (srcItem);
+		
+		source.getHeroItemSlot ().add (srcItemSlot);
+		
+		// Memory unit - damage
+		final UnitDamage srcDamage = new UnitDamage ();
+		srcDamage.setDamageType (StoredDamageTypeID.PERMANENT);
+		srcDamage.setDamageTaken (15);
+		source.getUnitDamage ().add (srcDamage);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Call method
+		final MemoryUnit dest = new MemoryUnit ();
+		utils.copyUnitValues (source, dest, true);
+		
+		// Check results
+		assertEquals (1, dest.getDoubleOverlandMovesLeft ());
+		assertEquals (2, dest.getDoubleCombatMovesLeft ());
+		assertEquals (UnitSpecialOrder.BUILD_ROAD, dest.getSpecialOrder ());
+		
+		// AvailableUnit fields
+		assertEquals (3, dest.getOwningPlayerID ());
+		assertEquals ("UN001", dest.getUnitID ());
+		assertEquals (4, dest.getWeaponGrade ());
+		assertEquals (new MapCoordinates3DEx (20, 10, 1), dest.getUnitLocation ());
+		assertNotSame (source.getUnitLocation (), dest.getUnitLocation ());
+
+		// AvailableUnit - skills list
+		assertEquals (1, dest.getUnitHasSkill ().size ());
+		assertEquals ("US001", dest.getUnitHasSkill ().get (0).getUnitSkillID ());
+		assertEquals (5, dest.getUnitHasSkill ().get (0).getUnitSkillValue ());
+		assertNotSame (source.getUnitHasSkill ().get (0), dest.getUnitHasSkill ().get (0));
+
+		// MemoryUnit fields
+		assertEquals (6, dest.getUnitURN ());
+		assertEquals ("HN01", dest.getHeroNameID ());
+		assertEquals ("Bob", dest.getUnitName ());
+		assertEquals (7, dest.getAmmoRemaining ());
+		
+		assertEquals (8, dest.getManaRemaining ());
+		assertEquals (UnitStatusID.ALIVE, dest.getStatus ());
+		assertTrue (dest.isWasSummonedInCombat ());
+		assertEquals (9, dest.getCombatHeading ());
+		assertEquals (UnitCombatSideID.ATTACKER, dest.getCombatSide ());
+		assertEquals (ConfusionEffect.OWNER_CONTROLLED, dest.getConfusionEffect ());
+
+		assertEquals (1, dest.getFixedSpellsRemaining ().size ());
+		assertEquals (10, dest.getFixedSpellsRemaining ().get (0));
+		assertEquals (1, dest.getHeroItemSpellChargesRemaining ().size ());
+		assertEquals (11, dest.getHeroItemSpellChargesRemaining ().get (0));
+		
+		assertEquals (new MapCoordinates3DEx (21, 10, 1), dest.getCombatLocation ());
+		assertNotSame (source.getCombatLocation (), dest.getCombatLocation ());
+		
+		assertEquals (new MapCoordinates2DEx (5, 7), dest.getCombatPosition ());
+		assertNotSame (source.getCombatPosition (), dest.getCombatPosition ());
+		
+		// MemoryUnit - hero item slots list
+		assertEquals (1, dest.getHeroItemSlot ().size ());
+		assertEquals (12, dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemURN ());
+		assertEquals ("Sword", dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemName ());
+		assertEquals ("IT01", dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemTypeID ());
+		assertEquals (13, dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemImageNumber ());
+		assertEquals ("SP001", dest.getHeroItemSlot ().get (0).getHeroItem ().getSpellID ());
+		assertEquals (14, dest.getHeroItemSlot ().get (0).getHeroItem ().getSpellChargeCount ());
+		
+		assertEquals (1, dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemChosenBonus ().size ());
+		assertEquals ("IB01", dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemChosenBonus ().get (0));
+		
+		assertNotSame (source.getHeroItemSlot ().get (0), dest.getHeroItemSlot ().get (0));
+		assertNotSame (source.getHeroItemSlot ().get (0).getHeroItem (), dest.getHeroItemSlot ().get (0).getHeroItem ());
+		
+		// Memory unit - damage
+		assertEquals (1, dest.getUnitDamage ().size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, dest.getUnitDamage ().get (0).getDamageType ());
+		assertEquals (15, dest.getUnitDamage ().get (0).getDamageTaken ());
+		assertNotSame (source.getUnitDamage ().get (0), dest.getUnitDamage ().get (0));
+	}
+	
+	/**
+	 * Tests the copyUnitValues method excluding movement fields
+	 */
+	@Test
+	public final void testCopyUnitValues_excludeMovementFields ()
+	{
+		// Source object
+		final MemoryUnit source = new MemoryUnit ();
+		source.setDoubleOverlandMovesLeft (1);
+		source.setDoubleCombatMovesLeft (2);
+		source.setSpecialOrder (UnitSpecialOrder.BUILD_ROAD);
+		
+		// AvailableUnit fields
+		source.setOwningPlayerID (3);
+		source.setUnitID ("UN001");
+		source.setWeaponGrade (4);
+		source.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+
+		// AvailableUnit - skills list
+		final UnitSkillAndValue srcSkill = new UnitSkillAndValue ();
+		srcSkill.setUnitSkillID ("US001");
+		srcSkill.setUnitSkillValue (5);
+		source.getUnitHasSkill ().add (srcSkill);
+
+		// MemoryUnit fields
+		source.setUnitURN (6);
+		source.setHeroNameID ("HN01");
+		source.setUnitName ("Bob");
+		source.setAmmoRemaining (7);
+		
+		source.setManaRemaining (8);
+		source.setStatus (UnitStatusID.ALIVE);
+		source.setWasSummonedInCombat (true);
+		source.setCombatHeading (9);
+		source.setCombatSide (UnitCombatSideID.ATTACKER);
+		source.setConfusionEffect (ConfusionEffect.OWNER_CONTROLLED);
+
+		source.getFixedSpellsRemaining ().add (10);
+		source.getHeroItemSpellChargesRemaining ().add (11);
+		
+		source.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
+		source.setCombatPosition (new MapCoordinates2DEx (5, 7));
+		
+		// MemoryUnit - hero item slots list
+		final NumberedHeroItem srcItem = new NumberedHeroItem ();
+		srcItem.setHeroItemURN (12);
+		srcItem.setHeroItemName ("Sword");
+		srcItem.setHeroItemTypeID ("IT01");
+		srcItem.setHeroItemImageNumber (13);
+		srcItem.setSpellID ("SP001");
+		srcItem.setSpellChargeCount (14);
+		
+		srcItem.getHeroItemChosenBonus ().add ("IB01");
+		
+		final MemoryUnitHeroItemSlot srcItemSlot = new MemoryUnitHeroItemSlot ();
+		srcItemSlot.setHeroItem (srcItem);
+		
+		source.getHeroItemSlot ().add (srcItemSlot);
+		
+		// Memory unit - damage
+		final UnitDamage srcDamage = new UnitDamage ();
+		srcDamage.setDamageType (StoredDamageTypeID.PERMANENT);
+		srcDamage.setDamageTaken (15);
+		source.getUnitDamage ().add (srcDamage);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Call method
+		final MemoryUnit dest = new MemoryUnit ();
+		utils.copyUnitValues (source, dest, false);
+		
+		// Check results
+		assertEquals (0, dest.getDoubleOverlandMovesLeft ());
+		assertNull (dest.getDoubleCombatMovesLeft ());
+		assertNull (dest.getSpecialOrder ());
+		
+		// AvailableUnit fields
+		assertEquals (3, dest.getOwningPlayerID ());
+		assertEquals ("UN001", dest.getUnitID ());
+		assertEquals (4, dest.getWeaponGrade ());
+		assertEquals (new MapCoordinates3DEx (20, 10, 1), dest.getUnitLocation ());
+		assertNotSame (source.getUnitLocation (), dest.getUnitLocation ());
+
+		// AvailableUnit - skills list
+		assertEquals (1, dest.getUnitHasSkill ().size ());
+		assertEquals ("US001", dest.getUnitHasSkill ().get (0).getUnitSkillID ());
+		assertEquals (5, dest.getUnitHasSkill ().get (0).getUnitSkillValue ());
+		assertNotSame (source.getUnitHasSkill ().get (0), dest.getUnitHasSkill ().get (0));
+
+		// MemoryUnit fields
+		assertEquals (6, dest.getUnitURN ());
+		assertEquals ("HN01", dest.getHeroNameID ());
+		assertEquals ("Bob", dest.getUnitName ());
+		assertEquals (7, dest.getAmmoRemaining ());
+		
+		assertEquals (8, dest.getManaRemaining ());
+		assertEquals (UnitStatusID.ALIVE, dest.getStatus ());
+		assertTrue (dest.isWasSummonedInCombat ());
+		assertEquals (9, dest.getCombatHeading ());
+		assertEquals (UnitCombatSideID.ATTACKER, dest.getCombatSide ());
+		assertEquals (ConfusionEffect.OWNER_CONTROLLED, dest.getConfusionEffect ());
+
+		assertEquals (1, dest.getFixedSpellsRemaining ().size ());
+		assertEquals (10, dest.getFixedSpellsRemaining ().get (0));
+		assertEquals (1, dest.getHeroItemSpellChargesRemaining ().size ());
+		assertEquals (11, dest.getHeroItemSpellChargesRemaining ().get (0));
+		
+		assertEquals (new MapCoordinates3DEx (21, 10, 1), dest.getCombatLocation ());
+		assertNotSame (source.getCombatLocation (), dest.getCombatLocation ());
+		
+		assertEquals (new MapCoordinates2DEx (5, 7), dest.getCombatPosition ());
+		assertNotSame (source.getCombatPosition (), dest.getCombatPosition ());
+		
+		// MemoryUnit - hero item slots list
+		assertEquals (1, dest.getHeroItemSlot ().size ());
+		assertEquals (12, dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemURN ());
+		assertEquals ("Sword", dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemName ());
+		assertEquals ("IT01", dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemTypeID ());
+		assertEquals (13, dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemImageNumber ());
+		assertEquals ("SP001", dest.getHeroItemSlot ().get (0).getHeroItem ().getSpellID ());
+		assertEquals (14, dest.getHeroItemSlot ().get (0).getHeroItem ().getSpellChargeCount ());
+		
+		assertEquals (1, dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemChosenBonus ().size ());
+		assertEquals ("IB01", dest.getHeroItemSlot ().get (0).getHeroItem ().getHeroItemChosenBonus ().get (0));
+		
+		assertNotSame (source.getHeroItemSlot ().get (0), dest.getHeroItemSlot ().get (0));
+		assertNotSame (source.getHeroItemSlot ().get (0).getHeroItem (), dest.getHeroItemSlot ().get (0).getHeroItem ());
+		
+		// Memory unit - damage
+		assertEquals (1, dest.getUnitDamage ().size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, dest.getUnitDamage ().get (0).getDamageType ());
+		assertEquals (15, dest.getUnitDamage ().get (0).getDamageTaken ());
+		assertNotSame (source.getUnitDamage ().get (0), dest.getUnitDamage ().get (0));
+	}
+	
+	/**
+	 * Tests the copyUnitValues method with all field values left as null
+	 */
+	@Test
+	public final void testCopyUnitValues_nulls ()
+	{
+		// Source object
+		final MemoryUnit source = new MemoryUnit ();
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Call method
+		final MemoryUnit dest = new MemoryUnit ();
+		utils.copyUnitValues (source, dest, false);
+		
+		// Check results
+		assertEquals (0, dest.getDoubleOverlandMovesLeft ());
+		assertNull (dest.getDoubleCombatMovesLeft ());
+		assertNull (dest.getSpecialOrder ());
+		
+		// AvailableUnit fields
+		assertEquals (0, dest.getOwningPlayerID ());
+		assertNull (dest.getUnitID ());
+		assertNull (dest.getWeaponGrade ());
+		assertNull (dest.getUnitLocation ());
+
+		// AvailableUnit - skills list
+		assertEquals (0, dest.getUnitHasSkill ().size ());
+
+		// MemoryUnit fields
+		assertEquals (0, dest.getUnitURN ());
+		assertNull (dest.getHeroNameID ());
+		assertNull (dest.getUnitName ());
+		assertEquals (0, dest.getAmmoRemaining ());
+		
+		assertEquals (0, dest.getManaRemaining ());
+		assertNull (dest.getStatus ());
+		assertFalse (dest.isWasSummonedInCombat ());
+		assertNull (dest.getCombatHeading ());
+		assertNull (dest.getCombatSide ());
+		assertNull (dest.getConfusionEffect ());
+
+		assertEquals (0, dest.getFixedSpellsRemaining ().size ());
+		assertEquals (0, dest.getHeroItemSpellChargesRemaining ().size ());
+		
+		assertNull (dest.getCombatLocation ());
+		assertNull (dest.getCombatPosition ());
+		
+		// MemoryUnit - hero item slots list
+		assertEquals (0, dest.getHeroItemSlot ().size ());
+		
+		// Memory unit - damage
+		assertEquals (0, dest.getUnitDamage ().size ());
 	}
 	
 	/**
@@ -1296,5 +1882,295 @@ public final class TestUnitUtilsImpl
 		}
 
 		assertEquals (2+3, utils.getHealableDamageTaken (damages));		// Permanent (4) is the last component and gets excluded
+	}
+	
+	/**
+	 * Tests the isUnitImmuneToSpellEffects method when there's no spell effects listed
+	 * (In the actual place this method is used, this would've already been caught by a previous check, so this scenario is a bit dubious)
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitImmuneToSpellEffects_emptyList () throws Exception
+	{
+		// Possible effects
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertTrue (utils.isUnitImmuneToSpellEffects (null, effects, null));
+	}
+
+	/**
+	 * Tests the isUnitImmuneToSpellEffects method when the unit is immune to all spell effects
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitImmuneToSpellEffects_immune () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final NegatedBySkill negated = new NegatedBySkill ();
+		negated.setNegatedBySkillID ("US002");
+		negated.setNegatedByUnitID (NegatedByUnitID.OUR_UNIT);
+		
+		final UnitSkillEx skillDef = new UnitSkillEx ();
+		skillDef.getNegatedBySkill ().add (negated);
+		when (db.findUnitSkill ("US001", "isUnitImmuneToSpellEffects")).thenReturn (skillDef);
+		
+		// Possible effects
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
+		
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		effects.add (effect);
+		
+		// Unit being tested
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.hasModifiedSkill ("US002")).thenReturn (true);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertTrue (utils.isUnitImmuneToSpellEffects (xu, effects, db));
+	}
+
+	/**
+	 * Tests the isUnitImmuneToSpellEffects method when the unit doesn't have the skill to make itself immune
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitImmuneToSpellEffects_dontHaveSkill () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final NegatedBySkill negated = new NegatedBySkill ();
+		negated.setNegatedBySkillID ("US002");
+		negated.setNegatedByUnitID (NegatedByUnitID.OUR_UNIT);
+		
+		final UnitSkillEx skillDef = new UnitSkillEx ();
+		skillDef.getNegatedBySkill ().add (negated);
+		when (db.findUnitSkill ("US001", "isUnitImmuneToSpellEffects")).thenReturn (skillDef);
+		
+		// Possible effects
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
+		
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		effects.add (effect);
+		
+		// Unit being tested
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.hasModifiedSkill ("US002")).thenReturn (false);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isUnitImmuneToSpellEffects (xu, effects, db));
+	}
+
+	/**
+	 * Tests the isUnitImmuneToSpellEffects method when the negation comes from the enemy unit instead
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitImmuneToSpellEffects_negaedByEnemy () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final NegatedBySkill negated = new NegatedBySkill ();
+		negated.setNegatedBySkillID ("US002");
+		negated.setNegatedByUnitID (NegatedByUnitID.ENEMY_UNIT);
+		
+		final UnitSkillEx skillDef = new UnitSkillEx ();
+		skillDef.getNegatedBySkill ().add (negated);
+		when (db.findUnitSkill ("US001", "isUnitImmuneToSpellEffects")).thenReturn (skillDef);
+		
+		// Possible effects
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
+		
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		effects.add (effect);
+		
+		// Unit being tested
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isUnitImmuneToSpellEffects (xu, effects, db));
+	}
+	
+	/**
+	 * Tests the isExperienceBonusAndWeAlreadyHaveTooMuch method when there's no spell effects listed
+	 * (In the actual place this method is used, this would've already been caught by a previous check, so this scenario is a bit dubious)
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsExperienceBonusAndWeAlreadyHaveTooMuch_emptyList () throws Exception
+	{
+		// Possible effects
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isExperienceBonusAndWeAlreadyHaveTooMuch (null, effects, null));
+	}
+
+	/**
+	 * Tests the isExperienceBonusAndWeAlreadyHaveTooMuch method when the spell effect boosts some other stat other than experience
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsExperienceBonusAndWeAlreadyHaveTooMuch_notExperience () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final AddsToSkill boost = new AddsToSkill ();
+		boost.setAddsToSkillID ("US002");
+		boost.setAddsToSkillValue (100);
+
+		final UnitSkillEx skillDef = new UnitSkillEx ();
+		skillDef.getAddsToSkill ().add (boost);
+		when (db.findUnitSkill ("US001", "isExperienceBonusAndWeAlreadyHaveTooMuch")).thenReturn (skillDef);
+		
+		// Possible effects
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
+
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		effects.add (effect);
+
+		// Unit being tested
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isExperienceBonusAndWeAlreadyHaveTooMuch (xu, effects, db));
+	}
+
+	/**
+	 * Tests the isExperienceBonusAndWeAlreadyHaveTooMuch method when we do already have too much experience
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsExperienceBonusAndWeAlreadyHaveTooMuch_tooMuchExperience () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final AddsToSkill boost = new AddsToSkill ();
+		boost.setAddsToSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		boost.setAddsToSkillValue (100);
+
+		final UnitSkillEx skillDef = new UnitSkillEx ();
+		skillDef.getAddsToSkill ().add (boost);
+		when (db.findUnitSkill ("US001", "isExperienceBonusAndWeAlreadyHaveTooMuch")).thenReturn (skillDef);
+		
+		// Possible effects
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
+
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		effects.add (effect);
+
+		// Unit being tested
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);		
+		when (xu.hasBasicSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (true);
+		when (xu.getBasicSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (101);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertTrue (utils.isExperienceBonusAndWeAlreadyHaveTooMuch (xu, effects, db));
+	}
+
+	/**
+	 * Tests the isExperienceBonusAndWeAlreadyHaveTooMuch method when we do have experience, but not enough
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsExperienceBonusAndWeAlreadyHaveTooMuch_notEnoughExperience () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final AddsToSkill boost = new AddsToSkill ();
+		boost.setAddsToSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		boost.setAddsToSkillValue (100);
+
+		final UnitSkillEx skillDef = new UnitSkillEx ();
+		skillDef.getAddsToSkill ().add (boost);
+		when (db.findUnitSkill ("US001", "isExperienceBonusAndWeAlreadyHaveTooMuch")).thenReturn (skillDef);
+		
+		// Possible effects
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
+
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		effects.add (effect);
+
+		// Unit being tested
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);		
+		when (xu.hasBasicSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (true);
+		when (xu.getBasicSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (99);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isExperienceBonusAndWeAlreadyHaveTooMuch (xu, effects, db));
+	}
+	
+	/**
+	 * Tests the isExperienceBonusAndWeAlreadyHaveTooMuch method when its a summoned unit that cannot have experience
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsExperienceBonusAndWeAlreadyHaveTooMuch_cantHaveExperience () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final AddsToSkill boost = new AddsToSkill ();
+		boost.setAddsToSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		boost.setAddsToSkillValue (100);
+
+		final UnitSkillEx skillDef = new UnitSkillEx ();
+		skillDef.getAddsToSkill ().add (boost);
+		when (db.findUnitSkill ("US001", "isExperienceBonusAndWeAlreadyHaveTooMuch")).thenReturn (skillDef);
+		
+		// Possible effects
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
+
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		effects.add (effect);
+
+		// Unit being tested
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.hasBasicSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (false);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.isExperienceBonusAndWeAlreadyHaveTooMuch (xu, effects, db));
 	}
 }

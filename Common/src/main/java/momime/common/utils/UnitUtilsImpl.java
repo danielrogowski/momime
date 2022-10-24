@@ -13,7 +13,6 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.AddsToSkill;
-import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -213,10 +212,11 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return True if this combat area effect affects this unit
 	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws MomException If the combat area "affects" code is unrecognized
 	 */
 	@Override
 	public final boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final CommonDatabase db)
-		throws RecordNotFoundException
+		throws RecordNotFoundException, MomException
 	{
 		final boolean applies;
 		
@@ -266,33 +266,39 @@ public final class UnitUtilsImpl implements UnitUtils
 				// Check player - if this is blank, its a combat area effect that doesn't provide unit bonuses/penalties, e.g. Call Lightning, so we can just return false
 				if (combatAreaEffect.getCombatAreaAffectsPlayers () == null)
 					applies = false;
-	
-				// All is easy, either its a global CAE that affects everyone (like Chaos Surge or Eternal Night) or its a CAE in a
-				// specific location that affects everyone, whether or not they're in combat (like Node Auras)
-				else if (combatAreaEffect.getCombatAreaAffectsPlayers ().equals (CombatAreaAffectsPlayersID.ALL_EVEN_NOT_IN_COMBAT))
-					applies = true;
-	
-				// Spells that apply only to the caster only apply to available units if they're global (like Holy Arms)
-				// Localised spells that apply only to the caster (like Prayer or Mass Invisibility) only apply to units in combat
-				// NDG 19/6/2011 - On looking at this again I think that's highly debatable - if there was a caster only buff CAE then why
-				// wouldn't it help units in the city defend against overland attacks like Call the Void?  However I've checked, there's no
-				// City Enchantments in the original MoM that grant these kind of bonuses so its pretty irrelevant, so leaving it as it is
-				else if (combatAreaEffect.getCombatAreaAffectsPlayers ().equals (CombatAreaAffectsPlayersID.CASTER_ONLY))
-					applies = ((effect.getCastingPlayerID () == unit.getOwningPlayerID ()) && ((combatLocation != null) || (effect.getMapLocation () == null)));
-	
-				// 'Both' CAEs (like Darkness) apply only to units in combat
-				// If the unit is in a combat at the right location, then by definition it is one of the two players (either attacker or defender) and so the CAE applies
-				else if (combatAreaEffect.getCombatAreaAffectsPlayers ().equals (CombatAreaAffectsPlayersID.BOTH_PLAYERS_IN_COMBAT))
-					applies = (combatLocation != null);
-	
-				// Similarly we must be in combat for 'Opponent' CAEs to apply, and to be an 'Opponent' CAE the CAE must be in combat at the same
-				// location we are... so this simply needs us to check that we're not the caster
-				else if (combatAreaEffect.getCombatAreaAffectsPlayers ().equals (CombatAreaAffectsPlayersID.COMBAT_OPPONENT))
-					applies = ((effect.getCastingPlayerID () != unit.getOwningPlayerID ()) && (combatLocation != null));
-	
-				// 'Both' CAEs (like Darkness) and 'Opponent' CAEs (like Black Prayer) can only apply to units in combat, which Available Units can never be
 				else
-					applies = false;
+					switch (combatAreaEffect.getCombatAreaAffectsPlayers ())
+					{
+						// All is easy, either its a global CAE that affects everyone (like Chaos Surge or Eternal Night) or its a CAE in a
+						// specific location that affects everyone, whether or not they're in combat (like Node Auras)
+						case ALL_EVEN_NOT_IN_COMBAT:
+							applies = true;
+							break;
+							
+						// Spells that apply only to the caster only apply to available units if they're global (like Holy Arms)
+						// Localised spells that apply only to the caster (like Prayer or Mass Invisibility) only apply to units in combat
+						// NDG 19/6/2011 - On looking at this again I think that's highly debatable - if there was a caster only buff CAE then why
+						// wouldn't it help units in the city defend against overland attacks like Call the Void?  However I've checked, there's no
+						// City Enchantments in the original MoM that grant these kind of bonuses so its pretty irrelevant, so leaving it as it is
+						case CASTER_ONLY:
+							applies = ((effect.getCastingPlayerID () == unit.getOwningPlayerID ()) && ((combatLocation != null) || (effect.getMapLocation () == null)));
+							break;
+							
+						// 'Both' CAEs (like Darkness) apply only to units in combat
+						// If the unit is in a combat at the right location, then by definition it is one of the two players (either attacker or defender) and so the CAE applies
+						case BOTH_PLAYERS_IN_COMBAT:
+							applies = (combatLocation != null);
+							break;
+							
+						// Similarly we must be in combat for 'Opponent' CAEs to apply, and to be an 'Opponent' CAE the CAE must be in combat at the same
+						// location we are... so this simply needs us to check that we're not the caster
+						case COMBAT_OPPONENT:
+							applies = ((effect.getCastingPlayerID () != unit.getOwningPlayerID ()) && (combatLocation != null));
+							break;
+							
+						default:
+							throw new MomException ("CAE " + effect.getCombatAreaEffectID () + " has an unknown \"affects\" value: " + combatAreaEffect.getCombatAreaAffectsPlayers ());
+					}
 			}
 		}
 
@@ -498,17 +504,35 @@ public final class UnitUtilsImpl implements UnitUtils
 		final CoordinateSystem combatMapCoordinateSystem, final boolean allowTargetingVortexes)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		final MemoryUnit mu = findAliveUnitInCombatAt (mem.getUnit (), combatLocation, combatPosition, db, allowTargetingVortexes);
-		ExpandedUnitDetails xu = null;
+		ExpandedUnitDetails found = null;
+		ExpandedUnitDetails foundVortex = null;
 		
-		if (mu != null)
+		final Iterator<MemoryUnit> iter = mem.getUnit ().iterator ();
+		while ((found == null) && (iter.hasNext ()))
 		{
-			xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null, players, mem, db);
-			if (!getUnitVisibilityUtils ().canSeeUnitInCombat (xu, ourPlayerID, players, mem, db, combatMapCoordinateSystem))
-				xu = null;
+			final MemoryUnit thisUnit = iter.next ();
+
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (combatPosition.equals (thisUnit.getCombatPosition ())) &&
+				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
+			{
+				if (!db.getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ()))
+				{
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+					if (getUnitVisibilityUtils ().canSeeUnitInCombat (xu, ourPlayerID, players, mem, db, combatMapCoordinateSystem))
+						found = xu;
+				}
+
+				// Store vortex as secondary target, but keep searching for a normal unit too and only output this if we don't find one
+				else if (allowTargetingVortexes)
+				{
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+					if (getUnitVisibilityUtils ().canSeeUnitInCombat (xu, ourPlayerID, players, mem, db, combatMapCoordinateSystem))
+						foundVortex = xu;
+				}
+			}
 		}
-		
-		return xu;
+
+		return (found == null) ? foundVortex : found;
 	}
 	
 	/**

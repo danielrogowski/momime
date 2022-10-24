@@ -9,7 +9,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CitySpellEffect;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileType;
@@ -28,6 +33,7 @@ import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.DamageType;
 import momime.common.database.GenerateTestData;
 import momime.common.database.Pick;
+import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -43,6 +49,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -468,57 +475,112 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertEquals ("SP005NonUnit", spells.get (6).getSpellID ());
 		assertEquals ("SP005", spells.get (7).getSpellID ());
 	}
-
+	
 	/**
-	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method
+	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method when the spell has no effects listed
 	 */
 	@Test
-	public final void testListUnitSpellEffectsNotYetCastOnUnit ()
+	public final void testListUnitSpellEffectsNotYetCastOnUnit_noSpellEffects ()
 	{
-		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
+		// Spell definition
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
-		// Spell has no unitSpellEffectIDs defined
-		assertNull (utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10));
-		
-		// Spell with exactly one unitSpellEffectID, that isn't cast yet
+		// Call method
+		assertNull (utils.listUnitSpellEffectsNotYetCastOnUnit (null, spell, 1, 10));
+	}
+
+	/**
+	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method when the spell has a single effect, and the unit doesn't have that effect yet
+	 */
+	@Test
+	public final void testListUnitSpellEffectsNotYetCastOnUnit_effectNotYetOnUnit ()
+	{
+		// Spell definition
 		final UnitSpellEffect effectA = new UnitSpellEffect ();
 		effectA.setUnitSkillID ("A");
-		spell.getUnitSpellEffect ().add (effectA);
-		
-		final List<UnitSpellEffect> listOne = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
-		assertEquals (1, listOne.size ());
-		assertEquals ("A", listOne.get (0).getUnitSkillID ());
 
-		// Spell with exactly one unitSpellEffectID, that is already cast yet
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.getUnitSpellEffect ().add (effectA);
+
+		// Existing spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		final List<UnitSpellEffect> list = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
+		
+		// Check results
+		assertEquals (1, list.size ());
+		assertEquals ("A", list.get (0).getUnitSkillID ());
+	}
+
+	/**
+	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method when the spell has a single effect, and the unit doesn't have that effect yet
+	 */
+	@Test
+	public final void testListUnitSpellEffectsNotYetCastOnUnit_effectAlreadyOnUnit ()
+	{
+		// Spell definition
+		final UnitSpellEffect effectA = new UnitSpellEffect ();
+		effectA.setUnitSkillID ("A");
+
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.getUnitSpellEffect ().add (effectA);
+
+		// Existing spells
 		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
 		existingEffectA.setSpellID ("SP001");
 		existingEffectA.setCastingPlayerID (1);
 		existingEffectA.setUnitSkillID ("A");
 		existingEffectA.setUnitURN (10);
-		spells.add (existingEffectA);
+
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (existingEffectA);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
-		final List<UnitSpellEffect> listZero = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
-		assertEquals (0, listZero.size ());
-		
-		// Add three more effects
-		for (final String effectID : new String [] {"B", "C", "D"})
+		// Call method
+		assertEquals (0, utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10).size ());
+	}
+
+	/**
+	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method when the spell has multiple effects, and the unit only has one of them already
+	 */
+	@Test
+	public final void testListUnitSpellEffectsNotYetCastOnUnit_multipleEffects ()
+	{
+		// Spell definition
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+
+		for (final String effectID : new String [] {"A", "B", "C", "D"})
 		{
 			final UnitSpellEffect effectB = new UnitSpellEffect ();
 			effectB.setUnitSkillID (effectID);
 			spell.getUnitSpellEffect ().add (effectB);
 		}
 		
+		// Existing spells
+		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
+		existingEffectA.setSpellID ("SP001");
+		existingEffectA.setCastingPlayerID (1);
+		existingEffectA.setUnitSkillID ("A");
+		existingEffectA.setUnitURN (10);
+
 		// One with wrong spell ID
 		final MemoryMaintainedSpell existingEffectB = new MemoryMaintainedSpell ();
 		existingEffectB.setSpellID ("SP002");
 		existingEffectB.setCastingPlayerID (1);
 		existingEffectB.setUnitSkillID ("B");
 		existingEffectB.setUnitURN (10);
-		spells.add (existingEffectB);
 		
 		// One for wrong player
 		final MemoryMaintainedSpell existingEffectC = new MemoryMaintainedSpell ();
@@ -526,7 +588,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		existingEffectC.setCastingPlayerID (2);
 		existingEffectC.setUnitSkillID ("C");
 		existingEffectC.setUnitURN (10);
-		spells.add (existingEffectC);
 		
 		// One in wrong unit
 		final MemoryMaintainedSpell existingEffectD = new MemoryMaintainedSpell ();
@@ -534,14 +595,140 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		existingEffectD.setCastingPlayerID (1);
 		existingEffectD.setUnitSkillID ("D");
 		existingEffectD.setUnitURN (11);
-		spells.add (existingEffectD);
 		
-		// All three effect should still be listed
-		final List<UnitSpellEffect> listThree = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
-		assertEquals (3, listThree.size ());
-		assertEquals ("B", listThree.get (0).getUnitSkillID ());
-		assertEquals ("C", listThree.get (1).getUnitSkillID ());
-		assertEquals ("D", listThree.get (2).getUnitSkillID ());
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (existingEffectA, existingEffectB, existingEffectC, existingEffectD);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		final List<UnitSpellEffect> list = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
+		
+		// Check results
+		assertEquals (3, list.size ());
+		assertEquals ("B", list.get (0).getUnitSkillID ());
+		assertEquals ("C", list.get (1).getUnitSkillID ());
+		assertEquals ("D", list.get (2).getUnitSkillID ());
+	}
+
+	/**
+	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method when the spell has a permanent effect, so won't be listed
+	 */
+	@Test
+	public final void testListUnitSpellEffectsNotYetCastOnUnit_permanent ()
+	{
+		// Spell definition
+		final UnitSpellEffect effectA = new UnitSpellEffect ();
+		effectA.setUnitSkillID ("A");
+		effectA.setPermanent (true);
+
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.getUnitSpellEffect ().add (effectA);
+
+		// Existing spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertEquals (0, utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10).size ());
+	}
+
+	/**
+	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method on the stasis spell, where the effect on the unit may have a different ID that the spell definition
+	 */
+	@Test
+	public final void testListUnitSpellEffectsNotYetCastOnUnit_stasis ()
+	{
+		// Spell definition
+		final UnitSpellEffect effectA = new UnitSpellEffect ();
+		effectA.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_STASIS_FIRST_TURN);
+
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.getUnitSpellEffect ().add (effectA);
+
+		// Existing spells
+		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
+		existingEffectA.setSpellID ("SP001");
+		existingEffectA.setCastingPlayerID (1);
+		existingEffectA.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_STASIS_LATER_TURNS);
+		existingEffectA.setUnitURN (10);
+
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (existingEffectA);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertEquals (0, utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10).size ());
+	}
+	
+	/**
+	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method with web, where you CAN web a unit again even if it already has a web on it, as long as the web has been cut through
+	 */
+	@Test
+	public final void testListUnitSpellEffectsNotYetCastOnUnit_webCutThrough ()
+	{
+		// Spell definition
+		final UnitSpellEffect effectA = new UnitSpellEffect ();
+		effectA.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_WEB);
+
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.getUnitSpellEffect ().add (effectA);
+
+		// Existing spells
+		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
+		existingEffectA.setSpellID ("SP001");
+		existingEffectA.setCastingPlayerID (1);
+		existingEffectA.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_WEB);
+		existingEffectA.setUnitURN (10);
+
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (existingEffectA);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		final List<UnitSpellEffect> list = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
+		
+		// Check results
+		assertEquals (1, list.size ());
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_WEB, list.get (0).getUnitSkillID ());
+	}
+	
+	/**
+	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method with web, where the existing web is still intact so can't cast another one
+	 */
+	@Test
+	public final void testListUnitSpellEffectsNotYetCastOnUnit_webIntact ()
+	{
+		// Spell definition
+		final UnitSpellEffect effectA = new UnitSpellEffect ();
+		effectA.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_WEB);
+
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.getUnitSpellEffect ().add (effectA);
+
+		// Existing spells
+		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
+		existingEffectA.setSpellID ("SP001");
+		existingEffectA.setCastingPlayerID (1);
+		existingEffectA.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_WEB);
+		existingEffectA.setUnitURN (10);
+		existingEffectA.setVariableDamage (1);	// HP of the web
+
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (existingEffectA);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertEquals (0, utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10).size ());
 	}
 	
 	/**
@@ -986,6 +1173,45 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 	
 	/**
+	 * Tests the isUnitValidTargetForSpell method on a summoning spell, trying to raise a unit from the dead that isn't dead
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_Summoning_NotDead () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
+		spell.setResurrectedHealthPercentage (50);
+	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RAISE_DEAD);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.GENERATED);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.UNIT_NOT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
 	 * Tests the isUnitValidTargetForSpell method on a unit enchantment overland on our own unit which doesn't yet have it
 	 * @throws Exception If there is a problem
 	 */
@@ -1381,6 +1607,214 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 	
 	/**
+	 * Tests the isUnitValidTargetForSpell method trying to cast Heroism on a unit that already has 120 exp or more
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_UnitEnchantment_TooMuchExperience () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
+	
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		spell.getUnitSpellEffect ().add (effect);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Too much experience
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.isExperienceBonusAndWeAlreadyHaveTooMuch (xu, spell.getUnitSpellEffect (), db)).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.TOO_MUCH_EXPERIENCE, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+
+	/**
+	 * Tests the isUnitValidTargetForSpell method on Lycanthropy, which is a special kind of unit enchantment
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_Lycanthropy () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
+		spell.getSummonedUnit ().add ("UN001");
+	
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		spell.getUnitSpellEffect ().add (effect);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CHANGE_UNIT_ID);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Terrain the unit is standing on
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("TT01");
+		
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem (); 
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		mem.setMap (terrain);
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Mock creating the new unit
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
+
+		final Set<String> modifiedSkillIDs = new HashSet<String> ();
+		final ExpandedUnitDetails replacementUnit = mock (ExpandedUnitDetails.class);
+		when (replacementUnit.listModifiedSkillIDs ()).thenReturn (modifiedSkillIDs);
+		
+		when (sampleUnitUtils.createSampleUnit ("UN001", 1, null, players, mem, db)).thenReturn (replacementUnit);
+		
+		// Terrain is passable to the new unit
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.calculateDoubleMovementToEnterTileType (replacementUnit, modifiedSkillIDs, "TT01", db)).thenReturn (1);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setUnitUtils (mock (UnitUtils.class));
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setSampleUnitUtils (sampleUnitUtils);
+		utils.setUnitCalculations (unitCalculations);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, mem, null, players, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on Lycanthropy, where the terrain will be impassable to the new unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_Lycanthropy_Impassable () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
+		spell.getSummonedUnit ().add ("UN001");
+	
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		spell.getUnitSpellEffect ().add (effect);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CHANGE_UNIT_ID);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Terrain the unit is standing on
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("TT01");
+		
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem (); 
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		mem.setMap (terrain);
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Mock creating the new unit
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
+
+		final Set<String> modifiedSkillIDs = new HashSet<String> ();
+		final ExpandedUnitDetails replacementUnit = mock (ExpandedUnitDetails.class);
+		when (replacementUnit.listModifiedSkillIDs ()).thenReturn (modifiedSkillIDs);
+		
+		when (sampleUnitUtils.createSampleUnit ("UN001", 1, null, players, mem, db)).thenReturn (replacementUnit);
+		
+		// Terrain is passable to the new unit
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.calculateDoubleMovementToEnterTileType (replacementUnit, modifiedSkillIDs, "TT01", db)).thenReturn (null);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setUnitUtils (mock (UnitUtils.class));
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setSampleUnitUtils (sampleUnitUtils);
+		utils.setUnitCalculations (unitCalculations);
+
+		// Run method
+		assertEquals (TargetSpellResult.TERRAIN_IMPASSABLE, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, mem, null, players, db));
+	}
+	
+	/**
 	 * Tests the isUnitValidTargetForSpell method on a unit curse in combat on an enemy unit which doesn't yet have it
 	 * @throws Exception If there is a problem
 	 */
@@ -1738,6 +2172,54 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 
 	/**
+	 * Tests the isUnitValidTargetForSpell method on a unit curse in combat on an enemy unit that's immune to the curse
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_UnitCurse_Immune () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_CURSES);
+	
+		final UnitSpellEffect effect = new UnitSpellEffect ();
+		effect.setUnitSkillID ("US001");
+		spell.getUnitSpellEffect ().add (effect);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_CURSES);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		// Immune to curse
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.isUnitImmuneToSpellEffects (xu, spell.getUnitSpellEffect (), db)).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
 	 * Tests the isUnitValidTargetForSpell method on making a normal attack against an enemy unit in combat
 	 * @throws Exception If there is a problem
 	 */
@@ -2042,6 +2524,598 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 	
 	/**
+	 * Tests the isUnitValidTargetForSpell method on targeting a normal attack against an enemy unit overland, e.g. Ice Storm
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_TargetingNormalAttack_Overland () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final MemoryUnit mu = new MemoryUnit ();
+		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.getMemoryUnit ()).thenReturn (mu);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Can see the location
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem (); 
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Can see the unit
+		final UnitVisibilityUtils unitVisibilityUtils = mock (UnitVisibilityUtils.class);
+		when (unitVisibilityUtils.canSeeUnitOverland (mu, 1, mem.getMaintainedSpell (), db)).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setUnitVisibilityUtils (unitVisibilityUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, true, mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on targeting a normal attack against an enemy unit overland, e.g. Ice Storm, but we can't see the location
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_TargetingNormalAttack_Overland_CantSeeLocation () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		// Can see the location
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem (); 
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.HAVE_SEEN);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, true, mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on targeting a normal attack against an enemy unit overland, e.g. Ice Storm, but the unit is invisible
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_TargetingNormalAttack_Overland_Invisible () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final MemoryUnit mu = new MemoryUnit ();
+		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.getMemoryUnit ()).thenReturn (mu);
+		
+		// Can see the location
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem (); 
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Can see the unit
+		final UnitVisibilityUtils unitVisibilityUtils = mock (UnitVisibilityUtils.class);
+		when (unitVisibilityUtils.canSeeUnitOverland (mu, 1, mem.getMaintainedSpell (), db)).thenReturn (false);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setUnitVisibilityUtils (unitVisibilityUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.INVISIBLE, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, true, mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on resolving a normal attack against an enemy unit overland, e.g. Ice Storm, so its valid even if we can't see the unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_ResolvingNormalAttack_Overland () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Can see the location
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem (); 
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.HAVE_SEEN);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on making a normal attack against our own unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_NormalAttack_Overland_OurUnit () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on making a normal attack against an enemy unit that's a lifeform type we're not allowed to target with this spell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_NormalAttack_Overland_WrongLifeformType () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (false);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on making a normal attack against an enemy unit that's already dead
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_NormalAttack_Overland_Dead () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+
+	/**
+	 * Tests the isUnitValidTargetForSpell method on making a normal attack against an enemy unit, but its immune to it.
+	 * For example hitting a fire immune unit with fire bolt - not a "normal attack" in the sense of swords or bows, but it
+	 * still rolls for damage and not a resistance roll so it in this sense its still considered a "normal attack" and we can be immune to it.
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_NormalAttack_Overland_Immune () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final DamageType damageType = new DamageType ();
+		when (db.findDamageType ("DT01", "isUnitValidTargetForSpell")).thenReturn (damageType);
+		
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		spell.setAttackSpellDamageTypeID ("DT01");
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.isUnitImmuneToDamageType (damageType)).thenReturn (true);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on targeting a plane shift spell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_PlaneShift () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.PLANE_SHIFT);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// It isn't a tower
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (false);
+		
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem (); 
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		mem.setMap (terrain);
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, mem, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on targeting a plane shift spell when planar seal is in effect
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_PlaneShift_PlanarSeal () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.PLANE_SHIFT);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		// Planar seal
+		final MemoryMaintainedSpell planarSeal = new MemoryMaintainedSpell ();
+		planarSeal.setSpellID (CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL);
+		mem.getMaintainedSpell ().add (planarSeal);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.PLANAR_SEAL, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, mem, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on targeting a plane shift spell on units in a tower
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_PlaneShift_Tower () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.PLANE_SHIFT);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		// It isn't a tower
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (true);
+		
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem (); 
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		mem.setMap (terrain);
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.INVALID_MAP_FEATURE, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, mem, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on targeting a plane shift spell on an enemy unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_PlaneShift_EnemyUnit () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.PLANE_SHIFT);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on targeting a plane shift spell on a dead unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_PlaneShift_Dead () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.PLANE_SHIFT);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
 	 * Tests the isUnitValidTargetForSpell method making an enemy unit making a resistance roll in combat
 	 * @throws Exception If there is a problem
 	 */
@@ -2302,6 +3376,308 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 	
 	/**
+	 * Tests the isUnitValidTargetForSpell method making an enemy unit making a resistance roll in combat;
+	 * its resistance is high enough to avoid the effect normally, except its being cast by a hero using an item with a -spell save modifier.
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_ResistanceRoll_SavingThrowModifier_HeroSpellSaveItem () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
+		spell.setCombatBaseDamage (1);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (12);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Hero casting the spell
+		final ExpandedUnitDetails castingUnit = mock (ExpandedUnitDetails.class); 
+		when (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY)).thenReturn (true);
+		when (castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY)).thenReturn (2);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, castingUnit, null, xu, false, fow, null, null, db));
+	}
+		
+	/**
+	 * Tests the isUnitValidTargetForSpell method making an enemy unit making a resistance roll overland (for example Black Wind)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_ResistanceRoll_Overland () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (8);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method making an enemy unit making a resistance roll in overland.
+	 * For example you can't cast Petrify on a unit with Stoning Immunity.
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_ResistanceRoll_Overland_Immune () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final DamageType damageType = new DamageType ();
+		when (db.findDamageType ("DT01", "isUnitValidTargetForSpell")).thenReturn (damageType);
+		
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
+		spell.setAttackSpellDamageTypeID ("DT01");
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.isUnitImmuneToDamageType (damageType)).thenReturn (true);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method making an enemy unit making a resistance roll overland, but its resistance is high enough to avoid the effect
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_ResistanceRoll_Overland_ResistanceTooHigh () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
+
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (12);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method making an enemy unit making a resistance roll overland;
+	 * its resistance is high enough to avoid the effect normally, except its a particularly nasty spell with a saving throw modifier.
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_ResistanceRoll_Overland_SavingThrowModifier () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
+		spell.setOverlandBaseDamage (4);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (12);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method making an enemy unit making a resistance roll overland;
+	 * its resistance is high enough to avoid the effect normally, except we're pumping in extra MP to make the spell more potent.
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_ResistanceRoll_Overland_VariableSavingThrowModifier () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
+		spell.setOverlandBaseDamage (1);
+		spell.setOverlandMaxDamage (6);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (12);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, null, 1, null, 4, xu, false, fow, null, null, db));
+	}
+		
+	/**
 	 * Tests the isUnitValidTargetForSpell method making an enemy unit making a chance roll in combat that makes
 	 * no difference how high resistance it has, such as Cracks Call.
 	 * @throws Exception If there is a problem
@@ -2311,6 +3687,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatTileType grass = new CombatTileType ();
+		grass.setLand (true);
+		when (db.findCombatTileType ("CTL01", "isUnitValidTargetForSpell")).thenReturn (grass);
 
 		// Set up other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -2342,6 +3722,132 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
+		// Combat terrain
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles combatTerrain = GenerateTestData.createCombatMap (sys);
+		final MomCombatTile tile = combatTerrain.getRow ().get (5).getCell ().get (4);
+		
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN)).thenReturn ("CTL01");
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setCombatMapUtils (combatMapUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), combatTerrain, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method trying to target Cracks Call on a water or air tile
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_CracksCall_Water () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatTileType grass = new CombatTileType ();
+		grass.setLand (false);
+		when (db.findCombatTileType ("CTL01", "isUnitValidTargetForSpell")).thenReturn (grass);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.CHANCE_OF_DEATH);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS_AND_WALLS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Combat terrain
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles combatTerrain = GenerateTestData.createCombatMap (sys);
+		final MomCombatTile tile = combatTerrain.getRow ().get (5).getCell ().get (4);
+		
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN)).thenReturn ("CTL01");
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setCombatMapUtils (combatMapUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.INVALID_TILE_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), combatTerrain, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on the Warp Wood spell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_WarpWood () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
+		rat.setWooden (true);
+		
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.ZEROES_AMMO);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (true);
+		when (xu.getRangedAttackType ()).thenReturn (rat);
+		when (xu.getAmmoRemaining ()).thenReturn (4);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
@@ -2349,6 +3855,168 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on the Warp Wood spell when the target uniit has no ranged attack
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_WarpWood_NoRangedAttack () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
+		rat.setWooden (true);
+		
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.ZEROES_AMMO);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (false);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.NO_RANGED_ATTACK, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on the Warp Wood spell when the target has a magical ranged attack (or boulders, anything non-wooden)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_WarpWood_MagicRangedAttack () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
+		rat.setWooden (false);
+		
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.ZEROES_AMMO);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (true);
+		when (xu.getRangedAttackType ()).thenReturn (rat);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.INVALID_RANGED_ATTACK_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method on the Warp Wood spell on a unit that's already ran out of ammo
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_WarpWood_NoAmmo () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
+		rat.setWooden (true);
+		
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.ZEROES_AMMO);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (true);
+		when (xu.getRangedAttackType ()).thenReturn (rat);
+		when (xu.getAmmoRemaining ()).thenReturn (0);
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.NO_AMMUNITION, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, null, null, xu, false, fow, null, null, db));
 	}
 	
 	/**
@@ -3232,6 +4900,55 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		// Run method
 		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, null, null, xu, false, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method dispelling a vortex, where we're dispelling the unit itself rather than a spell cast on it
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_Dispel_Vortex () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitsThatMoveThroughOtherUnits ()).thenReturn (Arrays.asList ("UN001"));
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
+
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.getUnitID ()).thenReturn ("UN001");
+		
+		final Pick normalUnits = new Pick ();
+		normalUnits.setPickID ("LTN");
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		
+		// Correct lifeform type?
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+
+		// Run method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, null, null, xu, false, fow, null, null, db));
 	}
 	
 	/**

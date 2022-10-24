@@ -29,7 +29,7 @@ public enum KindOfSpell
 	/** Combat enchantments, no subdivision of spell book section */
 	COMBAT_ENCHANTMENTS,
 	
-	/** City cursesno subdivision of spell book section */
+	/** City curses, no subdivision of spell book section */
 	CITY_CURSES,
 	
 	/** Unit curses, no subdivision of spell book section */

@@ -318,7 +318,7 @@ public final class CommonDatabaseConstants
 	public final static String UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL = "SS062";
 	
 	/** All invisibility skills */
-	public final static List<String> UNIT_SKILL_IDS_INVISIBILITY = Arrays.asList ("IS08", UNIT_SKILL_ID_INVISIBILITY, UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL);
+	public final static List<String> UNIT_SKILL_IDS_INVISIBILITY = Arrays.asList (UNIT_SKILL_ID_INVISIBILITY, UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL, "IS08");
 
 	/** Converts melee damage dealt into life stealing stored damage type (ghouls) */
 	public final static String UNIT_SKILL_ID_CREATE_UNDEAD = "US019";

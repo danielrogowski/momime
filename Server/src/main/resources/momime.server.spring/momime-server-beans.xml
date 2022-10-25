@@ -207,6 +207,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="targetSpellMessage" class="momime.server.messages.process.TargetSpellMessageImpl" scope="prototype">
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="randomUtils" ref="randomUtils" />
@@ -467,7 +468,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">
 		<property name="spellUtils" ref="spellUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
@@ -662,6 +663,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
@@ -674,13 +676,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -728,6 +731,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -765,6 +769,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="spellDispelling" ref="spellDispelling" />
@@ -848,7 +853,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="combatHandling" class="momime.server.process.CombatHandlingImpl">
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
@@ -866,7 +871,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="damageProcessor" ref="damageProcessor" />
@@ -950,6 +955,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="spellAI" class="momime.server.ai.SpellAIImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="aiSpellCalculations" ref="aiSpellCalculations" />
 		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="randomUtils" ref="randomUtils" />
@@ -1086,7 +1092,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />

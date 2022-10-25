@@ -23,6 +23,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 
@@ -41,6 +42,9 @@ public final class SpellTriggersImpl implements SpellTriggers
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
@@ -117,7 +121,7 @@ public final class SpellTriggersImpl implements SpellTriggers
 					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
 						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
-						if (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (singleTileSpell, spell.getCastingPlayerID (), coords,
+						if (getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell (singleTileSpell, spell.getCastingPlayerID (), coords,
 							mom.getGeneralServerKnowledge ().getTrueMap (), null, mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
 							targetCells.add (coords);
@@ -234,6 +238,22 @@ public final class SpellTriggersImpl implements SpellTriggers
 		memoryMaintainedSpellUtils = utils;
 	}
 
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
+	}
+	
 	/**
 	 * @return Coordinate system utils
 	 */

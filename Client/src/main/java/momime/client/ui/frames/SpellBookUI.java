@@ -78,6 +78,7 @@ import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 
@@ -117,6 +118,9 @@ public final class SpellBookUI extends MomClientFrameUI
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -790,7 +794,7 @@ public final class SpellBookUI extends MomClientFrameUI
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
-					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+					if (getSpellTargetingUtils ().isUnitValidTargetForSpell
 						(spell, null, getCombatUI ().getCombatLocation (), getCombatUI ().getCombatTerrain (), getClient ().getOurPlayerID (), castingUnit, null, xu, true,
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (),
@@ -887,7 +891,7 @@ public final class SpellBookUI extends MomClientFrameUI
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
-					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+					if (getSpellTargetingUtils ().isUnitValidTargetForSpell
 						(spell, null, getCombatUI ().getCombatLocation (), getCombatUI ().getCombatTerrain (), getClient ().getOurPlayerID (), castingUnit, null, xu, true,
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (),
@@ -1599,6 +1603,22 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils su)
 	{
 		memoryMaintainedSpellUtils = su;
+	}
+	
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
 	}
 	
 	/**

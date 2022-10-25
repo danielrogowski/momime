@@ -41,7 +41,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
@@ -102,8 +102,8 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
@@ -367,7 +367,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 								final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 									getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 								
-								if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+								if (getSpellTargetingUtils ().isUnitValidTargetForSpell
 									(spell, null, null, null, getClient ().getOurPlayerID (), null, null, xu, true,
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (),
@@ -686,19 +686,19 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	}
 
 	/**
-	 * @return MemoryMaintainedSpell utils
+	 * @return Methods that determine whether something is a valid target for a spell
 	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final SpellTargetingUtils getSpellTargetingUtils ()
 	{
-		return memoryMaintainedSpellUtils;
+		return spellTargetingUtils;
 	}
 
 	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
+	 * @param s Methods that determine whether something is a valid target for a spell
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
 	{
-		memoryMaintainedSpellUtils = spellUtils;
+		spellTargetingUtils = s;
 	}
 
 	/**

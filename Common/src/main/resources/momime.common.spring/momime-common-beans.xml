@@ -313,7 +313,9 @@
 
 	<bean id="playerKnowledgeUtils" class="momime.common.utils.PlayerKnowledgeUtilsImpl" />
 	
-	<bean id="memoryMaintainedSpellUtils" class="momime.common.utils.MemoryMaintainedSpellUtilsImpl">
+	<bean id="memoryMaintainedSpellUtils" class="momime.common.utils.MemoryMaintainedSpellUtilsImpl" />
+	
+	<bean id="spellTargetingUtils" class="momime.common.utils.SpellTargetingUtilsImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
@@ -321,13 +323,13 @@
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />

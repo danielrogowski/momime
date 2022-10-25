@@ -47,6 +47,7 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 import momime.server.ai.RelationAI;
@@ -80,6 +81,9 @@ public final class SpellCastingImpl implements SpellCasting
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Damage processor */
 	private DamageProcessor damageProcessor;
@@ -286,7 +290,7 @@ public final class SpellCastingImpl implements SpellCasting
 				final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
-				if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, SpellBookSectionID.ATTACK_SPELLS, null, null,
+				if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, SpellBookSectionID.ATTACK_SPELLS, null, null,
 					(castingPlayer == null) ? 0 : castingPlayer.getPlayerDescription ().getPlayerID (),
 						null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 						(priv == null) ? null : priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
@@ -556,6 +560,22 @@ public final class SpellCastingImpl implements SpellCasting
 		memoryMaintainedSpellUtils = spellUtils;
 	}
 
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
+	}
+	
 	/**
 	 * @return Damage processor
 	 */

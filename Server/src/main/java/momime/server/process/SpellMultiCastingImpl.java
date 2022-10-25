@@ -17,7 +17,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AttackCitySpellResult;
-import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 
@@ -35,8 +35,8 @@ public final class SpellMultiCastingImpl implements SpellMultiCasting
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/**
 	 * Used for spells that can hit the units stationed in a city, destroy buildings and (sometimes) kill some of the population as well.  Earthquake + Call the Void.
@@ -96,7 +96,7 @@ public final class SpellMultiCastingImpl implements SpellMultiCasting
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (targetLocation);
 			for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 				if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
-					(getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (singleTileSpell,
+					(getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell (singleTileSpell,
 						(castingPlayer == null) ? 0: castingPlayer.getPlayerDescription ().getPlayerID (), coords,
 							mom.getGeneralServerKnowledge ().getTrueMap (), null, mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 					(getRandomUtils ().nextBoolean ()))
@@ -156,18 +156,18 @@ public final class SpellMultiCastingImpl implements SpellMultiCasting
 	}
 
 	/**
-	 * @return MemoryMaintainedSpell utils
+	 * @return Methods that determine whether something is a valid target for a spell
 	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final SpellTargetingUtils getSpellTargetingUtils ()
 	{
-		return memoryMaintainedSpellUtils;
+		return spellTargetingUtils;
 	}
 
 	/**
-	 * @param utils MemoryMaintainedSpell utils
+	 * @param s Methods that determine whether something is a valid target for a spell
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
 	{
-		memoryMaintainedSpellUtils = utils;
+		spellTargetingUtils = s;
 	}
 }

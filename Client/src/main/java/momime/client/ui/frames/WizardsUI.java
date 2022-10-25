@@ -73,6 +73,7 @@ import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 
 /**
@@ -130,6 +131,9 @@ public final class WizardsUI extends MomClientFrameUI
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
+	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
 	
@@ -529,7 +533,7 @@ public final class WizardsUI extends MomClientFrameUI
 							// Is this wizard a valid target?
 							final OverlandCastingInfo targetOverlandCastingInfo = overlandCastingInfo.get (player.getPlayerDescription ().getPlayerID ());
 							
-							final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (getTargetingSpell (),
+							final TargetSpellResult validTarget = getSpellTargetingUtils ().isWizardValidTargetForSpell (getTargetingSpell (),
 								getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge (),
 								player.getPlayerDescription ().getPlayerID (), targetOverlandCastingInfo);
 							
@@ -1226,6 +1230,22 @@ public final class WizardsUI extends MomClientFrameUI
 		memoryMaintainedSpellUtils = utils;
 	}
 
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
+	}
+	
 	/**
 	 * @return Overland map UI
 	 */

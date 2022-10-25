@@ -56,6 +56,7 @@ import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
@@ -82,6 +83,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
@@ -434,7 +438,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					xuCombatTargetUnit = getExpandUnitDetails ().expandUnitDetails (combatTargetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
-					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+					final TargetSpellResult validTarget = getSpellTargetingUtils ().isUnitValidTargetForSpell
 						(spell, null, combatLocation, combatDetails.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xuCombatTargetUnit,
 							true, mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ());
 					
@@ -456,7 +460,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			{
 				// (Note overland spells tend to have a lot less validation since we don't pick targets until they've completed casting - so the checks are done then)
 				// Verify that the city the combat is being played at is a valid target for city enchantments/curses
-				final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
+				final TargetSpellResult validTarget = getSpellTargetingUtils ().isCityValidTargetForSpell
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 					spell, castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation,
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
@@ -513,7 +517,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(combatTargetLocation != null)))		// Cracks Call when targetted at a wall instead of a unit
 			{
 				// Check location is valid 
-				if (!getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatTargetLocation, combatDetails.getCombatMap (), mom.getServerDB ()))
+				if (!getSpellTargetingUtils ().isCombatLocationValidTargetForSpell (spell, combatTargetLocation, combatDetails.getCombatMap (), mom.getServerDB ()))
 					msg = "This location is not a valid target for this combat spell";
 			}
 		}
@@ -779,6 +783,22 @@ public final class SpellQueueingImpl implements SpellQueueing
 		memoryMaintainedSpellUtils = utils;
 	}
 
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
+	}
+	
 	/**
 	 * @return MemoryGridCell utils
 	 */

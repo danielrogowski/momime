@@ -95,6 +95,7 @@ import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitVisibilityUtils;
 
@@ -168,6 +169,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Methods dealing with checking whether we can see units or not */
 	private UnitVisibilityUtils unitVisibilityUtils;
@@ -917,7 +921,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 								if (mc.getCityData () != null)
 								{
 									// Use common routine to do all the validation
-									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
+									final TargetSpellResult validTarget = getSpellTargetingUtils ().isCityValidTargetForSpell
 										(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
 											getClient ().getOurPlayerID (), mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 											getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (),
@@ -996,7 +1000,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 										final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 										
-										final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
+										final TargetSpellResult validTarget = getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 											getClient ().getOurPlayerID (), null, null, xu, true, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 											getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
 										
@@ -1065,7 +1069,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 								(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
 							{
 								// Use common routine to do all the validation
-								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, getClient ().getOurPlayerID (),
+								final TargetSpellResult validTarget = getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell (spell, getClient ().getOurPlayerID (),
 									mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
 								
@@ -1921,6 +1925,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 		memoryMaintainedSpellUtils = spellUtils;
 	}
 
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
+	}
+	
 	/**
 	 * @return Methods dealing with checking whether we can see units or not
 	 */

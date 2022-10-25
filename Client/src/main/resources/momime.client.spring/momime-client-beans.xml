@@ -719,7 +719,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
@@ -1103,7 +1103,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="memoryMaintainedSpellClientUtils" class="momime.client.utils.MemoryMaintainedSpellClientUtilsImpl">
 		<property name="client" ref="client" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 	</bean>
 	
 	<bean id="combatSpellClientUtils" class="momime.client.utils.CombatSpellClientUtilsImpl">
@@ -1111,7 +1111,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="variableManaUI" ref="variableManaUI" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="languageHolder" ref="languageHolder" />
@@ -1450,6 +1450,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
 		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="zoneAI" ref="zoneAI" />
 		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
 		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
@@ -1544,6 +1545,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="helpUI" ref="helpUI" />
@@ -1713,6 +1715,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
@@ -2285,7 +2288,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="combatUI" ref="combatUI" />

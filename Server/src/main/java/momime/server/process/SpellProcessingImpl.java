@@ -91,6 +91,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
@@ -136,6 +137,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
@@ -852,7 +856,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							final int thisCastingPlayerID = ((randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_HEALING)) ||
 								(randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS))) ? thisUnit.getOwningPlayerID () : castingPlayer.getPlayerDescription ().getPlayerID ();
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (randomSpell, null, combatLocation, combatDetails.getCombatMap (), thisCastingPlayerID,
+							if (getSpellTargetingUtils ().isUnitValidTargetForSpell (randomSpell, null, combatLocation, combatDetails.getCombatMap (), thisCastingPlayerID,
 								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							{
@@ -888,7 +892,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, combatDetails.getCombatMap (),
+							if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, combatDetails.getCombatMap (),
 								castingPlayer.getPlayerDescription ().getPlayerID (),
 								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
@@ -917,7 +921,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						// If its Cracks Call, is there a wall segment to attack in addition to the unit we're attacking?
 						Integer wreckTileChance = null;
 						MapCoordinates2DEx wreckTilePosition = null;
-						if ((spell.getSpellValidBorderTarget ().size () > 0) && (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell
+						if ((spell.getSpellValidBorderTarget ().size () > 0) && (getSpellTargetingUtils ().isCombatLocationValidTargetForSpell
 							(spell, (MapCoordinates2DEx) targetUnit.getCombatPosition (), combatDetails.getCombatMap (), mom.getServerDB ())))
 						{
 							wreckTileChance = 1;
@@ -1226,7 +1230,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
+						if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{
@@ -1490,7 +1494,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
+						if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
@@ -1581,7 +1585,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
+						if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{
@@ -2208,6 +2212,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 		memoryMaintainedSpellUtils = utils;
 	}
 
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
+	}
+	
 	/**
 	 * @return Memory CAE utils
 	 */

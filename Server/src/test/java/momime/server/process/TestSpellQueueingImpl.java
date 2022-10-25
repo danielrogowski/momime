@@ -61,6 +61,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
@@ -1831,9 +1832,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (expand.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
 		
 		// Invalid target
-		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
-		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, null, combatLocation, null, attackingPd.getPlayerID (), null, null, xu, true,
+		final SpellTargetingUtils spellTargetingUtils = mock (SpellTargetingUtils.class);
+		when (spellTargetingUtils.isUnitValidTargetForSpell (spell, null, combatLocation, null, attackingPd.getPlayerID (), null, null, xu, true,
 			trueMap, attackingPriv.getFogOfWar (), players, db)).thenReturn (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY);
+		
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
 		// Combat details
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
@@ -1860,6 +1863,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
+		proc.setSpellTargetingUtils (spellTargetingUtils);
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setExpandUnitDetails (expand);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
@@ -1984,9 +1988,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (expand.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
 		
 		// Valid target
-		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
-		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, null, combatLocation, null, attackingPd.getPlayerID (), null, null, xu, true,
+		final SpellTargetingUtils spellTargetingUtils = mock (SpellTargetingUtils.class);
+		when (spellTargetingUtils.isUnitValidTargetForSpell (spell, null, combatLocation, null, attackingPd.getPlayerID (), null, null, xu, true,
 			trueMap, attackingPriv.getFogOfWar (), players, db)).thenReturn (TargetSpellResult.VALID_TARGET);
+		
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
 		// Combat details
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
@@ -2015,6 +2021,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
+		proc.setSpellTargetingUtils (spellTargetingUtils);
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setSpellProcessing (spellProcessing);
 		proc.setExpandUnitDetails (expand);

@@ -37,7 +37,9 @@ import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellValidMapFeatureTarget;
 import momime.common.database.SpellValidTileTypeTarget;
+import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
@@ -50,9 +52,12 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.OverlandCastingInfo;
 
 /**
  * Tests the MemoryMaintainedSpellUtils class
@@ -4952,113 +4957,548 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 	
 	/**
-	 * Tests the isCityValidTargetForSpell method
+	 * Tests the isCityValidTargetForSpell method when we can't see the location being targeted
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsCityValidTargetForSpell () throws Exception
+	public final void testIsCityValidTargetForSpell_CantSeeLocation () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
 		
-		final Spell enchantment = new Spell ();
-		enchantment.setSpellID ("SP001");
-		enchantment.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
-
-		final Spell curse = new Spell ();
-		curse.setSpellID ("SP002");
-		curse.setSpellBookSectionID (SpellBookSectionID.CITY_CURSES);
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.HAVE_SEEN);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isCityValidTargetForSpell
+			(null, null, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when we can see the location, but there's no city there
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_NoCity () throws Exception
+	{
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell
+			(null, null, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when we try to cast a beneficial enchantment on an enemy city
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_CityEnchantment_EnemyCity () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
 		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
 		
-		// Our city
-		final OverlandMapCityData city3 = new OverlandMapCityData ();
-		city3.setCityPopulation (10000);
-		city3.setCityOwnerID (1);
-		map.getPlane ().get (0).getRow ().get (20).getCell ().get (23).setCityData (city3);
-		fow.getPlane ().get (0).getRow ().get (20).getCell ().set (23, FogOfWarStateID.CAN_SEE);
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
-		// Enemy city
-		final OverlandMapCityData city4 = new OverlandMapCityData ();
-		city4.setCityPopulation (10000);
-		city4.setCityOwnerID (2);
-		map.getPlane ().get (0).getRow ().get (20).getCell ().get (24).setCityData (city4);
-		fow.getPlane ().get (0).getRow ().get (20).getCell ().set (24, FogOfWarStateID.CAN_SEE);
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
 		
-		// Existing spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
-		// Existing buildings
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isCityValidTargetForSpell
+			(null, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+
+	/**
+	 * Tests the isCityValidTargetForSpell method when try to cast a curse on our own city
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_CityCurse_OurCity () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_CURSES);
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell
+			(null, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when try to use an attack spell (e.g. Earthquake) on our own city
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_Attack_OurCity () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell
+			(null, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when we cast a spell that creates a building (Wall of Stone, Summoning Circle, Move Fortress, Spell of Return)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_CreateBuilding () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
+		spellDef.setBuildingID ("BL01");
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (1000);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		
-		// Wizards
-		final List<KnownWizardDetails> wizards = new ArrayList<KnownWizardDetails> ();
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL01")).thenReturn (null);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		// Can't see location
-		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isCityValidTargetForSpell
-			(spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, fow, buildings, wizards, db));
-		
-		// No city
-		fow.getPlane ().get (0).getRow ().get (20).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell
-			(spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, fow, buildings, wizards, db));
-		
-		// Wrong owner
-		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell
-			(spells, curse, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, wizards, db));
-		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isCityValidTargetForSpell
-			(spells, enchantment, 1, new MapCoordinates3DEx (24, 20, 0), map, fow, buildings, wizards, db));
-		
-		// No spell effects defined
-		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isCityValidTargetForSpell
-			(spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, wizards, db));
-		
-		// Spell that creates a building
-		enchantment.setBuildingID ("BL01");
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell
-			(spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, wizards, db));
-		
-		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (23, 20, 0), "BL01")).thenReturn (new MemoryBuilding ());
-		assertEquals (TargetSpellResult.CITY_ALREADY_HAS_BUILDING, utils.isCityValidTargetForSpell
-			(spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, wizards, db));
-		
-		// Spell that creates one of two spell effects
-		enchantment.setBuildingID (null);
-		for (int n = 1; n <= 2; n++)
-			enchantment.getSpellHasCityEffect ().add ("CSE0" + n);
-		
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell
-			(spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, wizards, db));
-		
-		final MemoryMaintainedSpell effect1 = new MemoryMaintainedSpell ();
-		effect1.setCityLocation (new MapCoordinates3DEx (23, 20, 0));
-		effect1.setSpellID (enchantment.getSpellID ());
-		effect1.setCitySpellEffectID ("CSE01");
-		effect1.setCastingPlayerID (1);
-		spells.add (effect1);
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell
-			(spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, wizards, db));
-
-		final MemoryMaintainedSpell effect2 = new MemoryMaintainedSpell ();
-		effect2.setCityLocation (new MapCoordinates3DEx (23, 20, 0));
-		effect2.setSpellID (enchantment.getSpellID ());
-		effect2.setCitySpellEffectID ("CSE02");
-		effect2.setCastingPlayerID (1);
-		spells.add (effect2);
-		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isCityValidTargetForSpell
-			(spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, wizards, db));
+			(null, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, buildings, null, null));
 	}
 	
 	/**
-	 * Tests the testIsOverlandLocationValidTargetForSpell method on Earth Lore or Enchant Road, which have a spell radius defined
+	 * Tests the isCityValidTargetForSpell method when we cast a spell that creates a building in an outpost
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_CreateBuilding_Outpost () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
+		spellDef.setBuildingID ("BL01");
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (999);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.CANT_CREATE_BUILDINGS_IN_OUTPOSTS, utils.isCityValidTargetForSpell
+			(null, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when we cast a spell that creates a building, but the city already has that building
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_CreateBuilding_AlreadyHas () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
+		spellDef.setBuildingID ("BL01");
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (1000);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL01")).thenReturn (new MemoryBuilding ());
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.CITY_ALREADY_HAS_BUILDING, utils.isCityValidTargetForSpell
+			(null, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, buildings, null, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when the city has a Spell Ward that blocks this realm of magic
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_SpellWard () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.getProtectsAgainstSpellRealm ().add ("MB01");
+		when (db.findCitySpellEffect ("CSE01", "isCityProtectedAgainstSpellRealm")).thenReturn (effect);
+		
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+		spellDef.setSpellRealm ("MB01");
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Spell Ward
+		final MemoryMaintainedSpell spellWard = new MemoryMaintainedSpell ();
+		spellWard.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spellWard.setCitySpellEffectID ("CSE01");
+		spellWard.setCastingPlayerID (2);
+		
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (spellWard);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.PROTECTED_AGAINST_SPELL_REALM, utils.isCityValidTargetForSpell
+			(spells, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, db));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when try to use an attack spell (e.g. Earthquake)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_Attack () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell
+			(null, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+		
+	/**
+	 * Tests the isCityValidTargetForSpell method when try to cast a curse on an enemy city, but the curse has no effects defined
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_CityCurse_NoEffectsDefined () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_CURSES);
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isCityValidTargetForSpell
+			(null, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when try to cast a curse on an enemy city, but the city already has that curse cast on it
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_CityCurse_AlreadyHasEffect () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.getSpellHasCityEffect ().add ("CSE01");
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_CURSES);
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Already has effect
+		final MemoryMaintainedSpell curse = new MemoryMaintainedSpell ();
+		curse.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		curse.setCitySpellEffectID ("CSE01");
+		curse.setCastingPlayerID (1);
+		
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (curse);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isCityValidTargetForSpell
+			(spells, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when try to cast a curse on an enemy city and its valid
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_CityCurse () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.getSpellHasCityEffect ().add ("CSE01");
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_CURSES);
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// No existing effect
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell
+			(spells, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when try to cast Evil Prescence on an enemy city and its valid
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_EvilPrescence () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.getSpellHasCityEffect ().add (CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE);
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_CURSES);
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// City owner
+		final KnownWizardDetails cityOwner = new KnownWizardDetails ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		final List<KnownWizardDetails> wizards = new ArrayList<KnownWizardDetails> ();
+		
+		when (knownWizardUtils.findKnownWizardDetails (wizards, 2, "isCityValidTargetForSpell")).thenReturn (cityOwner);
+		
+		// City owner's picks
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (cityOwner.getPick (), CommonDatabaseConstants.PICK_ID_DEATH_BOOK)).thenReturn (0);
+		
+		// No existing effect
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell
+			(spells, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, wizards, null));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method when try to cast Evil Prescence on an enemy city and its valid, but the city owner has death books
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCityValidTargetForSpell_EvilPrescence_DeathWizard () throws Exception
+	{
+		// Spell being targeted
+		final Spell spellDef = new Spell ();
+		spellDef.getSpellHasCityEffect ().add (CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE);
+		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_CURSES);
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+		
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// City owner
+		final KnownWizardDetails cityOwner = new KnownWizardDetails ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		final List<KnownWizardDetails> wizards = new ArrayList<KnownWizardDetails> ();
+		
+		when (knownWizardUtils.findKnownWizardDetails (wizards, 2, "isCityValidTargetForSpell")).thenReturn (cityOwner);
+		
+		// City owner's picks
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (cityOwner.getPick (), CommonDatabaseConstants.PICK_ID_DEATH_BOOK)).thenReturn (1);
+		
+		// No existing effect
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// Can't see location
+		assertEquals (TargetSpellResult.WIZARD_HAS_DEATH_BOOKS, utils.isCityValidTargetForSpell
+			(spells, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, wizards, null));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method on Earth Lore or Enchant Road, which are valid anywhere
 	 * @throws Exception If there is a problem
 	 */
 	@Test
@@ -5066,7 +5506,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	{
 		// Spell being targetted
 		final Spell spell = new Spell ();
-		spell.setSpellRadius (10);
 		
 		// Kind of spell
 		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
@@ -5256,6 +5695,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
 		
+		final SpellValidTileTypeTarget validTileType = new SpellValidTileTypeTarget ();
+		validTileType.setTileTypeID ("TT01");
+		spell.getSpellValidTileTypeTarget ().add (validTileType);
+				
 		// Kind of spell
 		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
 		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CORRUPTION);
@@ -5270,6 +5713,195 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method trying to cast a spell on a city which is specifically warded against that realm of magic
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_Corrupt_SpellWard () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.getProtectsAgainstSpellRealm ().add ("MB01");
+		when (db.findCitySpellEffect ("CSE01", "isCityProtectedAgainstSpellRealm")).thenReturn (effect);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+		spell.setSpellRealm ("MB01");
+		
+		final SpellValidTileTypeTarget validTileType = new SpellValidTileTypeTarget ();
+		validTileType.setTileTypeID ("TT01");
+		spell.getSpellValidTileTypeTarget ().add (validTileType);
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CORRUPTION);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("TT01");
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Spell Ward
+		final MemoryMaintainedSpell spellWard = new MemoryMaintainedSpell ();
+		spellWard.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spellWard.setCitySpellEffectID ("CSE01");
+		spellWard.setCastingPlayerID (1);
+		
+		mem.getMaintainedSpell ().add (spellWard);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.PROTECTED_AGAINST_SPELL_REALM, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method on transmute (change map feature) when we have no terrain data
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_Transmute_NoTerrainData () throws Exception
+	{
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+		
+		final SpellValidMapFeatureTarget validMapFeature = new SpellValidMapFeatureTarget ();
+		validMapFeature.setMapFeatureID ("MF01");
+		spell.getSpellValidMapFeatureTarget ().add (validMapFeature);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CHANGE_MAP_FEATURE);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.INVALID_MAP_FEATURE, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
+	}
+
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method on transmute (change map feature) on the wrong kind of map feature
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_Transmute_InvalidMapFeature () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+
+		final SpellValidMapFeatureTarget validMapFeature = new SpellValidMapFeatureTarget ();
+		validMapFeature.setMapFeatureID ("MF01");
+		spell.getSpellValidMapFeatureTarget ().add (validMapFeature);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CHANGE_MAP_FEATURE);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setMapFeatureID ("MF02");
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.INVALID_MAP_FEATURE, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method on transmute (change map feature) on the right kind of map feature
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_Transmute () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+		
+		final SpellValidMapFeatureTarget validMapFeature = new SpellValidMapFeatureTarget ();
+		validMapFeature.setMapFeatureID ("MF01");
+		spell.getSpellValidMapFeatureTarget ().add (validMapFeature);
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CHANGE_MAP_FEATURE);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setMapFeatureID ("MF01");
 		
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
@@ -5422,6 +6054,438 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Any location is valid
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
 	}
+
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method, targeting disenchant area on a warped node to try to turn it back to normal
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_Dispel_WarpedNode () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final TileTypeEx node = new TileTypeEx ();
+		node.setMagicRealmID ("MB01");
+		when (db.findTileType ("TT01", "isOverlandLocationValidTargetForSpell")).thenReturn (node);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setWarped (true);
+		terrainData.setTileTypeID ("TT01");
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method summoning a floating island
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_FloatingIsland () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
+		spell.getSummonedUnit ().add ("UN001");
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Units in the target cell
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findFirstAliveEnemyAtLocation (mem.getUnit (), 20, 10, 1, 2)).thenReturn (null);
+		when (unitUtils.countAliveEnemiesAtLocation (mem.getUnit (), 20, 10, 1, 0)).thenReturn (8);
+		
+		// Sample island
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (sampleUnitUtils.createSampleUnit (spell.getSummonedUnit ().get (0), 2, null, players, mem, db)).thenReturn (xu);
+		
+		// Tile is passable
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db)).thenReturn (1);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setUnitUtils (unitUtils);
+		utils.setSampleUnitUtils (sampleUnitUtils);
+		utils.setUnitCalculations (unitCalculations);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, players, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method summoning a floating island but an enemy unit is here
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_FloatingIsland_EnemyHere () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
+		spell.getSummonedUnit ().add ("UN001");
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Units in the target cell
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findFirstAliveEnemyAtLocation (mem.getUnit (), 20, 10, 1, 2)).thenReturn (new MemoryUnit ());
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setUnitUtils (unitUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.ENEMIES_HERE, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method summoning a floating island but we already have 9 units in the target cell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_FloatingIsland_CellFull () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
+		spell.getSummonedUnit ().add ("UN001");
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Units in the target cell
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findFirstAliveEnemyAtLocation (mem.getUnit (), 20, 10, 1, 2)).thenReturn (null);
+		when (unitUtils.countAliveEnemiesAtLocation (mem.getUnit (), 20, 10, 1, 0)).thenReturn (9);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setUnitUtils (unitUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.CELL_FULL, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method summoning a floating island but the terrain is impassable
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_FloatingIsland_Impassable () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
+		spell.getSummonedUnit ().add ("UN001");
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Units in the target cell
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findFirstAliveEnemyAtLocation (mem.getUnit (), 20, 10, 1, 2)).thenReturn (null);
+		when (unitUtils.countAliveEnemiesAtLocation (mem.getUnit (), 20, 10, 1, 0)).thenReturn (8);
+		
+		// Sample island
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (sampleUnitUtils.createSampleUnit (spell.getSummonedUnit ().get (0), 2, null, players, mem, db)).thenReturn (xu);
+		
+		// Tile is passable
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db)).thenReturn (null);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setUnitUtils (unitUtils);
+		utils.setSampleUnitUtils (sampleUnitUtils);
+		utils.setUnitCalculations (unitCalculations);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.TERRAIN_IMPASSABLE, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, players, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method targeting Warp Node
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_WarpNode () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.WARP_NODE);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setNodeOwnerID (1);
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method targeting Warp Node on a node that's already warped
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_WarpNode_AlreadyWarped () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.WARP_NODE);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setNodeOwnerID (1);
+		terrainData.setWarped (true);
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method targeting Warp Node on a node that isn't owned by anyone
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_WarpNode_Unowned () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.WARP_NODE);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.UNOWNED_NODE, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
+	
+	/**
+	 * Tests the testIsOverlandLocationValidTargetForSpell method targeting Warp Node on a node that we control
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsOverlandLocationValidTargetForSpell_WarpNode_Ours () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+				
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.WARP_NODE);
+		
+		// Visible area
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+		
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setNodeOwnerID (2);
+		
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Any location is valid
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
+	}
 	
 	/**
 	 * Tests the isSpellValidTargetForSpell method on a valid enemy overland enchantment
@@ -5502,11 +6566,300 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 	
 	/**
-	 * Tests the isCombatLocationValidTargetForSpell method on Earth to Mud
+	 * Tests the isWizardValidTargetForSpell method trying to cast something nasty on ourselves
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsCombatLocationValidTargetForSpell_EarthToMud () throws Exception
+	public final void testIsWizardValidTargetForSpell_Us () throws Exception
+	{
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertEquals (TargetSpellResult.ATTACKING_OWN_WIZARD, utils.isWizardValidTargetForSpell (null, 1, null, 1, null));
+	}
+	
+	/**
+	 * Tests the isWizardValidTargetForSpell method trying to cast something on a wizard we haven't met
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsWizardValidTargetForSpell_NotMet () throws Exception
+	{
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge castingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		castingPriv.setFogOfWarMemory (mem);
+		
+		// Wizard being targeted
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2)).thenReturn (null);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		
+		// Call method
+		assertEquals (TargetSpellResult.WIZARD_NOT_MET, utils.isWizardValidTargetForSpell (null, 1, castingPriv, 2, null));
+	}
+	
+	/**
+	 * Tests the isWizardValidTargetForSpell method trying to cast something on a wizard who is banished
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsWizardValidTargetForSpell_Banished () throws Exception
+	{
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge castingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		castingPriv.setFogOfWarMemory (mem);
+		
+		// Wizard being targeted
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails targetWizard = new KnownWizardDetails ();
+		targetWizard.setWizardState (WizardState.BANISHED);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2)).thenReturn (targetWizard);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		
+		// Call method
+		assertEquals (TargetSpellResult.WIZARD_BANISHED_OR_DEFEATED, utils.isWizardValidTargetForSpell (null, 1, castingPriv, 2, null));
+	}
+	
+	/**
+	 * Tests the isWizardValidTargetForSpell method trying to cast something on Raiders or Rampaging Monsters
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsWizardValidTargetForSpell_Raiders () throws Exception
+	{
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge castingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		castingPriv.setFogOfWarMemory (mem);
+		
+		// Wizard being targeted
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails targetWizard = new KnownWizardDetails ();
+		targetWizard.setWizardState (WizardState.ACTIVE);
+		targetWizard.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2)).thenReturn (targetWizard);
+		
+		// Is it a real wizard?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (false);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		
+		// Call method
+		assertEquals (TargetSpellResult.NOT_A_WIZARD, utils.isWizardValidTargetForSpell (null, 1, castingPriv, 2, null));
+	}
+	
+	/**
+	 * Tests the isWizardValidTargetForSpell method casting a normal enemy wizard spell at a valid target
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsWizardValidTargetForSpell_Valid () throws Exception
+	{
+		// Spell
+		final Spell spell = new Spell ();
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ENEMY_WIZARD_SPELLS);
+		
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge castingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		castingPriv.setFogOfWarMemory (mem);
+		
+		// Wizard being targeted
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails targetWizard = new KnownWizardDetails ();
+		targetWizard.setWizardState (WizardState.ACTIVE);
+		targetWizard.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2)).thenReturn (targetWizard);
+		
+		// Is it a real wizard?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Call method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isWizardValidTargetForSpell (spell, 1, castingPriv, 2, null));
+	}
+	
+	/**
+	 * Tests the isWizardValidTargetForSpell method casting Spell Blast on a wizard who isn't casting anything
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsWizardValidTargetForSpell_SpellBlast_NotCastingAnything () throws Exception
+	{
+		// Spell
+		final Spell spell = new Spell ();
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SPELL_BLAST);
+		
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge castingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		castingPriv.setFogOfWarMemory (mem);
+		
+		// Wizard being targeted
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails targetWizard = new KnownWizardDetails ();
+		targetWizard.setWizardState (WizardState.ACTIVE);
+		targetWizard.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2)).thenReturn (targetWizard);
+		
+		// Is it a real wizard?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		
+		// Call method
+		assertEquals (TargetSpellResult.NO_SPELL_BEING_CAST, utils.isWizardValidTargetForSpell (spell, 1, castingPriv, 2, null));
+	}
+	
+	/**
+	 * Tests the isWizardValidTargetForSpell method casting Spell Blast when we don't have enough MP to blast the target spell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsWizardValidTargetForSpell_SpellBlast_InsufficientMana () throws Exception
+	{
+		// Spell
+		final Spell spell = new Spell ();
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SPELL_BLAST);
+		
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge castingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		castingPriv.setFogOfWarMemory (mem);
+		
+		// Wizard being targeted
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails targetWizard = new KnownWizardDetails ();
+		targetWizard.setWizardState (WizardState.ACTIVE);
+		targetWizard.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2)).thenReturn (targetWizard);
+		
+		// Is it a real wizard?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+		
+		// Spell they are casting
+		final OverlandCastingInfo targetCastingInfo = new OverlandCastingInfo ();
+		targetCastingInfo.setSpellID ("SP001");
+		targetCastingInfo.setManaSpentOnCasting (100);
+		
+		// How much MP we have
+		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
+		when (resourceValueUtils.findAmountStoredForProductionType (castingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (99);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setResourceValueUtils (resourceValueUtils);
+		
+		// Call method
+		assertEquals (TargetSpellResult.INSUFFICIENT_MANA, utils.isWizardValidTargetForSpell (spell, 1, castingPriv, 2, targetCastingInfo));
+	}
+	
+	/**
+	 * Tests the isWizardValidTargetForSpell method casting Spell Blast on a valid target
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsWizardValidTargetForSpell_SpellBlast_Valid () throws Exception
+	{
+		// Spell
+		final Spell spell = new Spell ();
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SPELL_BLAST);
+		
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge castingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		castingPriv.setFogOfWarMemory (mem);
+		
+		// Wizard being targeted
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails targetWizard = new KnownWizardDetails ();
+		targetWizard.setWizardState (WizardState.ACTIVE);
+		targetWizard.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2)).thenReturn (targetWizard);
+		
+		// Is it a real wizard?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+		
+		// Spell they are casting
+		final OverlandCastingInfo targetCastingInfo = new OverlandCastingInfo ();
+		targetCastingInfo.setSpellID ("SP001");
+		targetCastingInfo.setManaSpentOnCasting (100);
+		
+		// How much MP we have
+		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
+		when (resourceValueUtils.findAmountStoredForProductionType (castingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (100);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setResourceValueUtils (resourceValueUtils);
+		
+		// Call method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isWizardValidTargetForSpell (spell, 1, castingPriv, 2, targetCastingInfo));
+	}
+	
+	/**
+	 * Tests the isCombatLocationValidTargetForSpell method casting Earth to Mud at a valid combat tile
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCombatLocationValidTargetForSpell_EarthToMud_Valid () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -5533,12 +6886,63 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		utils.setCombatMapUtils (combatMapUtils);
 		
-		// Spells not targetted at borders can hit anywhere
+		// Run method
 		assertTrue (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map, db));
-		
-		// Unless its off the map edge
+	}
+
+	/**
+	 * Tests the isCombatLocationValidTargetForSpell method casting Earth to Mud off the edge of the map
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCombatLocationValidTargetForSpell_EarthToMud_OffMapEdge () throws Exception
+	{
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles map = GenerateTestData.createCombatMap (sys);
 		map.getRow ().get (1).getCell ().get (2).setOffMapEdge (true);
-		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (2, 1), map, db));
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertFalse (utils.isCombatLocationValidTargetForSpell (null, new MapCoordinates2DEx (2, 1), map, null));
+	}
+
+	/**
+	 * Tests the isCombatLocationValidTargetForSpell method casting Earth to Mud at a water tile
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCombatLocationValidTargetForSpell_EarthToMud_Water () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatTileType combatTileType = new CombatTileType ();
+		combatTileType.setLand (false);
+		when (db.findCombatTileType ("CTL01", "isCombatLocationValidTargetForSpell")).thenReturn (combatTileType);
+
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.EARTH_TO_MUD);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles map = GenerateTestData.createCombatMap (sys);
+
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.getCombatTileTypeForLayer (map.getRow ().get (5).getCell ().get (10), CombatMapLayerID.TERRAIN)).thenReturn ("CTL01");
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setCombatMapUtils (combatMapUtils);
+		
+		// Run method
+		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map, db));
 	}
 
 	/**
@@ -5580,5 +6984,162 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Border already destroyed
 		map.getRow ().get (5).getCell ().get (10).setWrecked (true);
 		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map, db));
+	}
+	
+	/**
+	 * Tests the isBlockedCastingCombatSpellsOfRealm method when it is blocked
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsBlockedCastingCombatSpellsOfRealm_Yes () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.setBlockCastingCombatSpellsOfRealm (true);
+		effect.getProtectsAgainstSpellRealm ().add ("MB01");
+		when (db.findCitySpellEffect ("CSE01", "isBlockedCastingCombatSpellsOfRealm")).thenReturn (effect);
+
+		// Spell Ward
+		final MemoryMaintainedSpell spellWard = new MemoryMaintainedSpell ();
+		spellWard.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spellWard.setCitySpellEffectID ("CSE01");
+		spellWard.setCastingPlayerID (2);
+
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (spellWard);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertTrue (utils.isBlockedCastingCombatSpellsOfRealm (spells, 1, new MapCoordinates3DEx (20, 10, 1), "MB01", db));
+	}
+
+	/**
+	 * Tests the isBlockedCastingCombatSpellsOfRealm method when it blocks a different magic realm
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsBlockedCastingCombatSpellsOfRealm_WrongMagicRealm () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.setBlockCastingCombatSpellsOfRealm (true);
+		effect.getProtectsAgainstSpellRealm ().add ("MB02");
+		when (db.findCitySpellEffect ("CSE01", "isBlockedCastingCombatSpellsOfRealm")).thenReturn (effect);
+
+		// Spell Ward
+		final MemoryMaintainedSpell spellWard = new MemoryMaintainedSpell ();
+		spellWard.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spellWard.setCitySpellEffectID ("CSE01");
+		spellWard.setCastingPlayerID (2);
+
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (spellWard);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertFalse (utils.isBlockedCastingCombatSpellsOfRealm (spells, 1, new MapCoordinates3DEx (20, 10, 1), "MB01", db));
+	}
+
+	/**
+	 * Tests the isBlockedCastingCombatSpellsOfRealm method when blockCastingCombatSpellsOfRealm isn't set to true (Consecration blocks overland spells but not combat spells)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsBlockedCastingCombatSpellsOfRealm_DoesntBlockCombatSpells () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.setBlockCastingCombatSpellsOfRealm (false);
+		effect.getProtectsAgainstSpellRealm ().add ("MB01");
+		when (db.findCitySpellEffect ("CSE01", "isBlockedCastingCombatSpellsOfRealm")).thenReturn (effect);
+
+		// Spell Ward
+		final MemoryMaintainedSpell spellWard = new MemoryMaintainedSpell ();
+		spellWard.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spellWard.setCitySpellEffectID ("CSE01");
+		spellWard.setCastingPlayerID (2);
+
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (spellWard);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertFalse (utils.isBlockedCastingCombatSpellsOfRealm (spells, 1, new MapCoordinates3DEx (20, 10, 1), "MB01", db));
+	}
+
+	/**
+	 * Tests the listMagicRealmsBlockedAsCombatSpells method when it is blocked
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testListMagicRealmsBlockedAsCombatSpells_Yes () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.setBlockCastingCombatSpellsOfRealm (true);
+		effect.getProtectsAgainstSpellRealm ().add ("MB01");
+		when (db.findCitySpellEffect ("CSE01", "listMagicRealmsBlockedAsCombatSpells")).thenReturn (effect);
+
+		// Spell Ward
+		final MemoryMaintainedSpell spellWard = new MemoryMaintainedSpell ();
+		spellWard.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spellWard.setCitySpellEffectID ("CSE01");
+		spellWard.setCastingPlayerID (2);
+
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (spellWard);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		final Set<String> set = utils.listMagicRealmsBlockedAsCombatSpells (spells, 1, new MapCoordinates3DEx (20, 10, 1), db);
+
+		// Check results
+		assertEquals (1, set.size ());
+		assertTrue (set.contains ("MB01"));
+	}
+
+	/**
+	 * Tests the listMagicRealmsBlockedAsCombatSpells method when blockCastingCombatSpellsOfRealm isn't set to true (Consecration blocks overland spells but not combat spells)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testListMagicRealmsBlockedAsCombatSpells_DoesntBlockCombatSpells () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.setBlockCastingCombatSpellsOfRealm (false);
+		effect.getProtectsAgainstSpellRealm ().add ("MB01");
+		when (db.findCitySpellEffect ("CSE01", "listMagicRealmsBlockedAsCombatSpells")).thenReturn (effect);
+
+		// Spell Ward
+		final MemoryMaintainedSpell spellWard = new MemoryMaintainedSpell ();
+		spellWard.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spellWard.setCitySpellEffectID ("CSE01");
+		spellWard.setCastingPlayerID (2);
+
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (spellWard);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		final Set<String> set = utils.listMagicRealmsBlockedAsCombatSpells (spells, 1, new MapCoordinates3DEx (20, 10, 1), db);
+		
+		// Check results
+		assertTrue (set.isEmpty ());
 	}
 }

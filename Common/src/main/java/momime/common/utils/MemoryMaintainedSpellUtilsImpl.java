@@ -729,7 +729,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    		if (getUnitUtils ().findFirstAliveEnemyAtLocation (mem.getUnit (), targetLocation.getX (), targetLocation.getY (), targetLocation.getZ (), castingPlayerID) != null)
 	    			result = TargetSpellResult.ENEMIES_HERE;
 	
-	    		else if (getUnitUtils ().countAliveEnemiesAtLocation (mem.getUnit (), targetLocation.getX (), targetLocation.getY (), targetLocation.getZ (), 0) > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
+	    		else if (getUnitUtils ().countAliveEnemiesAtLocation (mem.getUnit (), targetLocation.getX (), targetLocation.getY (), targetLocation.getZ (), 0) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
 	    			result = TargetSpellResult.CELL_FULL;
 	    		
 	    		else

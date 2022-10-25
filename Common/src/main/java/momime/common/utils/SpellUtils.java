@@ -189,20 +189,6 @@ public interface SpellUtils
 		throws RecordNotFoundException;
 
 	/**
-	 * Note this is a bit weird that we pass in a list of research statuses instead of just a list of spells, but
-	 * just left it like this to stay consistent with all the other methods
-	 *
-	 * @param spells Research status of every spell for this player
-	 * @param magicRealmID Filters list to items in this magic realm; arcane spells have null magic realm so null searches for Arcane spells
-	 * @param spellRankID Filters list to items in this spell rank
-	 * @param db Lookup lists built over the XML database
-	 * @return List containing string IDs of all the spells (whether available or not) for a particular magic realm and spell rank
-	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
-	 */
-	public List<Spell> getSpellsForRealmAndRank (final List<SpellResearchStatus> spells, final String magicRealmID,
-		final String spellRankID, final CommonDatabase db) throws RecordNotFoundException;
-
-	/**
 	 * @param spells Research status of every spell for this player
 	 * @param spellRankID Filters list to items in this spell rank
 	 * @param status Filters list to items with this MomPlayerSpellStatus
@@ -233,30 +219,4 @@ public interface SpellUtils
 	 */
 	public List<String> getSpellRanksForStatus (final List<SpellResearchStatus> spells,
 		final SpellResearchStatusID status, final CommonDatabase db) throws RecordNotFoundException;
-
-	/**
-	 * @param spells List of all the spells defined in the XML file
-	 * @param magicRealmID Filters list to items in this magic realm; arcane spells have null magic realm so null searches for Arcane spells
-	 * @return List of Spell Rank IDs for which there are spells in this list in the specified magic realm
-	 */
-	public List<String> getSpellRanksForMagicRealm (final List<Spell> spells, final String magicRealmID);
-
-	/**
-	 * Depending on the sectionID requested, lists spells either sorted by Remaining Research Cost, or Casting Cost
-	 *
-	 * This is a little less complicated than listing out the sections in the first place (which is done by TfrmMomClient.ShowSpellBook)
-	 * since we know we're going to have been given a valid SectionID
-	 *
-	 * e.g. we're not going to pass in section = RESEARCH with CastType = msctCombat
-	 *
-	 * @param spells Research status of every spell for this player
-	 * @param desiredSectionID Filters list to items with this section ID
-	 * @param castType Filters list to items that allow this MomSpellCastType (this filter does not apply if sectionID requested is SPELL_BOOK_SECTION_RESEARCH_SPELLS or SPELL_BOOK_SECTION_UNKNOWN_SPELLS)
-	 * @param db Lookup lists built over the XML database
-	 * @return List of string IDs for all the spells in the specified spell book section, sorted by casting cost (or remaining research cost if spell is not yet researched)
-	 * @throws MomException If we encounter an unkown research status or castType
-	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
-	 */
-	public List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final SpellBookSectionID desiredSectionID,
-		final SpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException;
 }

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -296,6 +297,34 @@ public final class TestSpellUtilsImpl
 	}
 	
 	/**
+	 * Tests the getUnmodifiedCombatCastingCost where each additional MP grant multiple dmg, and the caster has Runemaster
+	 * @throws MomException If there is a problem
+	 */
+	@Test
+	public final void testGetUnmodifiedCombatCastingCost_DamagePerMana_Runemaster () throws MomException
+	{
+		final Spell spell = new Spell ();
+		spell.setCombatCastingCost (30);
+		spell.setCombatBaseDamage (20);
+		spell.setCombatMaxDamage (110);
+		spell.setCombatAdditionalDamagePointsPerMana (3);
+		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
+		
+		// Has runemaster
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_NODE_RUNEMASTER)).thenReturn (1);
+		
+		// So we want to do 100 damage, but only have to pay for 50, which is base + 30
+		// We get +3 for each additional MP so +30 dmg costs +10 MP
+		// plus the base casting cost of 30 = 40
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		assertEquals (40, utils.getUnmodifiedCombatCastingCost (spell, 100, picks)); 
+	}
+	
+	/**
 	 * Tests the getUnmodifiedCombatCastingCost where the spell doesn't define whether
 	 * its "MP per dmg" or "dmg per MP"
 	 * @throws MomException If there is a problem
@@ -396,6 +425,34 @@ public final class TestSpellUtilsImpl
 	}
 	
 	/**
+	 * Tests the getUnmodifiedOverlandCastingCost where each additional MP grant multiple dmg, and the caster has Runemaster
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetUnmodifiedOverlandCastingCost_DamagePerMana_Runemaster () throws Exception
+	{
+		final Spell spell = new Spell ();
+		spell.setOverlandCastingCost (30);
+		spell.setOverlandBaseDamage (20);
+		spell.setOverlandMaxDamage (110);
+		spell.setOverlandAdditionalDamagePointsPerMana (3);
+		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
+		
+		// Has runemaster
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_NODE_RUNEMASTER)).thenReturn (1);
+		
+		// So we want to do 100 damage, but only have to pay for 50, which is base + 30
+		// We get +3 for each additional MP so +30 dmg costs +10 MP
+		// plus the base casting cost of 30 = 40
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		assertEquals (40, utils.getUnmodifiedOverlandCastingCost (spell, null, 100, picks, null)); 
+	}
+	
+	/**
 	 * Tests the getUnmodifiedOverlandCastingCost where the spell doesn't define whether
 	 * its "MP per dmg" or "dmg per MP"
 	 * @throws Exception If there is a problem
@@ -417,14 +474,11 @@ public final class TestSpellUtilsImpl
 	}
 	
 	/**
-	 * Tests the getReducedCastingCost method.  Just test this directly with mocks.
-	 * getReducedCombatCastingCost and getReducedOverlandCastingCost are then just simple
-	 * combinations of other methods that have unit tests, so don't need their own tests.
-	 * 
+	 * Tests the getReducedCastingCost method where the spell is cheaper because we have a lot of books 
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGetReducedCastingCost () throws Exception
+	public final void testGetReducedCastingCost_Reduction () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -455,6 +509,55 @@ public final class TestSpellUtilsImpl
 		
 		// 15.5% of 2000 is 310
 		assertEquals (2000 - 310, utils.getReducedCastingCost (spell, 2000, picks, spells, spellSettings, db));
+	}
+	
+	/**
+	 * Tests the getReducedCastingCost method where the spell is more expensive because of a nasty Overland Enchantment like Evil Omens
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetReducedCastingCost_Increase () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellID ("SP001");
+		spellDef.setSpellBookSectionID (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
+		spellDef.setTriggerCastingCostIncrease (50);
+		spellDef.getTriggeredBySpellRealm ().add ("MB01");
+		
+		when (db.getSpell ()).thenReturn (Arrays.asList (spellDef));
+		
+		// Spell to test
+		final Spell spell = new Spell ();
+		spell.setSpellRealm ("MB01");
+
+		// Number of picks we have in the magic realm of the spell
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (picks, "MB01")).thenReturn (8);
+		
+		// Casting cost reduction
+		final SpellSetting spellSettings = new SpellSetting ();
+		
+		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
+		when (spellCalculations.calculateCastingCostReduction (8, spellSettings, spell, picks, db)).thenReturn (0d);
+		
+		// Casting cost increase
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (spells, null, "SP001", null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
+		
+		// Set up object to test
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setSpellCalculations (spellCalculations);
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// 2000 + 50%
+		assertEquals (3000, utils.getReducedCastingCost (spell, 2000, picks, spells, spellSettings, db));
 	}
 	
 	/**
@@ -755,48 +858,6 @@ public final class TestSpellUtilsImpl
 	}
 
 	/**
-	 * Tests the getSpellsForRealmAndRank method
-	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
-	 */
-	@Test
-	public final void testGetSpellsForRealmAndRank () throws RecordNotFoundException
-	{
-		// Mock list of spells
-		final CommonDatabase db = mock (CommonDatabase.class);
-
-		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		int n = 0;
-		for (final SpellResearchStatusID status : new SpellResearchStatusID [] {SpellResearchStatusID.UNAVAILABLE, SpellResearchStatusID.AVAILABLE, SpellResearchStatusID.NOT_IN_SPELL_BOOK})
-			for (int realm = 1; realm <= 3; realm++)
-				for (int rank = 1; rank <= 3; rank++)
-				{
-					n++;
-					final SpellResearchStatus thisStatus = new SpellResearchStatus ();
-					thisStatus.setSpellID ((n < 10) ? "SP00" + n : "SP0" + n);
-					thisStatus.setStatus (status);
-					statuses.add (thisStatus);
-					
-					final Spell spell = new Spell ();
-					spell.setSpellID (thisStatus.getSpellID ());
-					spell.setSpellRealm ("MB0" + realm);
-					spell.setSpellRank ("SR0" + rank);
-					when (db.findSpell (thisStatus.getSpellID (), "getSpellsForRealmRankStatusInternal")).thenReturn (spell);
-				}
-
-		// Set up object to test
-		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		
-		// Run method
-		final List<Spell> spells = utils.getSpellsForRealmAndRank (statuses, "MB02", "SR02", db);
-		
-		// Check results
-		assertEquals (3, spells.size ());
-		assertEquals ("SP005", spells.get (0).getSpellID ());
-		assertEquals ("SP014", spells.get (1).getSpellID ());
-		assertEquals ("SP023", spells.get (2).getSpellID ());
-	}
-
-	/**
 	 * Tests the getSpellsForRankAndStatus method
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
@@ -919,88 +980,5 @@ public final class TestSpellUtilsImpl
 		assertEquals ("SR01", spellRanks.get (0));
 		assertEquals ("SR02", spellRanks.get (1));
 		assertEquals ("SR03", spellRanks.get (2));
-	}
-
-	/**
-	 * Tests the getSpellRanksForMagicRealm method
-	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
-	 */
-	@Test
-	public final void testGetSpellRanksForMagicRealm () throws RecordNotFoundException
-	{
-		// Set up list of spells
-		final List<Spell> spells = new ArrayList<Spell> ();
-		for (int realm = 1; realm <= 3; realm++)
-			for (int rank = 1; rank <= 3; rank++)
-			{
-				final Spell spell = new Spell ();
-				spell.setSpellRealm ("MB0" + realm);
-				spell.setSpellRank ("SR0" + rank);
-				spells.add (spell);
-			}
-
-		// Set up object to test
-		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		
-		// Run method
-		final List<String> spellRanks = utils.getSpellRanksForMagicRealm (spells, "MB02");
-		
-		// Check results
-		assertEquals (3, spellRanks.size ());
-		assertEquals ("SR01", spellRanks.get (0));
-		assertEquals ("SR02", spellRanks.get (1));
-		assertEquals ("SR03", spellRanks.get (2));
-	}
-
-	/**
-	 * Tests the getSortedSpellsInSection method
-	 * @throws MomException If we encounter an unkown research status or castType
-	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
-	 */
-	@Test
-	public final void testGetSortedSpellsInSection () throws MomException, RecordNotFoundException
-	{
-		// Mock list of spells
-		final CommonDatabase db = mock (CommonDatabase.class);
-
-		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		int n = 0;
-		for (final SpellBookSectionID section : new SpellBookSectionID [] {SpellBookSectionID.ATTACK_SPELLS, SpellBookSectionID.OVERLAND_ENCHANTMENTS, SpellBookSectionID.SUMMONING})
-			for (final SpellResearchStatusID status : new SpellResearchStatusID [] {SpellResearchStatusID.UNAVAILABLE, SpellResearchStatusID.AVAILABLE, SpellResearchStatusID.NOT_IN_SPELL_BOOK})
-				for (int realm = 1; realm <= 3; realm++)
-					for (int rank = 1; rank <= 3; rank++)
-					{
-						n++;
-						final SpellResearchStatus thisStatus = new SpellResearchStatus ();
-						thisStatus.setSpellID ((n < 10) ? "SP00" + n : "SP0" + n);
-						thisStatus.setStatus (status);
-						statuses.add (thisStatus);
-						
-						final Spell spell = new Spell ();
-						spell.setSpellID (thisStatus.getSpellID ());
-						spell.setSpellRealm ("MB0" + realm);
-						spell.setSpellRank ("SR0" + rank);
-						spell.setSpellBookSectionID (section);
-						spell.setOverlandCastingCost (100 - n);
-						when (db.findSpell (thisStatus.getSpellID (), "getSortedSpellsInSection")).thenReturn (spell);
-					}
-
-		// Set up object to test
-		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		
-		// Run method
-		final List<Spell> spells = utils.getSortedSpellsInSection (statuses, SpellBookSectionID.OVERLAND_ENCHANTMENTS, SpellCastType.OVERLAND, db);
-		
-		// Check results
-		assertEquals (9, spells.size ());
-		assertEquals ("SP045", spells.get (0).getSpellID ());
-		assertEquals ("SP044", spells.get (1).getSpellID ());
-		assertEquals ("SP043", spells.get (2).getSpellID ());
-		assertEquals ("SP042", spells.get (3).getSpellID ());
-		assertEquals ("SP041", spells.get (4).getSpellID ());
-		assertEquals ("SP040", spells.get (5).getSpellID ());
-		assertEquals ("SP039", spells.get (6).getSpellID ());
-		assertEquals ("SP038", spells.get (7).getSpellID ());
-		assertEquals ("SP037", spells.get (8).getSpellID ());
 	}
 }

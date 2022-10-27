@@ -40,6 +40,7 @@ import momime.server.ai.DiplomacyAI;
 import momime.server.ai.RelationAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
+import momime.server.process.DiplomacyProcessing;
 import momime.server.utils.KnownWizardServerUtils;
 
 /**
@@ -98,6 +99,9 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** Methods for processing agreed diplomatic actions */
+	private DiplomacyProcessing diplomacyProcessing; 
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -122,7 +126,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl");
 		final PlayerServerDetails otherPlayer = (getOtherPlayerID () == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getOtherPlayerID (), "RequestDiplomacyMessageImpl");
 
-		// In context of player-to-player diplomacy, sender is the player making the request and talkToPlayer is the player we forward their requests on to
+		// In context of player-to-player diplomacy, sender is the player agreeing to / rejecting the request which usually means talkToPlayer is the one who initiated it in the first place
 		// In context of player-to-AI diplomacy, sender is the player making the request and talkToPlayer is the AI player who is responding  
 		final MomPersistentPlayerPrivateKnowledge senderPriv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge talkToPlayerPriv = (MomPersistentPlayerPrivateKnowledge) talkToPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -213,20 +217,35 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			switch (getAction ())
 			{
 				case ACCEPT_WIZARD_PACT:
-					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WIZARD_PACT, mom);
-					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WIZARD_PACT, mom);
+					getDiplomacyProcessing ().agreeWizardPact (talkToPlayer, sender, mom);
+					proceed = false;
 					break;
 					
 				case ACCEPT_ALLIANCE:
-					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.ALLIANCE, mom);
-					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.ALLIANCE, mom);
+					getDiplomacyProcessing ().agreeAlliance (talkToPlayer, sender, mom);
+					proceed = false;
 					break;
 					
 				case ACCEPT_PEACE_TREATY:
-					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
-					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+					getDiplomacyProcessing ().agreePeaceTreaty (talkToPlayer, sender, mom);
+					proceed = false;
 					break;
-	
+
+				case REJECT_WIZARD_PACT:
+					getDiplomacyProcessing ().rejectWizardPact (talkToPlayer, sender, mom);
+					proceed = false;
+					break;
+					
+				case REJECT_ALLIANCE:
+					getDiplomacyProcessing ().rejectAlliance (talkToPlayer, sender, mom);
+					proceed = false;
+					break;
+					
+				case REJECT_PEACE_TREATY:
+					getDiplomacyProcessing ().rejectPeaceTreaty (talkToPlayer, sender, mom);
+					proceed = false;
+					break;
+					
 				case DECLARE_WAR_BECAUSE_THREATENED:
 					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WAR, mom);
 					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
@@ -559,73 +578,28 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						
 					case PROPOSE_WIZARD_PACT:
 					{
-						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_WIZARD_PACT + aiPersonality.getHostilityModifier ());
-						if (accept)
-						{
-							getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WIZARD_PACT, mom);
-							getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WIZARD_PACT, mom);
-							
-							if (!senderWizard.isEverStartedCastingSpellOfMastery ())
-							{
-								getRelationAI ().bonusToVisibleRelation (senderWizard, 10);
-								relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-							}
-						}
-
-						final DiplomacyMessage msg = new DiplomacyMessage ();
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (accept ? DiplomacyAction.ACCEPT_WIZARD_PACT : DiplomacyAction.REJECT_WIZARD_PACT);
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						
-						sender.getConnection ().sendMessageToClient (msg);
+						if (senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_WIZARD_PACT + aiPersonality.getHostilityModifier ()))
+							getDiplomacyProcessing ().agreeWizardPact (sender, talkToPlayer, mom);
+						else
+							getDiplomacyProcessing ().rejectWizardPact (sender, talkToPlayer, mom);
 						break;
 					}
 
 					case PROPOSE_ALLIANCE:
 					{
-						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_ALLIANCE + aiPersonality.getHostilityModifier ());
-						if (accept)
-						{
-							getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.ALLIANCE, mom);
-							getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.ALLIANCE, mom);
-							
-							if (!senderWizard.isEverStartedCastingSpellOfMastery ())
-							{
-								getRelationAI ().bonusToVisibleRelation (senderWizard, 20);
-								relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-							}
-						}
-						
-						final DiplomacyMessage msg = new DiplomacyMessage ();
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (accept ? DiplomacyAction.ACCEPT_ALLIANCE : DiplomacyAction.REJECT_ALLIANCE);
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						
-						sender.getConnection ().sendMessageToClient (msg);
+						if (senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_ALLIANCE + aiPersonality.getHostilityModifier ()))
+							getDiplomacyProcessing ().agreeAlliance (sender, talkToPlayer, mom);
+						else
+							getDiplomacyProcessing ().rejectAlliance (sender, talkToPlayer, mom);
 						break;
 					}
 					
 					case PROPOSE_PEACE_TREATY:
 					{
-						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_PEACE_TREATY + aiPersonality.getHostilityModifier ());
-						if (accept)
-						{
-							getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
-							getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
-							
-							if (!senderWizard.isEverStartedCastingSpellOfMastery ())
-							{
-								getRelationAI ().bonusToVisibleRelation (senderWizard, 10);
-								relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-							}
-						}
-						
-						final DiplomacyMessage msg = new DiplomacyMessage ();
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (accept ? DiplomacyAction.ACCEPT_PEACE_TREATY : DiplomacyAction.REJECT_PEACE_TREATY);
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						
-						sender.getConnection ().sendMessageToClient (msg);
+						if (senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_PEACE_TREATY + aiPersonality.getHostilityModifier ()))
+							getDiplomacyProcessing ().agreePeaceTreaty (sender, talkToPlayer, mom);
+						else
+							getDiplomacyProcessing ().rejectAlliance (sender, talkToPlayer, mom);
 						break;
 					}
 					
@@ -947,5 +921,21 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Methods for processing agreed diplomatic actions
+	 */
+	public final DiplomacyProcessing getDiplomacyProcessing ()
+	{
+		return diplomacyProcessing;
+	}
+	
+	/**
+	 * @param p Methods for processing agreed diplomatic actions
+	 */
+	public final void setDiplomacyProcessing (final DiplomacyProcessing p)
+	{
+		diplomacyProcessing = p;
 	}
 }

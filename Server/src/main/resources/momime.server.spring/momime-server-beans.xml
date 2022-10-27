@@ -284,6 +284,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="diplomacyAI" ref="diplomacyAI" />
 		<property name="relationAI" ref="relationAI" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
 	</bean>
 
 	<!-- User registry -->
@@ -948,6 +949,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomEventTargeting" ref="randomEventTargeting" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="randomCityEvents" ref="randomCityEvents" />
+	</bean>
+
+	<bean id="diplomacyProcessing" class="momime.server.process.DiplomacyProcessingImpl">
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="relationAI" ref="relationAI" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<!-- AI -->

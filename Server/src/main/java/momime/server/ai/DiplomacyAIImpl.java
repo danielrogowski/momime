@@ -2,14 +2,119 @@ package momime.server.ai;
 
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.WizardPersonality;
+import momime.common.messages.DiplomacyWizardDetails;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.utils.KnownWizardUtils;
+import momime.server.MomSessionVariables;
+import momime.server.process.DiplomacyProcessing;
 
 /**
  * Methods for AI making decisions about diplomacy with other wizards
  */
 public final class DiplomacyAIImpl implements DiplomacyAI
 {
+	/** Methods for processing agreed diplomatic actions */
+	private DiplomacyProcessing diplomacyProcessing; 
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
+	/**
+	 * @param proposer Player who proposed the wizard pact
+	 * @param aiPlayer Player who is considering accepting or rejecting the wizard pact (us)
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void considerWizardPact (final PlayerServerDetails proposer, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// What's our opinion of the proposer?
+		final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails aiPlayerOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "considerWizardPact (P)");
+		
+		// What's our personality?
+		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerWizardPact");
+		final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (aiWizard.getWizardPersonalityID (), "considerWizardPact (W)");
+		
+		// Make decision
+		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_WIZARD_PACT + aiPersonality.getHostilityModifier ()))
+			getDiplomacyProcessing ().agreeWizardPact (proposer, aiPlayer, mom);
+		else
+			getDiplomacyProcessing ().rejectWizardPact (proposer, aiPlayer, mom);
+	}
+	
+	/**
+	 * @param proposer Player who proposed the alliance
+	 * @param aiPlayer Player who is considering accepting or rejecting the alliance (us)
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void considerAlliance (final PlayerServerDetails proposer, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// What's our opinion of the proposer?
+		final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails aiPlayerOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "considerAlliance (P)");
+		
+		// What's our personality?
+		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerWizardPact");
+		final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (aiWizard.getWizardPersonalityID (), "considerAlliance (W)");
+		
+		// Make decision
+		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_ALLIANCE + aiPersonality.getHostilityModifier ()))
+			getDiplomacyProcessing ().agreeAlliance (proposer, aiPlayer, mom);
+		else
+			getDiplomacyProcessing ().rejectAlliance (proposer, aiPlayer, mom);
+	}
+
+	/**
+	 * @param proposer Player who proposed the peace treaty
+	 * @param aiPlayer Player who is considering accepting or rejecting the peace treaty (us)
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void considerPeaceTreaty (final PlayerServerDetails proposer, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// What's our opinion of the proposer?
+		final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails aiPlayerOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "considerPeaceTreaty (P)");
+		
+		// What's our personality?
+		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerWizardPact");
+		final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (aiWizard.getWizardPersonalityID (), "considerPeaceTreaty (W)");
+		
+		// Make decision
+		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_PEACE_TREATY + aiPersonality.getHostilityModifier ()))
+			getDiplomacyProcessing ().agreePeaceTreaty (proposer, aiPlayer, mom);
+		else
+			getDiplomacyProcessing ().rejectPeaceTreaty (proposer, aiPlayer, mom);
+	}
+	
 	/**
 	 * @param requestSpellID The spell the other wizard wants from us
 	 * @param spellIDsWeCanOffer Spells we can request in return
@@ -44,5 +149,37 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 		}
 		
 		return bestSpellID;
+	}
+
+	/**
+	 * @return Methods for processing agreed diplomatic actions
+	 */
+	public final DiplomacyProcessing getDiplomacyProcessing ()
+	{
+		return diplomacyProcessing;
+	}
+	
+	/**
+	 * @param p Methods for processing agreed diplomatic actions
+	 */
+	public final void setDiplomacyProcessing (final DiplomacyProcessing p)
+	{
+		diplomacyProcessing = p;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

@@ -165,47 +165,47 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	
 	/**
 	 * @param proposer Player who proposed the wizard pact
-	 * @param agreer Player who rejected the wizard pact
+	 * @param rejecter Player who rejected the wizard pact
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void rejectWizardPact (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
+	public final void rejectWizardPact (final PlayerServerDetails proposer, final PlayerServerDetails rejecter, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		rejectPact (proposer, agreer, mom, DiplomacyAction.REJECT_WIZARD_PACT);
+		rejectPact (proposer, rejecter, mom, DiplomacyAction.REJECT_WIZARD_PACT);
 	}
 	
 	/**
 	 * @param proposer Player who proposed the alliance
-	 * @param agreer Player who rejected the alliance
+	 * @param rejecter Player who rejected the alliance
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void rejectAlliance (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
+	public final void rejectAlliance (final PlayerServerDetails proposer, final PlayerServerDetails rejecter, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		rejectPact (proposer, agreer, mom, DiplomacyAction.REJECT_ALLIANCE);
+		rejectPact (proposer, rejecter, mom, DiplomacyAction.REJECT_ALLIANCE);
 	}
 	
 	/**
 	 * @param proposer Player who proposed the peace treaty
-	 * @param agreer Player who rejected the peace treaty
+	 * @param rejecter Player who rejected the peace treaty
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void rejectPeaceTreaty (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
+	public final void rejectPeaceTreaty (final PlayerServerDetails proposer, final PlayerServerDetails rejecter, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		rejectPact (proposer, agreer, mom, DiplomacyAction.REJECT_PEACE_TREATY);
+		rejectPact (proposer, rejecter, mom, DiplomacyAction.REJECT_PEACE_TREATY);
 	}
 	
 	/**

@@ -1114,7 +1114,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
-	<bean id="diplomacyAI" class="momime.server.ai.DiplomacyAIImpl" />
+	<bean id="diplomacyAI" class="momime.server.ai.DiplomacyAIImpl">
+		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+	</bean>
 	
 	<!-- Fog of War -->
 

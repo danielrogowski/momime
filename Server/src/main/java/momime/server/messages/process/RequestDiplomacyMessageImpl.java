@@ -54,15 +54,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	/** Amount of space in the UI to list tradeable spells */
 	private final static int MAXIMUM_TRADEABLE_SPELLS = 4;
 
-	/** Minimum relation for an AI player to agree to a peace treaty, modified by their personality type */
-	private final static int MINIMUM_RELATION_TO_AGREE_TO_PEACE_TREATY = 0;
-
-	/** Minimum relation for an AI player to agree to a wizard pact, modified by their personality type */
-	private final static int MINIMUM_RELATION_TO_AGREE_TO_WIZARD_PACT = 20;
-
-	/** Minimum relation for an AI player to agree to an alliance, modified by their personality type */
-	private final static int MINIMUM_RELATION_TO_AGREE_TO_ALLIANCE = 40;
-
 	/** Minimum relation for an AI player to agree to declaring war on another wizard, modified by their personality type */
 	private final static int MINIMUM_RELATION_TO_AGREE_TO_DECLARE_WAR = 60;
 	
@@ -577,31 +568,16 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					}
 						
 					case PROPOSE_WIZARD_PACT:
-					{
-						if (senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_WIZARD_PACT + aiPersonality.getHostilityModifier ()))
-							getDiplomacyProcessing ().agreeWizardPact (sender, talkToPlayer, mom);
-						else
-							getDiplomacyProcessing ().rejectWizardPact (sender, talkToPlayer, mom);
+						getDiplomacyAI ().considerWizardPact (sender, talkToPlayer, mom);
 						break;
-					}
 
 					case PROPOSE_ALLIANCE:
-					{
-						if (senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_ALLIANCE + aiPersonality.getHostilityModifier ()))
-							getDiplomacyProcessing ().agreeAlliance (sender, talkToPlayer, mom);
-						else
-							getDiplomacyProcessing ().rejectAlliance (sender, talkToPlayer, mom);
+						getDiplomacyAI ().considerAlliance (sender, talkToPlayer, mom);
 						break;
-					}
 					
 					case PROPOSE_PEACE_TREATY:
-					{
-						if (senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_PEACE_TREATY + aiPersonality.getHostilityModifier ()))
-							getDiplomacyProcessing ().agreePeaceTreaty (sender, talkToPlayer, mom);
-						else
-							getDiplomacyProcessing ().rejectAlliance (sender, talkToPlayer, mom);
+						getDiplomacyAI ().considerPeaceTreaty (sender, talkToPlayer, mom);
 						break;
-					}
 					
 					case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
 					{

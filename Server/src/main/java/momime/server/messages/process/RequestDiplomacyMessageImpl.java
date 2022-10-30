@@ -21,7 +21,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RelationScore;
 import momime.common.database.Spell;
 import momime.common.database.SpellRank;
-import momime.common.database.WizardPersonality;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -54,12 +53,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	/** Amount of space in the UI to list tradeable spells */
 	private final static int MAXIMUM_TRADEABLE_SPELLS = 4;
 
-	/** Minimum relation for an AI player to agree to declaring war on another wizard, modified by their personality type */
-	private final static int MINIMUM_RELATION_TO_AGREE_TO_DECLARE_WAR = 60;
-	
-	/** Minimum relation for an AI player to agree to breaking an alliance with another wizard, modified by their personality type */
-	private final static int MINIMUM_RELATION_TO_AGREE_TO_BREAK_ALLIANCE = 60;
-	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 
@@ -270,23 +263,9 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				}
 					
 				case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
-				{
-					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), PactType.WAR, mom);
-					getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
-					
-					// Inform the 3rd party wizard, who isn't involved in the conversation
-					if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-					{
-						final DiplomacyMessage msg = new DiplomacyMessage ();	
-						msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
-						msg.setOtherPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD);
-						msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
-						
-						otherPlayer.getConnection ().sendMessageToClient (msg);
-					}
+					getDiplomacyProcessing ().agreeDeclareWarOnOtherWizard (talkToPlayer, sender, otherPlayer, mom);
+					proceed = false;
 					break;
-				}
 				
 				// Just putting this here so its consistent with PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD
 				case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
@@ -295,23 +274,9 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					break;
 	
 				case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
-				{
-					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), null, mom);
-					getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
-					
-					// Inform the 3rd party wizard, who isn't involved in the conversation
-					if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-					{
-						final DiplomacyMessage msg = new DiplomacyMessage ();	
-						msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
-						msg.setOtherPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD);
-						msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
-						
-						otherPlayer.getConnection ().sendMessageToClient (msg);
-					}
+					getDiplomacyProcessing ().agreeBreakAllianceWithOtherWizard (talkToPlayer, sender, otherPlayer, mom);
+					proceed = false;
 					break;
-				}
 				
 				// Tributes send an automated reply without even waiting for the recipient to click anything
 				case GIVE_GOLD:
@@ -548,7 +513,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			else
 			{
 				RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-				final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (talkToWizard.getWizardPersonalityID (), "RequestDiplomacyMessageImpl");
 				
 				switch (getAction ())
 				{
@@ -580,66 +544,12 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						break;
 					
 					case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
-					{
-						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_DECLARE_WAR + aiPersonality.getHostilityModifier ());
-						if (accept)
-						{
-							getKnownWizardServerUtils ().updatePact (talkToPlayer.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), PactType.WAR, mom);
-							getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
-							
-							// Inform the 3rd party wizard, who isn't involved in the conversation
-							if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-							{
-								final DiplomacyMessage msg = new DiplomacyMessage ();	
-								msg.setTalkFromPlayerID (talkToPlayer.getPlayerDescription ().getPlayerID ());
-								msg.setOtherPlayerID (sender.getPlayerDescription ().getPlayerID ());
-								msg.setAction (DiplomacyAction.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD);
-								msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
-								
-								otherPlayer.getConnection ().sendMessageToClient (msg);
-							}
-						}
-						
-						final DiplomacyMessage msg = new DiplomacyMessage ();
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setOtherPlayerID (getOtherPlayerID ());
-						msg.setAction (accept ? DiplomacyAction.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD : DiplomacyAction.REJECT_DECLARE_WAR_ON_OTHER_WIZARD);
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						
-						sender.getConnection ().sendMessageToClient (msg);
+						getDiplomacyAI ().considerDeclareWarOnOtherWizard (sender, talkToPlayer, otherPlayer, mom);
 						break;
-					}
 					
 					case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
-					{
-						final boolean accept = senderWizard.getVisibleRelation () >= (MINIMUM_RELATION_TO_AGREE_TO_BREAK_ALLIANCE + aiPersonality.getHostilityModifier ());
-						if (accept)
-						{
-							getKnownWizardServerUtils ().updatePact (talkToPlayer.getPlayerDescription ().getPlayerID (), getOtherPlayerID (), null, mom);
-							getKnownWizardServerUtils ().updatePact (getOtherPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
-							
-							// Inform the 3rd party wizard, who isn't involved in the conversation
-							if (otherPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-							{
-								final DiplomacyMessage msg = new DiplomacyMessage ();	
-								msg.setTalkFromPlayerID (talkToPlayer.getPlayerDescription ().getPlayerID ());
-								msg.setOtherPlayerID (sender.getPlayerDescription ().getPlayerID ());
-								msg.setAction (DiplomacyAction.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD);
-								msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (CommonDatabaseConstants.MIN_RELATION_SCORE, "RequestDiplomacyMessageImpl").getRelationScoreID ());
-								
-								otherPlayer.getConnection ().sendMessageToClient (msg);
-							}
-						}
-						
-						final DiplomacyMessage msg = new DiplomacyMessage ();
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setOtherPlayerID (getOtherPlayerID ());
-						msg.setAction (accept ? DiplomacyAction.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD : DiplomacyAction.REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						
-						sender.getConnection ().sendMessageToClient (msg);
+						getDiplomacyAI ().considerBreakAllianceWithOtherWizard (sender, talkToPlayer, otherPlayer, mom);
 						break;
-					}
 					
 					// Pick random option from: Do nothing, try to buy you off with gold, try to appease you with a free spell, declare war
 					case THREATEN:

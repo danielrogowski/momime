@@ -47,7 +47,8 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "considerWizardPact (P)");
 		
 		// What's our personality?
-		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerWizardPact");
+		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerWizardPact");
 		final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (aiWizard.getWizardPersonalityID (), "considerWizardPact (W)");
 		
 		// Make decision
@@ -76,7 +77,8 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "considerAlliance (P)");
 		
 		// What's our personality?
-		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerWizardPact");
+		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerAlliance");
 		final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (aiWizard.getWizardPersonalityID (), "considerAlliance (W)");
 		
 		// Make decision
@@ -105,7 +107,8 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "considerPeaceTreaty (P)");
 		
 		// What's our personality?
-		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerWizardPact");
+		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerPeaceTreaty");
 		final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (aiWizard.getWizardPersonalityID (), "considerPeaceTreaty (W)");
 		
 		// Make decision
@@ -113,6 +116,68 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 			getDiplomacyProcessing ().agreePeaceTreaty (proposer, aiPlayer, mom);
 		else
 			getDiplomacyProcessing ().rejectPeaceTreaty (proposer, aiPlayer, mom);
+	}
+
+	/**
+	 * @param proposer Player who proposed that we declare war on another wizard
+	 * @param aiPlayer Player who is considering declaring war on another wizard as requeted (us)
+	 * @param other The player we are being asked to declare war on
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void considerDeclareWarOnOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails aiPlayer, final PlayerServerDetails other, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// What's our opinion of the proposer?
+		final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails aiPlayerOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "considerDeclareWarOnOtherWizard (P)");
+		
+		// What's our personality?
+		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerDeclareWarOnOtherWizard");
+		final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (aiWizard.getWizardPersonalityID (), "considerDeclareWarOnOtherWizard (W)");
+		
+		// Make decision
+		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_DECLARE_WAR + aiPersonality.getHostilityModifier ()))
+			getDiplomacyProcessing ().agreeDeclareWarOnOtherWizard (proposer, aiPlayer, other, mom);
+		else
+			getDiplomacyProcessing ().rejectDeclareWarOnOtherWizard (proposer, aiPlayer, other, mom);
+	}
+	
+	/**
+	 * @param proposer Player who proposed that we declare war on another wizard
+	 * @param aiPlayer Player who is considering declaring war on another wizard as requeted (us)
+	 * @param other The player we are being asked to declare war on
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void considerBreakAllianceWithOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails aiPlayer, final PlayerServerDetails other, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// What's our opinion of the proposer?
+		final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails aiPlayerOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "considerBreakAllianceWithOtherWizard (P)");
+		
+		// What's our personality?
+		final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "considerBreakAllianceWithOtherWizard");
+		final WizardPersonality aiPersonality = mom.getServerDB ().findWizardPersonality (aiWizard.getWizardPersonalityID (), "considerBreakAllianceWithOtherWizard (W)");
+		
+		// Make decision
+		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_BREAK_ALLIANCE + aiPersonality.getHostilityModifier ()))
+			getDiplomacyProcessing ().agreeBreakAllianceWithOtherWizard (proposer, aiPlayer, other, mom);
+		else
+			getDiplomacyProcessing ().rejectBreakAllianceWithOtherWizard (proposer, aiPlayer, other, mom);
 	}
 	
 	/**

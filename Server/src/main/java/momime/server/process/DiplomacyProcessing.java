@@ -79,4 +79,54 @@ public interface DiplomacyProcessing
 	 */
 	public void rejectPeaceTreaty (final PlayerServerDetails proposer, final PlayerServerDetails rejecter, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param proposer Player who proposed that one wizard declare war on another
+	 * @param agreer Player who agreed to declare war
+	 * @param other Player who war was declared on
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void agreeDeclareWarOnOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final PlayerServerDetails other, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+		
+	/**
+	 * @param proposer Player who proposed that one wizard break their alliance with another
+	 * @param agreer Player who agreed to break their alliance
+	 * @param other Player who they had the alliance with
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void agreeBreakAllianceWithOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final PlayerServerDetails other, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param proposer Player who proposed the declaration of war
+	 * @param agreer Player who rejected the declaration of war
+	 * @param other Player who they wanted war declared on
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void rejectDeclareWarOnOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final PlayerServerDetails other,
+		final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param proposer Player who proposed the breaking allance
+	 * @param agreer Player who rejected breaking their alliance
+	 * @param other Player who they have an alliance with
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void rejectBreakAllianceWithOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final PlayerServerDetails other,
+		final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
 }

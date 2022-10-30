@@ -50,6 +50,30 @@ public interface DiplomacyAI
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
+	 * @param proposer Player who proposed that we declare war on another wizard
+	 * @param aiPlayer Player who is considering declaring war on another wizard as requeted (us)
+	 * @param other The player we are being asked to declare war on
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void considerDeclareWarOnOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails aiPlayer, final PlayerServerDetails other, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param proposer Player who proposed that we declare war on another wizard
+	 * @param aiPlayer Player who is considering declaring war on another wizard as requeted (us)
+	 * @param other The player we are being asked to declare war on
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void considerBreakAllianceWithOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails aiPlayer, final PlayerServerDetails other, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
 	 * @param requestSpellID The spell the other wizard wants from us
 	 * @param spellIDsWeCanOffer Spells we can request in return
 	 * @param db Lookup lists built over the XML database

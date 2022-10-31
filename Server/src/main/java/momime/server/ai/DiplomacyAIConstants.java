@@ -21,6 +21,9 @@ public final class DiplomacyAIConstants
 
 	/** Bonus for forming a peace treaty; both players like each other for the treaty, no matter who proposed or agreed to it */
 	public final static int RELATION_BONUS_FORM_PEACE_TREATY = 10;
+
+	/** Bonus for forming a gold donation, multiplied by the tier 1..4 */
+	public final static int RELATION_BONUS_FOR_GOLD_DONATION_PER_TIER = 5;
 	
 	// negative factors
 	

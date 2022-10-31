@@ -129,4 +129,28 @@ public interface DiplomacyProcessing
 	public void rejectBreakAllianceWithOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final PlayerServerDetails other,
 		final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param giver Player who is giving gold
+	 * @param receiver Player who is receiving gold
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param offerGoldTier Gold offer tier 1..4
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void giveGold (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final int offerGoldTier)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param giver Player who is giving gold
+	 * @param receiver Player who threatened them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param offerGoldTier Gold offer tier 1..4
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void giveGoldBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final int offerGoldTier)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
 }

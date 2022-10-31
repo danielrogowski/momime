@@ -14,9 +14,11 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.PactType;
 import momime.common.messages.servertoclient.DiplomacyMessage;
 import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.DiplomacyAIConstants;
 import momime.server.ai.RelationAI;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.utils.KnownWizardServerUtils;
 
 /**
@@ -33,6 +35,12 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Resource calculations */
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * @param proposer Player who proposed the pact
@@ -80,7 +88,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 			// Show them that the AI player's opinion of them improved because of the pact
 			// If it is two human players, leave it null and the UI will keep showing the same value from when diplomacy started
 			if (agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
-				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "agreePact").getRelationScoreID ());
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (agreersOpinionOfProposer.getVisibleRelation (), "agreePact").getRelationScoreID ());
 			
 			proposer.getConnection ().sendMessageToClient (msg);
 		}
@@ -133,32 +141,32 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	
 	/**
 	 * @param proposer Player who proposed the pact
-	 * @param agreer Player who rejected the pact
+	 * @param rejecter Player who rejected the pact
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param action Diplomacy rejection to send back to the proposer, if they are a human player
 	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	private final void rejectPact (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom, final DiplomacyAction action)
+	private final void rejectPact (final PlayerServerDetails proposer, final PlayerServerDetails rejecter, final MomSessionVariables mom, final DiplomacyAction action)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		// Find the two wizards' opinions of each other
-		final MomPersistentPlayerPrivateKnowledge proposerPriv = (MomPersistentPlayerPrivateKnowledge) proposer.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge rejecterPriv = (MomPersistentPlayerPrivateKnowledge) rejecter.getPersistentPlayerPrivateKnowledge ();
 		
-		final DiplomacyWizardDetails proposersOpinionOfAgreer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
-			(proposerPriv.getFogOfWarMemory ().getWizardDetails (), agreer.getPlayerDescription ().getPlayerID (), "rejectPact (A)");
+		final DiplomacyWizardDetails rejectersOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(rejecterPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "rejectPact (A)");
 		
 		// If the proposer was a human player, notify them that the agreer accepted the pact
 		if (proposer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
-			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
+			msg.setTalkFromPlayerID (rejecter.getPlayerDescription ().getPlayerID ());
 			msg.setAction (action);
 
 			// If it is two human players, leave it null and the UI will keep showing the same value from when diplomacy started
-			if (agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
-				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "rejectPact").getRelationScoreID ());
+			if (rejecter.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (rejectersOpinionOfProposer.getVisibleRelation (), "rejectPact").getRelationScoreID ());
 			
 			proposer.getConnection ().sendMessageToClient (msg);
 		}
@@ -229,12 +237,15 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	{
 		// Find the two wizards' opinions of each other
 		final MomPersistentPlayerPrivateKnowledge proposerPriv = (MomPersistentPlayerPrivateKnowledge) proposer.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge agreerPriv = (MomPersistentPlayerPrivateKnowledge) agreer.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge otherPriv = (MomPersistentPlayerPrivateKnowledge) other.getPersistentPlayerPrivateKnowledge ();
 		
 		final DiplomacyWizardDetails proposersOpinionOfAgreer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
 			(proposerPriv.getFogOfWarMemory ().getWizardDetails (), agreer.getPlayerDescription ().getPlayerID (), "agreePactWithThirdParty (A)");
+		final DiplomacyWizardDetails agreersOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(agreerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "agreePactWithThirdParty (P)");
 		final DiplomacyWizardDetails othersOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
-			(otherPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "agreePactWithThirdParty (P)");
+			(otherPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "agreePactWithThirdParty (T)");
 		final DiplomacyWizardDetails othersOpinionOfAgreer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
 			(otherPriv.getFogOfWarMemory ().getWizardDetails (), agreer.getPlayerDescription ().getPlayerID (), "agreePactWithThirdParty (O)");
 		
@@ -276,7 +287,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 			// Show them that the AI player's opinion of them improved because of the pact
 			// If it is two human players, leave it null and the UI will keep showing the same value from when diplomacy started
 			if (agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
-				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "agreePactWithThirdParty").getRelationScoreID ());
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (agreersOpinionOfProposer.getVisibleRelation (), "agreePactWithThirdParty").getRelationScoreID ());
 			
 			proposer.getConnection ().sendMessageToClient (msg);
 		}
@@ -333,10 +344,10 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		// Find the two wizards' opinions of each other
-		final MomPersistentPlayerPrivateKnowledge proposerPriv = (MomPersistentPlayerPrivateKnowledge) proposer.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge agreerPriv = (MomPersistentPlayerPrivateKnowledge) agreer.getPersistentPlayerPrivateKnowledge ();
 		
-		final DiplomacyWizardDetails proposersOpinionOfAgreer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
-			(proposerPriv.getFogOfWarMemory ().getWizardDetails (), agreer.getPlayerDescription ().getPlayerID (), "rejectPactWithThirdParty (A)");
+		final DiplomacyWizardDetails agreersOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(agreerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "rejectPactWithThirdParty");
 		
 		// If the proposer was a human player, notify them that the agreer accepted the pact
 		if (proposer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
@@ -348,7 +359,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 
 			// If it is two human players, leave it null and the UI will keep showing the same value from when diplomacy started
 			if (agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
-				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "rejectPactWithThirdParty").getRelationScoreID ());
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (agreersOpinionOfProposer.getVisibleRelation (), "rejectPactWithThirdParty").getRelationScoreID ());
 			
 			proposer.getConnection ().sendMessageToClient (msg);
 		}
@@ -386,6 +397,110 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		rejectPactWithThirdParty (proposer, agreer, other, mom, DiplomacyAction.REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
+	}
+
+	/**
+	 * @param giver Player who is giving gold
+	 * @param receiver Player who is receiving gold
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param offerGoldTier Gold offer tier 1..4
+	 * @param giverAction Diplomacy action to send back to the giver, if they are a human player
+	 * @param receiverAction Diplomacy action to send to the receiver, if they are a human player
+	 * @param relationBonusPerTier Bonus to the receiver's opinion of the giver, multiplied up by the tier
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	private final void giveGoldInternal (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom,
+		final int offerGoldTier, final DiplomacyAction giverAction, final DiplomacyAction receiverAction, final int relationBonusPerTier)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// Find the two wizards' opinions of each other
+		final MomPersistentPlayerPrivateKnowledge giverPriv = (MomPersistentPlayerPrivateKnowledge) giver.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge receiverPriv = (MomPersistentPlayerPrivateKnowledge) receiver.getPersistentPlayerPrivateKnowledge ();
+
+		final DiplomacyWizardDetails giversOpinionOfReceiver = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(giverPriv.getFogOfWarMemory ().getWizardDetails (), receiver.getPlayerDescription ().getPlayerID (), "giveGoldInternal (R)");
+		final DiplomacyWizardDetails receiversOpinionOfGiver = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(receiverPriv.getFogOfWarMemory ().getWizardDetails (), giver.getPlayerDescription ().getPlayerID (), "giveGoldInternal (G)");
+		
+		// Convert tier to actual gold amount
+		final int offerGoldAmount = getKnownWizardUtils ().convertGoldOfferTierToAmount (giversOpinionOfReceiver.getMaximumGoldTribute (), offerGoldTier);
+		
+		// Give gold				
+		getResourceValueUtils ().addToAmountStored (giverPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -offerGoldAmount);
+		getServerResourceCalculations ().sendGlobalProductionValues (giver, null, false);
+		
+		getResourceValueUtils ().addToAmountStored (receiverPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, offerGoldAmount);
+		getServerResourceCalculations ().sendGlobalProductionValues (receiver, null, false);
+		
+		// Further gold offers will be more expensive (there's no message for this - client triggers same update from the ACCEPT_GOLD msg sent below)
+		giversOpinionOfReceiver.setMaximumGoldTribute (giversOpinionOfReceiver.getMaximumGoldTribute () + offerGoldAmount);
+		
+		// Improved relation from the donation
+		if ((relationBonusPerTier > 0) && (receiver.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!receiversOpinionOfGiver.isEverStartedCastingSpellOfMastery ()))
+			getRelationAI ().bonusToVisibleRelation (receiversOpinionOfGiver, offerGoldTier * relationBonusPerTier);
+		
+		// Tell the receiver they were given some gold
+		if (receiver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (receiver.getPlayerDescription ().getPlayerID ());
+			msg.setAction (receiverAction);
+			msg.setOfferGoldAmount (offerGoldAmount);
+
+			if (giver.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (giversOpinionOfReceiver.getVisibleRelation (), "giveGoldInternal").getRelationScoreID ());
+			
+			receiver.getConnection ().sendMessageToClient (msg);
+		}
+		
+		// If the giver was a human player, tell them thanks
+		if (giver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (receiver.getPlayerDescription ().getPlayerID ());
+			msg.setAction (giverAction);
+			msg.setOfferGoldAmount (offerGoldAmount);
+
+			if (receiver.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (receiversOpinionOfGiver.getVisibleRelation (), "giveGoldInternal").getRelationScoreID ());
+			
+			giver.getConnection ().sendMessageToClient (msg);
+		}
+	}
+
+	/**
+	 * @param giver Player who is giving gold
+	 * @param receiver Player who is receiving gold
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param offerGoldTier Gold offer tier 1..4
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void giveGold (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final int offerGoldTier)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		giveGoldInternal (giver, receiver, mom, offerGoldTier, DiplomacyAction.ACCEPT_GOLD, DiplomacyAction.GIVE_GOLD,
+			DiplomacyAIConstants.RELATION_BONUS_FOR_GOLD_DONATION_PER_TIER);
+	}
+	
+	/**
+	 * @param giver Player who is giving gold
+	 * @param receiver Player who threatened them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param offerGoldTier Gold offer tier 1..4
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void giveGoldBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final int offerGoldTier)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		giveGoldInternal (giver, receiver, mom, offerGoldTier, DiplomacyAction.ACCEPT_GOLD_BECAUSE_THREATENED, DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED, 0);
 	}
 	
 	/**
@@ -434,5 +549,37 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final ServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

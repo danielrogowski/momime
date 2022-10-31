@@ -111,7 +111,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		final PlayerServerDetails otherPlayer = (getOtherPlayerID () == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getOtherPlayerID (), "RequestDiplomacyMessageImpl");
 
 		// In context of player-to-player diplomacy, sender is the player agreeing to / rejecting the request which usually means talkToPlayer is the one who initiated it in the first place
-		// In context of player-to-AI diplomacy, sender is the player making the request and talkToPlayer is the AI player who is responding  
+		// In context of player-to-AI diplomacy, sender is the human player making the request and talkToPlayer is the AI player who is responding  
 		final MomPersistentPlayerPrivateKnowledge senderPriv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge talkToPlayerPriv = (MomPersistentPlayerPrivateKnowledge) talkToPlayer.getPersistentPlayerPrivateKnowledge ();
 
@@ -121,10 +121,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		final DiplomacyWizardDetails senderWizard = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
 			(talkToPlayerPriv.getFogOfWarMemory ().getWizardDetails (), sender.getPlayerDescription ().getPlayerID (), "RequestDiplomacyMessageImpl (S)");
 		
-		// Convert gold tier to the actual amount, because the sender knows their relation to the other wizard, but the receiver won't
-		final Integer offerGoldAmount = (getOfferGoldTier () == null) ? null :
-			getKnownWizardUtils ().convertGoldOfferTierToAmount (talkToWizard.getMaximumGoldTribute (), getOfferGoldTier ());
-
 		// See if we're ran out patience to hear their requests - only applicable to AI players - human players can respond however they wish
 		boolean proceed = true;
 		if (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
@@ -280,36 +276,14 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				
 				// Tributes send an automated reply without even waiting for the recipient to click anything
 				case GIVE_GOLD:
-				case GIVE_GOLD_BECAUSE_THREATENED:
-				{
-					final DiplomacyMessage msg = new DiplomacyMessage ();	
-					msg.setTalkFromPlayerID (getTalkToPlayerID ());
-					msg.setAction ((getAction () == DiplomacyAction.GIVE_GOLD) ? DiplomacyAction.ACCEPT_GOLD : DiplomacyAction.ACCEPT_GOLD_BECAUSE_THREATENED);
-					msg.setOtherPlayerID (getOtherPlayerID ());
-					msg.setOfferGoldAmount (offerGoldAmount);
-					
-					// If giving gold to an AI wizard, modify visible relation (but not for threats)
-					if ((getAction () == DiplomacyAction.GIVE_GOLD) && (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
-					{
-						getRelationAI ().bonusToVisibleRelation (senderWizard, getOfferGoldTier () * 5);
-					
-						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-					}
-					
-					sender.getConnection ().sendMessageToClient (msg);
-					
-					// Give gold				
-					getResourceValueUtils ().addToAmountStored (senderPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -offerGoldAmount);
-					getServerResourceCalculations ().sendGlobalProductionValues (sender, null, false);
-					
-					getResourceValueUtils ().addToAmountStored (talkToPlayerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, offerGoldAmount);
-					getServerResourceCalculations ().sendGlobalProductionValues (talkToPlayer, null, false);
-					
-					// Further gold offers will be more expensive (there's no message for this - client triggers same update from the ACCEPT_GOLD msg sent above)
-					talkToWizard.setMaximumGoldTribute (talkToWizard.getMaximumGoldTribute () + offerGoldAmount);
+					getDiplomacyProcessing ().giveGold (sender, talkToPlayer, mom, getOfferGoldTier ());
+					proceed = false;
 					break;
-				}
+
+				case GIVE_GOLD_BECAUSE_THREATENED:
+					getDiplomacyProcessing ().giveGoldBecauseThreatened (sender, talkToPlayer, mom, getOfferGoldTier ());
+					proceed = false;
+					break;
 				
 				// Breaking a wizard pact / alliance send an automated reply without even waiting for the recipient to click anything
 				case BREAK_WIZARD_PACT_NICELY:
@@ -319,7 +293,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					msg.setTalkFromPlayerID (getTalkToPlayerID ());
 					msg.setAction ((getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY) ? DiplomacyAction.BROKEN_WIZARD_PACT_NICELY : DiplomacyAction.BROKEN_ALLIANCE_NICELY);
 					msg.setOtherPlayerID (getOtherPlayerID ());
-					msg.setOfferGoldAmount (offerGoldAmount);			
 				
 					// If breaking pact/alliance with an AI wizard, modify visible relation
 					if (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
@@ -506,7 +479,10 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				msg.setOtherPlayerID (getOtherPlayerID ());
 				msg.setOfferSpellID (getOfferSpellID ());
 				msg.setRequestSpellID (getRequestSpellID ());
-				msg.setOfferGoldAmount (offerGoldAmount);			
+				
+				// Convert gold tier to the actual amount, because the sender knows their relation to the other wizard, but the receiver won't
+				if (getOfferGoldTier () != null)
+					msg.setOfferGoldAmount (getKnownWizardUtils ().convertGoldOfferTierToAmount (talkToWizard.getMaximumGoldTribute (), getOfferGoldTier ()));
 				
 				talkToPlayer.getConnection ().sendMessageToClient (msg);
 			}
@@ -577,6 +553,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						
 						// Pick random response
 						final DiplomacyMessage msg = new DiplomacyMessage ();
+						boolean sendReply = true;
 						
 						final DiplomacyAction response = responses.get (getRandomUtils ().nextInt (responses.size ()));
 						switch (response)
@@ -587,17 +564,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 								break;
 								
 							case GIVE_GOLD_BECAUSE_THREATENED:
-								msg.setOfferGoldAmount (goldOffer);
-								
-								// Give gold				
-								getResourceValueUtils ().addToAmountStored (senderPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldOffer);
-								getServerResourceCalculations ().sendGlobalProductionValues (sender, null, false);
-								
-								getResourceValueUtils ().addToAmountStored (talkToPlayerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldOffer);
-								getServerResourceCalculations ().sendGlobalProductionValues (talkToPlayer, null, false);
-								
-								// Further gold offers will be more expensive
-								senderWizard.setMaximumGoldTribute (senderWizard.getMaximumGoldTribute () + goldOffer);
+								getDiplomacyProcessing ().giveGoldBecauseThreatened (talkToPlayer, sender, mom, tier);
+								sendReply = false;
 								break;
 								
 							case GIVE_SPELL_BECAUSE_THREATENED:
@@ -622,12 +590,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 							// Do nothing
 							default:
 						}
-						
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (response);
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						
-						sender.getConnection ().sendMessageToClient (msg);
+
+						if (sendReply)
+						{
+							msg.setTalkFromPlayerID (getTalkToPlayerID ());
+							msg.setAction (response);
+							msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+							
+							sender.getConnection ().sendMessageToClient (msg);
+						}
 						break;
 					}
 					

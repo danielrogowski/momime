@@ -8,17 +8,24 @@ import com.ndg.multiplayer.sessionbase.PlayerType;
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.SpellRank;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.PactType;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.servertoclient.DiplomacyMessage;
+import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.DiplomacyAIConstants;
 import momime.server.ai.RelationAI;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.calculations.ServerSpellCalculations;
 import momime.server.utils.KnownWizardServerUtils;
 
 /**
@@ -41,6 +48,12 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
+
+	/** Server-only spell calculations */
+	private ServerSpellCalculations serverSpellCalculations;
 	
 	/**
 	 * @param proposer Player who proposed the pact
@@ -72,10 +85,10 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		
 		// Both players like each other for establishing the pact.  It doesn't matter who proposed it and who agreed,
 		// but this is only relevant to AI players as we don't try to know what a human player's opinion of another player is.
-		if ((proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!proposersOpinionOfAgreer.isEverStartedCastingSpellOfMastery ()))
+		if ((relationBonus > 0) && (proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!proposersOpinionOfAgreer.isEverStartedCastingSpellOfMastery ()))
 			getRelationAI ().bonusToVisibleRelation (proposersOpinionOfAgreer, relationBonus);
 		
-		if ((agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!agreersOpinionOfProposer.isEverStartedCastingSpellOfMastery ()))
+		if ((relationBonus > 0) && (agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!agreersOpinionOfProposer.isEverStartedCastingSpellOfMastery ()))
 			getRelationAI ().bonusToVisibleRelation (agreersOpinionOfProposer, relationBonus);
 		
 		// If the proposer was a human player, notify them that the agreer accepted the pact
@@ -137,6 +150,24 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		agreePact (proposer, agreer, mom, null, DiplomacyAction.ACCEPT_PEACE_TREATY, DiplomacyAIConstants.RELATION_BONUS_FORM_PEACE_TREATY);
+	}
+	
+	/**
+	 * This works just like agreeing a pact, just "agreeing" to declare war on each other...
+	 * 
+	 * @param declarer Player who declared war
+	 * @param threatener Player who threatened them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void declareWarBecauseThreatened (final PlayerServerDetails declarer, final PlayerServerDetails threatener, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// Note players are reversed on purpose, its the threatener who gets a message back to say what the response to their threat was
+		agreePact (threatener, declarer, mom, PactType.WAR, DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED, 0);
 	}
 	
 	/**
@@ -504,6 +535,115 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	}
 	
 	/**
+	 * @param giver Player who is giving a spell
+	 * @param receiver Player who is receiving a spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param spellID Spell being given
+	 * @param giverAction Diplomacy action to send back to the giver, if they are a human player
+	 * @param receiverAction Diplomacy action to send to the receiver, if they are a human player
+	 * @param relationBonus Whether the receiver's opinion of the giver improves for them giving the spell (if true, the amount it improves depends on the spell rank and comes from the DB)
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	private final void giveSpellInternal (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom,
+		final String spellID, final DiplomacyAction giverAction, final DiplomacyAction receiverAction, final boolean relationBonus)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// Find the two wizards' opinions of each other
+		final MomPersistentPlayerPrivateKnowledge giverPriv = (MomPersistentPlayerPrivateKnowledge) giver.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge receiverPriv = (MomPersistentPlayerPrivateKnowledge) receiver.getPersistentPlayerPrivateKnowledge ();
+
+		final DiplomacyWizardDetails giversOpinionOfReceiver = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(giverPriv.getFogOfWarMemory ().getWizardDetails (), receiver.getPlayerDescription ().getPlayerID (), "giveSpellInternal (R)");
+		final DiplomacyWizardDetails receiversOpinionOfGiver = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(receiverPriv.getFogOfWarMemory ().getWizardDetails (), giver.getPlayerDescription ().getPlayerID (), "giveSpellInternal (G)");
+		
+		// Learn spell
+		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (receiverPriv.getSpellResearchStatus (), spellID);
+		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
+		
+		// Just in case the donated spell was one of the 8 spells available to research now
+		getServerSpellCalculations ().randomizeSpellsResearchableNow (receiverPriv.getSpellResearchStatus (), mom.getServerDB ());
+		
+		if (receiver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+			spellsMsg.getSpellResearchStatus ().addAll (receiverPriv.getSpellResearchStatus ());
+			receiver.getConnection ().sendMessageToClient (spellsMsg);
+		}
+		
+		// Improved relation from the donation
+		if ((relationBonus) && (receiver.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!receiversOpinionOfGiver.isEverStartedCastingSpellOfMastery ()))
+		{
+			final Spell spellDef = mom.getServerDB ().findSpell (spellID, "giveSpellInternal");
+			final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "giveSpellInternal");
+			if (spellRank.getSpellTributeRelationBonus () != null)
+				getRelationAI ().bonusToVisibleRelation (receiversOpinionOfGiver, spellRank.getSpellTributeRelationBonus ());
+		}
+		
+		// Tell the receiver they were given some a spell
+		if (receiver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (receiver.getPlayerDescription ().getPlayerID ());
+			msg.setAction (receiverAction);
+			msg.setOfferSpellID (spellID);
+
+			if (giver.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (giversOpinionOfReceiver.getVisibleRelation (), "giveSpellInternal").getRelationScoreID ());
+			
+			receiver.getConnection ().sendMessageToClient (msg);
+		}
+		
+		// If the giver was a human player, tell them thanks
+		if (giver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (receiver.getPlayerDescription ().getPlayerID ());
+			msg.setAction (giverAction);
+			msg.setOfferSpellID (spellID);
+
+			if (receiver.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (receiversOpinionOfGiver.getVisibleRelation (), "giveSpellInternal").getRelationScoreID ());
+			
+			giver.getConnection ().sendMessageToClient (msg);
+		}
+	}
+	
+	/**
+	 * @param giver Player who is giving a spell
+	 * @param receiver Player who is receiving a spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param spellID Spell being given
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void giveSpell (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final String spellID)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		giveSpellInternal (giver, receiver, mom, spellID, DiplomacyAction.ACCEPT_SPELL, DiplomacyAction.GIVE_SPELL, true);
+	}
+
+	/**
+	 * @param giver Player who is giving a spell
+	 * @param receiver Player who threatened them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param spellID Spell being given
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void giveSpellBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final String spellID)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		giveSpellInternal (giver, receiver, mom, spellID, DiplomacyAction.ACCEPT_SPELL_BECAUSE_THREATENED, DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED, false);
+	}
+	
+	/**
 	 * @return Process for making sure one wizard has met another wizard
 	 */
 	public final KnownWizardServerUtils getKnownWizardServerUtils ()
@@ -581,5 +721,37 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
+	}
+
+	/**
+	 * @return Server-only spell calculations
+	 */
+	public final ServerSpellCalculations getServerSpellCalculations ()
+	{
+		return serverSpellCalculations;
+	}
+
+	/**
+	 * @param calc Server-only spell calculations
+	 */
+	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
+	{
+		serverSpellCalculations = calc;
 	}
 }

@@ -24,7 +24,6 @@ import momime.common.database.SpellRank;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.PactType;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
@@ -227,8 +226,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					break;
 					
 				case DECLARE_WAR_BECAUSE_THREATENED:
-					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WAR, mom);
-					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+					getDiplomacyProcessing ().declareWarBecauseThreatened (sender, talkToPlayer, mom);
+					proceed = false;
 					break;
 					
 				// Player 1 asking player 2 to declare war on player 3 has no idea whether player 2 even knows who player 3 is.
@@ -376,40 +375,11 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					// Proceed with spell donation
 					else if (getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
 					{
-						final DiplomacyMessage msg = new DiplomacyMessage ();	
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) ? DiplomacyAction.PROPOSE_EXCHANGE_SPELL : DiplomacyAction.ACCEPT_SPELL);
-						msg.setOtherPlayerID (getOtherPlayerID ());
-						msg.setOfferSpellID (getOfferSpellID ());
-						msg.setRequestSpellID (getRequestSpellID ());
-					
-						// If giving spell to an AI wizard, modify visible relation
-						if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
-						{
-							final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
-							final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
-							if (spellRank.getSpellTributeRelationBonus () != null)
-								getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellTributeRelationBonus ());
-						
-							final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-							msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						}
-						
-						sender.getConnection ().sendMessageToClient (msg);
-						
-						// Learn the spell
-						final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (talkToPlayerPriv.getSpellResearchStatus (), getOfferSpellID ());
-						researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
-						
-						// Just in case the donated spell was one of the 8 spells available to research now
-						getServerSpellCalculations ().randomizeSpellsResearchableNow (talkToPlayerPriv.getSpellResearchStatus (), mom.getServerDB ());
-						
-						if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-						{
-							final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
-							spellsMsg.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
-							talkToPlayer.getConnection ().sendMessageToClient (spellsMsg);
-						}
+						proceed = false;
+						if (getAction () == DiplomacyAction.GIVE_SPELL)
+							getDiplomacyProcessing ().giveSpell (sender, talkToPlayer, mom, getOfferSpellID ());
+						else
+							getDiplomacyProcessing ().giveSpellBecauseThreatened (sender, talkToPlayer, mom, getOfferSpellID ());
 					}
 					break;
 					
@@ -552,52 +522,23 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 							responses.add (DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED);
 						
 						// Pick random response
-						final DiplomacyMessage msg = new DiplomacyMessage ();
-						boolean sendReply = true;
-						
 						final DiplomacyAction response = responses.get (getRandomUtils ().nextInt (responses.size ()));
 						switch (response)
 						{
 							case DECLARE_WAR_BECAUSE_THREATENED:
-								getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WAR, mom);
-								getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);
+								getDiplomacyProcessing ().declareWarBecauseThreatened (talkToPlayer, sender, mom);
 								break;
 								
 							case GIVE_GOLD_BECAUSE_THREATENED:
 								getDiplomacyProcessing ().giveGoldBecauseThreatened (talkToPlayer, sender, mom, tier);
-								sendReply = false;
 								break;
 								
 							case GIVE_SPELL_BECAUSE_THREATENED:
-								// Learn the spell
-								final String spellID = spellIDsWeCanOffer.get (0);
-								msg.setOfferSpellID (spellID);
-								
-								final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (senderPriv.getSpellResearchStatus (), spellID);
-								researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
-								
-								// Just in case the donated spell was one of the 8 spells available to research now
-								getServerSpellCalculations ().randomizeSpellsResearchableNow (senderPriv.getSpellResearchStatus (), mom.getServerDB ());
-								
-								if (sender.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-								{
-									final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
-									spellsMsg.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
-									sender.getConnection ().sendMessageToClient (spellsMsg);
-								}
+								getDiplomacyProcessing ().giveSpellBecauseThreatened (talkToPlayer, sender, mom, spellIDsWeCanOffer.get (0));
 								break;
 		
 							// Do nothing
 							default:
-						}
-
-						if (sendReply)
-						{
-							msg.setTalkFromPlayerID (getTalkToPlayerID ());
-							msg.setAction (response);
-							msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-							
-							sender.getConnection ().sendMessageToClient (msg);
 						}
 						break;
 					}

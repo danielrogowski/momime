@@ -48,6 +48,19 @@ public interface DiplomacyProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
+	 * This works just like agreeing a pact, just "agreeing" to declare war on each other...
+	 * 
+	 * @param declarer Player who declared war
+	 * @param threatener Player who threatened them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void declareWarBecauseThreatened (final PlayerServerDetails declarer, final PlayerServerDetails threatener, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
 	 * @param proposer Player who proposed the wizard pact
 	 * @param rejecter Player who rejected the wizard pact
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -152,5 +165,29 @@ public interface DiplomacyProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public void giveGoldBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final int offerGoldTier)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param giver Player who is giving a spell
+	 * @param receiver Player who is receiving a spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param spellID Spell being given
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void giveSpell (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final String spellID)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param giver Player who is giving a spell
+	 * @param receiver Player who threatened them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param spellID Spell being given
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void giveSpellBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final String spellID)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 }

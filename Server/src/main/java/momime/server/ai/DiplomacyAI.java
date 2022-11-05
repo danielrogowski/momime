@@ -74,6 +74,17 @@ public interface DiplomacyAI
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
+	 * @param threatener Player who threatened the AI player
+	 * @param aiPlayer Player who has to choose how respond to the threat (us)
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void respondToThreat (final PlayerServerDetails threatener, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
 	 * @param requestSpellID The spell the other wizard wants from us
 	 * @param spellIDsWeCanOffer Spells we can request in return
 	 * @param db Lookup lists built over the XML database

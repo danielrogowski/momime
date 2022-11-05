@@ -277,11 +277,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
-		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="diplomacyAI" ref="diplomacyAI" />
 		<property name="relationAI" ref="relationAI" />
-		<property name="randomUtils" ref="randomUtils" />
 		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
 	</bean>
 
@@ -1119,6 +1117,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="diplomacyAI" class="momime.server.ai.DiplomacyAIImpl">
 		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="relationAI" ref="relationAI" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	
 	<!-- Fog of War -->

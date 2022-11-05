@@ -32,6 +32,9 @@ public final class DiplomacyAIConstants
 
 	/** Penalty for declaring war (in the case of a wizard asking another wizard to declare war on a 3rd wizard, the 3rd wizard hates both the wizards by this amount for it) */
 	public final static int RELATION_PENALTY_FOR_DECLARING_WAR = 30;
+
+	/** Penalty for threatening a wizard (regardless of how they respond to the threat) */
+	public final static int RELATION_PENALTY_FOR_THREATENING = 30;
 	
 	// necessary relation scores for various actions
 

@@ -301,10 +301,10 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		if ((proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!proposersOpinionOfAgreer.isEverStartedCastingSpellOfMastery ()))
 			getRelationAI ().bonusToVisibleRelation (proposersOpinionOfAgreer, positiveRelationBonus);
 		
-		if ((other.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!othersOpinionOfProposer.isEverStartedCastingSpellOfMastery ()))
+		if (other.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
 			getRelationAI ().penaltyToVisibleRelation (othersOpinionOfProposer, negativeRelationBonus);
 
-		if ((other.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!othersOpinionOfAgreer.isEverStartedCastingSpellOfMastery ()))
+		if (other.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
 			getRelationAI ().penaltyToVisibleRelation (othersOpinionOfAgreer, negativeRelationBonus);
 		
 		// If the proposer was a human player, notify them that the agreer accepted the proposal

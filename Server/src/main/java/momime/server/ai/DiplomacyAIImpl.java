@@ -1,20 +1,27 @@
 package momime.server.ai;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.WizardPersonality;
+import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerSpellCalculations;
+import momime.server.messages.process.RequestDiplomacyMessageImpl;
 import momime.server.process.DiplomacyProcessing;
 
 /**
@@ -27,6 +34,18 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Server-only spell calculations */
+	private ServerSpellCalculations serverSpellCalculations;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * @param proposer Player who proposed the wizard pact
@@ -180,6 +199,68 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 			getDiplomacyProcessing ().rejectBreakAllianceWithOtherWizard (proposer, aiPlayer, other, mom);
 	}
 	
+	
+	/**
+	 * @param threatener Player who threatened the AI player
+	 * @param aiPlayer Player who has to choose how respond to the threat (us)
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void respondToThreat (final PlayerServerDetails threatener, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// What's our opinion of the wizard threatening us?
+		final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge threatenerPriv = (MomPersistentPlayerPrivateKnowledge) threatener.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails aiPlayerOpinionOfThreatener = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), threatener.getPlayerDescription ().getPlayerID (), "respondToThreat (P)");
+
+		// Dislike them for threatening us, regardless of how we respond
+		getRelationAI ().penaltyToVisibleRelation (aiPlayerOpinionOfThreatener, DiplomacyAIConstants.RELATION_PENALTY_FOR_THREATENING);
+
+		// Make a list of valid responses
+		final List<DiplomacyAction> responses = new ArrayList<DiplomacyAction> ();
+		responses.add (DiplomacyAction.IGNORE_THREAT);
+		responses.add (DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED);
+		
+		// Do we have enough gold to offer?
+		final int tier = 1;	// Always be cheap
+		final int goldAmount = getResourceValueUtils ().findAmountStoredForProductionType (aiPlayerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		final int goldOffer = getKnownWizardUtils ().convertGoldOfferTierToAmount (aiPlayerOpinionOfThreatener.getMaximumGoldTribute (), tier + 1);
+		if (goldAmount >= goldOffer)
+			responses.add (DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED);
+		
+		// Do we have a tradeable spell to offer?
+		final List<String> spellIDsWeCanOffer = getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+			(aiPlayerPriv.getSpellResearchStatus (), threatenerPriv.getSpellResearchStatus ()), RequestDiplomacyMessageImpl.MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ());
+		if (!spellIDsWeCanOffer.isEmpty ())
+			responses.add (DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED);
+		
+		// Pick random response
+		final DiplomacyAction response = responses.get (getRandomUtils ().nextInt (responses.size ()));
+		switch (response)
+		{
+			case DECLARE_WAR_BECAUSE_THREATENED:
+				getDiplomacyProcessing ().declareWarBecauseThreatened (aiPlayer, threatener, mom);
+				break;
+				
+			case GIVE_GOLD_BECAUSE_THREATENED:
+				getDiplomacyProcessing ().giveGoldBecauseThreatened (aiPlayer, threatener, mom, tier);
+				break;
+				
+			case GIVE_SPELL_BECAUSE_THREATENED:
+				getDiplomacyProcessing ().giveSpellBecauseThreatened (aiPlayer, threatener, mom, spellIDsWeCanOffer.get (0));
+				break;
+
+			// Do nothing
+			default:
+		}
+	}
+	
 	/**
 	 * @param requestSpellID The spell the other wizard wants from us
 	 * @param spellIDsWeCanOffer Spells we can request in return
@@ -246,5 +327,69 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return Server-only spell calculations
+	 */
+	public final ServerSpellCalculations getServerSpellCalculations ()
+	{
+		return serverSpellCalculations;
+	}
+
+	/**
+	 * @param calc Server-only spell calculations
+	 */
+	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
+	{
+		serverSpellCalculations = calc;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

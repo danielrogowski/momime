@@ -1,7 +1,6 @@
 package momime.server.messages.process;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -14,10 +13,8 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RelationScore;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
@@ -26,7 +23,6 @@ import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.messages.servertoclient.DiplomacyMessage;
 import momime.common.messages.servertoclient.TradeableSpellsMessage;
 import momime.common.utils.KnownWizardUtils;
-import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.DiplomacyAI;
 import momime.server.ai.RelationAI;
@@ -43,7 +39,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	private final static Log log = LogFactory.getLog (RequestDiplomacyMessageImpl.class);
 	
 	/** Amount of space in the UI to list tradeable spells */
-	private final static int MAXIMUM_TRADEABLE_SPELLS = 4;
+	public final static int MAXIMUM_TRADEABLE_SPELLS = 4;
 
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
@@ -54,9 +50,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
-	/** Resource value utils */
-	private ResourceValueUtils resourceValueUtils;
-	
 	/** Server-only spell calculations */
 	private ServerSpellCalculations serverSpellCalculations;
 	
@@ -65,9 +58,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	
 	/** For calculating relation scores between two wizards */
 	private RelationAI relationAI;
-	
-	/** Random number generator */
-	private RandomUtils randomUtils;
 	
 	/** Methods for processing agreed diplomatic actions */
 	private DiplomacyProcessing diplomacyProcessing; 
@@ -441,51 +431,9 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						getDiplomacyAI ().considerBreakAllianceWithOtherWizard (sender, talkToPlayer, otherPlayer, mom);
 						break;
 					
-					// Pick random option from: Do nothing, try to buy you off with gold, try to appease you with a free spell, declare war
 					case THREATEN:
-					{
-						getRelationAI ().penaltyToVisibleRelation (senderWizard, 30);
-						relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-
-						// Make a list of valid responses
-						final List<DiplomacyAction> responses = new ArrayList<DiplomacyAction> ();
-						responses.add (DiplomacyAction.IGNORE_THREAT);
-						responses.add (DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED);
-						
-						// Do we have enough gold to offer?
-						final int tier = 1;	// Always be cheap
-						final int goldAmount = getResourceValueUtils ().findAmountStoredForProductionType (talkToPlayerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-						final int goldOffer = getKnownWizardUtils ().convertGoldOfferTierToAmount (senderWizard.getMaximumGoldTribute (), tier + 1);
-						if (goldAmount >= goldOffer)
-							responses.add (DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED);
-						
-						// Do we have a tradeable spell to offer?
-						final List<String> spellIDsWeCanOffer = getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
-							(talkToPlayerPriv.getSpellResearchStatus (), senderPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ());
-						if (!spellIDsWeCanOffer.isEmpty ())
-							responses.add (DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED);
-						
-						// Pick random response
-						final DiplomacyAction response = responses.get (getRandomUtils ().nextInt (responses.size ()));
-						switch (response)
-						{
-							case DECLARE_WAR_BECAUSE_THREATENED:
-								getDiplomacyProcessing ().declareWarBecauseThreatened (talkToPlayer, sender, mom);
-								break;
-								
-							case GIVE_GOLD_BECAUSE_THREATENED:
-								getDiplomacyProcessing ().giveGoldBecauseThreatened (talkToPlayer, sender, mom, tier);
-								break;
-								
-							case GIVE_SPELL_BECAUSE_THREATENED:
-								getDiplomacyProcessing ().giveSpellBecauseThreatened (talkToPlayer, sender, mom, spellIDsWeCanOffer.get (0));
-								break;
-		
-							// Do nothing
-							default:
-						}
+						getDiplomacyAI ().respondToThreat (sender, talkToPlayer, mom);
 						break;
-					}
 					
 					// Ignore, AI doesn't need to respond to these
 					case END_CONVERSATION:
@@ -554,22 +502,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	}
 
 	/**
-	 * @return Resource value utils
-	 */
-	public final ResourceValueUtils getResourceValueUtils ()
-	{
-		return resourceValueUtils;
-	}
-
-	/**
-	 * @param util Resource value utils
-	 */
-	public final void setResourceValueUtils (final ResourceValueUtils util)
-	{
-		resourceValueUtils = util;
-	}
-
-	/**
 	 * @return Server-only spell calculations
 	 */
 	public final ServerSpellCalculations getServerSpellCalculations ()
@@ -615,22 +547,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void setRelationAI (final RelationAI ai)
 	{
 		relationAI = ai;
-	}
-
-	/**
-	 * @return Random number generator
-	 */
-	public final RandomUtils getRandomUtils ()
-	{
-		return randomUtils;
-	}
-
-	/**
-	 * @param utils Random number generator
-	 */
-	public final void setRandomUtils (final RandomUtils utils)
-	{
-		randomUtils = utils;
 	}
 
 	/**

@@ -642,6 +642,107 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	{
 		giveSpellInternal (giver, receiver, mom, spellID, DiplomacyAction.ACCEPT_SPELL_BECAUSE_THREATENED, DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED, false);
 	}
+
+	/**
+	 * @param proposer Player who proposed trading spells
+	 * @param agreer Player who agreed to trade spells
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param proposerWantsSpellID The spell the proposer asked for
+	 * @param agreerWantsSpellID The spell the agreer wants in return
+	 * @param proposerAction Diplomacy action to send back to the proposer, if they are a human player
+	 * @param agreerAction Diplomacy action to send back to the agreer, if they are a human player
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void tradeSpells (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom,
+		final String proposerWantsSpellID, final String agreerWantsSpellID, final DiplomacyAction proposerAction, final DiplomacyAction agreerAction)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// proposer = sender
+		// talktoPlayer = agreer
+
+		// Find the two wizards' opinions of each other
+		final MomPersistentPlayerPrivateKnowledge proposerPriv = (MomPersistentPlayerPrivateKnowledge) proposer.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge agreerPriv = (MomPersistentPlayerPrivateKnowledge) agreer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails proposersOpinionOfAgreer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(proposerPriv.getFogOfWarMemory ().getWizardDetails (), agreer.getPlayerDescription ().getPlayerID (), "tradeSpells (A)");
+		final DiplomacyWizardDetails agreersOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(agreerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "tradeSpells (P)");
+		
+		// Learn the spells
+		final SpellResearchStatus agreerResearchStatus = getSpellUtils ().findSpellResearchStatus (agreerPriv.getSpellResearchStatus (), agreerWantsSpellID);
+		final SpellResearchStatus proposerResearchStatus = getSpellUtils ().findSpellResearchStatus (proposerPriv.getSpellResearchStatus (), proposerWantsSpellID);
+		agreerResearchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
+		proposerResearchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
+		
+		// Just in case the donated spell was one of the 8 spells available to research now
+		getServerSpellCalculations ().randomizeSpellsResearchableNow (agreerPriv.getSpellResearchStatus (), mom.getServerDB ());
+		getServerSpellCalculations ().randomizeSpellsResearchableNow (proposerPriv.getSpellResearchStatus (), mom.getServerDB ());
+		
+		if (agreer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+			spellsMsg.getSpellResearchStatus ().addAll (agreerPriv.getSpellResearchStatus ());
+			agreer.getConnection ().sendMessageToClient (spellsMsg);
+		}
+
+		if (proposer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+			spellsMsg.getSpellResearchStatus ().addAll (proposerPriv.getSpellResearchStatus ());
+			proposer.getConnection ().sendMessageToClient (spellsMsg);
+		}
+		
+		// Improved relations from the trade
+		if ((agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!agreersOpinionOfProposer.isEverStartedCastingSpellOfMastery ()))
+		{
+			final Spell spellDef = mom.getServerDB ().findSpell (agreerWantsSpellID, "tradeSpells");
+			final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "tradeSpells");
+			if (spellRank.getSpellTributeRelationBonus () != null)
+				getRelationAI ().bonusToVisibleRelation (agreersOpinionOfProposer, spellRank.getSpellTributeRelationBonus ());
+		}
+
+		if ((proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!proposersOpinionOfAgreer.isEverStartedCastingSpellOfMastery ()))
+		{
+			final Spell spellDef = mom.getServerDB ().findSpell (proposerWantsSpellID, "tradeSpells");
+			final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "tradeSpells");
+			if (spellRank.getSpellTributeRelationBonus () != null)
+				getRelationAI ().bonusToVisibleRelation (proposersOpinionOfAgreer, spellRank.getSpellTributeRelationBonus ());
+		}
+
+		// Tell the receiver they were given some a spell
+		if (agreer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
+			msg.setAction (agreerAction);
+			msg.setOfferSpellID (agreerWantsSpellID);
+			msg.setRequestSpellID (proposerWantsSpellID);
+
+			if (proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "tradeSpells").getRelationScoreID ());
+			
+			agreer.getConnection ().sendMessageToClient (msg);
+		}
+		
+		// If the proposer was a human player, tell them thanks
+		if (proposer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
+			msg.setAction (proposerAction);
+			msg.setOfferSpellID (proposerWantsSpellID);		// // Note these are reversed, depending who the msg is going to
+			msg.setRequestSpellID (agreerWantsSpellID);
+
+			if (agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (agreersOpinionOfProposer.getVisibleRelation (), "tradeSpells").getRelationScoreID ());
+			
+			proposer.getConnection ().sendMessageToClient (msg);
+		}
+	}	
 	
 	/**
 	 * @return Process for making sure one wizard has met another wizard

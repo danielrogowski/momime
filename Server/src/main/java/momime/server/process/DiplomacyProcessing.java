@@ -6,6 +6,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.DiplomacyAction;
 import momime.server.MomSessionVariables;
 
 /**
@@ -189,5 +190,21 @@ public interface DiplomacyProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public void giveSpellBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final String spellID)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param proposer Player who proposed trading spells
+	 * @param agreer Player who agreed to trade spells
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param proposerWantsSpellID The spell the proposer asked for
+	 * @param agreerWantsSpellID The spell the agreer wants in return
+	 * @param proposerAction Diplomacy action to send back to the proposer, if they are a human player
+	 * @param agreerAction Diplomacy action to send back to the agreer, if they are a human player
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void tradeSpells (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom,
+		final String proposerWantsSpellID, final String agreerWantsSpellID, final DiplomacyAction proposerAction, final DiplomacyAction agreerAction)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 }

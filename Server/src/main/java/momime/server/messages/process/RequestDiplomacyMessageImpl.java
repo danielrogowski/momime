@@ -19,24 +19,17 @@ import com.ndg.utils.random.RandomUtils;
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RelationScore;
-import momime.common.database.Spell;
-import momime.common.database.SpellRank;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.SpellResearchStatus;
-import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.messages.servertoclient.DiplomacyMessage;
-import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.TradeableSpellsMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.DiplomacyAI;
 import momime.server.ai.RelationAI;
-import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.process.DiplomacyProcessing;
 import momime.server.utils.KnownWizardServerUtils;
@@ -64,14 +57,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
 	
-	/** Resource calculations */
-	private ServerResourceCalculations serverResourceCalculations;
-	
 	/** Server-only spell calculations */
 	private ServerSpellCalculations serverSpellCalculations;
-	
-	/** Spell utils */
-	private SpellUtils spellUtils;
 	
 	/** Methods for AI making decisions about diplomacy with other wizards */
 	private DiplomacyAI diplomacyAI;
@@ -385,53 +372,10 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 				// Exchange spells
 				case ACCEPT_EXCHANGE_SPELL:
-				{
-					// Person we are talking with, who suggested the spell they want in return, gets ACCEPT_EXCHANGE_SPELL message.
-					// Person initating the trade to begin with gets AFTER_EXCHANGE_SPELL, though both end up showing the same msg on the client.
-					final DiplomacyMessage msg = new DiplomacyMessage ();	
-					msg.setTalkFromPlayerID (getTalkToPlayerID ());
-					msg.setAction (DiplomacyAction.AFTER_EXCHANGE_SPELL);
-					msg.setOtherPlayerID (getOtherPlayerID ());
-					msg.setOfferSpellID (getRequestSpellID ());		// Note these are reversed, as its going back to the initiator
-					msg.setRequestSpellID (getOfferSpellID ());
-				
-					// If trading spell with an AI wizard, modify visible relation
-					if ((talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!senderWizard.isEverStartedCastingSpellOfMastery ()))
-					{
-						final Spell spellDef = mom.getServerDB ().findSpell (getOfferSpellID (), "RequestDiplomacyMessageImpl");
-						final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "RequestDiplomacyMessageImpl");
-						if (spellRank.getSpellExchangeRelationBonus () != null)
-							getRelationAI ().bonusToVisibleRelation (senderWizard, spellRank.getSpellExchangeRelationBonus ());
-					
-						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-					}
-					
-					sender.getConnection ().sendMessageToClient (msg);
-	
-					// Learn the spells
-					final SpellResearchStatus researchStatus1 = getSpellUtils ().findSpellResearchStatus (talkToPlayerPriv.getSpellResearchStatus (), getOfferSpellID ());
-					final SpellResearchStatus researchStatus2 = getSpellUtils ().findSpellResearchStatus (senderPriv.getSpellResearchStatus (), getRequestSpellID ());
-					researchStatus1.setStatus (SpellResearchStatusID.AVAILABLE);
-					researchStatus2.setStatus (SpellResearchStatusID.AVAILABLE);
-					
-					// Just in case the donated spell was one of the 8 spells available to research now
-					getServerSpellCalculations ().randomizeSpellsResearchableNow (talkToPlayerPriv.getSpellResearchStatus (), mom.getServerDB ());
-					getServerSpellCalculations ().randomizeSpellsResearchableNow (senderPriv.getSpellResearchStatus (), mom.getServerDB ());
-					
-					if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-					{
-						final FullSpellListMessage spellsMsg1 = new FullSpellListMessage ();
-						spellsMsg1.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
-						talkToPlayer.getConnection ().sendMessageToClient (spellsMsg1);
-					}
-	
-					final FullSpellListMessage spellsMsg2 = new FullSpellListMessage ();
-					spellsMsg2.getSpellResearchStatus ().addAll (senderPriv.getSpellResearchStatus ());
-					sender.getConnection ().sendMessageToClient (spellsMsg2);
-	
+					getDiplomacyProcessing ().tradeSpells (sender, talkToPlayer, mom, getRequestSpellID (), getOfferSpellID (),
+						DiplomacyAction.AFTER_EXCHANGE_SPELL, DiplomacyAction.ACCEPT_EXCHANGE_SPELL);
+					proceed = false;
 					break;
-				}
 					
 				default:
 					// This is fine, most diplomacy actions don't trigger updates 
@@ -626,22 +570,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	}
 
 	/**
-	 * @return Resource calculations
-	 */
-	public final ServerResourceCalculations getServerResourceCalculations ()
-	{
-		return serverResourceCalculations;
-	}
-
-	/**
-	 * @param calc Resource calculations
-	 */
-	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
-	{
-		serverResourceCalculations = calc;
-	}
-
-	/**
 	 * @return Server-only spell calculations
 	 */
 	public final ServerSpellCalculations getServerSpellCalculations ()
@@ -655,22 +583,6 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
 	{
 		serverSpellCalculations = calc;
-	}
-
-	/**
-	 * @return Spell utils
-	 */
-	public final SpellUtils getSpellUtils ()
-	{
-		return spellUtils;
-	}
-
-	/**
-	 * @param utils Spell utils
-	 */
-	public final void setSpellUtils (final SpellUtils utils)
-	{
-		spellUtils = utils;
 	}
 
 	/**

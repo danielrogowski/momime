@@ -278,9 +278,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
-		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
-		<property name="spellUtils" ref="spellUtils" />
 		<property name="diplomacyAI" ref="diplomacyAI" />
 		<property name="relationAI" ref="relationAI" />
 		<property name="randomUtils" ref="randomUtils" />

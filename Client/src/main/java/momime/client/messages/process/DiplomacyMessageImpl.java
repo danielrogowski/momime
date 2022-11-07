@@ -184,7 +184,6 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				break;
 				
 			case ACCEPT_GOLD:
-			case ACCEPT_GOLD_BECAUSE_THREATENED:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_GOLD);
 				getDiplomacyUI ().initializeText ();

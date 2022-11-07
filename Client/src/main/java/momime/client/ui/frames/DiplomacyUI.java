@@ -640,13 +640,22 @@ public final class DiplomacyUI extends MomClientFrameUI
 			{
 				final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 				msg.setTalkToPlayerID (getTalkingWizardID ());
-				msg.setAction ((getTextState () == DiplomacyTextState.OFFER_TRIBUTE) ? DiplomacyAction.GIVE_GOLD : DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED);
 				msg.setOfferGoldTier (goldTier);
-				getClient ().getServerConnection ().sendMessageToServer (msg);
 
-				// The player we're giving gold to doesn't have to click "OK, I accept", the server auto-replies it.
-				// But still, wait for that reply because if its an AI player, they will convey back their improved visibleRelationScoreID as part of the response.
-				setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+				if (getTextState () == DiplomacyTextState.OFFER_TRIBUTE)
+				{
+					// The player we're giving gold to doesn't have to click "OK, I accept", the server auto-replies it.
+					// But still, wait for that reply because if its an AI player, they will convey back their improved visibleRelationScoreID as part of the response.
+					msg.setAction (DiplomacyAction.GIVE_GOLD);
+					setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+				}
+				else
+				{
+					// No need to wait for a reply here, because their opinion of us isn't going to improve because we gave them gold in response to a threat
+					msg.setAction (DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED);
+					setTextState (DiplomacyTextState.THANKS_FOR_GOLD);
+				}				
+				getClient ().getServerConnection ().sendMessageToServer (msg);
 				initializeText ();
 			});
 			
@@ -1220,10 +1229,18 @@ public final class DiplomacyUI extends MomClientFrameUI
 								
 								getClient ().getServerConnection ().sendMessageToServer (msg);
 
-								// The player we're giving a spell to doesn't have to click "OK, I accept", the server auto-replies it.
-								// But still, wait for that reply because if its an AI player, they will convey back their improved visibleRelationScoreID as part of the response.
-								// If we're offering a spell exchange, then the other player does have to choose a reply.
-								setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+								if (getTextState () != DiplomacyTextState.GIVE_SPELL_BECAUSE_THREATENED)
+								{
+									// The player we're giving a spell to doesn't have to click "OK, I accept", the server auto-replies it.
+									// But still, wait for that reply because if its an AI player, they will convey back their improved visibleRelationScoreID as part of the response.
+									// If we're offering a spell exchange, then the other player does have to choose a reply.
+									setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+								}
+								else
+								{
+									// No need to wait for a reply here, because their opinion of us isn't going to improve because we gave them a spell in response to a threat
+									setTextState (DiplomacyTextState.THANKS_FOR_SPELL);
+								}
 								initializeText ();
 							});
 							

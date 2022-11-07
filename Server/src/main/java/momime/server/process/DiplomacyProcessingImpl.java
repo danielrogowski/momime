@@ -435,7 +435,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	 * @param receiver Player who is receiving gold
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param offerGoldTier Gold offer tier 1..4
-	 * @param giverAction Diplomacy action to send back to the giver, if they are a human player
+	 * @param giverAction Diplomacy action to send back to the giver, if they are a human player; can be null
 	 * @param receiverAction Diplomacy action to send to the receiver, if they are a human player
 	 * @param relationBonusPerTier Bonus to the receiver's opinion of the giver, multiplied up by the tier
 	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
@@ -487,7 +487,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		}
 		
 		// If the giver was a human player, tell them thanks
-		if (giver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		if ((giverAction != null) && (giver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
 			msg.setTalkFromPlayerID (receiver.getPlayerDescription ().getPlayerID ());
@@ -531,7 +531,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void giveGoldBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final int offerGoldTier)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		giveGoldInternal (giver, receiver, mom, offerGoldTier, DiplomacyAction.ACCEPT_GOLD_BECAUSE_THREATENED, DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED, 0);
+		giveGoldInternal (giver, receiver, mom, offerGoldTier, null, DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED, 0);
 	}
 	
 	/**
@@ -539,7 +539,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	 * @param receiver Player who is receiving a spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param spellID Spell being given
-	 * @param giverAction Diplomacy action to send back to the giver, if they are a human player
+	 * @param giverAction Diplomacy action to send back to the giver, if they are a human player; can be null
 	 * @param receiverAction Diplomacy action to send to the receiver, if they are a human player
 	 * @param relationBonus Whether the receiver's opinion of the giver improves for them giving the spell (if true, the amount it improves depends on the spell rank and comes from the DB)
 	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
@@ -597,7 +597,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		}
 		
 		// If the giver was a human player, tell them thanks
-		if (giver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		if ((giverAction != null) && (giver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
 			msg.setTalkFromPlayerID (receiver.getPlayerDescription ().getPlayerID ());
@@ -640,7 +640,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void giveSpellBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final String spellID)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		giveSpellInternal (giver, receiver, mom, spellID, DiplomacyAction.ACCEPT_SPELL_BECAUSE_THREATENED, DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED, false);
+		giveSpellInternal (giver, receiver, mom, spellID, null, DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED, false);
 	}
 
 	/**
@@ -660,9 +660,6 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		final String proposerWantsSpellID, final String agreerWantsSpellID, final DiplomacyAction proposerAction, final DiplomacyAction agreerAction)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		// proposer = sender
-		// talktoPlayer = agreer
-
 		// Find the two wizards' opinions of each other
 		final MomPersistentPlayerPrivateKnowledge proposerPriv = (MomPersistentPlayerPrivateKnowledge) proposer.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge agreerPriv = (MomPersistentPlayerPrivateKnowledge) agreer.getPersistentPlayerPrivateKnowledge ();

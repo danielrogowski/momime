@@ -48,6 +48,28 @@ public interface DiplomacyProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
+	 * @param proposer Player who is breaking the wizard pact
+	 * @param agreer Player who they had the wizard pact with
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void breakWizardPactNicely (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param proposer Player who is breaking the alliance
+	 * @param agreer Player who they had the alliance with
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void breakAllianceNicely (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
 	 * This works just like agreeing a pact, just "agreeing" to declare war on each other...
 	 * 
 	 * @param declarer Player who declared war

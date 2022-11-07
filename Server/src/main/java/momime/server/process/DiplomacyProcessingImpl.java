@@ -92,6 +92,10 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		if ((relationBonus > 0) && (agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!agreersOpinionOfProposer.isEverStartedCastingSpellOfMastery ()))
 			getRelationAI ().bonusToVisibleRelation (agreersOpinionOfProposer, relationBonus);
 		
+		// If they're breaking a pact, only the player breaking it gets a penalty
+		if ((relationBonus < 0) && (agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN))
+			getRelationAI ().penaltyToVisibleRelation (agreersOpinionOfProposer, -relationBonus);
+		
 		// If the proposer was a human player, notify them that the agreer accepted the pact
 		if (proposer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
@@ -166,6 +170,38 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	{
 		agreePact (proposer, agreer, mom, null, DiplomacyAction.ACCEPT_PEACE_TREATY, DiplomacyAction.AFTER_PEACE_TREATY,
 			DiplomacyAIConstants.RELATION_BONUS_FORM_PEACE_TREATY);
+	}
+
+	/**
+	 * @param proposer Player who is breaking the wizard pact
+	 * @param agreer Player who they had the wizard pact with
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void breakWizardPactNicely (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		agreePact (proposer, agreer, mom, null, DiplomacyAction.BROKEN_WIZARD_PACT_NICELY, DiplomacyAction.BREAK_WIZARD_PACT_NICELY,
+			-DiplomacyAIConstants.RELATION_PENALTY_FOR_BREAKING_WIZARD_PACT_NICELY);
+	}
+	
+	/**
+	 * @param proposer Player who is breaking the alliance
+	 * @param agreer Player who they had the alliance with
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void breakAllianceNicely (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		agreePact (proposer, agreer, mom, null, DiplomacyAction.BROKEN_ALLIANCE_NICELY, DiplomacyAction.BREAK_ALLIANCE_NICELY,
+			-DiplomacyAIConstants.RELATION_PENALTY_FOR_BREAKING_ALLIANCE_NICELY);
 	}
 	
 	/**

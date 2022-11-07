@@ -261,32 +261,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					proceed = false;
 					break;
 				
-				// Breaking a wizard pact / alliance send an automated reply without even waiting for the recipient to click anything
 				case BREAK_WIZARD_PACT_NICELY:
-				case BREAK_ALLIANCE_NICELY:
-				{
-					final DiplomacyMessage msg = new DiplomacyMessage ();	
-					msg.setTalkFromPlayerID (getTalkToPlayerID ());
-					msg.setAction ((getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY) ? DiplomacyAction.BROKEN_WIZARD_PACT_NICELY : DiplomacyAction.BROKEN_ALLIANCE_NICELY);
-					msg.setOtherPlayerID (getOtherPlayerID ());
-				
-					// If breaking pact/alliance with an AI wizard, modify visible relation
-					if (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
-					{
-						final int penalty = (getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY) ? 10 : 20;
-						getRelationAI ().penaltyToVisibleRelation (senderWizard, penalty);
-					
-						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-					}
-					
-					sender.getConnection ().sendMessageToClient (msg);
-					
-					// Remove pact
-					getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), null, mom);
-					getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), null, mom);
+					getDiplomacyProcessing ().breakWizardPactNicely (sender, talkToPlayer, mom);
+					proceed = false;
 					break;
-				}
+					
+				case BREAK_ALLIANCE_NICELY:
+					getDiplomacyProcessing ().breakAllianceNicely (sender, talkToPlayer, mom);
+					proceed = false;
+					break;
 				
 				// Generate list of tradeable spells
 				case GIVE_SPELL:

@@ -26,6 +26,9 @@ public final class DiplomacyAIConstants
 	public final static int RELATION_BONUS_FOR_GOLD_DONATION_PER_TIER = 5;
 	
 	// negative factors
+
+	/** Penalty for breaking a wizard pact nicely via diplomacy screen */
+	public final static int RELATION_PENALTY_FOR_BREAKING_WIZARD_PACT_NICELY = 10;
 	
 	/** Penalty for breaking an alliance nicely via diplomacy screen (in the case of a wizard asking another wizard to break their alliance with a 3rd wizard, the 3rd wizard hates them both by this amount for it) */
 	public final static int RELATION_PENALTY_FOR_BREAKING_ALLIANCE_NICELY = 20;

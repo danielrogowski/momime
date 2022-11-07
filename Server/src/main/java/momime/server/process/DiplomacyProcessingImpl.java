@@ -60,14 +60,15 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	 * @param agreer Player who agreed to the pact
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param pactType What type of pact it is
-	 * @param action Diplomacy action to send back to the proposer, if they are a human player
+	 * @param proposerAction Diplomacy action to send back to the proposer, if they are a human player
+	 * @param agreerAction Diplomacy action to send back to the agreer, if they are a human player
 	 * @param relationBonus Bonus to each player's opinion of each other
 	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	private final void agreePact (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom,
-		final PactType pactType, final DiplomacyAction action, final int relationBonus)
+		final PactType pactType, final DiplomacyAction proposerAction, final DiplomacyAction agreerAction, final int relationBonus)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		// Find the two wizards' opinions of each other
@@ -96,7 +97,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
 			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
-			msg.setAction (action);
+			msg.setAction (proposerAction);
 
 			// Show them that the AI player's opinion of them improved because of the pact
 			// If it is two human players, leave it null and the UI will keep showing the same value from when diplomacy started
@@ -104,6 +105,18 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (agreersOpinionOfProposer.getVisibleRelation (), "agreePact").getRelationScoreID ());
 			
 			proposer.getConnection ().sendMessageToClient (msg);
+		}
+
+		if ((agreerAction != null) && (agreer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (proposer.getPlayerDescription ().getPlayerID ());
+			msg.setAction (agreerAction);
+
+			if (proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "agreePact").getRelationScoreID ());
+			
+			agreer.getConnection ().sendMessageToClient (msg);
 		}
 	}
 
@@ -119,7 +132,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void agreeWizardPact (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		agreePact (proposer, agreer, mom, PactType.WIZARD_PACT, DiplomacyAction.ACCEPT_WIZARD_PACT, DiplomacyAIConstants.RELATION_BONUS_FORM_WIZARD_PACT);
+		agreePact (proposer, agreer, mom, PactType.WIZARD_PACT, DiplomacyAction.ACCEPT_WIZARD_PACT, DiplomacyAction.AFTER_WIZARD_PACT,
+			DiplomacyAIConstants.RELATION_BONUS_FORM_WIZARD_PACT);
 	}
 	
 	/**
@@ -134,7 +148,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void agreeAlliance (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		agreePact (proposer, agreer, mom, PactType.ALLIANCE, DiplomacyAction.ACCEPT_ALLIANCE, DiplomacyAIConstants.RELATION_BONUS_FORM_ALLIANCE);
+		agreePact (proposer, agreer, mom, PactType.ALLIANCE, DiplomacyAction.ACCEPT_ALLIANCE, DiplomacyAction.AFTER_ALLIANCE,
+			DiplomacyAIConstants.RELATION_BONUS_FORM_ALLIANCE);
 	}
 	
 	/**
@@ -149,7 +164,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void agreePeaceTreaty (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		agreePact (proposer, agreer, mom, null, DiplomacyAction.ACCEPT_PEACE_TREATY, DiplomacyAIConstants.RELATION_BONUS_FORM_PEACE_TREATY);
+		agreePact (proposer, agreer, mom, null, DiplomacyAction.ACCEPT_PEACE_TREATY, DiplomacyAction.AFTER_PEACE_TREATY,
+			DiplomacyAIConstants.RELATION_BONUS_FORM_PEACE_TREATY);
 	}
 	
 	/**
@@ -167,7 +183,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		// Note players are reversed on purpose, its the threatener who gets a message back to say what the response to their threat was
-		agreePact (threatener, declarer, mom, PactType.WAR, DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED, 0);
+		// There's no need to send a message back to the declarer, as the threatener's opinion of someone doesn't change when they threaten them
+		agreePact (threatener, declarer, mom, PactType.WAR, DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED, null, 0);
 	}
 	
 	/**
@@ -254,7 +271,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	 * @param other Player who pact was made with
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param pactType What type of pact it is
-	 * @param action Diplomacy action to send back to the proposer, if they are a human player
+	 * @param proposerAction Diplomacy action to send back to the proposer, if they are a human player
+	 * @param agreerAction Diplomacy action to send back to the agreer, if they are a human player
 	 * @param otherAction Diplomacy action to send back to the 3rd party player, if they are a human player
 	 * @param positiveRelationBonus How much proposer likes agreer for agreeing to this
 	 * @param negativeRelationBonus How much 3rd party wizard dislikes both of them for conspiring against them
@@ -263,7 +281,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	private final void agreePactWithThirdParty (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final PlayerServerDetails other, final MomSessionVariables mom,
-		final PactType pactType, final DiplomacyAction action, final DiplomacyAction otherAction, final int positiveRelationBonus, final int negativeRelationBonus)
+		final PactType pactType, final DiplomacyAction proposerAction, final DiplomacyAction agreerAction, final DiplomacyAction otherAction,
+		final int positiveRelationBonus, final int negativeRelationBonus)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		// Find the two wizards' opinions of each other
@@ -312,8 +331,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
 			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
-			msg.setOtherPlayerID (proposer.getPlayerDescription ().getPlayerID ());
-			msg.setAction (action);
+			msg.setOtherPlayerID (other.getPlayerDescription ().getPlayerID ());
+			msg.setAction (proposerAction);
 
 			// Show them that the AI player's opinion of them improved because of the pact
 			// If it is two human players, leave it null and the UI will keep showing the same value from when diplomacy started
@@ -321,6 +340,19 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (agreersOpinionOfProposer.getVisibleRelation (), "agreePactWithThirdParty").getRelationScoreID ());
 			
 			proposer.getConnection ().sendMessageToClient (msg);
+		}
+
+		if (agreer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (proposer.getPlayerDescription ().getPlayerID ());
+			msg.setOtherPlayerID (other.getPlayerDescription ().getPlayerID ());
+			msg.setAction (agreerAction);
+
+			if (proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "agreePactWithThirdParty").getRelationScoreID ());
+			
+			agreer.getConnection ().sendMessageToClient (msg);
 		}
 	}
 
@@ -338,8 +370,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		agreePactWithThirdParty (proposer, agreer, other, mom, PactType.WAR, DiplomacyAction.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD,
-			DiplomacyAction.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD, DiplomacyAIConstants.RELATION_BONUS_FORM_AGREEING_TO_DECLARE_WAR,
-			DiplomacyAIConstants.RELATION_PENALTY_FOR_DECLARING_WAR);
+			DiplomacyAction.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD, DiplomacyAction.AFTER_DECLARE_WAR_ON_OTHER_WIZARD,
+			DiplomacyAIConstants.RELATION_BONUS_FORM_AGREEING_TO_DECLARE_WAR, DiplomacyAIConstants.RELATION_PENALTY_FOR_DECLARING_WAR);
 	}
 	
 	/**
@@ -356,8 +388,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		agreePactWithThirdParty (proposer, agreer, other, mom, null, DiplomacyAction.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD,
-			DiplomacyAction.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD, DiplomacyAIConstants.RELATION_BONUS_FORM_AGREEING_TO_BREAK_ALLIANCE,
-			DiplomacyAIConstants.RELATION_PENALTY_FOR_BREAKING_ALLIANCE_NICELY);
+			DiplomacyAction.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD, DiplomacyAction.AFTER_BREAK_ALLIANCE_WITH_OTHER_WIZARD,
+			DiplomacyAIConstants.RELATION_BONUS_FORM_AGREEING_TO_BREAK_ALLIANCE, DiplomacyAIConstants.RELATION_PENALTY_FOR_BREAKING_ALLIANCE_NICELY);
 	}
 
 	/**
@@ -649,15 +681,13 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param proposerWantsSpellID The spell the proposer asked for
 	 * @param agreerWantsSpellID The spell the agreer wants in return
-	 * @param proposerAction Diplomacy action to send back to the proposer, if they are a human player
-	 * @param agreerAction Diplomacy action to send back to the agreer, if they are a human player
 	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
 	public final void tradeSpells (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom,
-		final String proposerWantsSpellID, final String agreerWantsSpellID, final DiplomacyAction proposerAction, final DiplomacyAction agreerAction)
+		final String proposerWantsSpellID, final String agreerWantsSpellID)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		// Find the two wizards' opinions of each other
@@ -715,7 +745,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
 			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
-			msg.setAction (agreerAction);
+			msg.setAction (DiplomacyAction.ACCEPT_EXCHANGE_SPELL);
 			msg.setOfferSpellID (agreerWantsSpellID);
 			msg.setRequestSpellID (proposerWantsSpellID);
 
@@ -730,7 +760,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
 			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
-			msg.setAction (proposerAction);
+			msg.setAction (DiplomacyAction.AFTER_EXCHANGE_SPELL);
 			msg.setOfferSpellID (proposerWantsSpellID);		// // Note these are reversed, depending who the msg is going to
 			msg.setRequestSpellID (agreerWantsSpellID);
 

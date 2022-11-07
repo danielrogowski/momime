@@ -123,6 +123,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				break;				
 				
 			case ACCEPT_WIZARD_PACT:
+			case AFTER_WIZARD_PACT:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_WIZARD_PACT);
 				getDiplomacyUI ().initializeText ();
@@ -130,6 +131,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				break;
 				
 			case ACCEPT_ALLIANCE:
+			case AFTER_ALLIANCE:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_ALLIANCE);
 				getDiplomacyUI ().initializeText ();
@@ -137,6 +139,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				break;
 			
 			case ACCEPT_PEACE_TREATY:
+			case AFTER_PEACE_TREATY:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_PEACE_TREATY);
 				getDiplomacyUI ().initializeText ();
@@ -297,6 +300,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				break;
 				
 			case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
+			case AFTER_DECLARE_WAR_ON_OTHER_WIZARD:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD);
 				getDiplomacyUI ().initializeText ();
@@ -304,6 +308,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				break;
 				
 			case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+			case AFTER_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
 				getDiplomacyUI ().initializeText ();

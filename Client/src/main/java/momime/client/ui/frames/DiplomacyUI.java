@@ -407,34 +407,26 @@ public final class DiplomacyUI extends MomClientFrameUI
 			{
 				case PROPOSE_WIZARD_PACT:
 					msg.setAction (DiplomacyAction.ACCEPT_WIZARD_PACT);
-					setTextState (DiplomacyTextState.ACCEPT_WIZARD_PACT);
 					break;
 
 				case PROPOSE_ALLIANCE:
 					msg.setAction (DiplomacyAction.ACCEPT_ALLIANCE);
-					setTextState (DiplomacyTextState.ACCEPT_ALLIANCE);
 					break;
 				
 				case PROPOSE_PEACE_TREATY:
 					msg.setAction (DiplomacyAction.ACCEPT_PEACE_TREATY);
-					setTextState (DiplomacyTextState.ACCEPT_PEACE_TREATY);
 					break;
 				
 				case PROPOSE_EXCHANGE_SPELL:					
 					msg.setAction (DiplomacyAction.ACCEPT_EXCHANGE_SPELL);
-					// The player we're agreeing to trade spells with doesn't have to click "OK, I accept" - they're the one that suggested the trade in the first place.
-					// But still, wait for that reply because if its an AI player, they will convey back their improved visibleRelationScoreID as part of the response.
-					setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
 					break;
 					
 				case PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD:
 					msg.setAction (DiplomacyAction.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD);
-					setTextState (DiplomacyTextState.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD);
 					break;
 					
 				case PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
 					msg.setAction (DiplomacyAction.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
-					setTextState (DiplomacyTextState.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
 					break;
 					
 				default:
@@ -442,6 +434,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 			}
 			
 			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			// Every agree action now waits for a reply from the server so we can see the change in relation in the gargoyle eyes
+			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
 			initializeText ();
 		});
 		

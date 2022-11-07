@@ -362,8 +362,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 				// Exchange spells
 				case ACCEPT_EXCHANGE_SPELL:
-					getDiplomacyProcessing ().tradeSpells (sender, talkToPlayer, mom, getRequestSpellID (), getOfferSpellID (),
-						DiplomacyAction.AFTER_EXCHANGE_SPELL, DiplomacyAction.ACCEPT_EXCHANGE_SPELL);
+					getDiplomacyProcessing ().tradeSpells (sender, talkToPlayer, mom, getRequestSpellID (), getOfferSpellID ());
 					proceed = false;
 					break;
 					

@@ -1454,6 +1454,10 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:documentation>Reject wizard pact</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_WIZARD_PACT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="FW"><xsd:annotation>
+				<xsd:documentation>After wizard pact (goes back to the wizard who agreed to the pact, so they can see improved relation from it)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="AFTER_WIZARD_PACT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="BW"><xsd:annotation>
 				<xsd:documentation>Break wizard pact (nicely from diplomacy screen)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="BREAK_WIZARD_PACT_NICELY" /></xsd:appinfo>
@@ -1477,6 +1481,10 @@ So need a separate data item for this.</xsd:documentation>
 			<xsd:enumeration value="RA"><xsd:annotation>
 				<xsd:documentation>Reject alliance</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_ALLIANCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="FA"><xsd:annotation>
+				<xsd:documentation>After alliance (goes back to the wizard who agreed to the alliance, so they can see improved relation from it)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="AFTER_ALLIANCE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="BA"><xsd:annotation>
 				<xsd:documentation>Break alliance (nicely from diplomacy screen)</xsd:documentation>
@@ -1506,6 +1514,10 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:documentation>Reject peace treaty</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_PEACE_TREATY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="FP"><xsd:annotation>
+				<xsd:documentation>After peace treaty (goes back to the wizard who agreed to the peace treaty, so they can see improved relation from it)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="AFTER_PEACE_TREATY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="CD"><xsd:annotation>
 				<xsd:documentation>Declare war (in response to attacking a city)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DECLARE_WAR_CITY" /></xsd:appinfo>
@@ -1522,12 +1534,16 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:documentation>Reject declare war on another wizard</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_DECLARE_WAR_ON_OTHER_WIZARD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="FD"><xsd:annotation>
+				<xsd:documentation>After declare war on other wizard (goes back to the wizard who agreed to declare war, so they can see improved relation from it)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="AFTER_DECLARE_WAR_ON_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="OD"><xsd:annotation>
 				<xsd:documentation>Declaring war on you because someone else asked us to</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="UD"><xsd:annotation>
-				<xsd:documentation>We were asked to declare war on a wizard that we don't even knowo</xsd:documentation>
+				<xsd:documentation>We were asked to declare war on a wizard that we don't even know</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="CANNOT_DECLARE_WAR_ON_UNKNOWN_WIZARD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="PB"><xsd:annotation>
@@ -1541,6 +1557,10 @@ So need a separate data item for this.</xsd:documentation>
 			<xsd:enumeration value="RB"><xsd:annotation>
 				<xsd:documentation>Reject break alliance with another wizard</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="FB"><xsd:annotation>
+				<xsd:documentation>After break alliance with other wizard (goes back to the wizard who agreed to break their alliance, so they can see improved relation from it)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="AFTER_BREAK_ALLIANCE_WITH_OTHER_WIZARD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="OB"><xsd:annotation>
 				<xsd:documentation>Breaking alliance with you because someone else asked us to</xsd:documentation>

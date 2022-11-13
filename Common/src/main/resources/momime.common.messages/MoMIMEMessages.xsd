@@ -604,6 +604,12 @@ Tributes are excluded, we will always accept free gifts!  Reduced by -1 each tur
 What the actual cap is depends on visibleRelation - a wizard we hate gets 1 chance at a request; a wizard we love will get 5.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="lastTurnTalkedTo" type="momimecommon:turnNumber">
+					    <xsd:annotation>
+	  						<xsd:documentation>The last turn we talked to this wizard (or tried to - them immediately rejecting and refusing to talk to us still updates this because we tried).
+Recorded to stop the AI wizards spamming players with requests every turn.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.utils.random.RandomUtils;
@@ -31,6 +32,7 @@ import momime.common.database.SelectedByPick;
 import momime.common.database.SpellSetting;
 import momime.common.database.WizardObjective;
 import momime.common.database.WizardPersonality;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageOffer;
@@ -103,6 +105,12 @@ public final class MomAIImpl implements MomAI
 	/** For calculating relation scores between two wizards */
 	private RelationAI relationAI;
 	
+	/** During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards */
+	private DiplomacyProposalsAI diplomacyProposalsAI;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
 	/**
 	 * @param player AI player whose turn to take
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -132,6 +140,29 @@ public final class MomAIImpl implements MomAI
 			getRelationAI ().slideTowardsBaseRelation (player);
 			getRelationAI ().capVisibleRelations (player);
 			getRelationAI ().regainPatience (player);
+			
+			// Do we want to make any diplomacy proposals to anyone?
+			if (wizardDetails.getWizardState () == WizardState.ACTIVE)
+			{
+				final Iterator<KnownWizardDetails> iter = priv.getFogOfWarMemory ().getWizardDetails ().iterator ();
+				while (iter.hasNext ())
+				{
+					final DiplomacyWizardDetails talkToWizard = (DiplomacyWizardDetails) iter.next ();
+					if ((getPlayerKnowledgeUtils ().isWizard (talkToWizard.getWizardID ())) && (talkToWizard.getWizardState () == WizardState.ACTIVE) &&
+						(talkToWizard.getPlayerID () != player.getPlayerDescription ().getPlayerID ()) &&
+						(mom.getGeneralPublicKnowledge ().getTurnNumber () >= talkToWizard.getLastTurnTalkedTo () + DiplomacyAIConstants.MINIMUM_TURNS_BETWEEN_TALKING))
+					{
+						final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), talkToWizard.getPlayerID (), "aiPlayerTurn");
+						final List<DiplomacyProposal> proposals = getDiplomacyProposalsAI ().generateProposals (player, talkToPlayer, mom);
+						if (!proposals.isEmpty ())
+						{
+							if (log.isDebugEnabled ())
+								for (final DiplomacyProposal proposal : proposals)
+									log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " wants to make proposal " + proposal + " to player ID " + talkToWizard.getPlayerID ()); 
+						}
+					}
+				}
+			}
 		}
 		
 		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID ());
@@ -872,5 +903,37 @@ public final class MomAIImpl implements MomAI
 	public final void setRelationAI (final RelationAI ai)
 	{
 		relationAI = ai;
+	}
+
+	/**
+	 * @return During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards
+	 */
+	public final DiplomacyProposalsAI getDiplomacyProposalsAI ()
+	{
+		return diplomacyProposalsAI;
+	}
+
+	/**
+	 * @param p During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards
+	 */
+	public final void setDiplomacyProposalsAI (final DiplomacyProposalsAI p)
+	{
+		diplomacyProposalsAI = p;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

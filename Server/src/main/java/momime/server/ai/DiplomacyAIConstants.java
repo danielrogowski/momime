@@ -5,6 +5,11 @@ package momime.server.ai;
  */
 public final class DiplomacyAIConstants
 {
+	// miscellaneous constants
+	
+	/** How often wizards are allowed to try to talk to each other */
+	public final static int MINIMUM_TURNS_BETWEEN_TALKING = 8;
+	
 	// positive factors
 	
 	/** Bonus for forming an alliance; both players like each other for the pact, no matter who proposed or agreed to it */
@@ -39,17 +44,37 @@ public final class DiplomacyAIConstants
 	/** Penalty for threatening a wizard (regardless of how they respond to the threat) */
 	public final static int RELATION_PENALTY_FOR_THREATENING = 30;
 	
-	// necessary relation scores for various actions
+	// necessary relation scores for various negative actions
 
+	/** Relation below which an AI player will threaten another player, modified by their personality type */
+	public final static int MAXIMUM_RELATION_TO_THREATEN = -50;
+
+	/** Relation below which an AI player will break a wizard pact, modified by their personality type */
+	public final static int MAXIMUM_RELATION_TO_BREAK_WIZARD_PACT = -10;
+	
+	/** Relation below which an AI player will break an alliance, modified by their personality type */
+	public final static int MAXIMUM_RELATION_TO_BREAK_ALLIANCE = 10;
+
+	// necessary relation scores for various positive actions
+	
 	/** Minimum relation for an AI player to agree to a peace treaty, modified by their personality type */
 	public final static int MINIMUM_RELATION_TO_AGREE_TO_PEACE_TREATY = 0;
 
+	/** Minimum relation for an AI player to propose a peace treaty, modified by their personality type */
+	public final static int MINIMUM_RELATION_TO_PROPOSE_PEACE_TREATY = 10;
+	
 	/** Minimum relation for an AI player to agree to a wizard pact, modified by their personality type */
 	public final static int MINIMUM_RELATION_TO_AGREE_TO_WIZARD_PACT = 20;
+
+	/** Minimum relation for an AI player to propose a wizard pact, modified by their personality type */
+	public final static int MINIMUM_RELATION_TO_PROPOSE_WIZARD_PACT = 30;
 
 	/** Minimum relation for an AI player to agree to an alliance, modified by their personality type */
 	public final static int MINIMUM_RELATION_TO_AGREE_TO_ALLIANCE = 40;
 
+	/** Minimum relation for an AI player to propose an alliance, modified by their personality type */
+	public final static int MINIMUM_RELATION_TO_PROPOSE_ALLIANCE = 50;
+	
 	/** Minimum relation for an AI player to agree to declaring war on another wizard, modified by their personality type */
 	public final static int MINIMUM_RELATION_TO_AGREE_TO_DECLARE_WAR = 60;
 	

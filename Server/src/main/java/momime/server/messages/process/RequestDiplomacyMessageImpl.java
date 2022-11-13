@@ -96,6 +96,11 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			(senderPriv.getFogOfWarMemory ().getWizardDetails (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl (T)");
 		final DiplomacyWizardDetails senderWizard = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
 			(talkToPlayerPriv.getFogOfWarMemory ().getWizardDetails (), sender.getPlayerDescription ().getPlayerID (), "RequestDiplomacyMessageImpl (S)");
+
+		// Keep track of the last time we tried to talk to this wizard; have to do this as a special block as AI players might reject talking just below here
+		// and we want to update this even if they completely refused to talk to us
+		if (getAction () == DiplomacyAction.INITIATE_TALKING)
+			senderWizard.setLastTurnTalkedTo (mom.getGeneralPublicKnowledge ().getTurnNumber ());
 		
 		// See if we're ran out patience to hear their requests - only applicable to AI players - human players can respond however they wish
 		boolean proceed = true;

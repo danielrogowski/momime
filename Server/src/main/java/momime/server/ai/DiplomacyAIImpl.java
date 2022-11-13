@@ -260,6 +260,32 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 			default:
 		}
 	}
+
+	/**
+	 * @param spellIDsWeCanRequest Spells we can request
+	 * @param db Lookup lists built over the XML database
+	 * @return Spell to request
+	 * @throws RecordNotFoundException If we can't find one of the spell IDs in the database
+	 */
+	@Override
+	public final String chooseSpellToRequest (final List<String> spellIDsWeCanRequest, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		String bestSpellID = null;
+		Integer bestResearchCost = null;
+		
+		for (final String spellID : spellIDsWeCanRequest)
+		{
+			final int thisResearchCost = db.findSpell (spellID, "chooseSpellToRequest").getResearchCost ();
+			if ((bestResearchCost == null) || (thisResearchCost > bestResearchCost))
+			{
+				bestSpellID = spellID;
+				bestResearchCost = thisResearchCost;
+			}
+		}
+		
+		return bestSpellID;
+	}
 	
 	/**
 	 * @param requestSpellID The spell the other wizard wants from us

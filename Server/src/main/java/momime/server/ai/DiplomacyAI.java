@@ -83,6 +83,15 @@ public interface DiplomacyAI
 	 */
 	public void respondToThreat (final PlayerServerDetails threatener, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param spellIDsWeCanRequest Spells we can request
+	 * @param db Lookup lists built over the XML database
+	 * @return Spell to request
+	 * @throws RecordNotFoundException If we can't find one of the spell IDs in the database
+	 */
+	public String chooseSpellToRequest (final List<String> spellIDsWeCanRequest, final CommonDatabase db)
+		throws RecordNotFoundException;
 	
 	/**
 	 * @param requestSpellID The spell the other wizard wants from us

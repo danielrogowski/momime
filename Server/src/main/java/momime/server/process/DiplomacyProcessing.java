@@ -15,6 +15,51 @@ import momime.server.MomSessionVariables;
 public interface DiplomacyProcessing
 {
 	/**
+	 * @param humanPlayer Human player we want to talk to
+	 * @param aiPlayer AI player who wants to talk to them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void requestTalking (final PlayerServerDetails humanPlayer, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param requester Player who wanted to talk
+	 * @param agreer Player who agreed to talk to them
+	 * @param patienceRunningOut Whether agreeing reluctantly and have limited patience to talk to them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void agreeTalking (final PlayerServerDetails requester, final PlayerServerDetails agreer, final boolean patienceRunningOut, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param requester Player who wanted to talk
+	 * @param rejecter Player who refused to talk to them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void rejectTalking (final PlayerServerDetails requester, final PlayerServerDetails rejecter, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param requester Player who wanted to talk
+	 * @param rejecter Player who is fed up talking to them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void grownImpatient (final PlayerServerDetails requester, final PlayerServerDetails rejecter, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
 	 * @param proposer Player who proposed the wizard pact
 	 * @param agreer Player who agreed to the wizard pact
 	 * @param mom Allows accessing server knowledge structures, player list and so on

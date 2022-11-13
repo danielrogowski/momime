@@ -2,8 +2,12 @@ package momime.server.ai;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.stream.XMLStreamException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.utils.random.RandomUtils;
@@ -29,6 +33,9 @@ import momime.server.process.DiplomacyProcessing;
  */
 public final class DiplomacyAIImpl implements DiplomacyAI
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (DiplomacyAIImpl.class);
+	
 	/** Methods for processing agreed diplomatic actions */
 	private DiplomacyProcessing diplomacyProcessing; 
 	
@@ -46,6 +53,95 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
+
+	/**
+	 * @param requester Player who wants to talk to us
+	 * @param aiPlayer Player who is considering agreeing talking to them or not (us)
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we agree to talk to them or not (note exactly what the caller needs to do based on this depends on whether the requester is a human or AI player)\
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final boolean decideWhetherWillTalkTo (final PlayerServerDetails requester, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// What's our opinion of the requester?
+		final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails aiPlayerOpinionOfRequester = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), requester.getPlayerDescription ().getPlayerID (), "decideWhetherWillTalkTo");
+
+		// Have they been bugging us with requests too often?
+		final int maximumRequests = getRelationAI ().decideMaximumRequests (aiPlayerOpinionOfRequester.getVisibleRelation ());
+		final boolean accept = (aiPlayerOpinionOfRequester.getImpatienceLevel () >= maximumRequests);
+		if (accept)
+		{
+			final boolean patienceRunningOut = (aiPlayerOpinionOfRequester.getImpatienceLevel () + 1 >= maximumRequests);
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided they would " +
+				(patienceRunningOut ? "reluctantly " : "") + "talk with Player ID " + requester.getPlayerDescription ().getPlayerID ());
+			
+			getDiplomacyProcessing ().agreeTalking (requester, aiPlayer, patienceRunningOut, mom);
+		}
+		else
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " refused to talk with Player ID " + requester.getPlayerDescription ().getPlayerID ());
+			getDiplomacyProcessing ().rejectTalking (requester, aiPlayer, mom);
+		}
+		
+		return accept;
+	}
+	
+	/**
+	 * Decision is made the same as decideWhetherWillTalkTo, the only difference is how we handle the accept or reject 
+	 * 
+	 * @param requester Player who wants to make a proposal to us
+	 * @param aiPlayer Player who is listening, or maybe lost patience to listen (us)
+	 * @param request What type of request they are trying to make (some can't be ignored)
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we agree to listen to their proposal or not (no action/msgs are taken for this, its up to the caller to act on a "true" result accordingly) 
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final boolean willListenToRequest (final PlayerServerDetails requester, final PlayerServerDetails aiPlayer, final DiplomacyAction request, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// What's our opinion of the requester?
+		final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails aiPlayerOpinionOfRequester = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), requester.getPlayerDescription ().getPlayerID (), "willListenToRequest");
+
+		// The fact that they keep bugging still reduces patience regardless of whether we listen or don't
+		aiPlayerOpinionOfRequester.setImpatienceLevel (aiPlayerOpinionOfRequester.getImpatienceLevel () + 1);
+		
+		// Some requests reduce patience, but can't be ignored
+		final boolean accept;
+		if (DiplomacyAIConstants.CANNOT_IGNORE_REQUESTS.contains (request))
+		{
+			accept = true;
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " has no choice but listen to proposal " + request + " from Player ID " +
+				requester.getPlayerDescription ().getPlayerID () + " because of the type of request");
+		}
+		else
+		{
+			final int maximumRequests = getRelationAI ().decideMaximumRequests (aiPlayerOpinionOfRequester.getVisibleRelation ());
+			accept = (aiPlayerOpinionOfRequester.getImpatienceLevel () >= maximumRequests);
+			if (accept)
+				log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " agreed to listen to proposal " + request + " from Player ID " + requester.getPlayerDescription ().getPlayerID ());
+			else
+			{
+				log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " grew impatient and refused to listen to proposal " + request + " from Player ID " +
+					requester.getPlayerDescription ().getPlayerID ());
+				getDiplomacyProcessing ().grownImpatient (requester, aiPlayer, mom);
+			}
+		}
+		
+		return accept;
+	}
 	
 	/**
 	 * @param proposer Player who proposed the wizard pact
@@ -72,9 +168,15 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 		
 		// Make decision
 		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_WIZARD_PACT + aiPersonality.getHostilityModifier ()))
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to accept a wizard pact with Player ID " + proposer.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().agreeWizardPact (proposer, aiPlayer, mom);
+		}
 		else
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to reject a wizard pact with Player ID " + proposer.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().rejectWizardPact (proposer, aiPlayer, mom);
+		}
 	}
 	
 	/**
@@ -102,9 +204,15 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 		
 		// Make decision
 		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_ALLIANCE + aiPersonality.getHostilityModifier ()))
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to accept an alliance with Player ID " + proposer.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().agreeAlliance (proposer, aiPlayer, mom);
+		}
 		else
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to reject an alliance with Player ID " + proposer.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().rejectAlliance (proposer, aiPlayer, mom);
+		}
 	}
 
 	/**
@@ -132,9 +240,15 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 		
 		// Make decision
 		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_PEACE_TREATY + aiPersonality.getHostilityModifier ()))
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to accept a peace treaty with Player ID " + proposer.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().agreePeaceTreaty (proposer, aiPlayer, mom);
+		}
 		else
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to reject a peace treaty with Player ID " + proposer.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().rejectPeaceTreaty (proposer, aiPlayer, mom);
+		}
 	}
 
 	/**
@@ -163,9 +277,17 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 		
 		// Make decision
 		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_DECLARE_WAR + aiPersonality.getHostilityModifier ()))
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to agree to Player ID " + proposer.getPlayerDescription ().getPlayerID () +
+				"'s request to declare war on Player ID " + other.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().agreeDeclareWarOnOtherWizard (proposer, aiPlayer, other, mom);
+		}
 		else
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to reject Player ID " + proposer.getPlayerDescription ().getPlayerID () +
+				"'s request to declare war on Player ID " + other.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().rejectDeclareWarOnOtherWizard (proposer, aiPlayer, other, mom);
+		}
 	}
 	
 	/**
@@ -194,9 +316,17 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 		
 		// Make decision
 		if (aiPlayerOpinionOfProposer.getVisibleRelation () >= (DiplomacyAIConstants.MINIMUM_RELATION_TO_AGREE_TO_BREAK_ALLIANCE + aiPersonality.getHostilityModifier ()))
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to agree to Player ID " + proposer.getPlayerDescription ().getPlayerID () +
+				"'s request to break their alliance with Player ID " + other.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().agreeBreakAllianceWithOtherWizard (proposer, aiPlayer, other, mom);
+		}
 		else
+		{
+			log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " decided to reject Player ID " + proposer.getPlayerDescription ().getPlayerID () +
+				"'s request to break their alliance with Player ID " + other.getPlayerDescription ().getPlayerID ());
 			getDiplomacyProcessing ().rejectBreakAllianceWithOtherWizard (proposer, aiPlayer, other, mom);
+		}
 	}
 	
 	
@@ -241,7 +371,13 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 			responses.add (DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED);
 		
 		// Pick random response
+		log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " is being threatened by Player ID " + threatener.getPlayerDescription ().getPlayerID () +
+			" and has following choices: " + responses.stream ().map (r -> r.toString ()).collect (Collectors.joining (", ")));
+		
 		final DiplomacyAction response = responses.get (getRandomUtils ().nextInt (responses.size ()));
+		log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " is being threatened by Player ID " + threatener.getPlayerDescription ().getPlayerID () +
+			" and made choice " + response);
+		
 		switch (response)
 		{
 			case DECLARE_WAR_BECAUSE_THREATENED:
@@ -323,6 +459,31 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 		return bestSpellID;
 	}
 
+	/**
+	 * @param weRequestedSpellID Spell ID we requested
+	 * @param theyRequestedSpellID Spell ID they want in return
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether we accept the trade, or false if they requested something way too expensive in return
+	 * @throws RecordNotFoundException If we can't find one of the spell IDs in the database
+	 */
+	@Override
+	public final boolean considerSpellTrade (final String weRequestedSpellID, final String theyRequestedSpellID, final CommonDatabase db) 
+		throws RecordNotFoundException
+	{
+		final int weRequestedResearchCost = db.findSpell (weRequestedSpellID, "considerSpellTrade").getResearchCost ();
+		final int theyRequestedResearchCost = db.findSpell (theyRequestedSpellID, "considerSpellTrade").getResearchCost ();
+		
+		// Accept it as long as it isn't more than 2x as expensive as what we requested
+		final boolean accept = (theyRequestedResearchCost <= (weRequestedResearchCost * 2));
+		
+		if (accept)
+			log.debug ("AI player requested spell ID " + weRequestedSpellID + " and agreed to give spell ID " + theyRequestedSpellID + " for it"); 
+		else
+			log.debug ("AI player requested spell ID " + weRequestedSpellID + " but refused to give spell ID " + theyRequestedSpellID + " for it"); 
+			
+		return accept;
+	}
+	
 	/**
 	 * @return Methods for processing agreed diplomatic actions
 	 */

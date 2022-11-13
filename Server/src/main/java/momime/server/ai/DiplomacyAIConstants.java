@@ -1,10 +1,19 @@
 package momime.server.ai;
 
+import java.util.Arrays;
+import java.util.List;
+
+import momime.common.messages.DiplomacyAction;
+
 /**
  * Amounts that AI players' opinions of other players alter by under various circumstances
  */
 public final class DiplomacyAIConstants
 {
+	/** Types of request that reduce patience, but can't be ignored so can't reply GROWN_IMPATIENT to them */
+	public final static List<DiplomacyAction> CANNOT_IGNORE_REQUESTS = Arrays.asList
+		(DiplomacyAction.BREAK_ALLIANCE_NICELY, DiplomacyAction.BREAK_WIZARD_PACT_NICELY, DiplomacyAction.THREATEN);
+	
 	// miscellaneous constants
 	
 	/** How often wizards are allowed to try to talk to each other */
@@ -38,6 +47,9 @@ public final class DiplomacyAIConstants
 	/** Penalty for breaking an alliance nicely via diplomacy screen (in the case of a wizard asking another wizard to break their alliance with a 3rd wizard, the 3rd wizard hates them both by this amount for it) */
 	public final static int RELATION_PENALTY_FOR_BREAKING_ALLIANCE_NICELY = 20;
 
+	/** Penalty for spamming us with diplomatic proposals when we've told them to go away */
+	public final static int RELATION_PENALTY_FOR_NAGGING = 20;
+	
 	/** Penalty for declaring war (in the case of a wizard asking another wizard to declare war on a 3rd wizard, the 3rd wizard hates both the wizards by this amount for it) */
 	public final static int RELATION_PENALTY_FOR_DECLARING_WAR = 30;
 

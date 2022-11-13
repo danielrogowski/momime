@@ -1025,7 +1025,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="relationAI" ref="relationAI" />
+		<property name="diplomacyAI" ref="diplomacyAI" />
 		<property name="diplomacyProposalsAI" ref="diplomacyProposalsAI" />
+		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
+		<property name="AIToAIDiplomacy" ref="aiToAIDiplomacy" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
@@ -1128,6 +1131,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="diplomacyAI" ref="diplomacyAI" />
+	</bean>
+
+	<bean id="aiToAIDiplomacy" class="momime.server.ai.AIToAIDiplomacyImpl">
+		<property name="diplomacyAI" ref="diplomacyAI" />
+		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 	</bean>
 	
 	<!-- Fog of War -->

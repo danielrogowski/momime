@@ -9,6 +9,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.DiplomacyAction;
 import momime.server.MomSessionVariables;
 
 /**
@@ -16,6 +17,33 @@ import momime.server.MomSessionVariables;
  */
 public interface DiplomacyAI
 {
+	/**
+	 * @param requester Player who wants to talk to us
+	 * @param aiPlayer Player who is considering agreeing talking to them or not (us)
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we agree to talk to them or not (note exactly what the caller needs to do based on this depends on whether the requester is a human or AI player)\
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public boolean decideWhetherWillTalkTo (final PlayerServerDetails requester, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Decision is made the same as decideWhetherWillTalkTo, the only difference is how we handle the accept or reject 
+	 * 
+	 * @param requester Player who wants to make a proposal to us
+	 * @param aiPlayer Player who is listening, or maybe lost patience to listen (us)
+	 * @param request What type of request they are trying to make (some can't be ignored)
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we agree to listen to their proposal or not (no action/msgs are taken for this, its up to the caller to act on a "true" result accordingly) 
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public boolean willListenToRequest (final PlayerServerDetails requester, final PlayerServerDetails aiPlayer, final DiplomacyAction request, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
 	/**
 	 * @param proposer Player who proposed the wizard pact
 	 * @param aiPlayer Player who is considering accepting or rejecting the wizard pact (us)
@@ -101,5 +129,15 @@ public interface DiplomacyAI
 	 * @throws RecordNotFoundException If we can't find one of the spell IDs in the database
 	 */
 	public String chooseSpellToRequestInReturn (final String requestSpellID, final List<String> spellIDsWeCanOffer, final CommonDatabase db)
+		throws RecordNotFoundException;
+
+	/**
+	 * @param weRequestedSpellID Spell ID we requested
+	 * @param theyRequestedSpellID Spell ID they want in return
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether we accept the trade, or false if they requested something way too expensive in return
+	 * @throws RecordNotFoundException If we can't find one of the spell IDs in the database
+	 */
+	public boolean considerSpellTrade (final String weRequestedSpellID, final String theyRequestedSpellID, final CommonDatabase db) 
 		throws RecordNotFoundException;
 }

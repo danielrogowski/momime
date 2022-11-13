@@ -111,31 +111,13 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				// 1) It has a different response (reject talking) rather than the standard (grown impatient)
 				// 2) A successful pass of the patience check doesn't increase impatience by +1
 				case INITIATE_TALKING:
-				{
-					final int maximumRequests = getRelationAI ().decideMaximumRequests (senderWizard.getVisibleRelation ());
-					if (senderWizard.getImpatienceLevel () >= maximumRequests)
-					{
-						getRelationAI ().penaltyToVisibleRelation (senderWizard, 20);
-						final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-						
-						final DiplomacyMessage msg = new DiplomacyMessage ();
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (DiplomacyAction.REJECT_TALKING);
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						
-						sender.getConnection ().sendMessageToClient (msg);
-						proceed = false;
-					}
-				}
-				break;
+					getDiplomacyAI ().decideWhetherWillTalkTo (sender, talkToPlayer, mom);
+					proceed = false;
+					break;
 				
-				// These add +1 to impatience, but will never return (grown impatient), they just aren't something we can ignore
+				// Requests that need to check patience level
 				case BREAK_WIZARD_PACT_NICELY:
 				case BREAK_ALLIANCE_NICELY:
-					senderWizard.setImpatienceLevel (senderWizard.getImpatienceLevel () + 1);
-					break;			
-					
-				// Normal case
 				case PROPOSE_WIZARD_PACT:
 				case PROPOSE_ALLIANCE:
 				case PROPOSE_PEACE_TREATY:
@@ -148,23 +130,9 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					if (((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && ((getRequestSpellID () == null) && (getOfferSpellID () == null))) ||
 						(getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL))
 					{
-						final int maximumRequests = getRelationAI ().decideMaximumRequests (senderWizard.getVisibleRelation ());
-						if (senderWizard.getImpatienceLevel () >= maximumRequests)
-						{
-							getRelationAI ().penaltyToVisibleRelation (senderWizard, 20);
-							final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-							
-							final DiplomacyMessage msg = new DiplomacyMessage ();
-							msg.setTalkFromPlayerID (getTalkToPlayerID ());
-							msg.setAction (DiplomacyAction.GROWN_IMPATIENT);
-							msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-							
-							sender.getConnection ().sendMessageToClient (msg);
+						// If true, will fall into the rest of the code below; if false then method sends GROWN_IMPATIENT back to the client
+						if (!getDiplomacyAI ().willListenToRequest (sender, talkToPlayer, getAction (), mom))
 							proceed = false;
-						}
-		
-						// Even if we refuse the proposal, the fact that they keep bugging still reduces patience
-						senderWizard.setImpatienceLevel (senderWizard.getImpatienceLevel () + 1);
 					}
 				}
 				break;
@@ -378,26 +346,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				talkToPlayer.getConnection ().sendMessageToClient (msg);
 			}
 			else
-			{
-				RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (senderWizard.getVisibleRelation (), "RequestDiplomacyMessageImpl");
-				
 				switch (getAction ())
 				{
-					// Impatience check was already done above, but warn player if the AI wizard only has patience to listen to 1 request
-					case INITIATE_TALKING:
-					{
-						final int maximumRequests = getRelationAI ().decideMaximumRequests (senderWizard.getVisibleRelation ());
-						final boolean patienceRunningOut = (senderWizard.getImpatienceLevel () + 1 >= maximumRequests);
-						
-						final DiplomacyMessage msg = new DiplomacyMessage ();
-						msg.setTalkFromPlayerID (getTalkToPlayerID ());
-						msg.setAction (patienceRunningOut ? DiplomacyAction.ACCEPT_TALKING_IMPATIENT : DiplomacyAction.ACCEPT_TALKING);
-						msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
-						
-						sender.getConnection ().sendMessageToClient (msg);
-						break;
-					}
-						
 					case PROPOSE_WIZARD_PACT:
 						getDiplomacyAI ().considerWizardPact (sender, talkToPlayer, mom);
 						break;
@@ -431,12 +381,12 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					// Already handled above
 					case BREAK_WIZARD_PACT_NICELY:
 					case BREAK_ALLIANCE_NICELY:
+					case INITIATE_TALKING:
 						break;
 					
 					default:
 						throw new IOException ("AI does not know how to respond to Diplomacy action " + getAction ());
 				}
-			}
 		}
 	}
 

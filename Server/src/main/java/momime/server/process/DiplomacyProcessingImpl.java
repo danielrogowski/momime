@@ -2,12 +2,16 @@ package momime.server.process;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.RelationScore;
 import momime.common.database.Spell;
 import momime.common.database.SpellRank;
 import momime.common.messages.DiplomacyAction;
@@ -34,6 +38,9 @@ import momime.server.utils.KnownWizardServerUtils;
  */
 public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (DiplomacyProcessingImpl.class);
+	
 	/** Process for making sure one wizard has met another wizard */
 	private KnownWizardServerUtils knownWizardServerUtils;
 	
@@ -54,6 +61,144 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 
 	/** Server-only spell calculations */
 	private ServerSpellCalculations serverSpellCalculations;
+
+	/**
+	 * @param humanPlayer Human player we want to talk to
+	 * @param aiPlayer AI player who wants to talk to them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void requestTalking (final PlayerServerDetails humanPlayer, final PlayerServerDetails aiPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		log.debug ("AI Player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " requesting to talk to human player ID " + humanPlayer.getPlayerDescription ().getPlayerID ());
+		
+		// What's our opinion of the human player?
+		final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails aiPlayerOpinionOfHumanPlayer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), humanPlayer.getPlayerDescription ().getPlayerID (), "requestTalking");
+		
+		final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (aiPlayerOpinionOfHumanPlayer.getVisibleRelation (), "requestTalking");
+		
+		// Send request
+		final DiplomacyMessage msg = new DiplomacyMessage ();
+		msg.setTalkFromPlayerID (aiPlayer.getPlayerDescription ().getPlayerID ());
+		msg.setAction (DiplomacyAction.INITIATE_TALKING);
+		msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+		
+		humanPlayer.getConnection ().sendMessageToClient (msg);
+	}
+	
+	
+	/**
+	 * @param requester Player who wanted to talk
+	 * @param agreer Player who agreed to talk to them
+	 * @param patienceRunningOut Whether agreeing reluctantly and have limited patience to talk to them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void agreeTalking (final PlayerServerDetails requester, final PlayerServerDetails agreer, final boolean patienceRunningOut, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		log.debug ("Player ID " + agreer.getPlayerDescription ().getPlayerID () + " agreed to talk to " + requester.getPlayerDescription ().getPlayerType () +
+			" player ID " + requester.getPlayerDescription ().getPlayerID ());
+		
+		if (requester.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			// What's our opinion of the requester?
+			final MomPersistentPlayerPrivateKnowledge agreerPriv = (MomPersistentPlayerPrivateKnowledge) agreer.getPersistentPlayerPrivateKnowledge ();
+			
+			final DiplomacyWizardDetails rejecterOpinionOfRequester = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+				(agreerPriv.getFogOfWarMemory ().getWizardDetails (), requester.getPlayerDescription ().getPlayerID (), "rejectTalking");
+
+			final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (rejecterOpinionOfRequester.getVisibleRelation (), "rejectTalking");
+
+			// Send message
+			final DiplomacyMessage msg = new DiplomacyMessage ();
+			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
+			msg.setAction (patienceRunningOut ? DiplomacyAction.ACCEPT_TALKING_IMPATIENT : DiplomacyAction.ACCEPT_TALKING);
+			msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+			
+			requester.getConnection ().sendMessageToClient (msg);
+		}
+	}
+
+	/**
+	 * @param requester Player who wanted to talk
+	 * @param rejecter Player who is fed up talking to them
+	 * @param action Kind of rejection action to send
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	private final void nagging (final PlayerServerDetails requester, final PlayerServerDetails rejecter, final DiplomacyAction action, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// What's our opinion of the requester?
+		final MomPersistentPlayerPrivateKnowledge rejecterPriv = (MomPersistentPlayerPrivateKnowledge) rejecter.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails rejecterOpinionOfRequester = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(rejecterPriv.getFogOfWarMemory ().getWizardDetails (), requester.getPlayerDescription ().getPlayerID (), "nagging");
+
+		// Penalty for nagging
+		getRelationAI ().penaltyToVisibleRelation (rejecterOpinionOfRequester, DiplomacyAIConstants.RELATION_PENALTY_FOR_NAGGING);
+		
+		if (requester.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (rejecterOpinionOfRequester.getVisibleRelation (), "nagging");
+			
+			final DiplomacyMessage msg = new DiplomacyMessage ();
+			msg.setTalkFromPlayerID (rejecter.getPlayerDescription ().getPlayerID ());
+			msg.setAction (action);
+			msg.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
+			
+			requester.getConnection ().sendMessageToClient (msg);
+		}
+	}
+	
+	/**
+	 * @param requester Player who wanted to talk
+	 * @param rejecter Player who refused to talk to them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void rejectTalking (final PlayerServerDetails requester, final PlayerServerDetails rejecter, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		log.debug ("Player ID " + rejecter.getPlayerDescription ().getPlayerID () + " refused to talk to " + requester.getPlayerDescription ().getPlayerType () +
+			" player ID " + requester.getPlayerDescription ().getPlayerID ());
+		
+		nagging (requester, rejecter, DiplomacyAction.REJECT_TALKING, mom);
+	}
+	
+	/**
+	 * @param requester Player who wanted to talk
+	 * @param rejecter Player who is fed up talking to them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void grownImpatient (final PlayerServerDetails requester, final PlayerServerDetails rejecter, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		log.debug ("Player ID " + rejecter.getPlayerDescription ().getPlayerID () + " was talking to " + requester.getPlayerDescription ().getPlayerType () +
+			" player ID " + requester.getPlayerDescription ().getPlayerID () + " but grew impatient so ended the conversation");
+		
+		nagging (requester, rejecter, DiplomacyAction.GROWN_IMPATIENT, mom);
+	}
 	
 	/**
 	 * @param proposer Player who proposed the pact
@@ -136,6 +281,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void agreeWizardPact (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + agreer.getPlayerDescription ().getPlayerID () + " agreed to a wizard pact with " + proposer.getPlayerDescription ().getPlayerType () +
+			" player ID " + proposer.getPlayerDescription ().getPlayerID ());
+		
 		agreePact (proposer, agreer, mom, PactType.WIZARD_PACT, DiplomacyAction.ACCEPT_WIZARD_PACT, DiplomacyAction.AFTER_WIZARD_PACT,
 			DiplomacyAIConstants.RELATION_BONUS_FORM_WIZARD_PACT);
 	}
@@ -152,6 +300,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void agreeAlliance (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + agreer.getPlayerDescription ().getPlayerID () + " agreed to an alliance with " + proposer.getPlayerDescription ().getPlayerType () +
+			" player ID " + proposer.getPlayerDescription ().getPlayerID ());
+		
 		agreePact (proposer, agreer, mom, PactType.ALLIANCE, DiplomacyAction.ACCEPT_ALLIANCE, DiplomacyAction.AFTER_ALLIANCE,
 			DiplomacyAIConstants.RELATION_BONUS_FORM_ALLIANCE);
 	}
@@ -168,6 +319,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void agreePeaceTreaty (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + agreer.getPlayerDescription ().getPlayerID () + " agreed to a peace treaty with " + proposer.getPlayerDescription ().getPlayerType () +
+			" player ID " + proposer.getPlayerDescription ().getPlayerID ());
+		
 		agreePact (proposer, agreer, mom, null, DiplomacyAction.ACCEPT_PEACE_TREATY, DiplomacyAction.AFTER_PEACE_TREATY,
 			DiplomacyAIConstants.RELATION_BONUS_FORM_PEACE_TREATY);
 	}
@@ -184,6 +338,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void breakWizardPactNicely (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + proposer.getPlayerDescription ().getPlayerID () + " is breaking their wizard pact with Player ID " + agreer.getPlayerDescription ().getPlayerType ());
+		
 		agreePact (proposer, agreer, mom, null, DiplomacyAction.BROKEN_WIZARD_PACT_NICELY, DiplomacyAction.BREAK_WIZARD_PACT_NICELY,
 			-DiplomacyAIConstants.RELATION_PENALTY_FOR_BREAKING_WIZARD_PACT_NICELY);
 	}
@@ -200,6 +356,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void breakAllianceNicely (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + proposer.getPlayerDescription ().getPlayerID () + " is breaking their alliance with Player ID " + agreer.getPlayerDescription ().getPlayerType ());
+		
 		agreePact (proposer, agreer, mom, null, DiplomacyAction.BROKEN_ALLIANCE_NICELY, DiplomacyAction.BREAK_ALLIANCE_NICELY,
 			-DiplomacyAIConstants.RELATION_PENALTY_FOR_BREAKING_ALLIANCE_NICELY);
 	}
@@ -220,6 +378,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	{
 		// Note players are reversed on purpose, its the threatener who gets a message back to say what the response to their threat was
 		// There's no need to send a message back to the declarer, as the threatener's opinion of someone doesn't change when they threaten them
+		log.debug ("Player ID " + threatener.getPlayerDescription ().getPlayerID () + " threatened Player ID " + declarer.getPlayerDescription ().getPlayerType () +
+			", so they declared war on them for it");
+		
 		agreePact (threatener, declarer, mom, PactType.WAR, DiplomacyAction.DECLARE_WAR_BECAUSE_THREATENED, null, 0);
 	}
 	
@@ -268,6 +429,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void rejectWizardPact (final PlayerServerDetails proposer, final PlayerServerDetails rejecter, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + rejecter.getPlayerDescription ().getPlayerID () + " rejected a wizard pact with " + proposer.getPlayerDescription ().getPlayerType () +
+			" player ID " + proposer.getPlayerDescription ().getPlayerID ());
+		
 		rejectPact (proposer, rejecter, mom, DiplomacyAction.REJECT_WIZARD_PACT);
 	}
 	
@@ -283,6 +447,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void rejectAlliance (final PlayerServerDetails proposer, final PlayerServerDetails rejecter, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + rejecter.getPlayerDescription ().getPlayerID () + " rejected an alliance with " + proposer.getPlayerDescription ().getPlayerType () +
+			" player ID " + proposer.getPlayerDescription ().getPlayerID ());
+		
 		rejectPact (proposer, rejecter, mom, DiplomacyAction.REJECT_ALLIANCE);
 	}
 	
@@ -298,6 +465,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void rejectPeaceTreaty (final PlayerServerDetails proposer, final PlayerServerDetails rejecter, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + rejecter.getPlayerDescription ().getPlayerID () + " rejected a peace treaty with " + proposer.getPlayerDescription ().getPlayerType () +
+			" player ID " + proposer.getPlayerDescription ().getPlayerID ());
+		
 		rejectPact (proposer, rejecter, mom, DiplomacyAction.REJECT_PEACE_TREATY);
 	}
 	
@@ -405,6 +575,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void agreeDeclareWarOnOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final PlayerServerDetails other, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + agreer.getPlayerDescription ().getPlayerID () + " agreed to player ID " + proposer.getPlayerDescription ().getPlayerType () +
+			"'s request to declare war on player ID " + other.getPlayerDescription ().getPlayerID ());
+		
 		agreePactWithThirdParty (proposer, agreer, other, mom, PactType.WAR, DiplomacyAction.DECLARE_WAR_ON_YOU_BECAUSE_OF_OTHER_WIZARD,
 			DiplomacyAction.ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD, DiplomacyAction.AFTER_DECLARE_WAR_ON_OTHER_WIZARD,
 			DiplomacyAIConstants.RELATION_BONUS_FORM_AGREEING_TO_DECLARE_WAR, DiplomacyAIConstants.RELATION_PENALTY_FOR_DECLARING_WAR);
@@ -423,6 +596,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void agreeBreakAllianceWithOtherWizard (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final PlayerServerDetails other, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + agreer.getPlayerDescription ().getPlayerID () + " agreed to player ID " + proposer.getPlayerDescription ().getPlayerType () +
+			"'s request to break their alliance with player ID " + other.getPlayerDescription ().getPlayerID ());
+		
 		agreePactWithThirdParty (proposer, agreer, other, mom, null, DiplomacyAction.BREAK_ALLIANCE_WITH_YOU_BECAUSE_OF_OTHER_WIZARD,
 			DiplomacyAction.ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD, DiplomacyAction.AFTER_BREAK_ALLIANCE_WITH_OTHER_WIZARD,
 			DiplomacyAIConstants.RELATION_BONUS_FORM_AGREEING_TO_BREAK_ALLIANCE, DiplomacyAIConstants.RELATION_PENALTY_FOR_BREAKING_ALLIANCE_NICELY);
@@ -478,6 +654,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + agreer.getPlayerDescription ().getPlayerID () + " refused player ID " + proposer.getPlayerDescription ().getPlayerType () +
+			"'s request to declare war on player ID " + other.getPlayerDescription ().getPlayerID ());
+		
 		rejectPactWithThirdParty (proposer, agreer, other, mom, DiplomacyAction.REJECT_DECLARE_WAR_ON_OTHER_WIZARD);
 	}
 
@@ -495,6 +674,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + agreer.getPlayerDescription ().getPlayerID () + " refused player ID " + proposer.getPlayerDescription ().getPlayerType () +
+			"'s request to break their alliance with player ID " + other.getPlayerDescription ().getPlayerID ());
+		
 		rejectPactWithThirdParty (proposer, agreer, other, mom, DiplomacyAction.REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD);
 	}
 
@@ -582,6 +764,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void giveGold (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final int offerGoldTier)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + giver.getPlayerDescription ().getPlayerID () + " is giving player ID " + receiver.getPlayerDescription ().getPlayerType () + " gold donation at tier " + offerGoldTier);
+		
 		giveGoldInternal (giver, receiver, mom, offerGoldTier, DiplomacyAction.ACCEPT_GOLD, DiplomacyAction.GIVE_GOLD,
 			DiplomacyAIConstants.RELATION_BONUS_FOR_GOLD_DONATION_PER_TIER);
 	}
@@ -599,6 +783,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void giveGoldBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final int offerGoldTier)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + giver.getPlayerDescription ().getPlayerID () + " is giving player ID " + receiver.getPlayerDescription ().getPlayerType () + " gold donation at tier " + offerGoldTier +
+			" in response to being threatened");
+		
 		giveGoldInternal (giver, receiver, mom, offerGoldTier, null, DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED, 0);
 	}
 	
@@ -692,6 +879,8 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void giveSpell (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final String spellID)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + giver.getPlayerDescription ().getPlayerID () + " is giving player ID " + receiver.getPlayerDescription ().getPlayerType () + " spell ID " + spellID);
+		
 		giveSpellInternal (giver, receiver, mom, spellID, DiplomacyAction.ACCEPT_SPELL, DiplomacyAction.GIVE_SPELL, true);
 	}
 
@@ -708,6 +897,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	public final void giveSpellBecauseThreatened (final PlayerServerDetails giver, final PlayerServerDetails receiver, final MomSessionVariables mom, final String spellID)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + giver.getPlayerDescription ().getPlayerID () + " is giving player ID " + receiver.getPlayerDescription ().getPlayerType () + " spell ID " + spellID +
+			" in response to being threatened");
+		
 		giveSpellInternal (giver, receiver, mom, spellID, null, DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED, false);
 	}
 
@@ -726,6 +918,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		final String proposerWantsSpellID, final String agreerWantsSpellID)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
+		log.debug ("Player ID " + proposer.getPlayerDescription ().getPlayerID () + " is getting spell ID " + proposerWantsSpellID +
+			" from player ID " + agreer.getPlayerDescription ().getPlayerType () + " in exchange for spell ID " + agreerWantsSpellID);
+		
 		// Find the two wizards' opinions of each other
 		final MomPersistentPlayerPrivateKnowledge proposerPriv = (MomPersistentPlayerPrivateKnowledge) proposer.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge agreerPriv = (MomPersistentPlayerPrivateKnowledge) agreer.getPersistentPlayerPrivateKnowledge ();

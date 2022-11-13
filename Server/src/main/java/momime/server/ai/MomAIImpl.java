@@ -18,6 +18,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.utils.random.RandomUtils;
 import com.ndg.utils.random.WeightedChoicesImpl;
 
@@ -49,6 +50,7 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.process.DiplomacyProcessing;
 import momime.server.process.OfferGenerator;
 import momime.server.utils.CityServerUtils;
 
@@ -105,8 +107,17 @@ public final class MomAIImpl implements MomAI
 	/** For calculating relation scores between two wizards */
 	private RelationAI relationAI;
 	
+	/** Methods for AI making decisions about diplomacy with other wizards */
+	private DiplomacyAI diplomacyAI;
+	
 	/** During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards */
 	private DiplomacyProposalsAI diplomacyProposalsAI;
+	
+	/** Methods for processing agreed diplomatic actions */
+	private DiplomacyProcessing diplomacyProcessing; 
+	
+	/** Methods for processing diplomacy requests from AI player to another AI player */
+	private AIToAIDiplomacy aiToAIDiplomacy;
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
@@ -158,7 +169,15 @@ public final class MomAIImpl implements MomAI
 						{
 							if (log.isDebugEnabled ())
 								for (final DiplomacyProposal proposal : proposals)
-									log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " wants to make proposal " + proposal + " to player ID " + talkToWizard.getPlayerID ()); 
+									log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " wants to make proposal " + proposal + " to player ID " + talkToWizard.getPlayerID ());
+							
+							if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+							{
+								getDiplomacyProcessing ().requestTalking (talkToPlayer, player, mom);
+								return false;		// Pause remainder of AI player turn until human player responds
+							}
+							else if (getDiplomacyAI ().decideWhetherWillTalkTo (player, talkToPlayer, mom))
+								getAiToAIDiplomacy ().submitProposals (player, talkToPlayer, proposals, mom);
 						}
 					}
 				}
@@ -906,6 +925,22 @@ public final class MomAIImpl implements MomAI
 	}
 
 	/**
+	 * @return Methods for AI making decisions about diplomacy with other wizards
+	 */
+	public final DiplomacyAI getDiplomacyAI ()
+	{
+		return diplomacyAI;
+	}
+
+	/**
+	 * @param ai Methods for AI making decisions about diplomacy with other wizards
+	 */
+	public final void setDiplomacyAI (final DiplomacyAI ai)
+	{
+		diplomacyAI = ai;
+	}
+	
+	/**
 	 * @return During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards
 	 */
 	public final DiplomacyProposalsAI getDiplomacyProposalsAI ()
@@ -921,6 +956,38 @@ public final class MomAIImpl implements MomAI
 		diplomacyProposalsAI = p;
 	}
 
+	/**
+	 * @return Methods for processing agreed diplomatic actions
+	 */
+	public final DiplomacyProcessing getDiplomacyProcessing ()
+	{
+		return diplomacyProcessing;
+	}
+	
+	/**
+	 * @param p Methods for processing agreed diplomatic actions
+	 */
+	public final void setDiplomacyProcessing (final DiplomacyProcessing p)
+	{
+		diplomacyProcessing = p;
+	}
+
+	/**
+	 * @return Methods for processing diplomacy requests from AI player to another AI player
+	 */
+	public final AIToAIDiplomacy getAiToAIDiplomacy ()
+	{
+		return aiToAIDiplomacy;
+	}
+
+	/**
+	 * @param d Methods for processing diplomacy requests from AI player to another AI player
+	 */
+	public final void setAIToAIDiplomacy (final AIToAIDiplomacy d)
+	{
+		aiToAIDiplomacy = d;
+	}
+	
 	/**
 	 * @return Server only helper methods for dealing with players in a session
 	 */

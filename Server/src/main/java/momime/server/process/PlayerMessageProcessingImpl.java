@@ -922,7 +922,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			else
 			{
 				log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-				if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
+				if (getMomAI ().aiPlayerTurn (currentPlayer, mom, true))
 				
 					// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 					nextTurnButton (mom, currentPlayer);
@@ -981,7 +981,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				else if (player.getPlayerDescription ().getPlayerType () == PlayerType.AI)
 				{
 					log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + player.getPlayerDescription ().getPlayerName () + "...");
-					getMomAI ().aiPlayerTurn (player, mom);
+					getMomAI ().aiPlayerTurn (player, mom, true);
 				
 					// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 					nextTurnButton (mom, player);

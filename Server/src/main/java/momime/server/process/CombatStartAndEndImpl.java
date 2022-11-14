@@ -880,7 +880,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					{
 						// AI players proceed with moving remaining unit stacks, possibly starting another combat or completing their turn
 						log.info ("Resuming AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-						if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
+						if (getMomAI ().aiPlayerTurn (currentPlayer, mom, false))
 							getPlayerMessageProcessing ().nextTurnButton (mom, currentPlayer);
 					}
 				}

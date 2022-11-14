@@ -129,13 +129,14 @@ public final class MomAIImpl implements MomAI
 	/**
 	 * @param player AI player whose turn to take
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param firstPass True if this is the first pass at this AI player's turn (previous player hit next turn); false if the AI player's turn was paused for a combat or diplomacy and now doing 2nd/3rd/etc pass 
 	 * @return Whether AI turn was fully completed or not; false if we the AI initated a combat in a one-player-at-a-time game and must resume their turn after the combat ends 
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final boolean aiPlayerTurn (final PlayerServerDetails player, final MomSessionVariables mom)
+	public final boolean aiPlayerTurn (final PlayerServerDetails player, final MomSessionVariables mom, final boolean firstPass)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -148,13 +149,16 @@ public final class MomAIImpl implements MomAI
 			getUnitAI ().reallocateHeroItems (player, mom);
 			
 			// All modifications to visible relation are done in one go, then capped at the end, so we allow them to temporarily go above 100 or below -100
-			getRelationAI ().updateVisibleRelationDueToUnitsInOurBorder (player, mom);
-			getRelationAI ().updateVisibleRelationDueToPactsAndAlliances (player);
-			getRelationAI ().updateVisibleRelationDueToAuraOfMajesty (player);
-			getRelationAI ().updateVisibleRelationDueToNastyMaintainedSpells (player, mom);
-			getRelationAI ().slideTowardsBaseRelation (player);
-			getRelationAI ().capVisibleRelations (player);
-			getRelationAI ().regainPatience (player);
+			if (firstPass)
+			{
+				getRelationAI ().updateVisibleRelationDueToUnitsInOurBorder (player, mom);
+				getRelationAI ().updateVisibleRelationDueToPactsAndAlliances (player);
+				getRelationAI ().updateVisibleRelationDueToAuraOfMajesty (player);
+				getRelationAI ().updateVisibleRelationDueToNastyMaintainedSpells (player, mom);
+				getRelationAI ().slideTowardsBaseRelation (player);
+				getRelationAI ().capVisibleRelations (player);
+				getRelationAI ().regainPatience (player);
+			}
 			
 			// Do we want to make any diplomacy proposals to anyone?
 			if (wizardDetails.getWizardState () == WizardState.ACTIVE)

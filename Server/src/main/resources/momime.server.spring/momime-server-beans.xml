@@ -1030,6 +1030,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
 		<property name="AIToAIDiplomacy" ref="aiToAIDiplomacy" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">
@@ -1124,6 +1125,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="relationAI" ref="relationAI" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 

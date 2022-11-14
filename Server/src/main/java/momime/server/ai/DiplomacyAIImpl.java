@@ -75,7 +75,7 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 
 		// Have they been bugging us with requests too often?
 		final int maximumRequests = getRelationAI ().decideMaximumRequests (aiPlayerOpinionOfRequester.getVisibleRelation ());
-		final boolean accept = (aiPlayerOpinionOfRequester.getImpatienceLevel () >= maximumRequests);
+		final boolean accept = (aiPlayerOpinionOfRequester.getImpatienceLevel () < maximumRequests);
 		if (accept)
 		{
 			final boolean patienceRunningOut = (aiPlayerOpinionOfRequester.getImpatienceLevel () + 1 >= maximumRequests);
@@ -115,9 +115,6 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 		final DiplomacyWizardDetails aiPlayerOpinionOfRequester = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
 			(aiPlayerPriv.getFogOfWarMemory ().getWizardDetails (), requester.getPlayerDescription ().getPlayerID (), "willListenToRequest");
 
-		// The fact that they keep bugging still reduces patience regardless of whether we listen or don't
-		aiPlayerOpinionOfRequester.setImpatienceLevel (aiPlayerOpinionOfRequester.getImpatienceLevel () + 1);
-		
 		// Some requests reduce patience, but can't be ignored
 		final boolean accept;
 		if (DiplomacyAIConstants.CANNOT_IGNORE_REQUESTS.contains (request))
@@ -129,7 +126,7 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 		else
 		{
 			final int maximumRequests = getRelationAI ().decideMaximumRequests (aiPlayerOpinionOfRequester.getVisibleRelation ());
-			accept = (aiPlayerOpinionOfRequester.getImpatienceLevel () >= maximumRequests);
+			accept = (aiPlayerOpinionOfRequester.getImpatienceLevel () < maximumRequests);
 			if (accept)
 				log.debug ("AI player ID " + aiPlayer.getPlayerDescription ().getPlayerID () + " agreed to listen to proposal " + request + " from Player ID " + requester.getPlayerDescription ().getPlayerID ());
 			else
@@ -139,6 +136,9 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 				getDiplomacyProcessing ().grownImpatient (requester, aiPlayer, mom);
 			}
 		}
+		
+		// The fact that they keep bugging still reduces patience regardless of whether we listen or don't
+		aiPlayerOpinionOfRequester.setImpatienceLevel (aiPlayerOpinionOfRequester.getImpatienceLevel () + 1);
 		
 		return accept;
 	}

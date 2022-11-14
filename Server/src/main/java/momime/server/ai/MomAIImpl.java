@@ -53,6 +53,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.process.DiplomacyProcessing;
 import momime.server.process.OfferGenerator;
 import momime.server.utils.CityServerUtils;
+import momime.server.utils.KnownWizardServerUtils;
 
 /**
  * Overall AI strategy + control
@@ -122,6 +123,9 @@ public final class MomAIImpl implements MomAI
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
+	
 	/**
 	 * @param player AI player whose turn to take
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -170,6 +174,9 @@ public final class MomAIImpl implements MomAI
 							if (log.isDebugEnabled ())
 								for (final DiplomacyProposal proposal : proposals)
 									log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " wants to make proposal " + proposal + " to player ID " + talkToWizard.getPlayerID ());
+							
+							getKnownWizardServerUtils ().meetWizard (player.getPlayerDescription ().getPlayerID (), talkToWizard.getPlayerID (), false, mom);
+							talkToWizard.setLastTurnTalkedTo (mom.getGeneralPublicKnowledge ().getTurnNumber ());
 							
 							if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 							{
@@ -1002,5 +1009,21 @@ public final class MomAIImpl implements MomAI
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

@@ -1,10 +1,14 @@
 package momime.server.ai;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.WizardPersonality;
@@ -13,10 +17,13 @@ import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.PactType;
+import momime.common.messages.servertoclient.DiplomacyMessage;
+import momime.common.messages.servertoclient.TradeableSpellsMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.messages.process.RequestDiplomacyMessageImpl;
+import momime.server.process.PlayerMessageProcessing;
 
 /**
  * During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards
@@ -31,6 +38,12 @@ public final class DiplomacyProposalsAIImpl implements DiplomacyProposalsAI
 	
 	/** Methods for AI making decisions about diplomacy with other wizards */
 	private DiplomacyAI diplomacyAI;
+	
+	/** AI player turns */
+	private MomAI momAI;
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
 	
 	/**
 	 * @param aiPlayer AI player whose turn to take
@@ -119,6 +132,69 @@ public final class DiplomacyProposalsAIImpl implements DiplomacyProposalsAI
 		
 		return proposals;
 	}
+	
+	/**
+	 * @param aiPlayer AI player whose turn it is
+	 * @param talkToPlayer Player they are talking to
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws IOException If there is another kind of problem
+	 */
+	@Override
+	public final void sendNextProposal (final PlayerServerDetails aiPlayer, final PlayerServerDetails talkToPlayer, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, IOException
+	{
+		if (mom.getPendingDiplomacyProposals ().isEmpty ())
+		{
+			// No proposals left - end the conversation and continue the AI player's turn
+			final DiplomacyMessage msg = new DiplomacyMessage ();
+			msg.setTalkFromPlayerID (aiPlayer.getPlayerDescription ().getPlayerID ());
+			msg.setAction (DiplomacyAction.END_CONVERSATION);
+			
+			talkToPlayer.getConnection ().sendMessageToClient (msg);
+			
+			if (getMomAI ().aiPlayerTurn (aiPlayer, mom, false))
+				getPlayerMessageProcessing ().nextTurnButton (mom, aiPlayer);
+		}
+		else
+		{
+			// Send first proposal in the queue
+			final DiplomacyProposal proposal = mom.getPendingDiplomacyProposals ().get (0);
+			mom.getPendingDiplomacyProposals ().remove (0);
+			
+			if (proposal.getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
+			{
+				// Proposing spell exchanges needs to send TradeableSpellsMessage instead, and tell the client the list of spells they can choose from
+				final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
+				final MomPersistentPlayerPrivateKnowledge talkToPlayerPriv = (MomPersistentPlayerPrivateKnowledge) talkToPlayer.getPersistentPlayerPrivateKnowledge ();
+				
+				final List<String> spellIDsWeCanOffer = getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+					(aiPlayerPriv.getSpellResearchStatus (), talkToPlayerPriv.getSpellResearchStatus ()), RequestDiplomacyMessageImpl.MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ());
+				
+				final TradeableSpellsMessage msg = new TradeableSpellsMessage ();
+				msg.setTalkFromPlayerID (aiPlayer.getPlayerDescription ().getPlayerID ());
+				msg.setAction (proposal.getAction ());
+				msg.setRequestSpellID (proposal.getRequestSpellID ());
+				msg.getTradeableSpellID ().addAll (spellIDsWeCanOffer);
+				
+				talkToPlayer.getConnection ().sendMessageToClient (msg);
+			}
+			else
+			{
+				// Normal proposal
+				final DiplomacyMessage msg = new DiplomacyMessage ();
+				msg.setTalkFromPlayerID (aiPlayer.getPlayerDescription ().getPlayerID ());
+				msg.setAction (proposal.getAction ());
+				msg.setRequestSpellID (proposal.getRequestSpellID ());
+				
+				if (proposal.getOther () != null)
+					msg.setOtherPlayerID (proposal.getOther ().getPlayerDescription ().getPlayerID ());
+				
+				talkToPlayer.getConnection ().sendMessageToClient (msg);
+			}
+		}
+	}
 
 	/**
 	 * @return Methods for finding KnownWizardDetails from the list
@@ -166,5 +242,37 @@ public final class DiplomacyProposalsAIImpl implements DiplomacyProposalsAI
 	public final void setDiplomacyAI (final DiplomacyAI ai)
 	{
 		diplomacyAI = ai;
+	}
+
+	/**
+	 * @return AI player turns
+	 */
+	public final MomAI getMomAI ()
+	{
+		return momAI;
+	}
+
+	/**
+	 * @param ai AI player turns
+	 */
+	public final void setMomAI (final MomAI ai)
+	{
+		momAI = ai;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

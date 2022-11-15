@@ -281,6 +281,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="diplomacyAI" ref="diplomacyAI" />
 		<property name="relationAI" ref="relationAI" />
 		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
+		<property name="momAI" ref="momAI" />
+		<property name="diplomacyProposalsAI" ref="diplomacyProposalsAI" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 
 	<!-- User registry -->
@@ -1133,6 +1136,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="diplomacyAI" ref="diplomacyAI" />
+		<property name="momAI" ref="momAI" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 
 	<bean id="aiToAIDiplomacy" class="momime.server.ai.AIToAIDiplomacyImpl">

@@ -7,7 +7,7 @@ import momime.common.messages.DiplomacyAction;
 /**
  * Stores details of one diplomacy proposal an AI player would like to make; assumed its known who the two wizards involved are
  */
-final class DiplomacyProposal
+public final class DiplomacyProposal
 {
 	/** Which action we want to take */
 	private final DiplomacyAction action;

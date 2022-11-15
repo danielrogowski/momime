@@ -14,6 +14,7 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabase;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.server.ai.DiplomacyProposal;
 import momime.server.knowledge.CombatDetails;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.MomGeneralServerKnowledge;
@@ -110,4 +111,9 @@ public interface MomSessionVariables
 	 * @return Combat details storage
 	 */
 	public List<CombatDetails> getCombatDetails ();
+	
+	/**
+	 * @return List of diplomacy proposals an AI player is waiting to send to a human player
+	 */
+	public List<DiplomacyProposal> getPendingDiplomacyProposals ();
 }

@@ -25,9 +25,12 @@ import momime.common.messages.servertoclient.TradeableSpellsMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.DiplomacyAI;
+import momime.server.ai.DiplomacyProposalsAI;
+import momime.server.ai.MomAI;
 import momime.server.ai.RelationAI;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.process.DiplomacyProcessing;
+import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.KnownWizardServerUtils;
 
 /**
@@ -61,6 +64,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	
 	/** Methods for processing agreed diplomatic actions */
 	private DiplomacyProcessing diplomacyProcessing; 
+	
+	/** AI player turns */
+	private MomAI momAI;
+
+	/** During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards */
+	private DiplomacyProposalsAI diplomacyProposalsAI;
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -371,6 +383,26 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					case THREATEN:
 						getDiplomacyAI ().respondToThreat (sender, talkToPlayer, mom);
 						break;
+						
+					// AI player asked to talk to human player, human player said no
+					case REJECT_TALKING:
+					case GROWN_IMPATIENT:
+						if (getMomAI ().aiPlayerTurn (talkToPlayer, mom, false))
+							getPlayerMessageProcessing ().nextTurnButton (mom, talkToPlayer);
+						break;
+						
+					// AI player asked to talk to human player, human player said yes
+					// Or human player rejected one proposal so now they can send the next one, or carry on with their turn 
+					case ACCEPT_TALKING:
+					case ACCEPT_TALKING_IMPATIENT:
+					case REFUSE_EXCHANGE_SPELL:
+					case REJECT_WIZARD_PACT:
+					case REJECT_ALLIANCE:
+					case REJECT_PEACE_TREATY:
+					case REJECT_DECLARE_WAR_ON_OTHER_WIZARD:
+					case REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:						
+						getDiplomacyProposalsAI ().sendNextProposal (talkToPlayer, sender, mom);
+						break;
 					
 					// Ignore, AI doesn't need to respond to these
 					case END_CONVERSATION:
@@ -500,5 +532,53 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void setDiplomacyProcessing (final DiplomacyProcessing p)
 	{
 		diplomacyProcessing = p;
+	}
+
+	/**
+	 * @return AI player turns
+	 */
+	public final MomAI getMomAI ()
+	{
+		return momAI;
+	}
+
+	/**
+	 * @param ai AI player turns
+	 */
+	public final void setMomAI (final MomAI ai)
+	{
+		momAI = ai;
+	}
+
+	/**
+	 * @return During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards
+	 */
+	public final DiplomacyProposalsAI getDiplomacyProposalsAI ()
+	{
+		return diplomacyProposalsAI;
+	}
+	
+	/**
+	 * @param p During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards
+	 */
+	public final void setDiplomacyProposalsAI (final DiplomacyProposalsAI p)
+	{
+		diplomacyProposalsAI = p;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

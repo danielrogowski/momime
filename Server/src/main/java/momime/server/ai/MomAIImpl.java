@@ -184,6 +184,10 @@ public final class MomAIImpl implements MomAI
 							
 							if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 							{
+								// Store proposals away untl the human player replies
+								mom.getPendingDiplomacyProposals ().clear ();
+								mom.getPendingDiplomacyProposals ().addAll (proposals);
+								
 								getDiplomacyProcessing ().requestTalking (talkToPlayer, player, mom);
 								return false;		// Pause remainder of AI player turn until human player responds
 							}

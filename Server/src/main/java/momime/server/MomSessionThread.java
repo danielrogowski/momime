@@ -51,6 +51,7 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.server.ai.DiplomacyProposal;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseValues;
@@ -99,6 +100,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/** Combat details storage */
 	private List<CombatDetails> combatDetails = new ArrayList<CombatDetails> ();
 	
+	/** List of diplomacy proposals an AI player is waiting to send to a human player */
+	private List<DiplomacyProposal> pendingDiplomacyProposals = new ArrayList<DiplomacyProposal> ();
+
 	/**
 	 * Descendant server classes will want to override this to create a thread that knows how to process useful messages
 	 * 
@@ -512,6 +516,15 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		return overlandMapGenerator;
 	}
 
+	/**
+	 * @return List of diplomacy proposals an AI player is waiting to send to a human player
+	 */
+	@Override
+	public final List<DiplomacyProposal> getPendingDiplomacyProposals ()
+	{
+		return pendingDiplomacyProposals;
+	}
+	
 	/**
 	 * @param mapGen Overland map generator for this session
 	 */

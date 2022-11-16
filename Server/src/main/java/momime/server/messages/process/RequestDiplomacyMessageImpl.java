@@ -159,32 +159,32 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			{
 				case ACCEPT_WIZARD_PACT:
 					getDiplomacyProcessing ().agreeWizardPact (talkToPlayer, sender, mom);
-					proceed = false;
+					proceed = (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN);
 					break;
 					
 				case ACCEPT_ALLIANCE:
 					getDiplomacyProcessing ().agreeAlliance (talkToPlayer, sender, mom);
-					proceed = false;
+					proceed = (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN);
 					break;
 					
 				case ACCEPT_PEACE_TREATY:
 					getDiplomacyProcessing ().agreePeaceTreaty (talkToPlayer, sender, mom);
-					proceed = false;
+					proceed = (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN);
 					break;
 
 				case REJECT_WIZARD_PACT:
 					getDiplomacyProcessing ().rejectWizardPact (talkToPlayer, sender, mom);
-					proceed = false;
+					proceed = (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN);
 					break;
 					
 				case REJECT_ALLIANCE:
 					getDiplomacyProcessing ().rejectAlliance (talkToPlayer, sender, mom);
-					proceed = false;
+					proceed = (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN);
 					break;
 					
 				case REJECT_PEACE_TREATY:
 					getDiplomacyProcessing ().rejectPeaceTreaty (talkToPlayer, sender, mom);
-					proceed = false;
+					proceed = (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN);
 					break;
 					
 				case DECLARE_WAR_BECAUSE_THREATENED:
@@ -330,7 +330,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 				// Exchange spells
 				case ACCEPT_EXCHANGE_SPELL:
-					getDiplomacyProcessing ().tradeSpells (sender, talkToPlayer, mom, getRequestSpellID (), getOfferSpellID ());
+					getDiplomacyProcessing ().agreeTradeSpells (sender, talkToPlayer, mom, getRequestSpellID (), getOfferSpellID ());
 					proceed = false;
 					break;
 					
@@ -392,7 +392,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 						break;
 						
 					// AI player asked to talk to human player, human player said yes
-					// Or human player rejected one proposal so now they can send the next one, or carry on with their turn 
+					// Or human player rejected one proposal so now they can send the next one, or carry on with their turn
+					// Or human player accepted one proposal (which was already dealt with above) so now they can send the next one, or carry on with their turn
 					case ACCEPT_TALKING:
 					case ACCEPT_TALKING_IMPATIENT:
 					case REFUSE_EXCHANGE_SPELL:
@@ -400,7 +401,22 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					case REJECT_ALLIANCE:
 					case REJECT_PEACE_TREATY:
 					case REJECT_DECLARE_WAR_ON_OTHER_WIZARD:
-					case REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:						
+					case REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+					case ACCEPT_WIZARD_PACT:
+					case ACCEPT_ALLIANCE:
+					case ACCEPT_PEACE_TREATY:
+					case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
+					case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+						getDiplomacyProposalsAI ().sendNextProposal (talkToPlayer, sender, mom);
+						break;
+						
+					// AI player asked for a spell from human player; human player replied with the spell they'd like in return
+					case PROPOSE_EXCHANGE_SPELL:
+						if (getDiplomacyAI ().considerSpellTrade (getRequestSpellID (), getOfferSpellID (), mom.getServerDB ()))
+							getDiplomacyProcessing ().agreeTradeSpells (talkToPlayer, sender, mom, getRequestSpellID (), getOfferSpellID ());
+						else
+							getDiplomacyProcessing ().rejectTradeSpells (talkToPlayer, sender, mom, getRequestSpellID (), getOfferSpellID ());
+						
 						getDiplomacyProposalsAI ().sendNextProposal (talkToPlayer, sender, mom);
 						break;
 					

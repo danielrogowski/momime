@@ -101,7 +101,7 @@ public final class AIToAIDiplomacyImpl implements AIToAIDiplomacy
 	
 								// chooseSpellToRequestInReturn makes sure we'll never generate a too unreasonable demand in return, but putting it here anyway for consistency with AI-to-human diplomacy
 								if (getDiplomacyAI ().considerSpellTrade (proposal.getRequestSpellID (), requestSpellIDInReturn, mom.getServerDB ()))
-									getDiplomacyProcessing ().tradeSpells (player, talkToPlayer, mom, proposal.getRequestSpellID (), requestSpellIDInReturn);
+									getDiplomacyProcessing ().agreeTradeSpells (player, talkToPlayer, mom, proposal.getRequestSpellID (), requestSpellIDInReturn);
 							}
 							
 							break;

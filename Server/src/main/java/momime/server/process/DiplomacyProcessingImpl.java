@@ -914,7 +914,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void tradeSpells (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom,
+	public final void agreeTradeSpells (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom,
 		final String proposerWantsSpellID, final String agreerWantsSpellID)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
@@ -926,9 +926,9 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		final MomPersistentPlayerPrivateKnowledge agreerPriv = (MomPersistentPlayerPrivateKnowledge) agreer.getPersistentPlayerPrivateKnowledge ();
 		
 		final DiplomacyWizardDetails proposersOpinionOfAgreer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
-			(proposerPriv.getFogOfWarMemory ().getWizardDetails (), agreer.getPlayerDescription ().getPlayerID (), "tradeSpells (A)");
+			(proposerPriv.getFogOfWarMemory ().getWizardDetails (), agreer.getPlayerDescription ().getPlayerID (), "agreeTradeSpells (A)");
 		final DiplomacyWizardDetails agreersOpinionOfProposer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
-			(agreerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "tradeSpells (P)");
+			(agreerPriv.getFogOfWarMemory ().getWizardDetails (), proposer.getPlayerDescription ().getPlayerID (), "agreeTradeSpells (P)");
 		
 		// Learn the spells
 		final SpellResearchStatus agreerResearchStatus = getSpellUtils ().findSpellResearchStatus (agreerPriv.getSpellResearchStatus (), agreerWantsSpellID);
@@ -957,16 +957,16 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		// Improved relations from the trade
 		if ((agreer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!agreersOpinionOfProposer.isEverStartedCastingSpellOfMastery ()))
 		{
-			final Spell spellDef = mom.getServerDB ().findSpell (agreerWantsSpellID, "tradeSpells");
-			final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "tradeSpells");
+			final Spell spellDef = mom.getServerDB ().findSpell (agreerWantsSpellID, "agreeTradeSpells");
+			final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "agreeTradeSpells");
 			if (spellRank.getSpellTributeRelationBonus () != null)
 				getRelationAI ().bonusToVisibleRelation (agreersOpinionOfProposer, spellRank.getSpellTributeRelationBonus ());
 		}
 
 		if ((proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN) && (!proposersOpinionOfAgreer.isEverStartedCastingSpellOfMastery ()))
 		{
-			final Spell spellDef = mom.getServerDB ().findSpell (proposerWantsSpellID, "tradeSpells");
-			final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "tradeSpells");
+			final Spell spellDef = mom.getServerDB ().findSpell (proposerWantsSpellID, "agreeTradeSpells");
+			final SpellRank spellRank = mom.getServerDB ().findSpellRank (spellDef.getSpellRank (), "agreeTradeSpells");
 			if (spellRank.getSpellTributeRelationBonus () != null)
 				getRelationAI ().bonusToVisibleRelation (proposersOpinionOfAgreer, spellRank.getSpellTributeRelationBonus ());
 		}
@@ -981,7 +981,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 			msg.setRequestSpellID (proposerWantsSpellID);
 
 			if (proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
-				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "tradeSpells").getRelationScoreID ());
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "agreeTradeSpells").getRelationScoreID ());
 			
 			agreer.getConnection ().sendMessageToClient (msg);
 		}
@@ -1001,6 +1001,42 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 			proposer.getConnection ().sendMessageToClient (msg);
 		}
 	}	
+	
+	/**
+	 * @param proposer Player who proposed trading spells, but ultimately rejected the proposal when the agreer requested an unreasonable spell in return 
+	 * @param agreer Player who agreed to trade spells
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param proposerWantsSpellID The spell the proposer asked for
+	 * @param agreerWantsSpellID The spell the agreer wants in return
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void rejectTradeSpells (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom,
+		final String proposerWantsSpellID, final String agreerWantsSpellID)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// Find the two wizards' opinions of each other
+		final MomPersistentPlayerPrivateKnowledge proposerPriv = (MomPersistentPlayerPrivateKnowledge) proposer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails proposersOpinionOfAgreer = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(proposerPriv.getFogOfWarMemory ().getWizardDetails (), agreer.getPlayerDescription ().getPlayerID (), "rejectTradeSpells (A)");
+
+		if (agreer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
+			msg.setAction (DiplomacyAction.REJECT_EXCHANGE_SPELL);
+			msg.setOfferSpellID (agreerWantsSpellID);
+			msg.setRequestSpellID (proposerWantsSpellID);
+
+			if (proposer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "rejectTradeSpells").getRelationScoreID ());
+			
+			agreer.getConnection ().sendMessageToClient (msg);
+		}
+	}
 	
 	/**
 	 * @return Process for making sure one wizard has met another wizard

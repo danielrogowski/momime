@@ -189,7 +189,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					
 				case DECLARE_WAR_BECAUSE_THREATENED:
 					getDiplomacyProcessing ().declareWarBecauseThreatened (sender, talkToPlayer, mom);
-					proceed = false;
+					proceed = (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN);
 					break;
 					
 				// Player 1 asking player 2 to declare war on player 3 has no idea whether player 2 even knows who player 3 is.
@@ -407,6 +407,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					case ACCEPT_PEACE_TREATY:
 					case ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD:
 					case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
+					case IGNORE_THREAT:
+					case DECLARE_WAR_BECAUSE_THREATENED:
 						getDiplomacyProposalsAI ().sendNextProposal (talkToPlayer, sender, mom);
 						break;
 						

@@ -126,7 +126,16 @@ public final class DiplomacyProposalsAIImpl implements DiplomacyProposalsAI
 			if ((!spellIDsWeCanOffer.isEmpty ()) && (!spellIDsWeCanRequest.isEmpty ()))
 			{
 				final String requestSpellID = getDiplomacyAI ().chooseSpellToRequest (spellIDsWeCanRequest, mom.getServerDB ());
-				proposals.add (new DiplomacyProposal (DiplomacyAction.PROPOSE_EXCHANGE_SPELL, null, requestSpellID));
+				
+				// Out of all the spells the other wizard could request in return, if we'll reject every one no matter which they pick then there's no point ever sending the proposal
+				// otherwise AI players end up spamming human players with ridiculous requests
+				boolean found = false;
+				for (final String spellIDWeCanOffer : spellIDsWeCanOffer)
+					if (getDiplomacyAI ().considerSpellTrade (requestSpellID, spellIDWeCanOffer, mom.getServerDB ()))
+						found = true;
+				
+				if (found)
+					proposals.add (new DiplomacyProposal (DiplomacyAction.PROPOSE_EXCHANGE_SPELL, null, requestSpellID));
 			}
 		}
 		

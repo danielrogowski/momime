@@ -391,6 +391,10 @@ public final class DiplomacyAIImpl implements DiplomacyAI
 			case GIVE_SPELL_BECAUSE_THREATENED:
 				getDiplomacyProcessing ().giveSpellBecauseThreatened (aiPlayer, threatener, mom, spellIDsWeCanOffer.get (0));
 				break;
+				
+			case IGNORE_THREAT:
+				getDiplomacyProcessing ().ignoreThreat (aiPlayer, threatener, mom);
+				break;
 
 			// Do nothing
 			default:

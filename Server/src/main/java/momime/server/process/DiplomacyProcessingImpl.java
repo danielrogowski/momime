@@ -726,7 +726,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		if (receiver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
-			msg.setTalkFromPlayerID (receiver.getPlayerDescription ().getPlayerID ());
+			msg.setTalkFromPlayerID (giver.getPlayerDescription ().getPlayerID ());
 			msg.setAction (receiverAction);
 			msg.setOfferGoldAmount (offerGoldAmount);
 
@@ -841,7 +841,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		if (receiver.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
-			msg.setTalkFromPlayerID (receiver.getPlayerDescription ().getPlayerID ());
+			msg.setTalkFromPlayerID (giver.getPlayerDescription ().getPlayerID ());
 			msg.setAction (receiverAction);
 			msg.setOfferSpellID (spellID);
 
@@ -975,7 +975,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		if (agreer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
-			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
+			msg.setTalkFromPlayerID (proposer.getPlayerDescription ().getPlayerID ());
 			msg.setAction (DiplomacyAction.ACCEPT_EXCHANGE_SPELL);
 			msg.setOfferSpellID (agreerWantsSpellID);
 			msg.setRequestSpellID (proposerWantsSpellID);
@@ -1026,7 +1026,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		if (agreer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
-			msg.setTalkFromPlayerID (agreer.getPlayerDescription ().getPlayerID ());
+			msg.setTalkFromPlayerID (proposer.getPlayerDescription ().getPlayerID ());
 			msg.setAction (DiplomacyAction.REJECT_EXCHANGE_SPELL);
 			msg.setOfferSpellID (agreerWantsSpellID);
 			msg.setRequestSpellID (proposerWantsSpellID);
@@ -1035,6 +1035,39 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (proposersOpinionOfAgreer.getVisibleRelation (), "rejectTradeSpells").getRelationScoreID ());
 			
 			agreer.getConnection ().sendMessageToClient (msg);
+		}
+	}
+	
+	/**
+	 * @param ignorer Player who ignored the threat
+	 * @param threatener Player who threatened them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void ignoreThreat (final PlayerServerDetails ignorer, final PlayerServerDetails threatener, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		log.debug ("Player ID " + threatener.getPlayerDescription ().getPlayerID () + " threatened Player ID " + ignorer.getPlayerDescription ().getPlayerType () + " and got ignored");
+		
+		// Find the two wizards' opinions of each other
+		final MomPersistentPlayerPrivateKnowledge ignorerPriv = (MomPersistentPlayerPrivateKnowledge) ignorer.getPersistentPlayerPrivateKnowledge ();
+		
+		final DiplomacyWizardDetails ignorersOpinionOfThreatener = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(ignorerPriv.getFogOfWarMemory ().getWizardDetails (), threatener.getPlayerDescription ().getPlayerID (), "ignoreThreat");
+
+		if (threatener.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			final DiplomacyMessage msg = new DiplomacyMessage ();	
+			msg.setTalkFromPlayerID (ignorer.getPlayerDescription ().getPlayerID ());
+			msg.setAction (DiplomacyAction.IGNORE_THREAT);
+
+			if (ignorer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+				msg.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (ignorersOpinionOfThreatener.getVisibleRelation (), "ignoreThreat").getRelationScoreID ());
+			
+			threatener.getConnection ().sendMessageToClient (msg);
 		}
 	}
 	

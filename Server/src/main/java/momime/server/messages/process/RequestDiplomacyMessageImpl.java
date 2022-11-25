@@ -243,7 +243,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 
 				case GIVE_GOLD_BECAUSE_THREATENED:
 					getDiplomacyProcessing ().giveGoldBecauseThreatened (sender, talkToPlayer, mom, getOfferGoldTier ());
-					proceed = false;
+					proceed = (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN);
 					break;
 				
 				case BREAK_WIZARD_PACT_NICELY:
@@ -320,11 +320,16 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					// Proceed with spell donation
 					else if (getAction () != DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
 					{
-						proceed = false;
 						if (getAction () == DiplomacyAction.GIVE_SPELL)
+						{
 							getDiplomacyProcessing ().giveSpell (sender, talkToPlayer, mom, getOfferSpellID ());
+							proceed = false;
+						}
 						else
+						{
 							getDiplomacyProcessing ().giveSpellBecauseThreatened (sender, talkToPlayer, mom, getOfferSpellID ());
+							proceed = (talkToPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN);
+						}
 					}
 					break;
 					
@@ -409,6 +414,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					case ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD:
 					case IGNORE_THREAT:
 					case DECLARE_WAR_BECAUSE_THREATENED:
+					case GIVE_GOLD_BECAUSE_THREATENED:
+					case GIVE_SPELL_BECAUSE_THREATENED:
 						getDiplomacyProposalsAI ().sendNextProposal (talkToPlayer, sender, mom);
 						break;
 						

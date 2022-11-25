@@ -285,4 +285,15 @@ public interface DiplomacyProcessing
 	public void rejectTradeSpells (final PlayerServerDetails proposer, final PlayerServerDetails agreer, final MomSessionVariables mom,
 		final String proposerWantsSpellID, final String agreerWantsSpellID)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param ignorer Player who ignored the threat
+	 * @param threatener Player who threatened them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void ignoreThreat (final PlayerServerDetails ignorer, final PlayerServerDetails threatener, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;	
 }

@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
@@ -22,7 +22,7 @@ import momime.common.utils.KnownWizardUtils;
 /**
  * Notifying a player of a proposal, offer or demand to another wizard, the exact nature of which is set by the action value.
  */
-public final class DiplomacyMessageImpl extends DiplomacyMessage implements BaseServerToClientMessage
+public final class DiplomacyMessageImpl extends DiplomacyMessage implements CustomDurationServerToClientMessage
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (DiplomacyMessageImpl.class);
@@ -63,6 +63,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
 			getDiplomacyUI ().updateRelationScore ();
 		}
+		
+		boolean block = false;
 		
 		switch (getAction ())
 		{
@@ -191,6 +193,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_GOLD);
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
+				block = true;
 
 				// Further gold offers will be more expensive
 				final DiplomacyWizardDetails talkToWizard = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
@@ -203,6 +206,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_SPELL);
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
+				block = true;
 				break;
 				
 			case PROPOSE_EXCHANGE_SPELL:
@@ -232,6 +236,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().setTextState (DiplomacyTextState.REJECT_EXCHANGE_SPELL);
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
+				block = true;
 				break;
 
 			case ACCEPT_EXCHANGE_SPELL:
@@ -239,6 +244,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_EXCHANGING_SPELL);
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
+				block = true;
 				break;
 				
 			case AFTER_EXCHANGE_SPELL:
@@ -341,6 +347,19 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 		}
 		
 		log.debug ("Done with diplomacy action " + getAction () + " from player ID " + getTalkFromPlayerID ());
+		
+		if (block)
+			getDiplomacyUI ().setDiplomacyMessage (this);
+		else
+			getClient ().finishCustomDurationMessage (this);
+	}
+
+	/**
+	 * Nothing to do here, the custom duration is just to block the next message from being processed
+	 */
+	@Override
+	public final void finish ()
+	{
 	}
 	
 	/**

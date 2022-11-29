@@ -786,7 +786,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		log.debug ("Player ID " + giver.getPlayerDescription ().getPlayerID () + " is giving player ID " + receiver.getPlayerDescription ().getPlayerType () + " gold donation at tier " + offerGoldTier +
 			" in response to being threatened");
 		
-		giveGoldInternal (giver, receiver, mom, offerGoldTier, null, DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED, 0);
+		giveGoldInternal (giver, receiver, mom, offerGoldTier, DiplomacyAction.ACCEPT_GOLD, DiplomacyAction.GIVE_GOLD_BECAUSE_THREATENED, 0);
 	}
 	
 	/**
@@ -900,7 +900,7 @@ public final class DiplomacyProcessingImpl implements DiplomacyProcessing
 		log.debug ("Player ID " + giver.getPlayerDescription ().getPlayerID () + " is giving player ID " + receiver.getPlayerDescription ().getPlayerType () + " spell ID " + spellID +
 			" in response to being threatened");
 		
-		giveSpellInternal (giver, receiver, mom, spellID, null, DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED, false);
+		giveSpellInternal (giver, receiver, mom, spellID, DiplomacyAction.ACCEPT_SPELL, DiplomacyAction.GIVE_SPELL_BECAUSE_THREATENED, false);
 	}
 
 	/**

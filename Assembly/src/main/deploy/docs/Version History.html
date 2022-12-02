@@ -36,8 +36,35 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.5.2</b></td>
-			<td align=left><b>20 Oct 2022</b></td>
+			<td align=left><b>Current version: 1.6</b></td>
+			<td align=left><b>2 Dec 2022</b></td>
+			<td align=left>
+				<b>Diplomacy part 3:</b>
+				<ul>
+					<li>AI wizards will make and break pacts, trade spells and threaten each other, all following the same rules that govern diplomacy involving human players
+					<li>AI wizards initiate conversations with human wizards to make and break pacts, trade spells and threaten you
+				</ul>
+
+				<b>Diplomacy additional relation modifiers and bug fixes:</b>
+				<ul>
+					<li>AI wizards will like you for agreeing to their proposal to declare war on another wizard or break alliance with another wizard
+					<li>If one wizard asks another to declare war on an AI wizard and they agree, the AI wizard will dislike both of them for it
+					<li>Stopped a wizard liking you more for giving them a spell when the reason you gave it to them was because they threatened you
+					<li>AI wizards can no longer brush you off and ignore threats if they've lost patience to talk to you; they have to respond to the threat (they might choose to ignore the threat anyway, but that's via proper threat handling)
+					<li>Fixed AI wizards opinion modifiers being re-applied after every combat they initiate as part of their turn; now opinion modifiers are only applied at the start of the AI player turn as intended
+				</ul>
+
+				<b>Fixed bugs unrelated to diplomacy:</b>
+				<ul>
+					<li>Spell Binding couldn't be targeted
+					<li>Fixed bug where "ghosts" of enemy heroes could be left behind visible on the map and in cities that did nothing - you could stack your units on top of them without attacking them - but they would not disappear.  Happened particularly after their wizard was defeated.
+					<li>Fixed being able to summon a Floating Island on a map cell that already had 9 units in it
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.5.2</td>
+			<td align=left>20 Oct 2022</td>
 			<td align=left>
 				<b>New features:</b>
 				<ul>

@@ -491,6 +491,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 *			of moveTo.getPlane () is by what map cell the player clicked on in the UI.
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether anything interesting changed as a result of the move (a unit, city, building, terrain, anything new or changed we didn't know about before, besides just the visible area changing)
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -498,7 +499,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+	public final boolean moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
@@ -590,7 +591,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			thisUnit.setUnitLocation (new MapCoordinates3DEx (moveTo));
 
 		// See what the units can see from their new location
-		getFogOfWarProcessing ().updateAndSendFogOfWar (unitStackOwner, "moveUnitStackOneCellOnServerAndClients", mom);
+		boolean somethingInterestingChanged = getFogOfWarProcessing ().updateAndSendFogOfWar (unitStackOwner, "moveUnitStackOneCellOnServerAndClients", mom);
 
 		// If we moved out of or into a city, then need to recalc rebels, production, because the units may now be (or may now no longer be) helping ease unrest.
 		// Note this doesn't deal with capturing cities - attacking even an empty city is treated as a combat, so we can pick Capture/Raze.
@@ -611,6 +612,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
 					cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+				
+				somethingInterestingChanged = true;
 			}
 		}
 		
@@ -633,6 +636,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			tc.getTerrainData ().setMapFeatureID (null);
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
 				moveTo, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+			
+			somethingInterestingChanged = true;
 		}					
 		
 		// If we captured a tower of wizardry, then turn the light on
@@ -648,6 +653,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
 					towerCoords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 			}
+			
+			somethingInterestingChanged = true;
 		}
 
 		// If we captured a node/lair/tower then award the treasure.
@@ -657,6 +664,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				(getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, tileTypeID, mapFeatureID, mom),
 					unitStackOwner, mom);
 			tc.setTreasureValue (null);
+			
+			somethingInterestingChanged = true;
 		}
 		
 		else if (tc.getGoldInRuin () != null)
@@ -664,7 +673,11 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			getTreasureUtils ().sendTreasureReward (getTreasureUtils ().giveGoldInRuin (tc.getGoldInRuin (), unitStackOwner, moveTo, tileTypeID, mapFeatureID),
 				unitStackOwner, mom);
 			tc.setGoldInRuin (null);
+			
+			somethingInterestingChanged = true;
 		}
+		
+		return somethingInterestingChanged;
 	}
 
 	/**
@@ -715,6 +728,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		// Have to define a lot of these out here so they can be used after the loop
 		boolean keepGoing = true;
 		boolean validMoveFound = false;
+		boolean somethingInterestingChanged = true;
 		int doubleMovementRemaining = 0;
 		OverlandMovementCell [] [] [] moves = null;
 
@@ -731,8 +745,13 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 
 			// Find distances and route from our start point to every location on the map
-			moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
-				unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
+			if (somethingInterestingChanged)
+			{
+				moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
+					unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
+				
+				somethingInterestingChanged = false;
+			}
 
 			// Is there a route to where we want to go?
 			validMoveFound = (moves [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] != null);
@@ -755,6 +774,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					moveTo.setX (oneStep.getX ());
 					moveTo.setY (oneStep.getY ());
 					moveTo.setZ (oneStep.getZ ());
+					
+					somethingInterestingChanged = true;
 				}
 				
 				oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -791,7 +812,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				if (!combatInitiated)
 				{
 					// Actually move the units
-					moveUnitStackOneCellOnServerAndClients (allUnitsMem, unitStackOwner, moveFrom, oneStep, mom);
+					if (moveUnitStackOneCellOnServerAndClients (allUnitsMem, unitStackOwner, moveFrom, oneStep, mom))
+						somethingInterestingChanged = true;
 
 					// Prepare for next loop
 					moveFrom = oneStep;

@@ -51,12 +51,13 @@ public interface FogOfWarProcessing
 	 * @param player The player whose FOW we are recalculating
 	 * @param triggeredFrom What caused the change in visible area - this is only used for debug messages on the client
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether anything interesting changed (a unit, city, building, terrain, anything new or changed we didn't know about before, besides just the visible area changing)
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void updateAndSendFogOfWar (final PlayerServerDetails player, final String triggeredFrom, final MomSessionVariables mom)
+	public boolean updateAndSendFogOfWar (final PlayerServerDetails player, final String triggeredFrom, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

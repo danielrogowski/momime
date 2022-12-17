@@ -153,8 +153,8 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.switchOffSpellsCastInCombat (new MapCoordinates3DEx (20, 10, 1), mom);
 		
 		// Check results
-		verify (wu).switchOffSpell (3);
-		verify (wu).switchOffSpell (6);
+		verify (wu).switchOffSpell (3, false);
+		verify (wu).switchOffSpell (6, false);
 		verify (wu).process (mom);
 		
 		verifyNoMoreInteractions (wu);
@@ -205,7 +205,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.switchOffSpellsInLocationOnServerAndClients (new MapCoordinates3DEx (20, 10, 1), 3, true, mom);
 
 		// Check results
-		verify (wu).switchOffSpell (3);
+		verify (wu).switchOffSpell (3, false);
 		verify (wu).process (mom);
 		
 		verifyNoMoreInteractions (wu);
@@ -256,8 +256,8 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.switchOffSpellsInLocationOnServerAndClients (new MapCoordinates3DEx (20, 10, 1), 0, true, mom);
 
 		// Check results
-		verify (wu).switchOffSpell (1);		// <--
-		verify (wu).switchOffSpell (3);
+		verify (wu).switchOffSpell (1, false);		// <--
+		verify (wu).switchOffSpell (3, false);
 		verify (wu).process (mom);
 		
 		verifyNoMoreInteractions (wu);

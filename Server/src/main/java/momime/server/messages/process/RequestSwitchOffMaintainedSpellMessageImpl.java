@@ -116,7 +116,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ()); 
 			
 			// Switch off spell + associated CAEs
-			mom.getWorldUpdates ().switchOffSpell (getSpellURN ());
+			mom.getWorldUpdates ().switchOffSpell (getSpellURN (), false);
 			mom.getWorldUpdates ().process (mom);
 			
 			// Did switching off the spell lose the combat?

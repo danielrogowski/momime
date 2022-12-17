@@ -75,6 +75,9 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
 	
+	/** If true, the spell will be removed in player's memory both on the server and clients, but won't be removed from the server's true memory */
+	private boolean retainSpellInServerTrueMemory;
+	
 	/**
 	 * @return Enum indicating which kind of update this is
 	 */
@@ -106,7 +109,12 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	@Override
 	public final String toString ()
 	{
-		return "Switch off spell URN " + getSpellURN ();
+		String s = "Switch off spell URN " + getSpellURN ();
+		
+		if (isRetainSpellInServerTrueMemory ())
+			s = s + ", but keep it in server's true memory";
+		
+		return s;
 	}
 	
 	/**
@@ -165,7 +173,8 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 		if (result == WorldUpdateResult.DONE)
 		{
 			// Switch off on server
-			getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+			if (!isRetainSpellInServerTrueMemory ())
+				getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 	
 			// Build the message ready to send it to whoever could see the spell
 			final SwitchOffMaintainedSpellMessage msg = new SwitchOffMaintainedSpellMessage ();
@@ -476,5 +485,21 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
 	{
 		combatMapServerUtils = u;
+	}
+
+	/**
+	 * @return If true, the spell will be removed in player's memory both on the server and clients, but won't be removed from the server's true memory
+	 */
+	public final boolean isRetainSpellInServerTrueMemory ()
+	{
+		return retainSpellInServerTrueMemory;
+	}
+
+	/**
+	 * @param r If true, the spell will be removed in player's memory both on the server and clients, but won't be removed from the server's true memory
+	 */
+	public final void setRetainSpellInServerTrueMemory (final boolean r)
+	{
+		retainSpellInServerTrueMemory = r;
 	}
 }

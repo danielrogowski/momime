@@ -507,18 +507,20 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					}
 				}
 			}
-			
-			// Cancel any spells that were cast in combat, note doing so can actually kill some units
-			getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombat (combatDetails.getCombatLocation (), mom);
 
 			// Work out moveToPlane - If attackers are capturing a tower from Myrror, in which case they jump to Arcanus as part of the move
 			final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (combatDetails.getCombatLocation ());
 			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
 				moveTo.setZ (0);
 			
-			// Units with regeneration come back from being dead and/or regain full health
+			// Units with regeneration come back from being dead and/or regain full health.
+			// Have to do this BEFORE switching off spells cast in combat, in case a unit had Regeneration cast on it in combat.
+			// That brings the unit back to life if it died but its side won, but of course it then loses the spell after its brought back to life, as it was only a combat spell.
 			msg.setRegeneratedCount (getCombatProcessing ().regenerateUnits (combatDetails.getCombatLocation (), winningPlayer, mom));
 			
+			// Cancel any spells that were cast in combat, note doing so can actually kill some units
+			getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombat (combatDetails.getCombatLocation (), mom);
+
 			// Undead created from ghouls / life stealing?
 			// Note these are always moved to the "moveTo" i.e. defending location - if the attacker won, their main force will advance
 			// there in the code below; if the defender won, the undead need to be moved to be stacked with the rest of the defenders.

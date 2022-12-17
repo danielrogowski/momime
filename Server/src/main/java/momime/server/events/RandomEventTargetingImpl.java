@@ -153,7 +153,7 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 				{
 					final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "triggerEvent");
 					if (spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
-						mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN ());
+						mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN (), false);
 				}
 				
 				mom.getWorldUpdates ().process (mom);

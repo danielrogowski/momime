@@ -54,6 +54,9 @@ public final class KillUnitUpdate implements WorldUpdate
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
 	
+	/** Flag to make sure we only switch off the spells cast on the dead unit once */
+	private boolean switchOffSpellsOnDeadUnitDone;
+	
 	/**
 	 * @return Enum indicating which kind of update this is
 	 */
@@ -105,13 +108,20 @@ public final class KillUnitUpdate implements WorldUpdate
 	{
 		WorldUpdateResult result = WorldUpdateResult.DONE;
 		
-		// If the unit has any spells cast on it, remove those first
-		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
-			if ((spell.getUnitURN () != null) && (spell.getUnitURN () == getUnitURN ()))
-			{
-				if (mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN ()))
-					result = WorldUpdateResult.REDO_BECAUSE_EARLIER_UPDATES_ADDED;
-			}
+		// If the unit has any spells cast on it, remove those first.
+		// If the unit died in combat, remove spells from player's memory only but keep it in the server's true memory just in case the unit regenerates at the end of combat and gets its spells back.
+		if (!switchOffSpellsOnDeadUnitDone)
+		{
+			final boolean retainSpellInServerTrueMemory = (getUntransmittedAction () == KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
+			for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+				if ((spell.getUnitURN () != null) && (spell.getUnitURN () == getUnitURN ()))
+				{
+					if (mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN (), retainSpellInServerTrueMemory))
+						result = WorldUpdateResult.REDO_BECAUSE_EARLIER_UPDATES_ADDED;
+				}
+			
+			switchOffSpellsOnDeadUnitDone = true;
+		}
 		
 		if (result == WorldUpdateResult.DONE)
 		{
@@ -127,7 +137,7 @@ public final class KillUnitUpdate implements WorldUpdate
 				final CombatDetails combatDetails = (trueUnit.getCombatLocation () == null) ? null :
 					getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), (MapCoordinates3DEx) trueUnit.getCombatLocation (), "KillUnitUpdate");
 				
-				if ((trueUnit.getCombatLocation () != null) && (untransmittedAction != KillUnitActionID.PERMANENT_DAMAGE))
+				if ((trueUnit.getCombatLocation () != null) && (getUntransmittedAction () != KillUnitActionID.PERMANENT_DAMAGE))
 					trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
 					{
 						combatDetails.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
@@ -148,7 +158,7 @@ public final class KillUnitUpdate implements WorldUpdate
 						final UnitStatusID newStatusInPlayersMemoryOnServer;
 						final UnitStatusID newStatusInPlayersMemoryOnClient;
 						
-						switch (untransmittedAction)
+						switch (getUntransmittedAction ())
 						{
 							// Heroes are killed outright on the clients (even if ours, and just dismissing him and may resummon him later), but return to 'Generated' status on the server below
 							case PERMANENT_DAMAGE:
@@ -195,7 +205,7 @@ public final class KillUnitUpdate implements WorldUpdate
 						    	break;
 						    	
 						    default:
-						    	throw new MomException ("killUnitOnServerAndClients doesn't know what unit status to convert " + untransmittedAction + " into");
+						    	throw new MomException ("killUnitOnServerAndClients doesn't know what unit status to convert " + getUntransmittedAction () + " into");
 						}
 	
 						// If still in combat, only set to DEAD in player's memory on server, rather than removing entirely
@@ -225,7 +235,7 @@ public final class KillUnitUpdate implements WorldUpdate
 				}
 	
 				// Now update server's true memory
-				switch (untransmittedAction)
+				switch (getUntransmittedAction ())
 				{
 					// Complete remove unit
 					case PERMANENT_DAMAGE:
@@ -273,7 +283,7 @@ public final class KillUnitUpdate implements WorldUpdate
 						break;
 						
 					default:
-						throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when action = " + untransmittedAction);
+						throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when action = " + getUntransmittedAction ());
 				}
 				
 				// If the unit died overland, recheck the remaining units at the location (if it died in combat, this is deferred until the combat ends)

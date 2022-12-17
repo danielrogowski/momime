@@ -928,7 +928,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 						if ((addsToSkill.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
 							(exp >= addsToSkill.getAddsToSkillValue ()))
 							
-							mom.getWorldUpdates ().switchOffSpell (thisSpell.getSpellURN ());
+							mom.getWorldUpdates ().switchOffSpell (thisSpell.getSpellURN (), false);
 				}
 			
 			mom.getWorldUpdates ().process (mom);

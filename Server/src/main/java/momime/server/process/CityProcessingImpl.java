@@ -1121,7 +1121,7 @@ public final class CityProcessingImpl implements CityProcessing
 			// Remove any spells the wizard still had cast
 			for (final MemoryMaintainedSpell defeatedSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 				if (defeatedSpell.getCastingPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ())
-					mom.getWorldUpdates ().switchOffSpell (defeatedSpell.getSpellURN ());
+					mom.getWorldUpdates ().switchOffSpell (defeatedSpell.getSpellURN (), false);
 
 			// Remove any units the wizard still had
 			for (final MemoryUnit defeatedUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())

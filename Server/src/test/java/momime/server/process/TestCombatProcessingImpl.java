@@ -1023,6 +1023,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1228,6 +1229,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1424,6 +1426,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1620,7 +1623,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
-		
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
+
 		// Session description
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -1780,6 +1784,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();

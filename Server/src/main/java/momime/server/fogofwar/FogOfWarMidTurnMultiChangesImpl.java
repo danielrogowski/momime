@@ -152,14 +152,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 			// Spells cast at the location
 			if ((trueSpell.isCastInCombat ()) && (combatLocation.equals (trueSpell.getCityLocation ())))
-				mom.getWorldUpdates ().switchOffSpell (trueSpell.getSpellURN ());
+				mom.getWorldUpdates ().switchOffSpell (trueSpell.getSpellURN (), false);
 
 			// Spells cast on units
 			else if ((trueSpell.isCastInCombat ()) && (trueSpell.getUnitURN () != null))
 			{
 				final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "switchOffSpellsCastInCombat");
 				if (combatLocation.equals (thisUnit.getCombatLocation ()))
-					mom.getWorldUpdates ().switchOffSpell (trueSpell.getSpellURN ());
+					mom.getWorldUpdates ().switchOffSpell (trueSpell.getSpellURN (), false);
 			}
 
 		mom.getWorldUpdates ().process (mom);
@@ -183,7 +183,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			if ((cityLocation.equals (trueSpell.getCityLocation ())) &&
 				((castingPlayerID == 0) || (trueSpell.getCastingPlayerID () == castingPlayerID)))
 				
-				mom.getWorldUpdates ().switchOffSpell (trueSpell.getSpellURN ());
+				mom.getWorldUpdates ().switchOffSpell (trueSpell.getSpellURN (), false);
 		
 		if (processChanges)
 			mom.getWorldUpdates ().process (mom);

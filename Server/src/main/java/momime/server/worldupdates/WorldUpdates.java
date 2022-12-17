@@ -37,9 +37,10 @@ public interface WorldUpdates
 	
 	/**
 	 * @param spellURN The spell to remove
+	 * @param retainSpellInServerTrueMemory If true, the spell will be removed in player's memory both on the server and clients, but won't be removed from the server's true memory
 	 * @return Whether the update was added; will return false if its a duplicate update already found to be in the list
 	 */
-	public boolean switchOffSpell (final int spellURN);
+	public boolean switchOffSpell (final int spellURN, final boolean retainSpellInServerTrueMemory);
 
 	/**
 	 * @param mapLocation The map location to check

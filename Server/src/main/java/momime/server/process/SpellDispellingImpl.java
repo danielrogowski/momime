@@ -240,7 +240,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 					
 					// Regular dispel
 					else
-						mom.getWorldUpdates ().switchOffSpell (spellToDispel.getSpellURN ());
+						mom.getWorldUpdates ().switchOffSpell (spellToDispel.getSpellURN (), false);
 				}			
 			}
 		

@@ -1659,7 +1659,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							{
 								final Spell spellToRemoveDef = mom.getServerDB ().findSpell (spellToRemove.getSpellID (), "targetOverlandSpell");
 								if (citySpellEffect.getProtectsAgainstSpellRealm ().contains (spellToRemoveDef.getSpellRealm ()))
-									mom.getWorldUpdates ().switchOffSpell (spellToRemove.getSpellURN ());
+									mom.getWorldUpdates ().switchOffSpell (spellToRemove.getSpellURN (), false);
 							}
 							
 							mom.getWorldUpdates ().process (mom);
@@ -2126,7 +2126,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							}
 							
 							if (removeSpell)
-								mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN ());
+								mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN (), false);
 						}
 					}
 				}

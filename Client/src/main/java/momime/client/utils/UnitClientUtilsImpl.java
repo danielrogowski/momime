@@ -608,30 +608,33 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final void playCombatActionSound (final AvailableUnit unit, final String combatActionID) throws RecordNotFoundException
 	{
-		// See if there's a specific override sound specified for this unit.
-		// This so earth elementals make a stomp stomp noise, cavalry go clippity clop and regular swordsmen go clank clank, even though they're all just doing the WALK action.
-		final String soundEffectFilename;
-		final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "playCombatActionSound");
-		final UnitCombatActionEx unitCombatAction = unitDef.findCombatAction (combatActionID, "playCombatActionSound");
-		if (unitCombatAction.getOverrideActionSoundFile () != null)
-			soundEffectFilename = unitCombatAction.getOverrideActionSoundFile ();
-		else
+		if (unit != null)
 		{
-			// If we didn't find a specific sound for this unit, use the general one
-			soundEffectFilename = getClient ().getClientDB ().findCombatAction (combatActionID, "playCombatActionSound").getDefaultActionSoundFile ();
-			if (soundEffectFilename == null)
-				log.warn ("Found combatAction " + combatActionID + " in the graphics XML, but it doesn't specify a defaultActionSoundFile");
+			// See if there's a specific override sound specified for this unit.
+			// This so earth elementals make a stomp stomp noise, cavalry go clippity clop and regular swordsmen go clank clank, even though they're all just doing the WALK action.
+			final String soundEffectFilename;
+			final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "playCombatActionSound");
+			final UnitCombatActionEx unitCombatAction = unitDef.findCombatAction (combatActionID, "playCombatActionSound");
+			if (unitCombatAction.getOverrideActionSoundFile () != null)
+				soundEffectFilename = unitCombatAction.getOverrideActionSoundFile ();
+			else
+			{
+				// If we didn't find a specific sound for this unit, use the general one
+				soundEffectFilename = getClient ().getClientDB ().findCombatAction (combatActionID, "playCombatActionSound").getDefaultActionSoundFile ();
+				if (soundEffectFilename == null)
+					log.warn ("Found combatAction " + combatActionID + " in the graphics XML, but it doesn't specify a defaultActionSoundFile");
+			}
+			
+			if (soundEffectFilename != null)
+				try
+				{
+					getSoundPlayer ().playAudioFile (soundEffectFilename);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 		}
-		
-		if (soundEffectFilename != null)
-			try
-			{
-				getSoundPlayer ().playAudioFile (soundEffectFilename);
-			}
-			catch (final Exception e)
-			{
-				log.error (e, e);
-			}
 	}
 	
 	/**

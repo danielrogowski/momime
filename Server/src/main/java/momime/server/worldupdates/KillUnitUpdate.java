@@ -130,19 +130,14 @@ public final class KillUnitUpdate implements WorldUpdate
 				log.warn ("KillUnitUpdate tried to kill Unit URN " + getUnitURN () + " but its true copy has already been removed");
 			else
 			{
+				// Dead heroes with magic items keep them for now.  If they die from permanent or overland damage, the items die with them.
+				// If they resurrect at the end of combat, they are still holding the items.  If they don't resurrect at the end of combat,
+				// THEN we remove their items and put them in the item pool for the combat winner.
 				final String unitMagicRealmID = mom.getServerDB ().findUnit (trueUnit.getUnitID (), "KillUnitUpdate").getUnitMagicRealm ();
 				final boolean isHero = unitMagicRealmID.equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 				
-				// If the unit was a hero dying in combat, move any items they had into the pool for the winner of the combat to claim
 				final CombatDetails combatDetails = (trueUnit.getCombatLocation () == null) ? null :
 					getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), (MapCoordinates3DEx) trueUnit.getCombatLocation (), "KillUnitUpdate");
-				
-				if ((trueUnit.getCombatLocation () != null) && (getUntransmittedAction () != KillUnitActionID.PERMANENT_DAMAGE))
-					trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
-					{
-						combatDetails.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
-						slot.setHeroItem (null);
-					});
 				
 				// Check which players could see the unit
 				for (final PlayerServerDetails player : mom.getPlayers ())

@@ -1005,9 +1005,22 @@ public final class CombatProcessingImpl implements CombatProcessing
 					// Heroes that didn't regenerate need any spells cast on them to be removed.  They were removed on the client during KillUnitUpdate,
 					// but the server has to keep a copy of the spell in its true memory just in case the hero regenerates and so keeps the spell.
 					if (trueUnit.getStatus () == UnitStatusID.DEAD)
+					{
 						for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 							if ((spell.getUnitURN () != null) && (spell.getUnitURN () == trueUnit.getUnitURN ()))
 								mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN (), false);
+						
+						// Also relieve them of their items.  They'll be awarded to the winner of the combat.
+						final CombatDetails combatDetails = (trueUnit.getCombatLocation () == null) ? null :
+							getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), (MapCoordinates3DEx) trueUnit.getCombatLocation (), "purgeDeadUnitsAndCombatSummonsFromCombat");
+						
+						if (combatDetails != null)
+							trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
+							{
+								combatDetails.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
+								slot.setHeroItem (null);
+							});
+					}
 				}
 				else
 				{

@@ -184,7 +184,8 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 			for (final PlayerServerDetails player : mom.getPlayers ())
 			{
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-				if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, player, mom))
+				if ((getMemoryMaintainedSpellUtils ().findSpellURN (getSpellURN (), priv.getFogOfWarMemory ().getMaintainedSpell ()) != null) &&
+					(getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, player, mom)))
 				{
 					// Update player's memory on server
 					getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), priv.getFogOfWarMemory ().getMaintainedSpell ());

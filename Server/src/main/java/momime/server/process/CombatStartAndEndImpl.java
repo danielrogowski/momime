@@ -403,7 +403,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			msg.setCombatLocation (combatDetails.getCombatLocation ());
 			msg.setWinningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
 			msg.setCaptureCityDecisionID (useCaptureCityDecision);
-			msg.setHeroItemCount (combatDetails.getItemsFromHeroesWhoDiedInCombat ().size ());
 			
 			// Start to work out fame change for each player involved
 			int winningFameChange = 0;
@@ -600,6 +599,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (defenderFameChange != 0)
 					getResourceValueUtils ().addToAmountStored (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME, defenderFameChange);
 			}
+
+			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
+			// This also removes ('kills') on the client monsters in a lair/node/tower who won
+			// Have to do this before we advance the attacker, otherwise we end up trying to advance the combat summoned units
+			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, mom);
+
+			// Hero items are collected up as part of purgeDeadUnitsAndCombatSummonsFromCombat, so can't do this until here 
+			msg.setHeroItemCount (combatDetails.getItemsFromHeroesWhoDiedInCombat ().size ());
 			
 			// Send the CombatEnded message
 			// Remember defending player may still be nil if we attacked an empty lair
@@ -614,11 +621,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				msg.setFameChange (attackerFameChange);
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
 			}
-			
-			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
-			// This also removes ('kills') on the client monsters in a lair/node/tower who won
-			// Have to do this before we advance the attacker, otherwise we end up trying to advance the combat summoned units
-			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, mom);
 			
 			// Remember the name of the city before we possibly destroy and remove the city
 			final String cityName = (tc.getCityData () == null) ? null : tc.getCityData ().getCityName ();

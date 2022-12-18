@@ -1165,10 +1165,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (fow);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run test
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
@@ -1368,10 +1370,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (fow);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run test
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
@@ -1565,10 +1569,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (fow);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run test
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
@@ -1731,10 +1737,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (fow);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run test
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, mom);
@@ -1892,10 +1900,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (fow);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run test
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, mom);

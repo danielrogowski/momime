@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:momMod xmlns:ns2="http://momime/common/mod">
+	<unit unitID="UN042">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN044">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN050">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN051">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN052">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN055">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN062">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN065">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN070">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN071">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN072">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN087">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN092">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN093">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN095">
+		<figureCount>4</figureCount>
+	</unit>
+	<unit unitID="UN100">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN102">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN107">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN109">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN110">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN124">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN125">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN130">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN131">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN132">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN134">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN136">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN141">
+		<figureCount>3</figureCount>
+	</unit>
+	<unit unitID="UN143">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN144">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN151">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN172">
+		<figureCount>2</figureCount>
+	</unit>
+	<unit unitID="UN181">
+		<figureCount>2</figureCount>
+	</unit>
+</ns2:momMod>

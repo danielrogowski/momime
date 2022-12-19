@@ -61,6 +61,20 @@
 			<tileRelativeY>9</tileRelativeY>
 		</figurePositionsForFigureCount>
 	</combatTileFigurePositions>
+	<combatTileFigurePositions figureCount="3">
+		<figurePositionsForFigureCount figureNumber="1">
+			<tileRelativeX>10</tileRelativeX>
+			<tileRelativeY>11</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="2">
+			<tileRelativeX>20</tileRelativeX>
+			<tileRelativeY>11</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="3">
+			<tileRelativeX>15</tileRelativeX>
+			<tileRelativeY>6</tileRelativeY>
+		</figurePositionsForFigureCount>
+	</combatTileFigurePositions>
 	<combatTileFigurePositions figureCount="4">
 		<figurePositionsForFigureCount figureNumber="1">
 			<tileRelativeX>15</tileRelativeX>

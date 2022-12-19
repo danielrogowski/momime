@@ -291,6 +291,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 							if (xuDefender.isUnitImmuneToDamageType (damageType))
 								damageType = null;
 						}
+						else if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ADVANCED_LIFE_STEALING))
+						{
+							damageType = db.findDamageType (ServerDatabaseValues.DAMAGE_TYPE_ID_ADVANCED_LIFE_STEALING, "attackFromUnitSkill");
+							if (xuDefender.isUnitImmuneToDamageType (damageType))
+								damageType = null;
+						}
 						
 						// If life stealing damage didn't apply, just use whatever is defined against the unit skill like normal
 						if (damageType == null)

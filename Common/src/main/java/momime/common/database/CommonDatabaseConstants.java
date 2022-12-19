@@ -338,6 +338,9 @@ public final class CommonDatabaseConstants
 	/** Skill for damage dealt being returned to the attackers' HP (this is subtely different than the ability to create undead - ghouls create undead but do not recover HP from it) */
 	public final static String UNIT_SKILL_ID_LIFE_STEALING = "US031";
 
+	/** From Life Stealing mod.  Combines the effect of Create Undead and Life Stealing, and converts all damage dealt into Life Steal damage. */
+	public final static String UNIT_SKILL_ID_ADVANCED_LIFE_STEALING = "US031X";
+	
 	/** Converts melee and ranged damage dealt into illusionary damage resolution type (phantom warriors/beasts) */
 	public final static String UNIT_SKILL_ID_ILLUSIONARY_ATTACK = "US035";
 	

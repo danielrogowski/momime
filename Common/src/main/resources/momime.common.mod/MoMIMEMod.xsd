@@ -4099,6 +4099,7 @@ Ordering of this list is very significant.
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="replace" />
+			<xsd:enumeration value="delete" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	

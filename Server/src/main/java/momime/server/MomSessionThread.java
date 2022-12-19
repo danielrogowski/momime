@@ -203,7 +203,8 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 			
 			// Force replacement of all content under this node, as if it was new
 			final boolean replace = "replace".equals (sourceAttributes.get ("mod"));
-			if (replace)
+			final boolean delete = "delete".equals (sourceAttributes.get ("mod"));
+			if ((replace) || (delete))
 				sourceAttributes.remove ("mod");
 
 			// Find matching element in target if present, otherwise create one
@@ -213,7 +214,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 			
 			log.debug ("Applying mod element, found " + possibleTargetElements.size () + " possible target element(s) for " + sourceElement + " - " + sourceAttributes);
 			
-			if (possibleTargetElements.isEmpty ())
+			if ((possibleTargetElements.isEmpty ()) && (!delete))
 			{
 				// Have to find the right place to insert it - after all the elements with the same name
 				if (targetElementsWithName.isEmpty ())
@@ -231,7 +232,13 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 			{
 				final Element targetElement = possibleTargetElements.get (0);
 				
-				if ((sourceElement.getChildren ().isEmpty ()) && (targetElement.getChildren ().isEmpty ()))
+				if (delete)
+				{
+					// Replace only removes child nodes.  Delete removes the found node itself too.
+					log.debug ("Deleting node " + targetElement.getText ());
+					targetElement.detach ();
+				}
+				else if ((sourceElement.getChildren ().isEmpty ()) && (targetElement.getChildren ().isEmpty ()))
 				{
 					log.debug ("Applying mod element, replacing with text " + sourceElement.getText ());
 					targetElement.setText (sourceElement.getText ());

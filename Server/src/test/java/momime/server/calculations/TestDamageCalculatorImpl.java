@@ -195,6 +195,7 @@ public final class TestDamageCalculatorImpl
 		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (true);
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_UNDEAD)).thenReturn (false);
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ADVANCED_LIFE_STEALING)).thenReturn (false);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
@@ -305,6 +306,7 @@ public final class TestDamageCalculatorImpl
 		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (true);
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_UNDEAD)).thenReturn (false);
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ADVANCED_LIFE_STEALING)).thenReturn (false);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
@@ -524,6 +526,7 @@ public final class TestDamageCalculatorImpl
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_DOOM_ATTACK)).thenReturn (false);
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)).thenReturn (true);
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_UNDEAD)).thenReturn (false);
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ADVANCED_LIFE_STEALING)).thenReturn (false);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each

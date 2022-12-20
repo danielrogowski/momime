@@ -36,8 +36,46 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.6</b></td>
-			<td align=left><b>2 Dec 2022</b></td>
+			<td align=left><b>Current version: 1.6.1</b></td>
+			<td align=left><b>20 Dec 2022</b></td>
+			<td align=left>
+				<b>Performance:</b>
+				<ul>
+					<li>During multi-tile moves, the server would re-evaluate the best route to the destination every time the unit moved 1 map cell, to take into account anything new learned by what the unit can see from its new location.
+						Now this only happens if by moving to the new map cell, the unit can now see something that you didn't already know (e.g. an enemy unit in the way, a road it can use, a mountain that is slow to cross).
+						This makes an especially big difference when moving great distances on enchanted roads,
+						and helps speed up the Raiders turns as they start on Myrror with many cities interconnected with enchanted roads and waste a lot of time shuffling units around between their cities.
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>AI players categorize units as combat units, transports, purifiers, settlers, and a few other types.  They would only consider the strength of "combat units" when deciding whether to attack somewhere,
+						treating other units as if they didn't exist, resulting it thinking it could win some combats like Sprites attacking a fleet of Warships.  Now will include transports and purifiers in strength estimates.
+					<li>Units with regeneration that die in combat but come back to life when their side wins the combat would lose any spells cast on them, this is now fixed.
+					<li>Another effect of this was that units with natural regeneration (trolls, shadow demons) would regenerate if they died in combat and their side won, but units with the regeneration Nature spell cast on them would not, because
+						the spell would be removed the instant the unit died, thereby preventing the unit from regenerating at the end of combat.
+					<li>Heroes with regeneration that die in combat but come back to life when their side wins the combat would lose any items they were holding, this is now fixed.
+					<li>Similar to above, heroes with regeneration granted by an item would not come back to life at the end of combat when their side won, because
+						their items would be taken from them the instant the unit died, thereby the hero would no longer be holding the regeneration item at the time the combat ended.
+				</ul>
+				
+				<b>Mods:</b>
+				<ul>
+					<li>Note to activate mods, tick the checkbox next to the database name when creating a new game.
+					<li>"More expensive Spell of Mastery" mod has been toned down.  Before it was SO expensive it was almost impossible to ever research and cast it.
+					<li>Created a "Life Stealing damage" mod that changes Life Stealing to work more like Ghouls' Create Undead, in that ALL damage dealt (both melee and ranged) is convereted into Life Steal damage,
+						turning the slain units into undead and healing the attacker as well.  Life Steal in the original rules becomes of decreasingly useful further on in the game, as it is a resistance-based attack and all
+						strong opponents will have plenty resistance to block it, plus the unit with life steal is dealing regular damage as well, probably doing more regular damage than life steal damage, stopping its own ability from working.
+						This makes all units with Create Undead or Life Steal much more effective.
+					<li>Created a "Half ranged figures" mod that halves the number of figures in every ranged unit that had more than 2 figures.  I created this because it is not difficult to buff Longbowmen or Slingers to the point that they
+						can easily take down Great Drakes and Sky Drakes, yet similarly buffed elite melee units (e.g. Hammerhands) cannot.  Ranged units are so good that using any other unit in the game becomes somewhat pointless, yet
+						the huge variety of units is one of the great things about MoM.  Using this mod significantly nerfs ranged units so it becomes very difficult to play with ranged units alone.
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6</td>
+			<td align=left>2 Dec 2022</td>
 			<td align=left>
 				<b>Diplomacy part 3:</b>
 				<ul>

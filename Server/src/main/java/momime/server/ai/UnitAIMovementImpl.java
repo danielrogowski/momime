@@ -124,6 +124,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		AIMovementDistance bestDistanceSoFar = null;
+		Integer bestEnemyUnitStackCombatUnitCurrentRatings = null;		// Just for debug msg
 
 		// The only way that any location on the plane other than where we are will be reachable is if we're stood right on a tower of wizardry,
 		// in which case this will evaluate which plane to exit off from, which is exactly what we want.  Same is true for most of the other movement codes.
@@ -140,24 +141,28 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 						final OverlandMovementCell cell = moves [z] [y] [x];
 						if (((cityData != null) || ((!isRaiders) && (!isMonsters) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))) &&
-							(enemyUnitStack != null) && (cell != null) &&
-							((isMonsters) || (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ())))
+							(enemyUnitStack != null) && (cell != null))
 						{
-							// We can get there eventually, and stand a chance of beating them
-							final int doubleThisDistance = cell.getDoubleMovementDistance ();
-							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
-							
-							final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
-								getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
-							
-							if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
+							final int thisEnemyUnitStackCombatUnitCurrentRatings = enemyUnitStack.totalCombatUnitCurrentRatings ();
+							if ((isMonsters) || (ourCurrentRating > thisEnemyUnitStackCombatUnitCurrentRatings))
 							{
-								bestDistanceSoFar = thisDistance;
-								destinations.clear ();
-								destinations.add (location);
+								// We can get there eventually, and stand a chance of beating them
+								final int doubleThisDistance = cell.getDoubleMovementDistance ();
+								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
+								
+								final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+									getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+								
+								if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
+								{
+									bestDistanceSoFar = thisDistance;
+									bestEnemyUnitStackCombatUnitCurrentRatings = thisEnemyUnitStackCombatUnitCurrentRatings;
+									destinations.clear ();
+									destinations.add (location);
+								}
+								else if (thisDistance.equals (bestDistanceSoFar))
+									destinations.add (location);
 							}
-							else if (thisDistance.equals (bestDistanceSoFar))
-								destinations.add (location);
 						}
 					}
 				}
@@ -168,7 +173,20 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-			log.debug ("Unit movement AI - Decided to attack stationary target at " + chosenLocation + " which is " + bestDistanceSoFar + " away");
+			
+			if (log.isDebugEnabled ())
+			{
+				final StringBuilder s = new StringBuilder ("Unit movement AI - Decided to attack stationary target at " + chosenLocation + " which is " + bestDistanceSoFar +
+					" away, our stack strength " + ourCurrentRating);
+				
+				if (isMonsters)
+					s.append (", rampaging monsters player so don't care about enemy strength");
+				else
+					s.append (", their stack strength " + bestEnemyUnitStackCombatUnitCurrentRatings);
+				
+				log.debug (s.toString ());
+			}
+			
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
@@ -199,6 +217,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		AIMovementDistance bestDistanceSoFar = null;
+		Integer bestEnemyUnitStackCombatUnitCurrentRatings = null;		// Just for debug msg
 
 		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
@@ -210,24 +229,28 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 					final OverlandMovementCell cell = moves [z] [y] [x];
 					if ((cityData == null) && (!getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)) &&
-						(enemyUnitStack != null) && (cell != null) &&
-						((isMonsters) || (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ())))
+						(enemyUnitStack != null) && (cell != null))
 					{
-						// We can get there eventually, and stand a chance of beating them
-						final int doubleThisDistance = cell.getDoubleMovementDistance ();
-						final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
-						
-						final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
-							getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
-						
-						if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
+						final int thisEnemyUnitStackCombatUnitCurrentRatings = enemyUnitStack.totalCombatUnitCurrentRatings ();
+						if ((isMonsters) || (ourCurrentRating > thisEnemyUnitStackCombatUnitCurrentRatings))
 						{
-							bestDistanceSoFar = thisDistance;
-							destinations.clear ();
-							destinations.add (location);
+							// We can get there eventually, and stand a chance of beating them
+							final int doubleThisDistance = cell.getDoubleMovementDistance ();
+							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
+							
+							final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+								getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+							
+							if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
+							{
+								bestDistanceSoFar = thisDistance;
+								bestEnemyUnitStackCombatUnitCurrentRatings = thisEnemyUnitStackCombatUnitCurrentRatings;
+								destinations.clear ();
+								destinations.add (location);
+							}
+							else if (thisDistance.equals (bestDistanceSoFar))
+								destinations.add (location);
 						}
-						else if (thisDistance.equals (bestDistanceSoFar))
-							destinations.add (location);
 					}
 				}
 		
@@ -237,7 +260,20 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-			log.debug ("Unit movement AI - Decided to attack wandering target at " + chosenLocation + " which is " + bestDistanceSoFar + " away");
+			
+			if (log.isDebugEnabled ())
+			{
+				final StringBuilder s = new StringBuilder ("Unit movement AI - Decided to attack wandering target at " + chosenLocation + " which is " + bestDistanceSoFar +
+					" away, our stack strength " + ourCurrentRating);
+				
+				if (isMonsters)
+					s.append (", rampaging monsters player so don't care about enemy strength");
+				else
+					s.append (", their stack strength " + bestEnemyUnitStackCombatUnitCurrentRatings);
+				
+				log.debug (s.toString ());
+			}
+			
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		

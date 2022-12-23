@@ -6,8 +6,10 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -55,6 +57,12 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/** There's always 1 page on the left and 1 page on the right.  Besides those, this many pages need to be stacked on top, on one side, the other, or split between the two */
 	private final static int FLIPPABLE_PAGE_COUNT = 12;
 	
+	/** Image of left page */
+	private BufferedImage pageLeft;
+
+	/** Image of right page */
+	private BufferedImage pageRight;
+	
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -79,8 +87,8 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	{
 		// Load images
 		final BufferedImage cover = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/cover.png");
-		final BufferedImage pageLeft = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-left-1.png");
-		final BufferedImage pageRight = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-right-1.png");
+		pageLeft = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-left-1.png");
+		pageRight = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-right-1.png");
 		final BufferedImage pageLeftCorner = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-left-corner.png");
 		final BufferedImage pageRightCorner = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-right-corner.png");
 		
@@ -95,6 +103,19 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		
 		final Dimension fixedSize = new Dimension (cover.getWidth () * 2,
 			(cover.getHeight () + ANIM_VERTICAL_OFFSET + OLD_BACKGROUND_PADDING_TOP + OLD_BACKGROUND_PADDING_BOTTOM) * 2);
+		
+		// Generate animation frames
+		generatePageTurnAnimationFrame (pageRight, 77, 47, 106, 243, false, null);
+		generatePageTurnAnimationFrame (pageRight, 80, 60, 115, 220, false, null);
+		generatePageTurnAnimationFrame (pageRight, 83, 73, 126, 180, false, null);
+		generatePageTurnAnimationFrame (pageRight, 86, 86, 140, 0, false, null);
+		generatePageTurnAnimationFrame (pageRight, 140, 150, 70, 0, false, null);
+
+		generatePageTurnAnimationFrame (pageLeft, 77, 47, 106, 243, true, null);
+		generatePageTurnAnimationFrame (pageLeft, 80, 60, 115, 220, true, null);
+		generatePageTurnAnimationFrame (pageLeft, 83, 73, 126, 180, true, null);
+		generatePageTurnAnimationFrame (pageLeft, 86, 86, 140, 0, true, null);
+		generatePageTurnAnimationFrame (pageLeft, 140, 150, 70, 0, true, null);
 		
 		// Actions
 		final Action closeAction = new LoggingAction ("X", (ev) -> getFrame ().setVisible (false));
@@ -143,9 +164,15 @@ public final class SpellBookNewUI extends MomClientFrameUI
 						g.drawImage ((n == additionalRightPages) ? pageRightCorner : pageRight,
 							FIRST_RIGHT_PAGE - (n * PAGE_SPACING_X), FIRST_PAGE_TOP - (n * PAGE_SPACING_Y), null);
 				}
+
+				/* drawCurve (g, 77, 47, 106, 243);
+				drawCurve (g, 80, 60, 115, 220);		// Original anim 1
+				drawCurve (g, 83, 73, 126, 180);
+				drawCurve (g, 86, 86, 140, 0);		// Original anim 2
+				drawCurve (g, 140, 150, 70, 0); */
 			}
 		};
-
+		
 		contentPane.setBackground (Color.BLACK);
 		contentPane.setMinimumSize (fixedSize);
 		contentPane.setMaximumSize (fixedSize);
@@ -167,6 +194,120 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
 		setWindowID (WindowID.SPELL_BOOK);
+	}
+	
+	/**
+	 * Used to test params for curve generation
+	 * 
+	 * @param g Graphics context to draw onto
+	 * @param radiusx Radius left-right of the initial curved part
+	 * @param radiusy Radius top-bottom of the initial curved part
+	 * @param angleend Angle where the curved part ends at
+	 * @param endx X coordinate where the straight part ends
+	private final void drawCurve (final Graphics g, final int radiusx, final int radiusy, final int angleend, final int endx)
+	{		
+		final int n = FLIPPABLE_PAGE_COUNT;
+		final int basex = FIRST_RIGHT_PAGE - (n * PAGE_SPACING_X);
+		final int basey = FIRST_PAGE_TOP + pageRight.getHeight () - (n * PAGE_SPACING_Y) - 5;		// -5 is fudge factor to make it line up to the unmodified page image
+		
+		// What point will that angle end at?
+		final int curveendx = radiusx - ((int) (Math.cos (Math.toRadians (angleend)) * radiusx));
+		final int curveendy = ((int) (Math.sin (Math.toRadians (angleend)) * radiusy));
+		final double dxdy = Math.tan (Math.toRadians (270 - angleend));
+		
+		g.setColor (Color.WHITE);
+		for (int x = 0; x < curveendx; x++)
+		{
+			final int cx = x - radiusx;
+			
+			// x² + y² = r², so y² = r² - x², so y = sqrt (r² - x²)
+			double y = Math.sqrt ((radiusx * radiusx) - (cx * cx));
+			
+			// Compensate if it isn't an even circle
+			if (radiusx != radiusy)
+				y = y / radiusx * radiusy;
+			
+			g.fillRect (basex + x, basey - ((int) y), 1, 1);
+		}
+		
+		for (int x = curveendx; x < endx; x++)
+		{
+			final int cx = x - curveendx;
+			final double cy = cx * dxdy;
+			
+			g.fillRect (basex + x, basey - curveendy - ((int) cy), 1, 1);
+		}
+	} */
+
+	/**
+	 * Uses generated curve to warp one of the page images to generate the page turn animation frames
+	 *  
+	 * @param source Source image
+	 * @param radiusx Radius left-right of the initial curved part
+	 * @param radiusy Radius top-bottom of the initial curved part
+	 * @param angleend Angle where the curved part ends at
+	 * @param endx X coordinate where the straight part ends
+	 * @param reverseX Whether to reverse X coords (need this for left page, since curve generation was tested and configured for the right pages)
+	 * @param destFile File to save generated image out to for testing purposes, usually just pass null here
+	 * @return Generated image
+	 * @throws IOException If there is a problem
+	 */
+	private final BufferedImage generatePageTurnAnimationFrame
+		(final BufferedImage source, final int radiusx, final int radiusy, final int angleend, final int endx, final boolean reverseX, final File destFile) throws IOException
+	{
+		// Anim frames are double height
+		final BufferedImage dest = new BufferedImage (source.getWidth (), source.getHeight () * 2, source.getType ());
+		
+		// What point will that angle end at?
+		final int curveendx = radiusx - ((int) (Math.cos (Math.toRadians (angleend)) * radiusx));
+		final int curveendy = ((int) (Math.sin (Math.toRadians (angleend)) * radiusy));
+		final double dxdy = Math.tan (Math.toRadians (270 - angleend));
+		final int totalendx = Math.max (endx, curveendx);		// If there's only an angle portion, endx will be 0, but we still need to know where the actual end is
+		
+		for (int x = 0; x < curveendx; x++)
+		{
+			final int cx = x - radiusx;
+			
+			int sourcex = (x * (source.getWidth () - 1)) / (totalendx - 1);
+			int destx = x;
+			if (reverseX)
+			{
+				sourcex = source.getWidth () - 1 - sourcex;
+				destx = dest.getWidth () - 1 - destx;
+			}
+			
+			// x² + y² = r², so y² = r² - x², so y = sqrt (r² - x²)
+			double y = Math.sqrt ((radiusx * radiusx) - (cx * cx));
+			
+			// Compensate if it isn't an even circle
+			if (radiusx != radiusy)
+				y = y / radiusx * radiusy;
+
+			for (int copy = 0; copy < source.getHeight (); copy++)
+				dest.setRGB (destx, dest.getHeight () - 1 - copy - ((int) y), source.getRGB (sourcex, source.getHeight () - 1 - copy));
+		}
+		
+		for (int x = curveendx; x < endx; x++)
+		{
+			final int cx = x - curveendx;
+			final double cy = cx * dxdy;
+
+			int sourcex = (x * (source.getWidth () - 1)) / (totalendx - 1);
+			int destx = x;
+			if (reverseX)
+			{
+				sourcex = source.getWidth () - 1 - sourcex;
+				destx = dest.getWidth () - 1 - destx;
+			}
+			
+			for (int copy = 0; copy < source.getHeight (); copy++)
+				dest.setRGB (destx, dest.getHeight () - 1 - copy - curveendy - ((int) cy), source.getRGB (sourcex, source.getHeight () - 1 - copy));
+		}
+		
+		if (destFile != null)
+			ImageIO.write (dest, "png", destFile);
+		
+		return dest;
 	}
 
 	/**

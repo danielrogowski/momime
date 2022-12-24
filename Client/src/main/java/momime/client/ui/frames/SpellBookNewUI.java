@@ -109,6 +109,8 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		pageRightFrames.add (getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-right-1.png"));
 		final BufferedImage pageLeftCorner = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-left-corner.png");
 		final BufferedImage pageRightCorner = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-right-corner.png");
+		final BufferedImage pageLeftShading = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-left-shading.png");
+		final BufferedImage pageRightShading = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-right-shading.png");
 		
 		if ((pageLeftFrames.get (0).getWidth () != pageRightFrames.get (0).getWidth ()) || (pageLeftFrames.get (0).getHeight () != pageRightFrames.get (0).getHeight ()))
 			throw new IOException ("Left and right page images are different sizes");
@@ -182,7 +184,13 @@ public final class SpellBookNewUI extends MomClientFrameUI
 					if (leftPageState < pageLeftFrames.size ())
 					{
 						final BufferedImage image = ((leftCorner != null) && (leftCorner == leftIndex)) ? pageLeftCorner : pageLeftFrames.get (leftPageState);
-						g.drawImage (image, FIRST_LEFT_PAGE + (leftIndex * PAGE_SPACING_X), FIRST_PAGE_BOTTOM - image.getHeight () - (leftIndex * PAGE_SPACING_Y), null);
+						final int imageX = FIRST_LEFT_PAGE + (leftIndex * PAGE_SPACING_X);
+						final int imageY = FIRST_PAGE_BOTTOM - image.getHeight () - (leftIndex * PAGE_SPACING_Y);
+						g.drawImage (image, imageX, imageY, null);
+						
+						// Shading in between pages, so they blend into a brown blob near the spine
+						if ((leftPageState == 0) && (leftIndex > 0))
+							g.drawImage (pageLeftShading, imageX + 31, imageY + image.getHeight () - 15, null);
 					}
 				}
 				
@@ -194,7 +202,13 @@ public final class SpellBookNewUI extends MomClientFrameUI
 					if (rightPageState >= pageLeftFrames.size ())
 					{
 						final BufferedImage image = ((rightCorner != null) && (rightCorner == rightIndex)) ? pageRightCorner : pageRightFrames.get (pageStateCount - 1 - rightPageState);
-						g.drawImage (image, FIRST_RIGHT_PAGE - (fromRight * PAGE_SPACING_X), FIRST_PAGE_BOTTOM - image.getHeight () - (fromRight * PAGE_SPACING_Y), null);
+						final int imageX = FIRST_RIGHT_PAGE - (fromRight * PAGE_SPACING_X);
+						final int imageY = FIRST_PAGE_BOTTOM - image.getHeight () - (fromRight * PAGE_SPACING_Y);
+						g.drawImage (image, imageX, imageY, null);
+						
+						// Shading in between pages, so they blend into a brown blob near the spine
+						if ((rightPageState == pageStateCount - 1) && (fromRight > 0))
+							g.drawImage (pageRightShading, imageX + 2, imageY + image.getHeight () - 15, null);
 					}
 				}
 

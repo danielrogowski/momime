@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.apache.commons.logging.Log;
@@ -62,6 +65,12 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	
 	/** How many frames apart the animations for adjacent pages must be kept */
 	private final static int ANIMATION_MINIMUM_SEPARATION = 3;
+	
+	/** Width of the fold down */
+	private final static int PAGE_CORNER_WIDTH = 32;
+	
+	/** Height of the fold down */
+	private final static int PAGE_CORNER_HEIGHT = 38;
 
 	/** Images of left pages at various stages of turning */
 	private List<BufferedImage> pageLeftFrames = new ArrayList<BufferedImage> ();
@@ -153,13 +162,26 @@ public final class SpellBookNewUI extends MomClientFrameUI
 				super.paintComponent (g);
 				g.drawImage (cover, 0, BACKGROUND_PADDING_TOP * 2, cover.getWidth () * 2, cover.getHeight () * 2, null);
 				
+				// Find how many pages are flat on each side, to know what page to draw with the corner folded down
+				// Don't draw a corner on the very first or very last page
+				Integer leftCorner = null;
+				Integer rightCorner = null;
+				for (int index = 1; (index + 1) < pageState.size (); index++)
+				{
+					final int value = pageState.get (index);
+					if (value == 0)
+						leftCorner = index;
+					else if ((value == pageStateCount - 1) && (rightCorner == null))
+						rightCorner = index;
+				}
+				
 				for (int leftIndex = 0; leftIndex < pageState.size (); leftIndex++)
 				{
 					// Draw left pages (those with pageState <= 5) in order, since page 0 is at the bottom of the left pile
 					final int leftPageState = pageState.get (leftIndex);
 					if (leftPageState < pageLeftFrames.size ())
 					{
-						final BufferedImage image = pageLeftFrames.get (leftPageState);
+						final BufferedImage image = ((leftCorner != null) && (leftCorner == leftIndex)) ? pageLeftCorner : pageLeftFrames.get (leftPageState);
 						g.drawImage (image, FIRST_LEFT_PAGE + (leftIndex * PAGE_SPACING_X), FIRST_PAGE_BOTTOM - image.getHeight () - (leftIndex * PAGE_SPACING_Y), null);
 					}
 				}
@@ -171,7 +193,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 					final int rightPageState = pageState.get (rightIndex);
 					if (rightPageState >= pageLeftFrames.size ())
 					{
-						final BufferedImage image = pageRightFrames.get (pageStateCount - 1 - rightPageState);
+						final BufferedImage image = ((rightCorner != null) && (rightCorner == rightIndex)) ? pageRightCorner : pageRightFrames.get (pageStateCount - 1 - rightPageState);
 						g.drawImage (image, FIRST_RIGHT_PAGE - (fromRight * PAGE_SPACING_X), FIRST_PAGE_BOTTOM - image.getHeight () - (fromRight * PAGE_SPACING_Y), null);
 					}
 				}
@@ -199,6 +221,64 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		buttonsPanel.add (new JButton (closeAction), getUtils ().createConstraintsNoFill (2, 0, 1, 1, 1, GridBagConstraintsNoFill.CENTRE));
 		
 		contentPane.add (buttonsPanel, BorderLayout.SOUTH);
+		
+		// Handle mouse clicks
+		final MouseAdapter spellBookMouseAdapter = new MouseAdapter ()
+		{
+			/**
+			 * Figure out what was clicked on
+			 */
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (SwingUtilities.isLeftMouseButton (ev))
+				{
+					// We basically have to duplicate the logic from paintComponent, when all we're really trying to spot is find is the location of the
+					// pages drawn with corners so we can tell if the corners were clicked on
+					Integer leftCorner = null;
+					Integer rightCorner = null;
+					for (int index = 1; (index + 1) < pageState.size (); index++)
+					{
+						final int value = pageState.get (index);
+						if (value == 0)
+							leftCorner = index;
+						else if ((value == pageStateCount - 1) && (rightCorner == null))
+							rightCorner = index;
+					}
+					
+					if (ev.getPoint ().x < cover.getWidth ())
+					{
+						// Possible click on left corner
+						if (leftCorner != null)
+						{
+							final int imageLeft = FIRST_LEFT_PAGE + (leftCorner * PAGE_SPACING_X);
+							final int imageTop = FIRST_PAGE_BOTTOM - pageLeftCorner.getHeight () - (leftCorner * PAGE_SPACING_Y);
+
+							if ((ev.getPoint ().x >= imageLeft) && (ev.getPoint ().y >= imageTop) &&
+								(ev.getPoint ().x < imageLeft + PAGE_CORNER_WIDTH) && (ev.getPoint ().y < imageTop + PAGE_CORNER_HEIGHT))
+								
+								desiredPagesOnLeft--;
+						}
+					}
+					else
+					{
+						// Possible click on right corner
+						if (rightCorner != null)
+						{
+							final int fromRight = pageState.size () - 1 - rightCorner;
+							final int imageRight = FIRST_RIGHT_PAGE - (fromRight * PAGE_SPACING_X) + pageRightCorner.getWidth ();
+							final int imageTop = FIRST_PAGE_BOTTOM - pageRightCorner.getHeight () - (fromRight * PAGE_SPACING_Y);
+							
+							if ((ev.getPoint ().x >= imageRight - PAGE_CORNER_WIDTH) && (ev.getPoint ().y >= imageTop) &&
+								(ev.getPoint ().x < imageRight) && (ev.getPoint ().y < imageTop + PAGE_CORNER_HEIGHT))
+									
+								desiredPagesOnLeft++;
+						}
+					}
+				}
+			}
+		};
+		contentPane.addMouseListener (spellBookMouseAdapter);
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

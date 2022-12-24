@@ -314,6 +314,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
 		setWindowID (WindowID.SPELL_BOOK);
+		updateSpellBook ();
 		
 		// Update the animation each tick
 		final Timer pageTurnTimer = new Timer (1000 / PAGE_FLIP_ANIMATION_SPEED, (ev) ->

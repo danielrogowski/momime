@@ -23,6 +23,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.SpellBookScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.SpellClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.database.AnimationEx;
 import momime.common.database.AnimationFrame;
@@ -194,6 +195,13 @@ public final class TestSpellBookUI extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		// Set up form
+		final CombatUI combatUI = new CombatUI ();
+		
+		final SpellClientUtilsImpl spellClientUtils = new SpellClientUtilsImpl ();
+		spellClientUtils.setCombatUI (combatUI);
+		spellClientUtils.setClient (client);
+		spellClientUtils.setSpellUtils (spellUtils);
+
 		final SpellBookUI book = new SpellBookUI ();
 		book.setUtils (utils);
 		book.setLanguageHolder (langHolder);
@@ -207,7 +215,8 @@ public final class TestSpellBookUI extends ClientTestData
 		book.setSmallFont (CreateFontsForTests.getSmallFont ());
 		book.setMediumFont (CreateFontsForTests.getMediumFont ());
 		book.setLargeFont (CreateFontsForTests.getLargeFont ());
-		book.setCombatUI (new CombatUI ());
+		book.setCombatUI (combatUI);
+		book.setSpellClientUtils (spellClientUtils);
 		book.setCastType (SpellCastType.OVERLAND);
 
 		// Display form		

@@ -14,11 +14,8 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -49,7 +46,9 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.utils.MemoryMaintainedSpellClientUtils;
-import momime.client.utils.SpellSorter;
+import momime.client.utils.SpellBookPage;
+import momime.client.utils.SpellClientUtils;
+import momime.client.utils.SpellClientUtilsImpl;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
@@ -61,14 +60,11 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SwitchResearch;
-import momime.common.database.Unit;
-import momime.common.database.UnitCanCast;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
-import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
@@ -149,8 +145,8 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
-	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
-	private final static int SPELLS_PER_PAGE = 4;
+	/** Client-side spell utils */
+	private SpellClientUtils spellClientUtils;
 	
 	/** Vertical gap between spells */
 	private final static int GAP_BETWEEN_SPELLS = 2;
@@ -222,16 +218,16 @@ public final class SpellBookUI extends MomClientFrameUI
 	private JLabel [] sectionHeadings = new JLabel [2];
 	
 	/** Spell names */
-	private JLabel [] [] spellNames = new JLabel [2] [SPELLS_PER_PAGE];
+	private JLabel [] [] spellNames = new JLabel [2] [SpellClientUtilsImpl.SPELLS_PER_PAGE];
 
 	/** Spell descriptions */
-	private JTextArea [] [] spellDescriptions = new JTextArea [2] [SPELLS_PER_PAGE];
+	private JTextArea [] [] spellDescriptions = new JTextArea [2] [SpellClientUtilsImpl.SPELLS_PER_PAGE];
 
 	/** Spell overland costs */
-	private JLabel [] [] spellOverlandCosts = new JLabel [2] [SPELLS_PER_PAGE];
+	private JLabel [] [] spellOverlandCosts = new JLabel [2] [SpellClientUtilsImpl.SPELLS_PER_PAGE];
 
 	/** Spell combat costs */
-	private JLabel [] [] spellCombatCosts = new JLabel [2] [SPELLS_PER_PAGE];
+	private JLabel [] [] spellCombatCosts = new JLabel [2] [SpellClientUtilsImpl.SPELLS_PER_PAGE];
 	
 	/** Turn page left action */
 	private Action turnPageLeftAction;
@@ -425,7 +421,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 		
-		final Dimension spellSize = new Dimension (PAGE_WIDTH, ((SPELL_BOOK_HEIGHT + GAP_BETWEEN_SPELLS) / SPELLS_PER_PAGE) - GAP_BETWEEN_SPELLS);
+		final Dimension spellSize = new Dimension (PAGE_WIDTH, ((SPELL_BOOK_HEIGHT + GAP_BETWEEN_SPELLS) / SpellClientUtilsImpl.SPELLS_PER_PAGE) - GAP_BETWEEN_SPELLS);
 		
 		turnPageLeftButton = new HideableComponent<JButton>
 			(getUtils ().createImageButton (turnPageLeftAction, null, null, null, turnPageLeftButtonNormal, turnPageLeftButtonNormal, turnPageLeftButtonNormal));
@@ -449,7 +445,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			contentPane.add (sectionHeading, headingConstraints);
 			sectionHeadings [x] = sectionHeading;
 			
-			for (int y = 0; y < SPELLS_PER_PAGE; y++)
+			for (int y = 0; y < SpellClientUtilsImpl.SPELLS_PER_PAGE; y++)
 			{
 				final int spellY = y;
 				
@@ -631,7 +627,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		}
 		
 		contentPane.add (getUtils ().createImageButton (closeAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
-			getUtils ().createConstraintsNoFill (2, SPELLS_PER_PAGE + 1, 1, 1, new Insets (38, 33, 0, 0), GridBagConstraintsNoFill.WEST));
+			getUtils ().createConstraintsNoFill (2, SpellClientUtilsImpl.SPELLS_PER_PAGE + 1, 1, 1, new Insets (38, 33, 0, 0), GridBagConstraintsNoFill.WEST));
 
 		// Default cast type to overland, if one wasn't already pre-set
 		if (getCastType () == null)
@@ -1055,108 +1051,8 @@ public final class SpellBookUI extends MomClientFrameUI
 	 */
 	public final void updateSpellBook () throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		// If it is a unit casting, rather than the wizard
-		final List<String> heroKnownSpellIDs = new ArrayList<String> ();
-		String overridePickID = null;
-		int overrideMaximumMP = -1;
-		if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
-			(getCombatUI ().getCastingSource ().getCastingUnit () != null) && (getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) &&
-			(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))
-		{
-			// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
-			// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
-			// overrideMaximumMP isn't essential, but there's no point us listing spells in the spell book that the unit doesn't have enough MP to cast.
-			final ExpandedUnitDetails castingUnit = getCombatUI ().getCastingSource ().getCastingUnit ();
-			
-			// Heroes can get the caster unit skill from + Spell Skill items
-			// Check unit type rather than caster hero skill, just in case we put a + spell skill sword on a non-caster sword hero
-			if ((castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) && (!castingUnit.isHero ()))
-				overrideMaximumMP = castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
-			
-			if (overrideMaximumMP > 0)
-			{
-				overridePickID = castingUnit.getModifiedUnitMagicRealmLifeformType ().getCastSpellsFromPickID ();
-				if (overridePickID == null)
-					overridePickID = castingUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ();
-			}
-			
-			if (overridePickID == null)
-			{
-				// Get a list of any spells this hero knows, in addition to being able to cast spells from their controlling wizard
-				final Unit unitDef = getClient ().getClientDB ().findUnit (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitID (), "updateSpellBook");
-				for (final UnitCanCast knownSpell : unitDef.getUnitCanCast ())
-					if (knownSpell.getNumberOfTimes () == null)
-						heroKnownSpellIDs.add (knownSpell.getUnitSpellID ());
-			}
-		}
-			
-		// Get a list of all spells we know, and all spells we can research now; grouped by section
-		final Map<SpellBookSectionID, List<Spell>> sections = new HashMap<SpellBookSectionID, List<Spell>> ();
-		for (final Spell spell : getClient ().getClientDB ().getSpell ())
-		{
-			final SpellResearchStatusID researchStatus;
-			
-			// Units can cast spells from a specific magic realm, up to a their maximum MP
-			if (overridePickID != null)
-				researchStatus = ((overridePickID.equals (spell.getSpellRealm ())) && (spell.getCombatCastingCost () != null) && (spell.getCombatCastingCost () <= overrideMaximumMP)) 
-					? SpellResearchStatusID.AVAILABLE : SpellResearchStatusID.UNAVAILABLE;
-			
-			// Heroes knowing their own spells in addition to spells from their controlling wizard
-			else if (heroKnownSpellIDs.contains (spell.getSpellID ()))
-				researchStatus = SpellResearchStatusID.AVAILABLE;
-			
-			// Normal situation of wizard casting, or hero casting spells their controlling wizard knows
-			else
-				researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ()).getStatus ();
-			
-			final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
-			if (sectionID != null)
-			{
-				// Do we have this section already?
-				List<Spell> section = sections.get (sectionID);
-				if (section == null)
-				{
-					section = new ArrayList<Spell> ();
-					sections.put (sectionID, section);
-				}
-				
-				section.add (spell);
-			}
-		}
-		
-		// Sort them into sections
-		final List<SpellBookSectionID> sortedSections = new ArrayList<SpellBookSectionID> ();
-		sortedSections.addAll (sections.keySet ());
-		Collections.sort (sortedSections);
-		
-		// Go through each section
 		pages.clear ();
-		for (final SpellBookSectionID sectionID : sortedSections)
-		{
-			final List<Spell> spells = sections.get (sectionID);
-			
-			// Sort the spells within this section
-			Collections.sort (spells, new SpellSorter (sectionID));
-			
-			// Divide them into pages with up to SPELLS_PER_PAGE on each page
-			boolean first = true;
-			while (spells.size () > 0)
-			{
-				final SpellBookPage page = new SpellBookPage ();
-				page.setSectionID (sectionID);
-				page.setFirstPageOfSection (first);
-				pages.add (page);
-				
-				while ((spells.size () > 0) && (page.getSpells ().size () < SPELLS_PER_PAGE))
-				{
-					page.getSpells ().add (spells.get (0));
-					spells.remove (0);
-				}
-				
-				first = false;
-			}
-		}
-		
+		pages.addAll (getSpellClientUtils ().generateSpellBookPages (getCastType ()));
 		languageOrPageChanged ();
 	}
 	
@@ -1205,7 +1101,7 @@ public final class SpellBookUI extends MomClientFrameUI
 						}
 						
 						// Spell names
-						for (int y = 0; y < SPELLS_PER_PAGE; y++)
+						for (int y = 0; y < SpellClientUtilsImpl.SPELLS_PER_PAGE; y++)
 							if (y < page.getSpells ().size ())
 							{
 								final Spell spell = page.getSpells ().get (y);
@@ -1364,7 +1260,7 @@ public final class SpellBookUI extends MomClientFrameUI
 					{
 						// Blank page
 						sectionHeadings [x].setText (null);
-						for (int y = 0; y < SPELLS_PER_PAGE; y++)
+						for (int y = 0; y < SpellClientUtilsImpl.SPELLS_PER_PAGE; y++)
 						{
 							spellNames [x] [y].setText (null);
 							spellDescriptions [x] [y].setText (null);
@@ -1764,59 +1660,20 @@ public final class SpellBookUI extends MomClientFrameUI
 	{
 		knownWizardUtils = k;
 	}
-	
+
 	/**
-	 * Represents one page of the spell book and the up-to-6 spells on it
+	 * @return Client-side spell utils
 	 */
-	final class SpellBookPage
+	public final SpellClientUtils getSpellClientUtils ()
 	{
-		/** The spell book section */
-		private SpellBookSectionID sectionID;
-		
-		/** Is this the first page of this section?  i.e. show the title or not */
-		private boolean firstPageOfSection;
-		
-		/** The spells on this page */
-		private List<Spell> spells = new ArrayList<Spell> ();
+		return spellClientUtils;
+	}
 
-		/**
-		 * @return The spell book section
-		 */
-		public final SpellBookSectionID getSectionID ()
-		{
-			return sectionID;
-		}
-
-		/**
-		 * @param section The spell book section
-		 */
-		public final void setSectionID (final SpellBookSectionID section)
-		{
-			sectionID = section;
-		}
-		
-		/**
-		 * @return Is this the first page of this section?  i.e. show the title or not
-		 */
-		public final boolean isFirstPageOfSection ()
-		{
-			return firstPageOfSection;
-		}
-
-		/**
-		 * @param first Is this the first page of this section?  i.e. show the title or not
-		 */
-		public final void setFirstPageOfSection (final boolean first)
-		{
-			firstPageOfSection = first;
-		}
-		
-		/**
-		 * @return The spells on this page
-		 */
-		public final List<Spell> getSpells ()
-		{
-			return spells;
-		}
+	/**
+	 * @param utils Client-side spell utils
+	 */
+	public final void setSpellClientUtils (final SpellClientUtils utils)
+	{
+		spellClientUtils = utils;
 	}
 }

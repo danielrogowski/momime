@@ -23,10 +23,16 @@ import javax.swing.Timer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.utils.swing.GridBagConstraintsNoFill;
 import com.ndg.utils.swing.actions.LoggingAction;
 
 import momime.client.config.WindowID;
+import momime.client.utils.SpellBookPage;
+import momime.client.utils.SpellClientUtils;
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
+import momime.common.utils.SpellCastType;
 
 /**
  * POC for new spell book where the pages are drawn so the book will look thinner/thicker on the left/right side depending how far through you are turned
@@ -90,11 +96,20 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/** Number of pages we want fully on the left, with all the others fully on the right.  Animation timer will attempt to update all the pages towards this state. */
 	private int desiredPagesOnLeft;
 	
+	/** Spell book pages (note these are numbered differently as in a real book, page 1 is on the left, page 2 is on the right (front+back are different pages).. as opposed to pageState which lists physical pages */
+	private List<SpellBookPage> pages = new ArrayList<SpellBookPage> ();
+	
 	/** Turn page left action */
 	private Action turnPageLeftAction;
 	
 	/** Turn page rightaction */
 	private Action turnPageRightAction;
+	
+	/** Overland or combat casting */
+	private SpellCastType castType;
+	
+	/** Client-side spell utils */
+	private SpellClientUtils spellClientUtils;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -493,5 +508,70 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getTitle ()));
+		languageOrPageChanged ();
+	}
+	
+	/**
+	 * When we learn a new spell, updates the spells in the spell book to include it.
+	 * That may involve shuffling pages around if a page is now full, or adding new pages if the spell is a kind we didn't previously have.
+	 * 
+	 * Unlike the original MoM and earlier MoM IME versions, because the spell book can be left up permanently now, it will always
+	 * draw all spells - so combat spells are shown when on the overland map, and overland spells are shown in combat, just greyed out.
+	 * So here we don't need to pay any attention to the cast type.
+	 * 
+	 * @throws MomException If we encounter an unknown research unexpected status
+	 * @throws RecordNotFoundException If we can't find a research status for a particular spell
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 */
+	public final void updateSpellBook () throws MomException, RecordNotFoundException, PlayerNotFoundException
+	{
+		pages.clear ();
+		pages.addAll (getSpellClientUtils ().generateSpellBookPages (getCastType ()));
+		languageOrPageChanged ();
+	}
+	
+	/**
+	 * Called when either the language or the currently displayed page changes
+	 */
+	public final void languageOrPageChanged ()
+	{
+		// This can be called before we've ever opened the spell book, so none of the components exist
+		if (contentPane != null)
+		{
+		}
+	}
+	
+	/**
+	 * @return Overland or combat casting
+	 */
+	public final SpellCastType getCastType ()
+	{
+		return castType;
+	}
+	
+	/**
+	 * @param ct Overland or combat casting
+	 */
+	public final void setCastType (final SpellCastType ct)
+	{
+		castType = ct;
+		languageOrPageChanged ();
+	}
+
+	/**
+	 * @return Client-side spell utils
+	 */
+	public final SpellClientUtils getSpellClientUtils ()
+	{
+		return spellClientUtils;
+	}
+
+	/**
+	 * @param utils Client-side spell utils
+	 */
+	public final void setSpellClientUtils (final SpellClientUtils utils)
+	{
+		spellClientUtils = utils;
 	}
 }

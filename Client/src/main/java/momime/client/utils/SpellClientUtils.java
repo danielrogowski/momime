@@ -5,10 +5,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.PlayerPick;
+import momime.common.utils.SpellCastType;
 
 /**
  * Client side only helper methods for dealing with spells
@@ -64,4 +67,22 @@ public interface SpellClientUtils
 	 * @return Image which will draw only pixels from sourceImage where the matching pixels in fadeAnimFrame are transparent
 	 */
 	public BufferedImage mergeImages (final Image sourceImage, final BufferedImage fadeAnimFrame, final int xOffset, final int yOffset);
+	
+	/**
+	 * When we learn a new spell, updates the spells in the spell book to include it.
+	 * That may involve shuffling pages around if a page is now full, or adding new pages if the spell is a kind we didn't previously have.
+	 * 
+	 * Unlike the original MoM and earlier MoM IME versions, because the spell book can be left up permanently now, it will always
+	 * draw all spells - so combat spells are shown when on the overland map, and overland spells are shown in combat, just greyed out.
+	 * So here we don't need to pay any attention to the cast type (except that in combat, heroes can make additional spells appear
+	 * in the spell book if they know any spells that their controlling wizard does not)
+	 * 
+	 * @param castType Whether to generate the spell book for overland or combat casting
+	 * @return List of spell book, broken into pages for the UI
+	 * @throws MomException If we encounter an unknown research unexpected status
+	 * @throws RecordNotFoundException If we can't find a research status for a particular spell
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 */
+	public List<SpellBookPage> generateSpellBookPages (final SpellCastType castType)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException;
 }

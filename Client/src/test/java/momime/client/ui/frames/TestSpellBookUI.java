@@ -1,11 +1,9 @@
 package momime.client.ui.frames;
 
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,13 +21,15 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.SpellBookScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
-import momime.client.utils.SpellClientUtilsImpl;
+import momime.client.utils.SpellBookPage;
+import momime.client.utils.SpellClientUtils;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.database.AnimationEx;
 import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
+import momime.common.database.Pick;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSection;
@@ -39,8 +39,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.SpellResearchStatus;
-import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.WizardState;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -65,11 +64,14 @@ public final class TestSpellBookUI extends ClientTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		for (int n = 1; n <= 2; n++)
+		int sectionNumber = 0;
+		for (final String sectionName : new String [] {"Summoning spells", "Overland enchantments"})
 		{
+			sectionNumber++;
+			
 			final SpellBookSection section = new SpellBookSection ();
-			section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Spell book section " + (n+1)));
-			when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + n), "SpellBookUI")).thenReturn (section);
+			section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, sectionName));
+			when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + sectionNumber), "SpellBookUI")).thenReturn (section);
 		}
 		
 		final ProductionTypeEx research = new ProductionTypeEx ();
@@ -79,6 +81,14 @@ public final class TestSpellBookUI extends ClientTestData
 		final ProductionTypeEx mana = new ProductionTypeEx ();
 		mana.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "SpellBookUI")).thenReturn (mana);
+		
+		final Pick lifeSpells = new Pick ();
+		lifeSpells.setPickBookshelfTitleColour ("FFFFFF");
+		when (db.findPick ("MB01", "languageOrPageChanged")).thenReturn (lifeSpells);
+		
+		final Pick pinkSpells = new Pick ();
+		pinkSpells.setPickBookshelfTitleColour ("EF75C8");
+		when (db.findPick ("MB02", "languageOrPageChanged")).thenReturn (pinkSpells);
 		
 		// Mock entries from the language XML
 		final SpellBookScreen spellBookScreenLang = new SpellBookScreen ();
@@ -118,74 +128,64 @@ public final class TestSpellBookUI extends ClientTestData
 		final FogOfWarMemory mem = new FogOfWarMemory ();
 
 		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
+		ourWizard.setWizardState (WizardState.ACTIVE);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2, "languageOrPageChanged")).thenReturn (ourWizard);
-		
-		// Mock 100 dummy spells
-		// SP000 - SP009 are in section SC00
-		// SP001 - SP019 are in section SC01
-		// and so on
-		// SP080 - SP089 are in section SC98 (researchable now)
-		// SP090 - SP099 are in section SC99 (in book, can research in future)
-		final List<Spell> spells = new ArrayList<Spell> ();
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		
-		for (int n = 0; n < 100; n++)
-		{
-			final Spell spell = new Spell ();
-			String spellID = Integer.valueOf (n).toString ();
-			if (n < 10)
-				spellID = "0" + spellID;
-			spell.setSpellID ("SP0" + spellID);
-			
-			spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell " + spell.getSpellID ()));
-			spell.getSpellDescription ().add (createLanguageText (Language.ENGLISH, "This is the long description of what spell " + spell.getSpellID () + " does that appears in the spell book"));
-			
-			// Cycle colours
-			final int realm = n % 3;
-			if (realm > 0)
-				spell.setSpellRealm ("MB0" + realm);
-			
-			spell.setOverlandCastingCost (1);		// Actual values are irrelevant, since what's displayed comes from getReducedOverlandCastingCost
-			spell.setCombatCastingCost (1);
-			spell.setResearchCost (n * 10);
-			spells.add (spell);
-			
-			if ((n == 10) || (n == 20) || (n == 21))
-			{
-				when (spellUtils.getReducedOverlandCastingCost (spell, null, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 5);
-				when (spellUtils.getReducedCombatCastingCost (spell, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 2);
-			}
-		}
-		doReturn (spells).when (db).getSpell ();
 		
 		// Research statuses - we know 0 of SP000 - SP009, 1 of SP010 - SP019 and so on
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setFogOfWarMemory (mem);
 		
-		for (int m = 0; m < 10; m++)
-		{
-			final SpellBookSectionID sectionID;
-			if (m == 9)
-				sectionID = SpellBookSectionID.RESEARCHABLE;
-			else if (m == 8)
-				sectionID = SpellBookSectionID.RESEARCHABLE_NOW;
-			else if (m == 0)
-				sectionID = SpellBookSectionID.SUMMONING;
-			else
-				sectionID = SpellBookSectionID.fromValue ("SC0" + m);
+		// Some example spells
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
+		final Spell magicSpirit = new Spell ();
+		magicSpirit.setSpellID ("SP201");
+		magicSpirit.getSpellName ().add (createLanguageText (Language.ENGLISH, "Magic Spirit"));
+		magicSpirit.getSpellDescription ().add (createLanguageText (Language.ENGLISH, "Summons magic spirit to meld with nodes and generate magic power."));
+		magicSpirit.setOverlandCastingCost (30);
+		when (spellUtils.spellCanBeCastIn (magicSpirit, SpellCastType.OVERLAND)).thenReturn (true);
+		when (spellUtils.getReducedOverlandCastingCost (magicSpirit, null, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (30);
+		
+		final Spell unicorns = new Spell ();
+		unicorns.setSpellID ("SP136");
+		unicorns.setSpellRealm ("MB01");
+		unicorns.getSpellName ().add (createLanguageText (Language.ENGLISH, "Unicorns"));
+		unicorns.getSpellDescription ().add (createLanguageText (Language.ENGLISH, "Summons a herd of unicorns. These lovely creatures can teleport to any square on the battlefield."));
+		unicorns.setOverlandCastingCost (250);
+		when (spellUtils.spellCanBeCastIn (unicorns, SpellCastType.OVERLAND)).thenReturn (true);
+		when (spellUtils.getReducedOverlandCastingCost (unicorns, null, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (225);
 
-			for (int n = 0; n < 10; n++)
-			{
-				final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-				researchStatus.setSpellID ("SP0" + m + n);
-				researchStatus.setStatus ((n < m) ? SpellResearchStatusID.AVAILABLE : SpellResearchStatusID.UNAVAILABLE);
-				
-				when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), researchStatus.getSpellID ())).thenReturn (researchStatus);
-				when (spellUtils.getModifiedSectionID (spells.get ((m*10) + n), researchStatus.getStatus (), true)).thenReturn ((n < m) ? sectionID : null);
-			}
-		}
+		final Spell foo = new Spell ();
+		foo.setSpellID ("SP250");
+		foo.setSpellRealm ("MB02");
+		foo.getSpellName ().add (createLanguageText (Language.ENGLISH, "Foo"));
+		foo.getSpellDescription ().add (createLanguageText (Language.ENGLISH, "Isn't it amazing having an overland enchantment that can be cast in combat!"));
+		foo.setOverlandCastingCost (80);
+		foo.setCombatCastingCost (25);
+		when (spellUtils.spellCanBeCastIn (foo, SpellCastType.OVERLAND)).thenReturn (true);
+		when (spellUtils.getReducedOverlandCastingCost (foo, null, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (70);
+		when (spellUtils.getReducedCombatCastingCost (foo, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (20);
+		
+		// Mock which sections and spells are on which pages
+		final SpellBookPage summoningPage = new SpellBookPage ();
+		summoningPage.setSectionID (SpellBookSectionID.SUMMONING);
+		summoningPage.setFirstPageOfSection (true);
+		summoningPage.getSpells ().add (magicSpirit);
+		summoningPage.getSpells ().add (unicorns);
+
+		final SpellBookPage overlandEnchantmentsPage = new SpellBookPage ();
+		overlandEnchantmentsPage.setSectionID (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
+		overlandEnchantmentsPage.setFirstPageOfSection (true);
+		overlandEnchantmentsPage.getSpells ().add (foo);
+		
+		final SpellBookPage researchPage = new SpellBookPage ();
+		researchPage.setSectionID (SpellBookSectionID.RESEARCHABLE_NOW);
+		researchPage.setFirstPageOfSection (true);
+		
+		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
+		when (spellClientUtils.generateSpellBookPages (SpellCastType.OVERLAND)).thenReturn (Arrays.asList (summoningPage, overlandEnchantmentsPage, researchPage));
 		
 		// Mock client
 		final MomClient client = mock (MomClient.class);
@@ -195,13 +195,6 @@ public final class TestSpellBookUI extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		// Set up form
-		final CombatUI combatUI = new CombatUI ();
-		
-		final SpellClientUtilsImpl spellClientUtils = new SpellClientUtilsImpl ();
-		spellClientUtils.setCombatUI (combatUI);
-		spellClientUtils.setClient (client);
-		spellClientUtils.setSpellUtils (spellUtils);
-
 		final SpellBookUI book = new SpellBookUI ();
 		book.setUtils (utils);
 		book.setLanguageHolder (langHolder);
@@ -215,7 +208,7 @@ public final class TestSpellBookUI extends ClientTestData
 		book.setSmallFont (CreateFontsForTests.getSmallFont ());
 		book.setMediumFont (CreateFontsForTests.getMediumFont ());
 		book.setLargeFont (CreateFontsForTests.getLargeFont ());
-		book.setCombatUI (combatUI);
+		book.setCombatUI (new CombatUI ());
 		book.setSpellClientUtils (spellClientUtils);
 		book.setCastType (SpellCastType.OVERLAND);
 

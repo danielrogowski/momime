@@ -11,7 +11,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.CreateArtifactUI;
-import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.SpellBookNewUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.calculations.UnitCalculations;
 import momime.common.messages.MemoryUnit;
@@ -41,7 +41,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	private MomClient client;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 	
 	/** Crafting popup */
 	private CreateArtifactUI createArtifactUI;
@@ -162,7 +162,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -170,7 +170,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}

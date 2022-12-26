@@ -363,7 +363,7 @@ public final class TestCombatUI extends ClientTestData
 		combat.setUnitCalculations (unitCalc);
 		combat.setExpandUnitDetails (expand);
 		combat.setTextUtils (new TextUtilsImpl ());
-		combat.setSpellBookUI (new SpellBookUI ());
+		combat.setSpellBookUI (new SpellBookNewUI ());
 		combat.setSmallFont (CreateFontsForTests.getSmallFont ());
 		combat.setMediumFont (CreateFontsForTests.getMediumFont ());
 		combat.setLargeFont (CreateFontsForTests.getLargeFont ());

@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
-import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.SpellBookNewUI;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.servertoclient.FullSpellListMessage;
@@ -27,7 +27,7 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 	private SpellUtils spellUtils;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -105,7 +105,7 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -113,7 +113,7 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}

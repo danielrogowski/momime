@@ -147,7 +147,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	private MagicSlidersUI magicSlidersUI;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 	
 	/** Cities list */
 	private CitiesListUI citiesListUI;
@@ -1800,7 +1800,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -1808,7 +1808,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}

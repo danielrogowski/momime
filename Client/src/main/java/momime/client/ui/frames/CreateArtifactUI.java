@@ -88,7 +88,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	private SpellUtils spellUtils;
 
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
@@ -783,7 +783,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -791,7 +791,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}

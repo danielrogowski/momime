@@ -10,7 +10,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import momime.client.MomClient;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
-import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.SpellBookNewUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.SpellResearchChangedMessage;
 
@@ -24,7 +24,7 @@ public final class SpellResearchChangedMessageImpl extends SpellResearchChangedM
 	private MomClient client;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 	
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
@@ -78,7 +78,7 @@ public final class SpellResearchChangedMessageImpl extends SpellResearchChangedM
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -86,7 +86,7 @@ public final class SpellResearchChangedMessageImpl extends SpellResearchChangedM
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}

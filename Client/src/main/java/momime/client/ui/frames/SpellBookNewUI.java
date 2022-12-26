@@ -6,10 +6,12 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -18,34 +20,57 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.config.WindowID;
+import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.dialogs.UnitRowDisplayUI;
+import momime.client.ui.dialogs.VariableManaUI;
+import momime.client.utils.MemoryMaintainedSpellClientUtils;
 import momime.client.utils.SpellBookPage;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.SpellClientUtilsImpl;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
+import momime.common.database.AnimationEx;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.LanguageText;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SwitchResearch;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.WizardState;
+import momime.common.messages.clienttoserver.RequestCastSpellMessage;
+import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
+import momime.common.utils.ExpandUnitDetails;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.SpellUtils;
+import momime.common.utils.TargetSpellResult;
 
 /**
  * POC for new spell book where the pages are drawn so the book will look thinner/thicker on the left/right side depending how far through you are turned
@@ -99,6 +124,9 @@ public final class SpellBookNewUI extends MomClientFrameUI
 
 	/** Shadow colour to draw the spell that we're currently researching */
 	private final static Color RESEARCHED_SPELL_COLOUR = new Color (0x6060FF);
+	
+	/** Animation for the blue swirl */
+	private final static String ANIM_SWIRL = "SPELL_BOOK_SWIRL";
 	
 	/** Images of left pages at various stages of turning */
 	private List<BufferedImage> pageLeftFrames = new ArrayList<BufferedImage> ();
@@ -182,6 +210,54 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/** Text utils */
 	private TextUtils textUtils;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Help text scroll */
+	private HelpUI helpUI;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
+	
+	/** Memory CAE utils */
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	
+	/** Methods for working with spells that are only needed on the client */
+	private MemoryMaintainedSpellClientUtils memoryMaintainedSpellClientUtils;
+	
+	/** Variable MP popup */
+	private VariableManaUI variableManaUI;
+	
+	/** Crafting popup */
+	private CreateArtifactUI createArtifactUI;
+	
+	/** Blue swirl animation for when we click on a spell to cast */
+	private AnimationEx castingAnim;
+	
+	/** This ticks up 0..13 and then goes back to null when we don't need to display the anim anymore */
+	private Integer castingAnimFrame;
+	
+	/** Timer for ticking up castingAnimFrame */
+	private Timer castingAnimTimer;
+	
+	/** Logical page number in spell book of the spell we're displaying the casting anim for */
+	private int castingAnimPageNumber;
+
+	/** Spell number on the page of the spell book we're displaying the casting anim for (0..3) */
+	private int castingAnimSpellNumber;
+	
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -209,6 +285,9 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		
 		final Dimension fixedSize = new Dimension (cover.getWidth () * 2,
 			(cover.getHeight () + BACKGROUND_PADDING_TOP + BACKGROUND_PADDING_BOTTOM) * 2);
+		
+		// Find animations we need
+		castingAnim = getGraphicsDB ().findAnimation (ANIM_SWIRL, "SpellBookUI");
 		
 		// Generate animation frames
 		pageRightFrames.add (generatePageTurnAnimationFrame (pageRightFrames.get (0), 77, 47, 106, 243, false, null));
@@ -347,6 +426,8 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		// Logical pages
 		for (int pageNumber = 1; pageNumber <= LOGICAL_PAGE_COUNT; pageNumber++)
 		{
+			final int clickedPageNumber = pageNumber - 1;
+
 			final JLabel sectionHeading = getUtils ().createLabel (MomUIConstants.DARK_RED, getLargeFont ());
 			sectionHeadings.add (sectionHeading);
 			contentPane.add (sectionHeading, "frmSpellBookPage" + pageNumber + "SectionHeading");
@@ -373,7 +454,32 @@ public final class SpellBookNewUI extends MomClientFrameUI
 			// Spells on this logical page
 			for (int spellNumber = 1; spellNumber <= SpellClientUtilsImpl.SPELLS_PER_PAGE; spellNumber++)
 			{
-				final JPanel spellPanel = new JPanel (new XmlLayoutManager (getSpellLayout ()));
+				final int clickedSpellNumber = spellNumber - 1;
+				
+				final JPanel spellPanel = new JPanel (new XmlLayoutManager (getSpellLayout ()))
+				{
+					/**
+					 * The animation of the swirl has to be drawn in front of the controls, so have to do it here rather than in paintComponent
+					 */
+					@Override
+					protected final void paintChildren (final Graphics g)
+					{
+						super.paintChildren (g);
+						
+						// Need to draw casting anim?
+						if ((castingAnimFrame != null) && (castingAnimPageNumber == clickedPageNumber) && (castingAnimSpellNumber == clickedSpellNumber))
+							try
+							{
+								final BufferedImage swirl = getUtils ().loadImage (castingAnim.getFrame ().get (castingAnimFrame).getImageFile ());
+								g.drawImage (swirl, 0, 0, getWidth (), getHeight (), null);
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
+					}
+				};
+				
 				spellPanel.setOpaque (false);
 				spellPanelsOnThisPage.add (spellPanel);
 				contentPane.add (spellPanel, "frmSpellBookPage" + pageNumber + "Spell" + spellNumber);
@@ -397,6 +503,118 @@ public final class SpellBookNewUI extends MomClientFrameUI
 				final JTextArea spellDescription = getUtils ().createWrappingLabel (MomUIConstants.DARK_BROWN, getSmallFont ());
 				spellDescriptionsOnThisPage.add (spellDescription);
 				spellPanel.add ("frmSpellBookSpellDescription", spellDescription);
+				
+				// Handle clicking on spells
+				final MouseListener spellClickListener = new MouseAdapter ()
+				{
+					@Override
+					public final void mouseClicked (final MouseEvent ev)
+					{
+						// Find the spell that was clicked on
+						if (clickedPageNumber < pages.size ())
+						{
+							final SpellBookPage page = pages.get (clickedPageNumber);
+							if (clickedSpellNumber < page.getSpells ().size ())
+							{
+								final Spell spell = page.getSpells ().get (clickedSpellNumber);
+								final SpellBookSectionID sectionID = page.getSectionID ();
+								
+								try
+								{
+									if (SwingUtilities.isRightMouseButton (ev))
+									{
+										// Right clicking on a spell to get help text for it
+										// Don't allow right clicking on ????? spells to find out what they are!
+										final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
+										if (sectionID != SpellBookSectionID.RESEARCHABLE)
+											getHelpUI ().showSpellID (spell.getSpellID (), ourPlayer);
+									}
+									else if (sectionID == SpellBookSectionID.RESEARCHABLE_NOW)
+									{
+										final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+											(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "clickSpell");
+										
+										if (ourWizard.getWizardState () == WizardState.ACTIVE)
+										{
+											// Clicking on a spell to research it
+											// Whether we're allowed to depends on what spell settings are, and what's currently selected to research
+											final boolean sendMessage;
+											
+											// Picking research when we've got no current research is always fine
+											if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null)
+												sendMessage = true;
+											
+											// Picking the same research that we're already researching is just ignored
+											else if (spell.getSpellID ().equals (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ()))
+												sendMessage = false;
+											
+											// If there's no penalty, then don't bother with a warning message
+											else if (getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.FREE)
+												sendMessage = true;
+											
+											else
+											{
+												// Now we need to know details about the spell that was previously being researched
+												final Spell oldSpell = getClient ().getClientDB ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched (), "switchResearch");
+												final SpellResearchStatus oldResearchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (),
+													getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
+												
+												// If we've made no progress researching the old spell, then we can switch with no penalty
+												if ((oldResearchStatus.getRemainingResearchCost () == oldSpell.getResearchCost ()) &&
+													(getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () != SwitchResearch.DISALLOWED))
+													sendMessage = true;
+												
+												else
+												{
+													// We've either just not allowed to switch at all, or can switch but will lose research towards the old spell, so either way
+													// we've got to display a message about it, and won't be sending any message now
+													final String oldSpellName = getLanguageHolder ().findDescription (oldSpell.getSpellName ());
+													final boolean lose = getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH;
+	
+													final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+													msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getSwitchResearchTitle ());
+													
+													final List<LanguageText> languageText = lose ?
+														getLanguages ().getSpellBookScreen ().getSwitchResearchLose () : getLanguages ().getSpellBookScreen ().getSwitchResearchDisallowed ();													
+													
+													msg.setText (getLanguageHolder ().findDescription (languageText).replaceAll
+														("OLD_SPELL_NAME", oldSpellName).replaceAll
+														("NEW_SPELL_NAME", spellNames.get (clickedPageNumber).get (clickedSpellNumber).getText ()).replaceAll
+														("RESEARCH_SO_FAR", getTextUtils ().intToStrCommas (oldSpell.getResearchCost () - oldResearchStatus.getRemainingResearchCost ())).replaceAll
+														("RESEARCH_TOTAL", getTextUtils ().intToStrCommas (oldSpell.getResearchCost ())));
+													
+													if (lose)
+														msg.setResearchSpellID (spell.getSpellID ());
+													
+													msg.setVisible (true);
+													
+													sendMessage = false;
+												}
+											}
+											
+											// Send message?
+											if (sendMessage)
+											{
+												final RequestResearchSpellMessage msg = new RequestResearchSpellMessage ();
+												msg.setSpellID (spell.getSpellID ());
+												getClient ().getServerConnection ().sendMessageToServer (msg);
+											}
+										}
+									}
+									else if (sectionID != SpellBookSectionID.RESEARCHABLE)
+										castSpell (spell, clickedPageNumber, clickedSpellNumber);
+								}
+								catch (final Exception e)
+								{
+									log.error (e, e);
+								}
+							}
+						}
+					}
+				};
+				
+				spellPanel.addMouseListener (spellClickListener);
+				spellDescription.addMouseListener (spellClickListener);
 			}
 		}
 		
@@ -456,7 +674,11 @@ public final class SpellBookNewUI extends MomClientFrameUI
 				}
 			}
 		};
-		contentPane.addMouseListener (spellBookMouseAdapter);
+		getFrame ().addMouseListener (spellBookMouseAdapter);
+		
+		// Default cast type to overland, if one wasn't already pre-set
+		if (getCastType () == null)
+			setCastType (SpellCastType.OVERLAND);
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -660,6 +882,352 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		return dest;
 	}
 
+	/**
+	 * Handles clicking on a spell to cast it.  This is in its own method because casting spells imbued into hero items
+	 * comes here directly without showing the spell book UI at all.
+	 * 
+	 * @param spell Spell to calculate the combat casting cost for
+	 * @param pageNumber Logical page number spell book of spell that was clicked on; null in cases where we don't want to display the animation
+	 * @param spellNumber Which number spell on the page that was clicked on (0..3); null in cases where we don't want to display the animation
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws IOException If there are any other problems
+	 */
+	public final void castSpell (final Spell spell, final Integer pageNumber, final Integer spellNumber) throws IOException, JAXBException, XMLStreamException
+	{
+		final SpellBookSectionID sectionID = spell.getSpellBookSectionID ();
+
+		final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "castSpell");
+
+		final ExpandedUnitDetails castingUnit;
+		final boolean castingFixedSpell;
+		if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null))
+		{
+			castingUnit = getCombatUI ().getCastingSource ().getCastingUnit ();
+			castingFixedSpell = (getCombatUI ().getCastingSource ().getFixedSpellNumber () != null);
+		}
+		else
+		{
+			castingUnit = null;
+			castingFixedSpell = false;
+		}
+		
+		// Look up name
+		final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
+		
+		// Ignore trying to cast spells in combat when it isn't our turn
+		final boolean proceed;
+		final List<MemoryUnit> deadUnits = new ArrayList<MemoryUnit> ();
+		if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN)) ||
+			((ourWizard.getWizardState () != WizardState.ACTIVE) && (castingUnit == null)))
+			
+			proceed = false;
+		else if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
+			proceed = false;
+		else
+		{										
+			// If spell is greyed due to incorrect cast type or not enough MP/skill in combat, then just ignore the click altogether
+			final Integer combatCost = getReducedCombatCastingCost (spell, ourWizard.getPick ());
+			
+			if ((getCastType () == SpellCastType.OVERLAND) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
+				proceed = false;
+
+			else if ((getCastType () == SpellCastType.SPELL_CHARGES) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
+				proceed = false;
+			
+			// If we're casting a fixed spell on a unit, allow it even if it can't normally be cast that way from the spell book
+			else if ((getCastType () == SpellCastType.COMBAT) && (!castingFixedSpell) &&
+				((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatMaxCastable ())))
+				proceed = false;
+			
+			// Check if it is an overland enchantment that we already have
+			else if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+			{
+				proceed = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPlayerID (), spell.getSpellID (), null, null, null, null) == null);
+				if (!proceed)
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getRequestCastExistingOverlandEnchantment ()).replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setCastSpellID (spell.getSpellID ());
+					msg.setVisible (true);
+				}
+			}
+			
+			// Check for Spell Ward blocking combat spells
+			else if ((getCastType () == SpellCastType.COMBAT) && (getMemoryMaintainedSpellUtils ().isBlockedCastingCombatSpellsOfRealm
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getOurPlayerID (),
+					getCombatUI ().getCombatLocation (), spell.getSpellRealm (), getClient ().getClientDB ())))
+			{
+				proceed = false;
+				final Pick pick = getClient ().getClientDB ().findPick (spell.getSpellRealm (), "castSpell");
+				
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+				msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getBlockedCastingCombatSpellsOfRealm ()).replaceAll
+					("SPELL_REALM", getLanguageHolder ().findDescription (pick.getBookshelfDescription ())));
+
+				msg.setVisible (true);
+			}
+			
+			// If its a combat spell then make sure there's at least something we can target it on
+			// Only do this for spells without variable damage, because otherwise we might raise or lower the saving throw modifier
+			// enough to make a difference as to whether there are any valid targets 
+			else if ((getCastType () == SpellCastType.COMBAT) && ((sectionID == SpellBookSectionID.DISPEL_SPELLS) || ((spell.getCombatMaxDamage () == null) &&
+				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
+				(sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS)))))
+			{
+				boolean found = false;
+				final Iterator<MemoryUnit> iter = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().iterator ();
+				while ((!found) && (iter.hasNext ()))
+				{
+					final MemoryUnit thisUnit = iter.next ();
+					
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
+					if (getSpellTargetingUtils ().isUnitValidTargetForSpell
+						(spell, null, getCombatUI ().getCombatLocation (), getCombatUI ().getCombatTerrain (), getClient ().getOurPlayerID (), castingUnit, null, xu, true,
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (),
+							getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
+						
+						found = true;
+				}
+				
+				// Disenchant Area / True will also affect spells at the location that aren't cast on units, like Wall of Fire or Heavenly Light
+				if ((!found) && (sectionID == SpellBookSectionID.DISPEL_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.ALL_UNITS))
+					found = (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().stream ().anyMatch
+						(s -> (s.getCastingPlayerID () != getClient ().getOurPlayerID ()) && (getCombatUI ().getCombatLocation ().equals (s.getCityLocation ())))) ||
+					
+						// Or CAEs like Prayer
+						(getMemoryCombatAreaEffectUtils ().listCombatAreaEffectsFromLocalisedSpells
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatUI ().getCombatLocation (), getClient ().getClientDB ()).stream ().anyMatch
+								(cae -> !cae.getCastingPlayerID ().equals (getClient ().getOurPlayerID ())));
+				
+				// Or warped nodes
+				if ((!found) && (sectionID == SpellBookSectionID.DISPEL_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.ALL_UNITS))
+				{
+					final OverlandMapTerrainData combatTerrainData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(getCombatUI ().getCombatLocation ().getZ ()).getRow ().get (getCombatUI ().getCombatLocation ().getY ()).getCell ().get
+						(getCombatUI ().getCombatLocation ().getX ()).getTerrainData ();
+					
+					found = (combatTerrainData.isWarped () != null) && (combatTerrainData.isWarped () &&
+						(getClient ().getClientDB ().findTileType (combatTerrainData.getTileTypeID (), "castSpell").getMagicRealmID () != null));
+				}
+				
+				// Cracks call can also be aimed at walls
+				if ((!found) && (sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getSpellValidBorderTarget ().size () > 0))
+					found = getMemoryMaintainedSpellClientUtils ().isAnyCombatLocationValidTargetForSpell (spell,
+						getCombatUI ().getCombatTerrain (), getClient ().getSessionDescription ().getCombatMapSize ());
+				
+				// If no valid targets then tell player and don't allow casting it
+				proceed = found;
+				if (!proceed)
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getNoValidTargets ()).replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setVisible (true);
+				}
+			}
+			
+			// Similar for spells targeted at a location
+			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.SPECIAL_COMBAT_SPELLS))
+			{
+				proceed = getMemoryMaintainedSpellClientUtils ().isAnyCombatLocationValidTargetForSpell (spell,
+					getCombatUI ().getCombatTerrain (), getClient ().getSessionDescription ().getCombatMapSize ());
+				
+				if (!proceed)
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getNoValidTargets ()).replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setVisible (true);
+				}
+			}
+			
+			// Check combat enchantments have some available effects left
+			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.COMBAT_ENCHANTMENTS))
+			{
+				final List<String> combatAreaEffectIDs = getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
+					spell, getClient ().getOurPlayerID (), getCombatUI ().getCombatLocation ());
+				
+				proceed = ((combatAreaEffectIDs != null) && (combatAreaEffectIDs.size () > 0));
+				if (!proceed)
+				{
+					final List<LanguageText> languageText = (combatAreaEffectIDs == null) ?
+						getLanguages ().getSpellBookScreen ().getNoCombatSpellEffectIDsDefined () : getLanguages ().getSpellBookScreen ().getAlreadyHasAllPossibleCombatSpellEffects ();
+					
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (languageText).replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setVisible (true);
+				}
+			}
+			
+			// For raise dead spells, check that at least one suitable unit has died
+			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.SUMMONING) &&
+				(spell.getResurrectedHealthPercentage () != null))
+			{
+				// This is basically the same loop as above, except now we need a list of the dead units, not simply to find one and exit the loop 
+				for (final MemoryUnit thisUnit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+				{
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
+					if (getSpellTargetingUtils ().isUnitValidTargetForSpell
+						(spell, null, getCombatUI ().getCombatLocation (), getCombatUI ().getCombatTerrain (), getClient ().getOurPlayerID (), castingUnit, null, xu, true,
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (),
+							getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
+						
+						deadUnits.add (thisUnit);
+				};						
+						
+				proceed = (deadUnits.size () > 0);
+				if (!proceed)
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getNoDeadUnitsToBeRaised ()).replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setVisible (true);
+				}
+			}			
+			else
+				proceed = true;
+		}
+		
+		// Prevent casting more than one combat spell each turn
+		if ((proceed) && (getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
+		{
+			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+			msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+			msg.setLanguageText (getLanguages ().getCombatScreen ().getOneSpellPerTurn ());
+			msg.setVisible (true);
+		}
+		
+		// Everything beyond here, we succeed in casting the spell (or requesting to), just various other pops may be necessary depending on which spell it is,
+		// so show the swirly animation that shows that we cast something.
+		if (proceed)
+		{
+			// Is it a spell with variable MP cost so we need to pop up a window with a slider to choose how much to put into it?
+			if (((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null) &&
+				(getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) &&		// Can't put additional power into spells imbued into items
+				(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))	||			// or casting fixed spells like Magicians' Fireball spell
+				((getCastType () == SpellCastType.OVERLAND) && (spell.getOverlandMaxDamage () != null)))				
+			{
+				getVariableManaUI ().setSpellBeingTargeted (spell);
+				
+				// If we've only got enough casting skill/MP to cast the spell at base cost, then don't even bother showing the variable damage form 
+				if (getVariableManaUI ().anySelectableRange ())
+					getVariableManaUI ().setVisible (true);
+				else
+					getVariableManaUI ().variableDamageChosen ();
+			}
+			
+			// For raise dead spells, first select the unit to raise
+			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.SUMMONING) &&
+				(spell.getResurrectedHealthPercentage () != null))
+			{
+				final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
+				unitRowDisplay.setUnits (deadUnits);
+				unitRowDisplay.setTargetSpellID (spell.getSpellID ());
+				unitRowDisplay.setVisible (true);
+			}
+			
+			// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it
+			else if ((getCastType () == SpellCastType.COMBAT) &&
+				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
+				(sectionID == SpellBookSectionID.SUMMONING) || (sectionID == SpellBookSectionID.SPECIAL_COMBAT_SPELLS) ||
+				(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
+					(spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT))))
+				
+				getCombatUI ().setSpellBeingTargeted (spell);
+			
+			// Show item crafting window for Enchant Item / Create Artifact
+			else if (spell.getHeroItemBonusMaximumCraftingCost () != null)
+			{
+				getCreateArtifactUI ().setSpell (spell);
+				getCreateArtifactUI ().setVisible (true);
+			}
+			
+			// Go back to the create artifact UI
+			else if (getCastType () == SpellCastType.SPELL_CHARGES)
+			{
+				getCreateArtifactUI ().setSpellCharges (spell);
+				
+				// Go back to showing normal spell book
+				setCastType (SpellCastType.OVERLAND);
+			}
+				
+			// Tell server to cast it
+			else
+			{
+				final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
+				msg.setSpellID (spell.getSpellID ());
+				
+				if (getCastType () == SpellCastType.COMBAT)
+				{
+					msg.setCombatURN (getCombatUI ().getCombatURN ());
+					if ((getCombatUI ().getCastingSource () != null) && (getCombatUI ().getCastingSource ().getCastingUnit () != null))
+					{
+						msg.setCombatCastingUnitURN (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitURN ());
+						msg.setCombatCastingFixedSpellNumber (getCombatUI ().getCastingSource ().getFixedSpellNumber ());
+						msg.setCombatCastingSlotNumber (getCombatUI ().getCastingSource ().getHeroItemSlotNumber ());
+					}
+				}
+				
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+			}
+			
+			// Show swirly animation on spell book
+			if ((pageNumber != null) && (spellNumber != null))
+			{
+				castingAnimPageNumber = pageNumber;
+				castingAnimSpellNumber = spellNumber;
+				
+				// Show casting animation
+				if (castingAnimTimer != null)
+					castingAnimTimer.stop ();				
+				
+				castingAnimFrame = 0;
+				contentPane.repaint ();
+				
+				castingAnimTimer = new Timer ((int) (1000 / castingAnim.getAnimationSpeed ()), (ev2) ->
+				{
+					if ((castingAnimFrame == null) || (castingAnimFrame+1 >= castingAnim.getFrame ().size ()))
+					{
+						if (castingAnimTimer != null)
+							castingAnimTimer.stop ();
+						
+						castingAnimTimer = null;
+						castingAnimFrame = null;
+					}
+					else
+						castingAnimFrame = castingAnimFrame + 1;
+					
+					contentPane.repaint ();
+				});
+				castingAnimTimer.start ();
+			}
+		}
+	}
+	
 	/**
 	 * Update all labels and such from the chosen language 
 	 */
@@ -1178,5 +1746,181 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Help text scroll
+	 */
+	public final HelpUI getHelpUI ()
+	{
+		return helpUI;
+	}
+
+	/**
+	 * @param ui Help text scroll
+	 */
+	public final void setHelpUI (final HelpUI ui)
+	{
+		helpUI = ui;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param su MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils su)
+	{
+		memoryMaintainedSpellUtils = su;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
+	}
+
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
+	}
+
+	/**
+	 * @return Methods for working with spells that are only needed on the client
+	 */
+	public final MemoryMaintainedSpellClientUtils getMemoryMaintainedSpellClientUtils ()
+	{
+		return memoryMaintainedSpellClientUtils;
+	}
+
+	/**
+	 * @param u Methods for working with spells that are only needed on the client
+	 */
+	public final void setMemoryMaintainedSpellClientUtils (final MemoryMaintainedSpellClientUtils u)
+	{
+		memoryMaintainedSpellClientUtils = u;
+	}
+
+	/**
+	 * @return Variable MP popup
+	 */
+	public VariableManaUI getVariableManaUI ()
+	{
+		return variableManaUI;
+	}
+
+	/**
+	 * @param ui Variable MP popup
+	 */
+	public final void setVariableManaUI (final VariableManaUI ui)
+	{
+		variableManaUI = ui;
+	}
+	
+	/**
+	 * @return Crafting popup
+	 */
+	public final CreateArtifactUI getCreateArtifactUI ()
+	{
+		return createArtifactUI;
+	}
+
+	/**
+	 * @param ui Crafting popup
+	 */
+	public final void setCreateArtifactUI (final CreateArtifactUI ui)
+	{
+		createArtifactUI = ui;
+	}
+
+	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
 	}
 }

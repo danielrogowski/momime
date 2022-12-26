@@ -16,6 +16,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -217,6 +218,7 @@ public final class TestSpellBookNewUI extends ClientTestData
 		book.setSmallFont (CreateFontsForTests.getSmallFont ());
 		book.setCombatUI (new CombatUI ());
 		book.setSpellClientUtils (spellClientUtils);
+		book.setGraphicsDB (mock (GraphicsDatabaseEx.class));
 		book.setCastType (SpellCastType.OVERLAND);
 
 		// Display form		

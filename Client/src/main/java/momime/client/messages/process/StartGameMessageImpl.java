@@ -27,7 +27,7 @@ import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.QueuedSpellsUI;
 import momime.client.ui.frames.SelectAdvisorUI;
-import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.SpellBookNewUI;
 import momime.client.ui.frames.TaxRateUI;
 import momime.client.ui.frames.WizardsUI;
 import momime.common.messages.servertoclient.StartGameMessage;
@@ -56,7 +56,7 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 	private AlchemyUI alchemyUI;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 
 	/** Queued spells UI */
 	private QueuedSpellsUI queuedSpellsUI;
@@ -254,7 +254,7 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -262,7 +262,7 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}

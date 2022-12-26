@@ -22,7 +22,7 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.SpellBookNewUI;
 import momime.client.ui.frames.WizardsUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
@@ -67,7 +67,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	private MomClient client;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
@@ -488,7 +488,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -496,7 +496,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}

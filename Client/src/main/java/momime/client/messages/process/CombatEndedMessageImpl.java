@@ -13,7 +13,7 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.SpellBookNewUI;
 import momime.client.utils.AnimationController;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.utils.SpellCastType;
@@ -47,7 +47,7 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	private OverlandMapProcessing overlandMapProcessing;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -177,7 +177,7 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -185,7 +185,7 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}

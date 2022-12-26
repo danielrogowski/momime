@@ -170,12 +170,15 @@ public final class TestSpellBookNewUI extends ClientTestData
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SpellBookUI.xml"));
-		layout.buildMaps ();
+		final XmlLayoutContainerEx bookLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SpellBookUI.xml"));
+		final XmlLayoutContainerEx spellLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SpellBookUI-Spell.xml"));
+		bookLayout.buildMaps ();
+		spellLayout.buildMaps ();
 		
 		// Set up form
 		final SpellBookNewUI book = new SpellBookNewUI ();
-		book.setSpellBookLayout (layout);
+		book.setSpellBookLayout (bookLayout);
+		book.setSpellLayout (spellLayout);
 		book.setUtils (utils);
 		book.setLanguageHolder (langHolder);
 		book.setClient (client);

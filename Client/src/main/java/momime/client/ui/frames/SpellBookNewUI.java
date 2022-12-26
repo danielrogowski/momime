@@ -30,8 +30,10 @@ import momime.client.config.WindowID;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellBookPage;
 import momime.client.utils.SpellClientUtils;
+import momime.client.utils.SpellClientUtilsImpl;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.utils.SpellCastType;
 
 /**
@@ -112,8 +114,14 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/** Section headings, numbered the same as the pages */
 	private List<JLabel> sectionHeadings = new ArrayList<JLabel> ();
 	
-	/** XML layout */
+	/** Spell panels, numbered the same as the pages */
+	private List<List<JPanel>> spellPanels = new ArrayList<List<JPanel>> ();
+	
+	/** XML layout for the spell book as a whole */
 	private XmlLayoutContainerEx spellBookLayout;
+	
+	/** XML layout for each individual spell panel */
+	private XmlLayoutContainerEx spellLayout;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -292,6 +300,16 @@ public final class SpellBookNewUI extends MomClientFrameUI
 			final JLabel sectionHeading = getUtils ().createLabel (MomUIConstants.DARK_RED, getLargeFont ());
 			sectionHeadings.add (sectionHeading);
 			contentPane.add (sectionHeading, "frmSpellBookPage" + pageNumber + "SectionHeading");
+			
+			final List<JPanel> spellPanelsOnThisPage = new ArrayList<JPanel> ();
+			spellPanels.add (spellPanelsOnThisPage);
+			
+			for (int spellNumber = 1; spellNumber <= SpellClientUtilsImpl.SPELLS_PER_PAGE; spellNumber++)
+			{
+				final JPanel spellPanel = new JPanel (new XmlLayoutManager (getSpellLayout ()));
+				spellPanelsOnThisPage.add (spellPanel);
+				contentPane.add (spellPanel, "frmSpellBookPage" + pageNumber + "Spell" + spellNumber);
+			}
 		}
 		
 		// Handle mouse clicks
@@ -609,13 +627,14 @@ public final class SpellBookNewUI extends MomClientFrameUI
 			leftPage = leftPage * 2;
 			rightPage = (rightPage * 2) - 1;
 			
-			// Update section headings
+			// Update section headings and spells
 			for (int pageNumber = 0; pageNumber < sectionHeadings.size (); pageNumber++)
 			{
 				if ((pageNumber < pages.size ()) && ((pageNumber == leftPage) || (pageNumber == rightPage)))
 				{
 					final SpellBookPage page = pages.get (pageNumber);
 					
+					// Section heading
 					try
 					{
 						sectionHeadings.get (pageNumber).setVisible (page.isFirstPageOfSection ());
@@ -627,11 +646,27 @@ public final class SpellBookNewUI extends MomClientFrameUI
 					{
 						log.error (e, e);
 					}
+					
+					// Spells
+					for (int spellNumber = 0; spellNumber < SpellClientUtilsImpl.SPELLS_PER_PAGE; spellNumber++)
+					{
+						final JPanel spellPanel = spellPanels.get (pageNumber).get (spellNumber);
+						if (spellNumber < page.getSpells ().size ())
+						{
+							spellPanel.setVisible (true);
+							
+							// Info about this spell
+							final Spell spellDef = page.getSpells ().get (spellNumber);
+						}
+						else
+							spellPanel.setVisible (false);
+					}
 				}
 				else
 				{
 					// Not one of topmost pages
 					sectionHeadings.get (pageNumber).setVisible (false);
+					spellPanels.get (pageNumber).forEach (p -> p.setVisible (false));
 				}
 			}
 		}
@@ -654,7 +689,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @return XML layout
+	 * @return XML layout for the spell book as a whole
 	 */
 	public final XmlLayoutContainerEx getSpellBookLayout ()
 	{
@@ -662,13 +697,29 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @param l XML layout
+	 * @param l XML layout for the spell book as a whole
 	 */
 	public final void setSpellBookLayout (final XmlLayoutContainerEx l)
 	{
 		spellBookLayout = l;
 	}
 
+	/**
+	 * @return XML layout for each individual spell panel
+	 */
+	public final XmlLayoutContainerEx getSpellLayout ()
+	{
+		return spellLayout;
+	}
+
+	/**
+	 * @param l XML layout for each individual spell panel
+	 */
+	public final void setSpellLayout (final XmlLayoutContainerEx l)
+	{
+		spellLayout = l;
+	}
+	
 	/**
 	 * @return Multiplayer client
 	 */

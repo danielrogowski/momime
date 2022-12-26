@@ -1,10 +1,9 @@
 package momime.client.ui.frames;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -14,8 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.Action;
-import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -24,10 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.utils.swing.GridBagConstraintsNoFill;
-import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import momime.client.MomClient;
 import momime.client.config.WindowID;
+import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellBookPage;
 import momime.client.utils.SpellClientUtils;
 import momime.common.MomException;
@@ -65,6 +65,9 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	
 	/** There's always 1 page on the left and 1 page on the right.  Besides those, this many pages need to be stacked on top, on one side, the other, or split between the two */
 	private final static int FLIPPABLE_PAGE_COUNT = 12;
+
+	/** The flippable pages, plus the fixed first and last page which can never be turned */
+	private final static int PHYSICAL_PAGE_COUNT = FLIPPABLE_PAGE_COUNT + 2;
 	
 	/** Old one with only 2 frames was ran at 5 FPS */
 	private final static int PAGE_FLIP_ANIMATION_SPEED = 12;
@@ -84,10 +87,14 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/** Images of right pages at various stages of turning*/
 	private List<BufferedImage> pageRightFrames = new ArrayList<BufferedImage> ();
 	
+	/** Large font */
+	private Font largeFont;
+	
 	/** Content pane */
 	private JPanel contentPane;
 	
-	/** 0..5 = progress through 6 images in pageLeftFrames, 6..11 = progress through 6 images in pageRightFrames.  There are FLIPPABLE_PAGE_COUNT+2 items in this list. */
+	/** 0..5 = progress through 6 images in pageLeftFrames, 6..11 = progress through 6 images in pageRightFrames.  There are PHYSICAL_PAGE_COUNT items in this list, but the
+	 * first entry must always be 0 and the last entry must always be 11 - those pages always lay fully flat and cannot be turned. */
 	private List<Integer> pageState = new ArrayList<Integer> ();
 	
 	/** Number of frames of animation that exist for each page, so valid page states are 0 .. pageStateCount - 1 */
@@ -95,15 +102,21 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	
 	/** Number of pages we want fully on the left, with all the others fully on the right.  Animation timer will attempt to update all the pages towards this state. */
 	private int desiredPagesOnLeft;
+
+	/** We can see the front and back of every physical page except the first and last which can never be turned */
+	private final static int LOGICAL_PAGE_COUNT = (FLIPPABLE_PAGE_COUNT + 1) * 2;
 	
-	/** Spell book pages (note these are numbered differently as in a real book, page 1 is on the left, page 2 is on the right (front+back are different pages).. as opposed to pageState which lists physical pages */
+	/** Logical spell book pages (note these are numbered differently as in a real book, page 1 is on the left, page 2 is on the right (front+back are different pages) */
 	private List<SpellBookPage> pages = new ArrayList<SpellBookPage> ();
 	
-	/** Turn page left action */
-	private Action turnPageLeftAction;
+	/** Section headings, numbered the same as the pages */
+	private List<JLabel> sectionHeadings = new ArrayList<JLabel> ();
 	
-	/** Turn page rightaction */
-	private Action turnPageRightAction;
+	/** XML layout */
+	private XmlLayoutContainerEx spellBookLayout;
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/** Overland or combat casting */
 	private SpellCastType castType;
@@ -161,17 +174,11 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		
 		desiredPagesOnLeft = 1;
 		
-		// Actions
-		final Action closeAction = new LoggingAction ("X", (ev) -> getFrame ().setVisible (false));
-		
-		turnPageLeftAction = new LoggingAction ("<", (ev) -> desiredPagesOnLeft++);
-		turnPageRightAction = new LoggingAction (">", (ev) -> desiredPagesOnLeft--);
-		
 		// Initialize the content pane
 		contentPane = new JPanel ()
 		{
 			/**
-			 * Draw the background of the frame
+			 * Draw the background of the frame, and pages that are sat fully flat
 			 */
 			@Override
 			protected final void paintComponent (final Graphics g)
@@ -194,9 +201,9 @@ public final class SpellBookNewUI extends MomClientFrameUI
 				
 				for (int leftIndex = 0; leftIndex < pageState.size (); leftIndex++)
 				{
-					// Draw left pages (those with pageState <= 5) in order, since page 0 is at the bottom of the left pile
+					// Draw fully left pages (those with pageState = 0) in order, since page 0 is at the bottom of the left pile
 					final int leftPageState = pageState.get (leftIndex);
-					if (leftPageState < pageLeftFrames.size ())
+					if (leftPageState == 0)
 					{
 						final BufferedImage image = ((leftCorner != null) && (leftCorner == leftIndex)) ? pageLeftCorner : pageLeftFrames.get (leftPageState);
 						final int imageX = FIRST_LEFT_PAGE + (leftIndex * PAGE_SPACING_X);
@@ -204,17 +211,17 @@ public final class SpellBookNewUI extends MomClientFrameUI
 						g.drawImage (image, imageX, imageY, null);
 						
 						// Shading in between pages, so they blend into a brown blob near the spine
-						if ((leftPageState == 0) && (leftIndex > 0))
+						if (leftIndex > 0)
 							g.drawImage (pageLeftShading, imageX + 31, imageY + image.getHeight () - 15, null);
 					}
 				}
 				
 				for (int fromRight = 0; fromRight < pageState.size (); fromRight++)
 				{
-					// Draw right pages (those with pageState >= 6) in reverse order, since page (max) is at the bottom of the right pile
+					// Draw right pages (those with pageState = max) in reverse order, since page (max) is at the bottom of the right pile
 					final int rightIndex = pageState.size () - 1 - fromRight;
 					final int rightPageState = pageState.get (rightIndex);
-					if (rightPageState >= pageLeftFrames.size ())
+					if (rightPageState == pageStateCount - 1)
 					{
 						final BufferedImage image = ((rightCorner != null) && (rightCorner == rightIndex)) ? pageRightCorner : pageRightFrames.get (pageStateCount - 1 - rightPageState);
 						final int imageX = FIRST_RIGHT_PAGE - (fromRight * PAGE_SPACING_X);
@@ -222,7 +229,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 						g.drawImage (image, imageX, imageY, null);
 						
 						// Shading in between pages, so they blend into a brown blob near the spine
-						if ((rightPageState == pageStateCount - 1) && (fromRight > 0))
+						if (fromRight > 0)
 							g.drawImage (pageRightShading, imageX + 2, imageY + image.getHeight () - 15, null);
 					}
 				}
@@ -233,6 +240,42 @@ public final class SpellBookNewUI extends MomClientFrameUI
 				drawCurve (g, 86, 86, 140, 0);		// Original anim 2
 				drawCurve (g, 140, 150, 70, 0); */
 			}
+			
+			/**
+			 * Draw pages that are in mid movement here, so they appear in front of the text on the flat pages
+			 */
+			@Override
+			protected final void paintChildren (final Graphics g)
+			{
+				super.paintChildren (g);
+				
+				for (int leftIndex = 0; leftIndex < pageState.size (); leftIndex++)
+				{
+					// Draw left pages (those with pageState 1..5) in order, since page 0 is at the bottom of the left pile
+					final int leftPageState = pageState.get (leftIndex);
+					if ((leftPageState > 0) && (leftPageState < pageLeftFrames.size ()))
+					{
+						final BufferedImage image = pageLeftFrames.get (leftPageState);
+						final int imageX = FIRST_LEFT_PAGE + (leftIndex * PAGE_SPACING_X);
+						final int imageY = FIRST_PAGE_BOTTOM - image.getHeight () - (leftIndex * PAGE_SPACING_Y);
+						g.drawImage (image, imageX, imageY, null);
+					}
+				}
+				
+				for (int fromRight = 0; fromRight < pageState.size (); fromRight++)
+				{
+					// Draw right pages (those with pageState 6..max-1) in reverse order, since page (max) is at the bottom of the right pile
+					final int rightIndex = pageState.size () - 1 - fromRight;
+					final int rightPageState = pageState.get (rightIndex);
+					if ((rightPageState >= pageLeftFrames.size ()) && (rightPageState < pageStateCount - 1))
+					{
+						final BufferedImage image = pageRightFrames.get (pageStateCount - 1 - rightPageState);
+						final int imageX = FIRST_RIGHT_PAGE - (fromRight * PAGE_SPACING_X);
+						final int imageY = FIRST_PAGE_BOTTOM - image.getHeight () - (fromRight * PAGE_SPACING_Y);
+						g.drawImage (image, imageX, imageY, null);
+					}
+				}
+			}
 		};
 		
 		contentPane.setBackground (Color.BLACK);
@@ -241,15 +284,15 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		contentPane.setPreferredSize (fixedSize);
 		
 		// Set up layout
-		contentPane.setLayout (new BorderLayout ());
+		contentPane.setLayout (new XmlLayoutManager (getSpellBookLayout ()));
 		
-		// Temporary buttons
-		final JPanel buttonsPanel = new JPanel (new GridBagLayout ());
-		buttonsPanel.add (new JButton (turnPageLeftAction), getUtils ().createConstraintsNoFill (0, 0, 1, 1, 1, GridBagConstraintsNoFill.CENTRE));
-		buttonsPanel.add (new JButton (turnPageRightAction), getUtils ().createConstraintsNoFill (1, 0, 1, 1, 1, GridBagConstraintsNoFill.CENTRE));
-		buttonsPanel.add (new JButton (closeAction), getUtils ().createConstraintsNoFill (2, 0, 1, 1, 1, GridBagConstraintsNoFill.CENTRE));
-		
-		contentPane.add (buttonsPanel, BorderLayout.SOUTH);
+		// Logical pages
+		for (int pageNumber = 1; pageNumber <= LOGICAL_PAGE_COUNT; pageNumber++)
+		{
+			final JLabel sectionHeading = getUtils ().createLabel (MomUIConstants.DARK_RED, getLargeFont ());
+			sectionHeadings.add (sectionHeading);
+			contentPane.add (sectionHeading, "frmSpellBookPage" + pageNumber + "SectionHeading");
+		}
 		
 		// Handle mouse clicks
 		final MouseAdapter spellBookMouseAdapter = new MouseAdapter ()
@@ -278,7 +321,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 					if (ev.getPoint ().x < cover.getWidth ())
 					{
 						// Possible click on left corner
-						if (leftCorner != null)
+						if ((leftCorner != null) && (desiredPagesOnLeft > 1))
 						{
 							final int imageLeft = FIRST_LEFT_PAGE + (leftCorner * PAGE_SPACING_X);
 							final int imageTop = FIRST_PAGE_BOTTOM - pageLeftCorner.getHeight () - (leftCorner * PAGE_SPACING_Y);
@@ -292,7 +335,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 					else
 					{
 						// Possible click on right corner
-						if (rightCorner != null)
+						if ((rightCorner != null) && (desiredPagesOnLeft < PHYSICAL_PAGE_COUNT - 1))
 						{
 							final int fromRight = pageState.size () - 1 - rightCorner;
 							final int imageRight = FIRST_RIGHT_PAGE - (fromRight * PAGE_SPACING_X) + pageRightCorner.getWidth ();
@@ -320,6 +363,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		final Timer pageTurnTimer = new Timer (1000 / PAGE_FLIP_ANIMATION_SPEED, (ev) ->
 		{
 			boolean updated = false;
+			boolean refreshPages = false;
 			
 			// Go through page in turn
 			// I don't think this is perfect - whether we need to process the pages left-first or right-first depends which way they are moving
@@ -336,10 +380,17 @@ public final class SpellBookNewUI extends MomClientFrameUI
 					{
 						pageState.set (leftIndex, leftPageNewState);
 						updated = true;
+						
+						// If changing FROM or TO a fully flat page, this will alter which pages the text needs to appear on
+						if ((leftPageState == 0) || (leftPageState == pageStateCount - 1) || (leftPageNewState == 0) || (leftPageNewState == pageStateCount - 1))
+							refreshPages = true;
 					}
 				}
 			}
 			
+			if (refreshPages)
+				languageOrPageChanged ();
+				
 			if (updated)
 				contentPane.repaint ();
 		});
@@ -540,7 +591,98 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		// This can be called before we've ever opened the spell book, so none of the components exist
 		if (contentPane != null)
 		{
+			// Only the topmost fully flat left page and the topmost fully flat right page have the text drawn on them
+			Integer leftPage = null;
+			Integer rightPage = null;
+			for (int index = 0; index < pageState.size (); index++)
+			{
+				final int value = pageState.get (index);
+				if (value == 0)
+					leftPage = index;
+				else if ((value == pageStateCount - 1) && (rightPage == null))
+					rightPage = index;
+			}
+			
+			// Above are the physical page numbers in the book - initially 0 on left, 1 on right and when we turn the page
+			// we end up with the same page 1 on left (just now the reverse side of it) and page 2 on right.
+			// But what we need below are the pages as actually numbered in a book, where the reverse of page 1 is page 2, and so on.
+			leftPage = leftPage * 2;
+			rightPage = (rightPage * 2) - 1;
+			
+			// Update section headings
+			for (int pageNumber = 0; pageNumber < sectionHeadings.size (); pageNumber++)
+			{
+				if ((pageNumber < pages.size ()) && ((pageNumber == leftPage) || (pageNumber == rightPage)))
+				{
+					final SpellBookPage page = pages.get (pageNumber);
+					
+					try
+					{
+						sectionHeadings.get (pageNumber).setVisible (page.isFirstPageOfSection ());
+						if (page.isFirstPageOfSection ())
+							sectionHeadings.get (pageNumber).setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpellBookSection
+								(page.getSectionID (), "SpellBookUI").getSpellBookSectionName ()));
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+				else
+				{
+					// Not one of topmost pages
+					sectionHeadings.get (pageNumber).setVisible (false);
+				}
+			}
 		}
+	}
+
+	/**
+	 * @return Large font
+	 */
+	public final Font getLargeFont ()
+	{
+		return largeFont;
+	}
+
+	/**
+	 * @param font Large font
+	 */
+	public final void setLargeFont (final Font font)
+	{
+		largeFont = font;
+	}
+	
+	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getSpellBookLayout ()
+	{
+		return spellBookLayout;
+	}
+
+	/**
+	 * @param l XML layout
+	 */
+	public final void setSpellBookLayout (final XmlLayoutContainerEx l)
+	{
+		spellBookLayout = l;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 	
 	/**

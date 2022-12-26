@@ -1,0 +1,993 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/utils/swing/layoutmanagers/xmllayout">
+	<formWidth>570</formWidth>
+	<formHeight>556</formHeight>
+	<component name="frmSpellBookPage1SectionHeading">
+		<left>141</left>
+		<top>183</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Spell1">
+		<left>17</left>
+		<top>208</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Spell2">
+		<left>17</left>
+		<top>274</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Spell3">
+		<left>17</left>
+		<top>340</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Spell4">
+		<left>17</left>
+		<top>406</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2SectionHeading">
+		<left>405</left>
+		<top>147</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Spell1">
+		<left>281</left>
+		<top>172</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Spell2">
+		<left>281</left>
+		<top>238</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Spell3">
+		<left>281</left>
+		<top>304</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Spell4">
+		<left>281</left>
+		<top>370</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3SectionHeading">
+		<left>143</left>
+		<top>180</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Spell1">
+		<left>19</left>
+		<top>205</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Spell2">
+		<left>19</left>
+		<top>271</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Spell3">
+		<left>19</left>
+		<top>337</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Spell4">
+		<left>19</left>
+		<top>403</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4SectionHeading">
+		<left>407</left>
+		<top>150</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Spell1">
+		<left>283</left>
+		<top>175</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Spell2">
+		<left>283</left>
+		<top>241</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Spell3">
+		<left>283</left>
+		<top>307</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Spell4">
+		<left>283</left>
+		<top>373</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5SectionHeading">
+		<left>145</left>
+		<top>177</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Spell1">
+		<left>21</left>
+		<top>202</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Spell2">
+		<left>21</left>
+		<top>268</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Spell3">
+		<left>21</left>
+		<top>334</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Spell4">
+		<left>21</left>
+		<top>400</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6SectionHeading">
+		<left>409</left>
+		<top>153</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Spell1">
+		<left>285</left>
+		<top>178</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Spell2">
+		<left>285</left>
+		<top>244</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Spell3">
+		<left>285</left>
+		<top>310</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Spell4">
+		<left>285</left>
+		<top>376</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7SectionHeading">
+		<left>147</left>
+		<top>174</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Spell1">
+		<left>23</left>
+		<top>199</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Spell2">
+		<left>23</left>
+		<top>265</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Spell3">
+		<left>23</left>
+		<top>331</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Spell4">
+		<left>23</left>
+		<top>397</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8SectionHeading">
+		<left>411</left>
+		<top>156</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Spell1">
+		<left>287</left>
+		<top>181</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Spell2">
+		<left>287</left>
+		<top>247</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Spell3">
+		<left>287</left>
+		<top>313</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Spell4">
+		<left>287</left>
+		<top>379</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9SectionHeading">
+		<left>149</left>
+		<top>171</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Spell1">
+		<left>25</left>
+		<top>196</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Spell2">
+		<left>25</left>
+		<top>262</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Spell3">
+		<left>25</left>
+		<top>328</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Spell4">
+		<left>25</left>
+		<top>394</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10SectionHeading">
+		<left>413</left>
+		<top>159</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Spell1">
+		<left>289</left>
+		<top>184</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Spell2">
+		<left>289</left>
+		<top>250</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Spell3">
+		<left>289</left>
+		<top>316</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Spell4">
+		<left>289</left>
+		<top>382</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11SectionHeading">
+		<left>151</left>
+		<top>168</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Spell1">
+		<left>27</left>
+		<top>193</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Spell2">
+		<left>27</left>
+		<top>259</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Spell3">
+		<left>27</left>
+		<top>325</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Spell4">
+		<left>27</left>
+		<top>391</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12SectionHeading">
+		<left>415</left>
+		<top>162</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Spell1">
+		<left>291</left>
+		<top>187</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Spell2">
+		<left>291</left>
+		<top>253</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Spell3">
+		<left>291</left>
+		<top>319</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Spell4">
+		<left>291</left>
+		<top>385</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13SectionHeading">
+		<left>153</left>
+		<top>165</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Spell1">
+		<left>29</left>
+		<top>190</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Spell2">
+		<left>29</left>
+		<top>256</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Spell3">
+		<left>29</left>
+		<top>322</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Spell4">
+		<left>29</left>
+		<top>388</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14SectionHeading">
+		<left>417</left>
+		<top>165</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Spell1">
+		<left>293</left>
+		<top>190</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Spell2">
+		<left>293</left>
+		<top>256</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Spell3">
+		<left>293</left>
+		<top>322</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Spell4">
+		<left>293</left>
+		<top>388</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15SectionHeading">
+		<left>155</left>
+		<top>162</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Spell1">
+		<left>31</left>
+		<top>187</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Spell2">
+		<left>31</left>
+		<top>253</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Spell3">
+		<left>31</left>
+		<top>319</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Spell4">
+		<left>31</left>
+		<top>385</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16SectionHeading">
+		<left>419</left>
+		<top>168</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Spell1">
+		<left>295</left>
+		<top>193</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Spell2">
+		<left>295</left>
+		<top>259</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Spell3">
+		<left>295</left>
+		<top>325</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Spell4">
+		<left>295</left>
+		<top>391</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17SectionHeading">
+		<left>157</left>
+		<top>159</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Spell1">
+		<left>33</left>
+		<top>184</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Spell2">
+		<left>33</left>
+		<top>250</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Spell3">
+		<left>33</left>
+		<top>316</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Spell4">
+		<left>33</left>
+		<top>382</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18SectionHeading">
+		<left>421</left>
+		<top>171</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Spell1">
+		<left>297</left>
+		<top>196</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Spell2">
+		<left>297</left>
+		<top>262</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Spell3">
+		<left>297</left>
+		<top>328</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Spell4">
+		<left>297</left>
+		<top>394</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19SectionHeading">
+		<left>159</left>
+		<top>156</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Spell1">
+		<left>35</left>
+		<top>181</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Spell2">
+		<left>35</left>
+		<top>247</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Spell3">
+		<left>35</left>
+		<top>313</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Spell4">
+		<left>35</left>
+		<top>379</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20SectionHeading">
+		<left>423</left>
+		<top>174</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Spell1">
+		<left>299</left>
+		<top>199</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Spell2">
+		<left>299</left>
+		<top>265</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Spell3">
+		<left>299</left>
+		<top>331</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Spell4">
+		<left>299</left>
+		<top>397</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21SectionHeading">
+		<left>161</left>
+		<top>153</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Spell1">
+		<left>37</left>
+		<top>178</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Spell2">
+		<left>37</left>
+		<top>244</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Spell3">
+		<left>37</left>
+		<top>310</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Spell4">
+		<left>37</left>
+		<top>376</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22SectionHeading">
+		<left>425</left>
+		<top>177</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Spell1">
+		<left>301</left>
+		<top>202</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Spell2">
+		<left>301</left>
+		<top>268</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Spell3">
+		<left>301</left>
+		<top>334</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Spell4">
+		<left>301</left>
+		<top>400</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23SectionHeading">
+		<left>163</left>
+		<top>150</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Spell1">
+		<left>39</left>
+		<top>175</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Spell2">
+		<left>39</left>
+		<top>241</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Spell3">
+		<left>39</left>
+		<top>307</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Spell4">
+		<left>39</left>
+		<top>373</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24SectionHeading">
+		<left>427</left>
+		<top>180</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Spell1">
+		<left>303</left>
+		<top>205</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Spell2">
+		<left>303</left>
+		<top>271</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Spell3">
+		<left>303</left>
+		<top>337</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Spell4">
+		<left>303</left>
+		<top>403</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25SectionHeading">
+		<left>165</left>
+		<top>147</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Spell1">
+		<left>41</left>
+		<top>172</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Spell2">
+		<left>41</left>
+		<top>238</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Spell3">
+		<left>41</left>
+		<top>304</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Spell4">
+		<left>41</left>
+		<top>370</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26SectionHeading">
+		<left>429</left>
+		<top>183</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Spell1">
+		<left>305</left>
+		<top>208</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Spell2">
+		<left>305</left>
+		<top>274</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Spell3">
+		<left>305</left>
+		<top>340</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Spell4">
+		<left>305</left>
+		<top>406</top>
+		<width>248</width>
+		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

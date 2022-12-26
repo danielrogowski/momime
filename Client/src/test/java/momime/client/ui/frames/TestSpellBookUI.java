@@ -2,6 +2,7 @@ package momime.client.ui.frames;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import java.util.Arrays;
 
@@ -39,6 +40,8 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.WizardState;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellCastType;
@@ -65,13 +68,17 @@ public final class TestSpellBookUI extends ClientTestData
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		int sectionNumber = 0;
-		for (final String sectionName : new String [] {"Summoning spells", "Overland enchantments"})
+		for (final String sectionName : new String [] {"Summoning spells", "Overland enchantments", "Research spells"})
 		{
 			sectionNumber++;
 			
 			final SpellBookSection section = new SpellBookSection ();
 			section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, sectionName));
-			when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + sectionNumber), "SpellBookUI")).thenReturn (section);
+			
+			if (sectionNumber > 2)
+				lenient ().when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC98"), "SpellBookUI")).thenReturn (section);
+			else
+				when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + sectionNumber), "SpellBookUI")).thenReturn (section);
 		}
 		
 		final ProductionTypeEx research = new ProductionTypeEx ();
@@ -168,6 +175,19 @@ public final class TestSpellBookUI extends ClientTestData
 		when (spellUtils.getReducedOverlandCastingCost (foo, null, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (70);
 		when (spellUtils.getReducedCombatCastingCost (foo, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (20);
 		
+		final Spell mastery = new Spell ();
+		mastery.setSpellID ("SP213");
+		mastery.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell of Mastery"));
+		mastery.getSpellDescription ().add (createLanguageText (Language.ENGLISH, "Banishes all opponent wizards to Limbo. You win."));
+		mastery.setOverlandCastingCost (5000);
+		mastery.setResearchCost (60000);
+		
+		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setRemainingResearchCost (59000);
+		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		researchStatus.setSpellID ("SP213");
+		lenient ().when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP213")).thenReturn (researchStatus);
+		
 		// Mock which sections and spells are on which pages
 		final SpellBookPage summoningPage = new SpellBookPage ();
 		summoningPage.setSectionID (SpellBookSectionID.SUMMONING);
@@ -183,6 +203,7 @@ public final class TestSpellBookUI extends ClientTestData
 		final SpellBookPage researchPage = new SpellBookPage ();
 		researchPage.setSectionID (SpellBookSectionID.RESEARCHABLE_NOW);
 		researchPage.setFirstPageOfSection (true);
+		researchPage.getSpells ().add (mastery);
 		
 		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
 		when (spellClientUtils.generateSpellBookPages (SpellCastType.OVERLAND)).thenReturn (Arrays.asList (summoningPage, overlandEnchantmentsPage, researchPage));

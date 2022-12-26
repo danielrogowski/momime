@@ -15,6 +15,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -31,10 +32,20 @@ import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellBookPage;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.SpellClientUtilsImpl;
+import momime.client.utils.TextUtils;
 import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.PlayerPick;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.WizardState;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellUtils;
 
 /**
  * POC for new spell book where the pages are drawn so the book will look thinner/thicker on the left/right side depending how far through you are turned
@@ -83,6 +94,12 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/** Height of the fold down */
 	private final static int PAGE_CORNER_HEIGHT = 38;
 
+	/** Colour to draw arcane spells */
+	private final static Color ARCANE_SPELL_COLOUR = new Color (0xA0A0A0);
+
+	/** Shadow colour to draw the spell that we're currently researching */
+	private final static Color RESEARCHED_SPELL_COLOUR = new Color (0x6060FF);
+	
 	/** Images of left pages at various stages of turning */
 	private List<BufferedImage> pageLeftFrames = new ArrayList<BufferedImage> ();
 
@@ -91,6 +108,12 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	
 	/** Large font */
 	private Font largeFont;
+	
+	/** Medium font */
+	private Font mediumFont;
+
+	/** Small font */
+	private Font smallFont;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -117,6 +140,21 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/** Spell panels, numbered the same as the pages */
 	private List<List<JPanel>> spellPanels = new ArrayList<List<JPanel>> ();
 	
+	/** Name of each spell */
+	private List<List<JLabel>> spellNames = new ArrayList<List<JLabel>> ();
+
+	/** Cost of casting spell overland */
+	private List<List<JLabel>> spellOverlandCosts = new ArrayList<List<JLabel>> ();
+	
+	/** Cost of casting spell in combat */
+	private List<List<JLabel>> spellCombatCosts = new ArrayList<List<JLabel>> ();
+
+	/** Research cost of spell (this is separate just so it can be a double width box to fit the high research cost of Spell of Mastery) */
+	private List<List<JLabel>> spellResearchCosts = new ArrayList<List<JLabel>> ();
+	
+	/** Long description of each spell */
+	private List<List<JTextArea>> spellDescriptions = new ArrayList<List<JTextArea>> ();
+	
 	/** XML layout for the spell book as a whole */
 	private XmlLayoutContainerEx spellBookLayout;
 	
@@ -131,6 +169,18 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	
 	/** Client-side spell utils */
 	private SpellClientUtils spellClientUtils;
+
+	/** Spell utils */
+	private SpellUtils spellUtils;
+	
+	/** Combat UI */
+	private CombatUI combatUI;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
+	/** Text utils */
+	private TextUtils textUtils;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -301,14 +351,52 @@ public final class SpellBookNewUI extends MomClientFrameUI
 			sectionHeadings.add (sectionHeading);
 			contentPane.add (sectionHeading, "frmSpellBookPage" + pageNumber + "SectionHeading");
 			
+			// Lists of things on this page
 			final List<JPanel> spellPanelsOnThisPage = new ArrayList<JPanel> ();
 			spellPanels.add (spellPanelsOnThisPage);
 			
+			final List<JLabel> spellNamesOnThisPage = new ArrayList<JLabel> ();
+			spellNames.add (spellNamesOnThisPage);
+
+			final List<JLabel> spellOverlandCostsOnThisPage = new ArrayList<JLabel> ();
+			spellOverlandCosts.add (spellOverlandCostsOnThisPage);
+			
+			final List<JLabel> spellCombatCostsOnThisPage = new ArrayList<JLabel> ();
+			spellCombatCosts.add (spellCombatCostsOnThisPage);
+
+			final List<JLabel> spellResearchCostsOnThisPage = new ArrayList<JLabel> ();
+			spellResearchCosts.add (spellResearchCostsOnThisPage);
+			
+			final List<JTextArea> spellDescriptionsOnThisPage = new ArrayList<JTextArea> ();
+			spellDescriptions.add (spellDescriptionsOnThisPage);
+			
+			// Spells on this logical page
 			for (int spellNumber = 1; spellNumber <= SpellClientUtilsImpl.SPELLS_PER_PAGE; spellNumber++)
 			{
 				final JPanel spellPanel = new JPanel (new XmlLayoutManager (getSpellLayout ()));
+				spellPanel.setOpaque (false);
 				spellPanelsOnThisPage.add (spellPanel);
 				contentPane.add (spellPanel, "frmSpellBookPage" + pageNumber + "Spell" + spellNumber);
+
+				final JLabel spellName = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getMediumFont ());
+				spellNamesOnThisPage.add (spellName);
+				spellPanel.add ("frmSpellBookSpellName", spellName);
+
+				final JLabel spellCombatCost = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getMediumFont ());
+				spellCombatCostsOnThisPage.add (spellCombatCost);
+				spellPanel.add ("frmSpellBookCombatCost", spellCombatCost);
+				
+				final JLabel spellOverlandCost = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getMediumFont ());
+				spellOverlandCostsOnThisPage.add (spellOverlandCost);
+				spellPanel.add ("frmSpellBookOverlandCost", spellOverlandCost);
+				
+				final JLabel spellResearchCost = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getMediumFont ());
+				spellResearchCostsOnThisPage.add (spellResearchCost);
+				spellPanel.add ("frmSpellBookResearchCost", spellResearchCost);
+				
+				final JTextArea spellDescription = getUtils ().createWrappingLabel (MomUIConstants.DARK_BROWN, getSmallFont ());
+				spellDescriptionsOnThisPage.add (spellDescription);
+				spellPanel.add ("frmSpellBookSpellDescription", spellDescription);
 			}
 		}
 		
@@ -608,70 +696,297 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	{
 		// This can be called before we've ever opened the spell book, so none of the components exist
 		if (contentPane != null)
-		{
-			// Only the topmost fully flat left page and the topmost fully flat right page have the text drawn on them
-			Integer leftPage = null;
-			Integer rightPage = null;
-			for (int index = 0; index < pageState.size (); index++)
+			try
 			{
-				final int value = pageState.get (index);
-				if (value == 0)
-					leftPage = index;
-				else if ((value == pageStateCount - 1) && (rightPage == null))
-					rightPage = index;
-			}
-			
-			// Above are the physical page numbers in the book - initially 0 on left, 1 on right and when we turn the page
-			// we end up with the same page 1 on left (just now the reverse side of it) and page 2 on right.
-			// But what we need below are the pages as actually numbered in a book, where the reverse of page 1 is page 2, and so on.
-			leftPage = leftPage * 2;
-			rightPage = (rightPage * 2) - 1;
-			
-			// Update section headings and spells
-			for (int pageNumber = 0; pageNumber < sectionHeadings.size (); pageNumber++)
-			{
-				if ((pageNumber < pages.size ()) && ((pageNumber == leftPage) || (pageNumber == rightPage)))
+				final String manaSuffix = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "SpellBookUI").getProductionTypeSuffix ());
+	
+				final String researchSuffix = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "SpellBookUI").getProductionTypeSuffix ());
+				
+				final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "languageOrPageChanged");
+				
+				final boolean unitCasting = (getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
+					(getCombatUI ().getCastingSource ().getCastingUnit () != null);
+				
+				// Only the topmost fully flat left page and the topmost fully flat right page have the text drawn on them
+				Integer leftPage = null;
+				Integer rightPage = null;
+				for (int index = 0; index < pageState.size (); index++)
 				{
-					final SpellBookPage page = pages.get (pageNumber);
-					
-					// Section heading
-					try
+					final int value = pageState.get (index);
+					if (value == 0)
+						leftPage = index;
+					else if ((value == pageStateCount - 1) && (rightPage == null))
+						rightPage = index;
+				}
+				
+				// Above are the physical page numbers in the book - initially 0 on left, 1 on right and when we turn the page
+				// we end up with the same page 1 on left (just now the reverse side of it) and page 2 on right.
+				// But what we need below are the pages as actually numbered in a book, where the reverse of page 1 is page 2, and so on.
+				leftPage = leftPage * 2;
+				rightPage = (rightPage * 2) - 1;
+				
+				// Update section headings and spells
+				for (int pageNumber = 0; pageNumber < sectionHeadings.size (); pageNumber++)
+				{
+					if ((pageNumber < pages.size ()) && ((pageNumber == leftPage) || (pageNumber == rightPage)))
 					{
-						sectionHeadings.get (pageNumber).setVisible (page.isFirstPageOfSection ());
-						if (page.isFirstPageOfSection ())
-							sectionHeadings.get (pageNumber).setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpellBookSection
-								(page.getSectionID (), "SpellBookUI").getSpellBookSectionName ()));
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-					
-					// Spells
-					for (int spellNumber = 0; spellNumber < SpellClientUtilsImpl.SPELLS_PER_PAGE; spellNumber++)
-					{
-						final JPanel spellPanel = spellPanels.get (pageNumber).get (spellNumber);
-						if (spellNumber < page.getSpells ().size ())
+						final SpellBookPage page = pages.get (pageNumber);
+						
+						// Section heading
+						try
 						{
-							spellPanel.setVisible (true);
-							
-							// Info about this spell
-							final Spell spellDef = page.getSpells ().get (spellNumber);
+							sectionHeadings.get (pageNumber).setVisible (page.isFirstPageOfSection ());
+							if (page.isFirstPageOfSection ())
+								sectionHeadings.get (pageNumber).setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpellBookSection
+									(page.getSectionID (), "SpellBookUI").getSpellBookSectionName ()));
 						}
-						else
-							spellPanel.setVisible (false);
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+						
+						// Spells
+						for (int spellNumber = 0; spellNumber < SpellClientUtilsImpl.SPELLS_PER_PAGE; spellNumber++)
+						{
+							final JPanel spellPanel = spellPanels.get (pageNumber).get (spellNumber);
+							if (spellNumber < page.getSpells ().size ())
+							{
+								spellPanel.setVisible (true);
+								
+								// How to render each spell is lifted straight out of the old spell book UI
+								final Spell spell = page.getSpells ().get (spellNumber);
+								
+								// Draw the spell being researched with a different colour shadow
+								final Color shadowColor = spell.getSpellID ().equals (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ()) ?
+									RESEARCHED_SPELL_COLOUR : Color.BLACK;
+								
+								spellNames.get (pageNumber).get (spellNumber).setBackground (shadowColor);
+								spellOverlandCosts.get (pageNumber).get (spellNumber).setBackground (shadowColor);
+								
+								// If we're banished, then grey out (light brown out) the entire spell book, as long as its the wizard casting spells
+								if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN)) ||
+									((ourWizard.getWizardState () != WizardState.ACTIVE) && (!unitCasting)))
+								{
+									spellNames.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+									spellCombatCosts.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+									spellOverlandCosts.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+									spellResearchCosts.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+									spellDescriptions.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+								}
+								else
+								{
+									// Let unknown spells be magic realm coloured too, as a hint
+									spellNames.get (pageNumber).get (spellNumber).setForeground (ARCANE_SPELL_COLOUR);
+									spellCombatCosts.get (pageNumber).get (spellNumber).setForeground (ARCANE_SPELL_COLOUR);
+									spellOverlandCosts.get (pageNumber).get (spellNumber).setForeground (ARCANE_SPELL_COLOUR);
+									spellResearchCosts.get (pageNumber).get (spellNumber).setForeground (ARCANE_SPELL_COLOUR);
+									spellDescriptions.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.DARK_BROWN);
+									if (spell.getSpellRealm () != null)
+										try
+										{
+											final Pick magicRealm = getClient ().getClientDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
+											if (magicRealm.getPickBookshelfTitleColour () != null)
+											{
+												final Color spellColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
+												spellNames.get (pageNumber).get (spellNumber).setForeground (spellColour);
+												spellCombatCosts.get (pageNumber).get (spellNumber).setForeground (spellColour);
+												spellOverlandCosts.get (pageNumber).get (spellNumber).setForeground (spellColour);
+												spellResearchCosts.get (pageNumber).get (spellNumber).setForeground (spellColour);
+											}
+										}
+										catch (final Exception e)
+										{
+											log.error (e, e);
+										}
+								}
+								
+								// Set text for this spell
+								spellCombatCosts.get (pageNumber).get (spellNumber).setText (null);
+								spellOverlandCosts.get (pageNumber).get (spellNumber).setText (null);
+
+								if (page.getSectionID () == SpellBookSectionID.RESEARCHABLE)
+								{
+									spellNames.get (pageNumber).get (spellNumber).setText ("??????????");
+									spellDescriptions.get (pageNumber).get (spellNumber).setText ("?????????????????????????????????????????");
+									spellResearchCosts.get (pageNumber).get (spellNumber).setText ("??? " + researchSuffix);
+								}
+								else
+								{
+									final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
+									final String spellDescription = getLanguageHolder ().findDescription (spell.getSpellDescription ());
+									
+									spellNames.get (pageNumber).get (spellNumber).setText ((spellName == null) ? spell.getSpellID () : spellName);
+									spellDescriptions.get (pageNumber).get (spellNumber).setText ((spellDescription == null) ? spell.getSpellID () : spellDescription);
+	
+									spellCombatCosts.get (pageNumber).get (spellNumber).setText (null);
+									spellOverlandCosts.get (pageNumber).get (spellNumber).setText (null);
+									spellResearchCosts.get (pageNumber).get (spellNumber).setText (null);
+									
+									// Show cost in MP for known spells, and RP for researchable spells
+									try
+									{
+										if (page.getSectionID () == SpellBookSectionID.RESEARCHABLE_NOW)
+										{
+											if (spell.getResearchCost () != null)
+											{
+												final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ());
+												spellResearchCosts.get (pageNumber).get (spellNumber).setText (getTextUtils ().intToStrCommas (researchStatus.getRemainingResearchCost ()) + " " + researchSuffix);
+											}
+										}
+										else
+										{
+											// Show combat and overland casting cost separately
+											Integer overlandCost;
+											Integer combatCost;
+											
+											if (getCastType () == SpellCastType.SPELL_CHARGES)
+											{
+												overlandCost = null;
+												combatCost = (spell.getCombatCastingCost () == null) ? null : spell.getCombatCastingCost () * 20;
+											}
+											else
+											{
+												overlandCost = (spell.getOverlandCastingCost () == null) ? null :
+													getSpellUtils ().getReducedOverlandCastingCost (spell, null, null, ourWizard.getPick (),
+														getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+														getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+			
+												combatCost = getReducedCombatCastingCost (spell, ourWizard.getPick ());
+											}
+	
+											if (overlandCost != null)
+												spellOverlandCosts.get (pageNumber).get (spellNumber).setText (getTextUtils ().intToStrCommas (overlandCost) + " " + manaSuffix);
+											
+											if (combatCost != null)
+												spellCombatCosts.get (pageNumber).get (spellNumber).setText (getTextUtils ().intToStrCommas (combatCost) + " " + manaSuffix);
+											
+											// Grey out (ok, light brown out...) casting cost that's inappropriate for our current cast type.
+											// If we're in a combat, this also greys out spells that we don't have enough remaining skill/MP to cast in the combat.
+											switch (getCastType ())
+											{
+												case COMBAT:
+													spellOverlandCosts.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+													if ((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatMaxCastable ()))
+													{
+														spellNames.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+														spellDescriptions.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+													}
+													break;
+	
+												case SPELL_CHARGES:
+													spellOverlandCosts.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+													if (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT))
+													{
+														spellNames.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+														spellDescriptions.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+													}
+													break;													
+													
+												case OVERLAND:
+													spellCombatCosts.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+													if (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND))
+													{
+														spellNames.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+														spellDescriptions.get (pageNumber).get (spellNumber).setForeground (MomUIConstants.LIGHT_BROWN);
+													}
+													break;
+													
+												default:
+													throw new MomException ("SpellBookUI doesn't know how to prepare spell " + spell.getSpellID () +
+														" in section " + page.getSectionID () + " when the cast type is " + getCastType ());
+											}
+										}
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
+									}
+								}
+							}
+							else
+								spellPanel.setVisible (false);
+						}
+					}
+					else
+					{
+						// Not one of topmost pages
+						sectionHeadings.get (pageNumber).setVisible (false);
+						spellPanels.get (pageNumber).forEach (p -> p.setVisible (false));
 					}
 				}
-				else
-				{
-					// Not one of topmost pages
-					sectionHeadings.get (pageNumber).setVisible (false);
-					spellPanels.get (pageNumber).forEach (p -> p.setVisible (false));
-				}
 			}
-		}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
 	}
 
+	/**
+	 * This isn't straightforward anymore, so pulled it out into a separate method.  The casting cost reduction from having a lot of spell books in one magic
+	 * realm, or retorts like Runemaster that might also reduce casting cost, only apply if it is the wizard casting the spell, and not a hero or a unit
+	 * with the caster ability e.g. Archangel.
+	 * 
+	 * @param spell Spell to calculate the combat casting cost for
+	 * @param picks Player's picks
+	 * @return Combat casting cost for this spell, or null if it can't be cast in combat
+	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
+	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
+	 */
+	private final Integer getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks) throws MomException, RecordNotFoundException
+	{
+		final Integer combatCost;
+		
+		if (spell.getCombatCastingCost () == null)
+			combatCost = null;
+		
+		// If casting overland, then its the wizard casting, so show their cost reduction even though the combat MP costs are greyed out at the moment
+		else if ((getCastType () != SpellCastType.COMBAT) || (getCombatUI ().getCastingSource () == null))
+			combatCost = getSpellUtils ().getReducedCombatCastingCost (spell, null, picks,
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+		
+		// If its the wizard casting in combat, then again show their cost reduction
+		else if (getCombatUI ().getCastingSource ().getCastingUnit () == null)
+			combatCost = getSpellUtils ().getReducedCombatCastingCost (spell, null, picks,
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+		
+		// Its a unit or hero casting in combat, so show no reduction
+		else
+			combatCost = spell.getCombatCastingCost ();
+		
+		return combatCost;
+	}
+	
+	/**
+	 * Similar to above, this now varies between being derived from the wizard's MP pool, casting skill and how many spells they have cast so far this combat,
+	 * or can be taken from the unit's MP pool.
+	 * 
+	 * @return Highest MP cost of combat spell that we can cast
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public final int getCombatMaxCastable () throws MomException
+	{
+		final int maxCastable;
+		
+		// Wizard casting limit is worked out by the combatUI, taking into account casting skill, spells cast already this combat, MP pool and range from fortress
+		if ((getCombatUI ().getCastingSource () == null) || (getCombatUI ().getCastingSource ().getCastingUnit () == null))
+			maxCastable = getCombatUI ().getMaxCastable ();
+		
+		// Unit or hero casting limit is simply the amount of MP they have left
+		else if ((getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) && (getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))
+			maxCastable = getCombatUI ().getCastingSource ().getCastingUnit ().getManaRemaining ();
+		
+		// Disable casting limits for casting spells from hero items or casting fixed spells - the spell is already imbued - we don't have to "pay" for it
+		else
+			maxCastable = Integer.MAX_VALUE;
+		
+		return maxCastable;
+	}
+	
 	/**
 	 * @return Large font
 	 */
@@ -686,6 +1001,38 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	public final void setLargeFont (final Font font)
 	{
 		largeFont = font;
+	}
+	
+	/**
+	 * @return Medium font
+	 */
+	public final Font getMediumFont ()
+	{
+		return mediumFont;
+	}
+
+	/**
+	 * @param font Medium font
+	 */
+	public final void setMediumFont (final Font font)
+	{
+		mediumFont = font;
+	}
+
+	/**
+	 * @return Small font
+	 */
+	public final Font getSmallFont ()
+	{
+		return smallFont;
+	}
+
+	/**
+	 * @param font Small font
+	 */
+	public final void setSmallFont (final Font font)
+	{
+		smallFont = font;
 	}
 	
 	/**
@@ -767,5 +1114,69 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	public final void setSpellClientUtils (final SpellClientUtils utils)
 	{
 		spellClientUtils = utils;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Text utils
+	 */
+	public final TextUtils getTextUtils ()
+	{
+		return textUtils;
+	}
+
+	/**
+	 * @param tu Text utils
+	 */
+	public final void setTextUtils (final TextUtils tu)
+	{
+		textUtils = tu;
 	}
 }

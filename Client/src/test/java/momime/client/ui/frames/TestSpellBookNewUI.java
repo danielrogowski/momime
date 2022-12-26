@@ -23,8 +23,12 @@ import momime.client.languages.database.SpellBookScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.SpellBookPage;
 import momime.client.utils.SpellClientUtils;
+import momime.client.utils.TextUtilsImpl;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
+import momime.common.database.Pick;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSection;
 import momime.common.database.SpellBookSectionID;
@@ -36,6 +40,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.WizardState;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 
@@ -73,6 +78,22 @@ public final class TestSpellBookNewUI extends ClientTestData
 				when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + sectionNumber), "SpellBookUI")).thenReturn (section);
 		}
 		
+		final ProductionTypeEx research = new ProductionTypeEx ();
+		research.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "RP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "SpellBookUI")).thenReturn (research);
+		
+		final ProductionTypeEx mana = new ProductionTypeEx ();
+		mana.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "SpellBookUI")).thenReturn (mana);
+		
+		final Pick lifeSpells = new Pick ();
+		lifeSpells.setPickBookshelfTitleColour ("FFFFFF");
+		when (db.findPick ("MB01", "languageOrPageChanged")).thenReturn (lifeSpells);
+		
+		final Pick pinkSpells = new Pick ();
+		pinkSpells.setPickBookshelfTitleColour ("EF75C8");
+		when (db.findPick ("MB02", "languageOrPageChanged")).thenReturn (pinkSpells);
+		
 		// Mock entries from the language XML
 		final SpellBookScreen spellBookScreenLang = new SpellBookScreen ();
 		spellBookScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Spells"));
@@ -97,6 +118,9 @@ public final class TestSpellBookNewUI extends ClientTestData
 		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
 		ourWizard.setWizardState (WizardState.ACTIVE);
 
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2, "languageOrPageChanged")).thenReturn (ourWizard);
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setFogOfWarMemory (mem);
 		
@@ -168,6 +192,8 @@ public final class TestSpellBookNewUI extends ClientTestData
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		when (client.getOurPlayerID ()).thenReturn (2);
+		when (client.getSessionDescription ()).thenReturn (sd);
 
 		// Layout
 		final XmlLayoutContainerEx bookLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SpellBookUI.xml"));
@@ -182,8 +208,14 @@ public final class TestSpellBookNewUI extends ClientTestData
 		book.setUtils (utils);
 		book.setLanguageHolder (langHolder);
 		book.setClient (client);
+		book.setSpellUtils (spellUtils);
 		book.setLanguageChangeMaster (langMaster);
+		book.setKnownWizardUtils (knownWizardUtils);
+		book.setTextUtils (new TextUtilsImpl ());
 		book.setLargeFont (CreateFontsForTests.getLargeFont ());
+		book.setMediumFont (CreateFontsForTests.getMediumFont ());
+		book.setSmallFont (CreateFontsForTests.getSmallFont ());
+		book.setCombatUI (new CombatUI ());
 		book.setSpellClientUtils (spellClientUtils);
 		book.setCastType (SpellCastType.OVERLAND);
 

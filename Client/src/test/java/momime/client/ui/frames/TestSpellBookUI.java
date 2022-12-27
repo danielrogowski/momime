@@ -1,8 +1,9 @@
 package momime.client.ui.frames;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.lenient;
 
 import java.util.Arrays;
 
@@ -16,6 +17,7 @@ import com.ndg.utils.swing.NdgUIUtilsImpl;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.config.SpellBookViewMode;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -206,7 +208,8 @@ public final class TestSpellBookUI extends ClientTestData
 		researchPage.getSpells ().add (mastery);
 		
 		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
-		when (spellClientUtils.generateSpellBookPages (SpellCastType.OVERLAND)).thenReturn (Arrays.asList (summoningPage, overlandEnchantmentsPage, researchPage));
+		when (spellClientUtils.generateSpellBookPages (any (SpellBookViewMode.class), any (SpellCastType.class))).thenReturn
+			(Arrays.asList (summoningPage, overlandEnchantmentsPage, researchPage));
 		
 		// Mock client
 		final MomClient client = mock (MomClient.class);

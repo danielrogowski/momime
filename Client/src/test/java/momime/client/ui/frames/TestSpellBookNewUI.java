@@ -1,5 +1,6 @@
 package momime.client.ui.frames;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -16,6 +17,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.config.SpellBookViewMode;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -187,7 +189,8 @@ public final class TestSpellBookNewUI extends ClientTestData
 		researchPage.getSpells ().add (mastery);
 		
 		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
-		when (spellClientUtils.generateSpellBookPages (SpellCastType.OVERLAND)).thenReturn (Arrays.asList (summoningPage, overlandEnchantmentsPage, researchPage));
+		when (spellClientUtils.generateSpellBookPages (any (SpellBookViewMode.class), any (SpellCastType.class))).thenReturn
+			(Arrays.asList (summoningPage, overlandEnchantmentsPage, researchPage));
 		
 		// Mock client
 		final MomClient client = mock (MomClient.class);
@@ -199,13 +202,16 @@ public final class TestSpellBookNewUI extends ClientTestData
 		// Layout
 		final XmlLayoutContainerEx bookLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SpellBookUI.xml"));
 		final XmlLayoutContainerEx spellLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SpellBookUI-Spell.xml"));
+		final XmlLayoutContainerEx compactLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SpellBookUI-Compact.xml"));
 		bookLayout.buildMaps ();
 		spellLayout.buildMaps ();
+		compactLayout.buildMaps ();
 		
 		// Set up form
 		final SpellBookNewUI book = new SpellBookNewUI ();
 		book.setSpellBookLayout (bookLayout);
 		book.setSpellLayout (spellLayout);
+		book.setCompactLayout (compactLayout);
 		book.setUtils (utils);
 		book.setLanguageHolder (langHolder);
 		book.setClient (client);

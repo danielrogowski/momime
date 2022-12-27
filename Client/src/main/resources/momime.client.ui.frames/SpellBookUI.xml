@@ -40,6 +40,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage1Compact1">
+		<left>17</left>
+		<top>208</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact2">
+		<left>17</left>
+		<top>232</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact3">
+		<left>17</left>
+		<top>256</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact4">
+		<left>17</left>
+		<top>280</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact5">
+		<left>17</left>
+		<top>304</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact6">
+		<left>17</left>
+		<top>328</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact7">
+		<left>17</left>
+		<top>352</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact8">
+		<left>17</left>
+		<top>376</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact9">
+		<left>17</left>
+		<top>400</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact10">
+		<left>17</left>
+		<top>424</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage1Compact11">
+		<left>17</left>
+		<top>448</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage2SectionHeading">
 		<left>405</left>
 		<top>147</top>
@@ -75,6 +163,94 @@
 		<top>370</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact1">
+		<left>281</left>
+		<top>172</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact2">
+		<left>281</left>
+		<top>196</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact3">
+		<left>281</left>
+		<top>220</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact4">
+		<left>281</left>
+		<top>244</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact5">
+		<left>281</left>
+		<top>268</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact6">
+		<left>281</left>
+		<top>292</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact7">
+		<left>281</left>
+		<top>316</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact8">
+		<left>281</left>
+		<top>340</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact9">
+		<left>281</left>
+		<top>364</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact10">
+		<left>281</left>
+		<top>388</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage2Compact11">
+		<left>281</left>
+		<top>412</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -116,6 +292,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage3Compact1">
+		<left>19</left>
+		<top>205</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact2">
+		<left>19</left>
+		<top>229</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact3">
+		<left>19</left>
+		<top>253</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact4">
+		<left>19</left>
+		<top>277</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact5">
+		<left>19</left>
+		<top>301</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact6">
+		<left>19</left>
+		<top>325</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact7">
+		<left>19</left>
+		<top>349</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact8">
+		<left>19</left>
+		<top>373</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact9">
+		<left>19</left>
+		<top>397</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact10">
+		<left>19</left>
+		<top>421</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage3Compact11">
+		<left>19</left>
+		<top>445</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage4SectionHeading">
 		<left>407</left>
 		<top>150</top>
@@ -151,6 +415,94 @@
 		<top>373</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact1">
+		<left>283</left>
+		<top>175</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact2">
+		<left>283</left>
+		<top>199</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact3">
+		<left>283</left>
+		<top>223</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact4">
+		<left>283</left>
+		<top>247</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact5">
+		<left>283</left>
+		<top>271</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact6">
+		<left>283</left>
+		<top>295</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact7">
+		<left>283</left>
+		<top>319</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact8">
+		<left>283</left>
+		<top>343</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact9">
+		<left>283</left>
+		<top>367</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact10">
+		<left>283</left>
+		<top>391</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage4Compact11">
+		<left>283</left>
+		<top>415</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -192,6 +544,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage5Compact1">
+		<left>21</left>
+		<top>202</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact2">
+		<left>21</left>
+		<top>226</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact3">
+		<left>21</left>
+		<top>250</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact4">
+		<left>21</left>
+		<top>274</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact5">
+		<left>21</left>
+		<top>298</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact6">
+		<left>21</left>
+		<top>322</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact7">
+		<left>21</left>
+		<top>346</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact8">
+		<left>21</left>
+		<top>370</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact9">
+		<left>21</left>
+		<top>394</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact10">
+		<left>21</left>
+		<top>418</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage5Compact11">
+		<left>21</left>
+		<top>442</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage6SectionHeading">
 		<left>409</left>
 		<top>153</top>
@@ -227,6 +667,94 @@
 		<top>376</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact1">
+		<left>285</left>
+		<top>178</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact2">
+		<left>285</left>
+		<top>202</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact3">
+		<left>285</left>
+		<top>226</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact4">
+		<left>285</left>
+		<top>250</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact5">
+		<left>285</left>
+		<top>274</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact6">
+		<left>285</left>
+		<top>298</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact7">
+		<left>285</left>
+		<top>322</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact8">
+		<left>285</left>
+		<top>346</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact9">
+		<left>285</left>
+		<top>370</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact10">
+		<left>285</left>
+		<top>394</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage6Compact11">
+		<left>285</left>
+		<top>418</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -268,6 +796,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage7Compact1">
+		<left>23</left>
+		<top>199</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact2">
+		<left>23</left>
+		<top>223</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact3">
+		<left>23</left>
+		<top>247</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact4">
+		<left>23</left>
+		<top>271</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact5">
+		<left>23</left>
+		<top>295</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact6">
+		<left>23</left>
+		<top>319</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact7">
+		<left>23</left>
+		<top>343</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact8">
+		<left>23</left>
+		<top>367</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact9">
+		<left>23</left>
+		<top>391</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact10">
+		<left>23</left>
+		<top>415</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage7Compact11">
+		<left>23</left>
+		<top>439</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage8SectionHeading">
 		<left>411</left>
 		<top>156</top>
@@ -303,6 +919,94 @@
 		<top>379</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact1">
+		<left>287</left>
+		<top>181</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact2">
+		<left>287</left>
+		<top>205</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact3">
+		<left>287</left>
+		<top>229</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact4">
+		<left>287</left>
+		<top>253</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact5">
+		<left>287</left>
+		<top>277</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact6">
+		<left>287</left>
+		<top>301</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact7">
+		<left>287</left>
+		<top>325</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact8">
+		<left>287</left>
+		<top>349</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact9">
+		<left>287</left>
+		<top>373</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact10">
+		<left>287</left>
+		<top>397</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage8Compact11">
+		<left>287</left>
+		<top>421</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -344,6 +1048,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage9Compact1">
+		<left>25</left>
+		<top>196</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact2">
+		<left>25</left>
+		<top>220</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact3">
+		<left>25</left>
+		<top>244</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact4">
+		<left>25</left>
+		<top>268</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact5">
+		<left>25</left>
+		<top>292</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact6">
+		<left>25</left>
+		<top>316</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact7">
+		<left>25</left>
+		<top>340</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact8">
+		<left>25</left>
+		<top>364</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact9">
+		<left>25</left>
+		<top>388</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact10">
+		<left>25</left>
+		<top>412</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage9Compact11">
+		<left>25</left>
+		<top>436</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage10SectionHeading">
 		<left>413</left>
 		<top>159</top>
@@ -379,6 +1171,94 @@
 		<top>382</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact1">
+		<left>289</left>
+		<top>184</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact2">
+		<left>289</left>
+		<top>208</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact3">
+		<left>289</left>
+		<top>232</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact4">
+		<left>289</left>
+		<top>256</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact5">
+		<left>289</left>
+		<top>280</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact6">
+		<left>289</left>
+		<top>304</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact7">
+		<left>289</left>
+		<top>328</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact8">
+		<left>289</left>
+		<top>352</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact9">
+		<left>289</left>
+		<top>376</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact10">
+		<left>289</left>
+		<top>400</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage10Compact11">
+		<left>289</left>
+		<top>424</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -420,6 +1300,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage11Compact1">
+		<left>27</left>
+		<top>193</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact2">
+		<left>27</left>
+		<top>217</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact3">
+		<left>27</left>
+		<top>241</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact4">
+		<left>27</left>
+		<top>265</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact5">
+		<left>27</left>
+		<top>289</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact6">
+		<left>27</left>
+		<top>313</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact7">
+		<left>27</left>
+		<top>337</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact8">
+		<left>27</left>
+		<top>361</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact9">
+		<left>27</left>
+		<top>385</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact10">
+		<left>27</left>
+		<top>409</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage11Compact11">
+		<left>27</left>
+		<top>433</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage12SectionHeading">
 		<left>415</left>
 		<top>162</top>
@@ -455,6 +1423,94 @@
 		<top>385</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact1">
+		<left>291</left>
+		<top>187</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact2">
+		<left>291</left>
+		<top>211</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact3">
+		<left>291</left>
+		<top>235</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact4">
+		<left>291</left>
+		<top>259</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact5">
+		<left>291</left>
+		<top>283</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact6">
+		<left>291</left>
+		<top>307</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact7">
+		<left>291</left>
+		<top>331</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact8">
+		<left>291</left>
+		<top>355</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact9">
+		<left>291</left>
+		<top>379</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact10">
+		<left>291</left>
+		<top>403</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage12Compact11">
+		<left>291</left>
+		<top>427</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -496,6 +1552,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage13Compact1">
+		<left>29</left>
+		<top>190</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact2">
+		<left>29</left>
+		<top>214</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact3">
+		<left>29</left>
+		<top>238</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact4">
+		<left>29</left>
+		<top>262</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact5">
+		<left>29</left>
+		<top>286</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact6">
+		<left>29</left>
+		<top>310</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact7">
+		<left>29</left>
+		<top>334</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact8">
+		<left>29</left>
+		<top>358</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact9">
+		<left>29</left>
+		<top>382</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact10">
+		<left>29</left>
+		<top>406</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage13Compact11">
+		<left>29</left>
+		<top>430</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage14SectionHeading">
 		<left>417</left>
 		<top>165</top>
@@ -531,6 +1675,94 @@
 		<top>388</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact1">
+		<left>293</left>
+		<top>190</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact2">
+		<left>293</left>
+		<top>214</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact3">
+		<left>293</left>
+		<top>238</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact4">
+		<left>293</left>
+		<top>262</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact5">
+		<left>293</left>
+		<top>286</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact6">
+		<left>293</left>
+		<top>310</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact7">
+		<left>293</left>
+		<top>334</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact8">
+		<left>293</left>
+		<top>358</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact9">
+		<left>293</left>
+		<top>382</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact10">
+		<left>293</left>
+		<top>406</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage14Compact11">
+		<left>293</left>
+		<top>430</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -572,6 +1804,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage15Compact1">
+		<left>31</left>
+		<top>187</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact2">
+		<left>31</left>
+		<top>211</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact3">
+		<left>31</left>
+		<top>235</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact4">
+		<left>31</left>
+		<top>259</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact5">
+		<left>31</left>
+		<top>283</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact6">
+		<left>31</left>
+		<top>307</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact7">
+		<left>31</left>
+		<top>331</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact8">
+		<left>31</left>
+		<top>355</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact9">
+		<left>31</left>
+		<top>379</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact10">
+		<left>31</left>
+		<top>403</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage15Compact11">
+		<left>31</left>
+		<top>427</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage16SectionHeading">
 		<left>419</left>
 		<top>168</top>
@@ -607,6 +1927,94 @@
 		<top>391</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact1">
+		<left>295</left>
+		<top>193</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact2">
+		<left>295</left>
+		<top>217</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact3">
+		<left>295</left>
+		<top>241</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact4">
+		<left>295</left>
+		<top>265</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact5">
+		<left>295</left>
+		<top>289</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact6">
+		<left>295</left>
+		<top>313</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact7">
+		<left>295</left>
+		<top>337</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact8">
+		<left>295</left>
+		<top>361</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact9">
+		<left>295</left>
+		<top>385</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact10">
+		<left>295</left>
+		<top>409</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage16Compact11">
+		<left>295</left>
+		<top>433</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -648,6 +2056,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage17Compact1">
+		<left>33</left>
+		<top>184</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact2">
+		<left>33</left>
+		<top>208</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact3">
+		<left>33</left>
+		<top>232</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact4">
+		<left>33</left>
+		<top>256</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact5">
+		<left>33</left>
+		<top>280</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact6">
+		<left>33</left>
+		<top>304</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact7">
+		<left>33</left>
+		<top>328</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact8">
+		<left>33</left>
+		<top>352</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact9">
+		<left>33</left>
+		<top>376</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact10">
+		<left>33</left>
+		<top>400</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage17Compact11">
+		<left>33</left>
+		<top>424</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage18SectionHeading">
 		<left>421</left>
 		<top>171</top>
@@ -683,6 +2179,94 @@
 		<top>394</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact1">
+		<left>297</left>
+		<top>196</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact2">
+		<left>297</left>
+		<top>220</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact3">
+		<left>297</left>
+		<top>244</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact4">
+		<left>297</left>
+		<top>268</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact5">
+		<left>297</left>
+		<top>292</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact6">
+		<left>297</left>
+		<top>316</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact7">
+		<left>297</left>
+		<top>340</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact8">
+		<left>297</left>
+		<top>364</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact9">
+		<left>297</left>
+		<top>388</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact10">
+		<left>297</left>
+		<top>412</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage18Compact11">
+		<left>297</left>
+		<top>436</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -724,6 +2308,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage19Compact1">
+		<left>35</left>
+		<top>181</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact2">
+		<left>35</left>
+		<top>205</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact3">
+		<left>35</left>
+		<top>229</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact4">
+		<left>35</left>
+		<top>253</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact5">
+		<left>35</left>
+		<top>277</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact6">
+		<left>35</left>
+		<top>301</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact7">
+		<left>35</left>
+		<top>325</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact8">
+		<left>35</left>
+		<top>349</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact9">
+		<left>35</left>
+		<top>373</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact10">
+		<left>35</left>
+		<top>397</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage19Compact11">
+		<left>35</left>
+		<top>421</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage20SectionHeading">
 		<left>423</left>
 		<top>174</top>
@@ -759,6 +2431,94 @@
 		<top>397</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact1">
+		<left>299</left>
+		<top>199</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact2">
+		<left>299</left>
+		<top>223</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact3">
+		<left>299</left>
+		<top>247</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact4">
+		<left>299</left>
+		<top>271</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact5">
+		<left>299</left>
+		<top>295</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact6">
+		<left>299</left>
+		<top>319</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact7">
+		<left>299</left>
+		<top>343</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact8">
+		<left>299</left>
+		<top>367</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact9">
+		<left>299</left>
+		<top>391</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact10">
+		<left>299</left>
+		<top>415</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage20Compact11">
+		<left>299</left>
+		<top>439</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -800,6 +2560,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage21Compact1">
+		<left>37</left>
+		<top>178</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact2">
+		<left>37</left>
+		<top>202</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact3">
+		<left>37</left>
+		<top>226</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact4">
+		<left>37</left>
+		<top>250</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact5">
+		<left>37</left>
+		<top>274</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact6">
+		<left>37</left>
+		<top>298</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact7">
+		<left>37</left>
+		<top>322</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact8">
+		<left>37</left>
+		<top>346</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact9">
+		<left>37</left>
+		<top>370</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact10">
+		<left>37</left>
+		<top>394</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage21Compact11">
+		<left>37</left>
+		<top>418</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage22SectionHeading">
 		<left>425</left>
 		<top>177</top>
@@ -835,6 +2683,94 @@
 		<top>400</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact1">
+		<left>301</left>
+		<top>202</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact2">
+		<left>301</left>
+		<top>226</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact3">
+		<left>301</left>
+		<top>250</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact4">
+		<left>301</left>
+		<top>274</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact5">
+		<left>301</left>
+		<top>298</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact6">
+		<left>301</left>
+		<top>322</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact7">
+		<left>301</left>
+		<top>346</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact8">
+		<left>301</left>
+		<top>370</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact9">
+		<left>301</left>
+		<top>394</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact10">
+		<left>301</left>
+		<top>418</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage22Compact11">
+		<left>301</left>
+		<top>442</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -876,6 +2812,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage23Compact1">
+		<left>39</left>
+		<top>175</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact2">
+		<left>39</left>
+		<top>199</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact3">
+		<left>39</left>
+		<top>223</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact4">
+		<left>39</left>
+		<top>247</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact5">
+		<left>39</left>
+		<top>271</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact6">
+		<left>39</left>
+		<top>295</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact7">
+		<left>39</left>
+		<top>319</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact8">
+		<left>39</left>
+		<top>343</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact9">
+		<left>39</left>
+		<top>367</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact10">
+		<left>39</left>
+		<top>391</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage23Compact11">
+		<left>39</left>
+		<top>415</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage24SectionHeading">
 		<left>427</left>
 		<top>180</top>
@@ -911,6 +2935,94 @@
 		<top>403</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact1">
+		<left>303</left>
+		<top>205</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact2">
+		<left>303</left>
+		<top>229</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact3">
+		<left>303</left>
+		<top>253</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact4">
+		<left>303</left>
+		<top>277</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact5">
+		<left>303</left>
+		<top>301</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact6">
+		<left>303</left>
+		<top>325</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact7">
+		<left>303</left>
+		<top>349</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact8">
+		<left>303</left>
+		<top>373</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact9">
+		<left>303</left>
+		<top>397</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact10">
+		<left>303</left>
+		<top>421</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage24Compact11">
+		<left>303</left>
+		<top>445</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -952,6 +3064,94 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookPage25Compact1">
+		<left>41</left>
+		<top>172</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact2">
+		<left>41</left>
+		<top>196</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact3">
+		<left>41</left>
+		<top>220</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact4">
+		<left>41</left>
+		<top>244</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact5">
+		<left>41</left>
+		<top>268</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact6">
+		<left>41</left>
+		<top>292</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact7">
+		<left>41</left>
+		<top>316</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact8">
+		<left>41</left>
+		<top>340</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact9">
+		<left>41</left>
+		<top>364</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact10">
+		<left>41</left>
+		<top>388</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage25Compact11">
+		<left>41</left>
+		<top>412</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage26SectionHeading">
 		<left>429</left>
 		<top>183</top>
@@ -987,6 +3187,94 @@
 		<top>406</top>
 		<width>248</width>
 		<height>64</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact1">
+		<left>305</left>
+		<top>208</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact2">
+		<left>305</left>
+		<top>232</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact3">
+		<left>305</left>
+		<top>256</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact4">
+		<left>305</left>
+		<top>280</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact5">
+		<left>305</left>
+		<top>304</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact6">
+		<left>305</left>
+		<top>328</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact7">
+		<left>305</left>
+		<top>352</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact8">
+		<left>305</left>
+		<top>376</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact9">
+		<left>305</left>
+		<top>400</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact10">
+		<left>305</left>
+		<top>424</top>
+		<width>248</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookPage26Compact11">
+		<left>305</left>
+		<top>448</top>
+		<width>248</width>
+		<height>22</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

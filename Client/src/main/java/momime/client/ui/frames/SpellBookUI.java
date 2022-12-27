@@ -38,6 +38,7 @@ import com.ndg.utils.swing.actions.LoggingAction;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
+import momime.client.config.SpellBookViewMode;
 import momime.client.config.WindowID;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
@@ -48,7 +49,6 @@ import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.utils.MemoryMaintainedSpellClientUtils;
 import momime.client.utils.SpellBookPage;
 import momime.client.utils.SpellClientUtils;
-import momime.client.utils.SpellClientUtilsImpl;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
@@ -175,6 +175,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Shadow colour to draw the spell that we're currently researching */
 	private final static Color RESEARCHED_SPELL_COLOUR = new Color (0x6060FF);
 	
+	/** Old spell book UI can still use the old constant which doesn't depend on view mode */
+	private final static int SPELLS_PER_PAGE = 4;
+	
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -218,16 +221,16 @@ public final class SpellBookUI extends MomClientFrameUI
 	private JLabel [] sectionHeadings = new JLabel [2];
 	
 	/** Spell names */
-	private JLabel [] [] spellNames = new JLabel [2] [SpellClientUtilsImpl.SPELLS_PER_PAGE];
+	private JLabel [] [] spellNames = new JLabel [2] [SPELLS_PER_PAGE];
 
 	/** Spell descriptions */
-	private JTextArea [] [] spellDescriptions = new JTextArea [2] [SpellClientUtilsImpl.SPELLS_PER_PAGE];
+	private JTextArea [] [] spellDescriptions = new JTextArea [2] [SPELLS_PER_PAGE];
 
 	/** Spell overland costs */
-	private JLabel [] [] spellOverlandCosts = new JLabel [2] [SpellClientUtilsImpl.SPELLS_PER_PAGE];
+	private JLabel [] [] spellOverlandCosts = new JLabel [2] [SPELLS_PER_PAGE];
 
 	/** Spell combat costs */
-	private JLabel [] [] spellCombatCosts = new JLabel [2] [SpellClientUtilsImpl.SPELLS_PER_PAGE];
+	private JLabel [] [] spellCombatCosts = new JLabel [2] [SPELLS_PER_PAGE];
 	
 	/** Turn page left action */
 	private Action turnPageLeftAction;
@@ -421,7 +424,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 		
-		final Dimension spellSize = new Dimension (PAGE_WIDTH, ((SPELL_BOOK_HEIGHT + GAP_BETWEEN_SPELLS) / SpellClientUtilsImpl.SPELLS_PER_PAGE) - GAP_BETWEEN_SPELLS);
+		final Dimension spellSize = new Dimension (PAGE_WIDTH, ((SPELL_BOOK_HEIGHT + GAP_BETWEEN_SPELLS) / SPELLS_PER_PAGE) - GAP_BETWEEN_SPELLS);
 		
 		turnPageLeftButton = new HideableComponent<JButton>
 			(getUtils ().createImageButton (turnPageLeftAction, null, null, null, turnPageLeftButtonNormal, turnPageLeftButtonNormal, turnPageLeftButtonNormal));
@@ -445,7 +448,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			contentPane.add (sectionHeading, headingConstraints);
 			sectionHeadings [x] = sectionHeading;
 			
-			for (int y = 0; y < SpellClientUtilsImpl.SPELLS_PER_PAGE; y++)
+			for (int y = 0; y < SPELLS_PER_PAGE; y++)
 			{
 				final int spellY = y;
 				
@@ -627,7 +630,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		}
 		
 		contentPane.add (getUtils ().createImageButton (closeAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
-			getUtils ().createConstraintsNoFill (2, SpellClientUtilsImpl.SPELLS_PER_PAGE + 1, 1, 1, new Insets (38, 33, 0, 0), GridBagConstraintsNoFill.WEST));
+			getUtils ().createConstraintsNoFill (2, SPELLS_PER_PAGE + 1, 1, 1, new Insets (38, 33, 0, 0), GridBagConstraintsNoFill.WEST));
 
 		// Default cast type to overland, if one wasn't already pre-set
 		if (getCastType () == null)
@@ -1052,7 +1055,7 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void updateSpellBook () throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		pages.clear ();
-		pages.addAll (getSpellClientUtils ().generateSpellBookPages (getCastType ()));
+		pages.addAll (getSpellClientUtils ().generateSpellBookPages (SpellBookViewMode.STANDARD, getCastType ()));
 		languageOrPageChanged ();
 	}
 	
@@ -1101,7 +1104,7 @@ public final class SpellBookUI extends MomClientFrameUI
 						}
 						
 						// Spell names
-						for (int y = 0; y < SpellClientUtilsImpl.SPELLS_PER_PAGE; y++)
+						for (int y = 0; y < SPELLS_PER_PAGE; y++)
 							if (y < page.getSpells ().size ())
 							{
 								final Spell spell = page.getSpells ().get (y);
@@ -1260,7 +1263,7 @@ public final class SpellBookUI extends MomClientFrameUI
 					{
 						// Blank page
 						sectionHeadings [x].setText (null);
-						for (int y = 0; y < SpellClientUtilsImpl.SPELLS_PER_PAGE; y++)
+						for (int y = 0; y < SPELLS_PER_PAGE; y++)
 						{
 							spellNames [x] [y].setText (null);
 							spellDescriptions [x] [y].setText (null);

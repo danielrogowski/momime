@@ -14,6 +14,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
+import momime.client.config.SpellBookViewMode;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -43,8 +44,11 @@ import momime.common.utils.SpellUtils;
  */
 public final class SpellClientUtilsImpl implements SpellClientUtils
 {
-	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
-	public final static int SPELLS_PER_PAGE = 4;
+	/** How many spells we show on each page in standard view */
+	private final static int SPELLS_PER_PAGE_STANDARD = 4;
+
+	/** How many spells we show on each page in compact view */
+	private final static int SPELLS_PER_PAGE_COMPACT = 11;
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
@@ -416,6 +420,16 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	}
 	
 	/**
+	 * @param viewMode Current view mode of the spell book UI
+	 * @return How many spells can appear on each logical page 
+	 */
+	@Override
+	public final int getSpellsPerPage (final SpellBookViewMode viewMode)
+	{
+		return (viewMode == SpellBookViewMode.COMPACT) ? SPELLS_PER_PAGE_COMPACT : SPELLS_PER_PAGE_STANDARD;
+	}
+	
+	/**
 	 * When we learn a new spell, updates the spells in the spell book to include it.
 	 * That may involve shuffling pages around if a page is now full, or adding new pages if the spell is a kind we didn't previously have.
 	 * 
@@ -424,6 +438,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	 * So here we don't need to pay any attention to the cast type (except that in combat, heroes can make additional spells appear
 	 * in the spell book if they know any spells that their controlling wizard does not)
 	 * 
+	 * @param viewMode Current view mode of the spell book UI
 	 * @param castType Whether to generate the spell book for overland or combat casting
 	 * @return List of spell book, broken into pages for the UI
 	 * @throws MomException If we encounter an unknown research unexpected status
@@ -431,7 +446,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 */
 	@Override
-	public final List<SpellBookPage> generateSpellBookPages (final SpellCastType castType)
+	public final List<SpellBookPage> generateSpellBookPages (final SpellBookViewMode viewMode, final SpellCastType castType)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		// If it is a unit casting, rather than the wizard
@@ -526,7 +541,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				page.setFirstPageOfSection (first);
 				pages.add (page);
 				
-				while ((spells.size () > 0) && (page.getSpells ().size () < SPELLS_PER_PAGE))
+				while ((spells.size () > 0) && (page.getSpells ().size () < getSpellsPerPage (viewMode)))
 				{
 					page.getSpells ().add (spells.get (0));
 					spells.remove (0);

@@ -16,6 +16,7 @@
 	<newShadows>false</newShadows>
 	<showHeroPortraits>true</showHeroPortraits>
 	<displayUnitSkillsAsAttributes>A</displayUnitSkillsAsAttributes>
+    <spellBookViewMode>STANDARD</spellBookViewMode>
 	<debugShowURNs>false</debugShowURNs>
 	<debugShowEdgesOfMap>false</debugShowEdgesOfMap>
 </config:momImeClientConfig>

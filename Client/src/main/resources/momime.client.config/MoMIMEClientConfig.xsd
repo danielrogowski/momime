@@ -54,6 +54,9 @@
 				<!-- Unit info display options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="showHeroPortraits" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="displayUnitSkillsAsAttributes" type="momimecommon:unitSkillTypeID" />
+
+				<!-- Spell book display options -->
+				<xsd:element minOccurs="1" maxOccurs="1" name="spellBookViewMode" type="momimecltconfig:spellBookViewMode" />
 				
 				<!-- Debug options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="debugShowURNs" type="xsd:boolean" />
@@ -110,6 +113,13 @@
 			<xsd:enumeration value="HERO_ITEMS" />
 			<xsd:enumeration value="HISTORY" />
 			<xsd:enumeration value="DIPLOMACY" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="spellBookViewMode">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="STANDARD" />
+			<xsd:enumeration value="COMPACT" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	

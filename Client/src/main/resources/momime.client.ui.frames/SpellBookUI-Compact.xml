@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/utils/swing/layoutmanagers/xmllayout">
+	<formWidth>248</formWidth>
+	<formHeight>22</formHeight>
+	<component name="frmSpellBookSpellName">
+		<left>0</left>
+		<top>0</top>
+		<width>148</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookCombatCost">
+		<left>173</left>
+		<top>0</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookOverlandCost">
+		<left>223</left>
+		<top>0</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookResearchCost">
+		<left>198</left>
+		<top>0</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

@@ -1538,10 +1538,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="spellLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/SpellBookUI-Spell.xml" />
 	</bean>
+
+	<bean id="compactLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/SpellBookUI-Compact.xml" />
+	</bean>
 	
 	<bean id="spellBookUI" class="momime.client.ui.frames.SpellBookNewUI">
 		<property name="spellBookLayout" ref="spellBookLayout" />
 		<property name="spellLayout" ref="spellLayout" />
+		<property name="compactLayout" ref="compactLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />

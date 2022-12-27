@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import momime.client.config.SpellBookViewMode;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -69,6 +70,12 @@ public interface SpellClientUtils
 	public BufferedImage mergeImages (final Image sourceImage, final BufferedImage fadeAnimFrame, final int xOffset, final int yOffset);
 	
 	/**
+	 * @param viewMode Current view mode of the spell book UI
+	 * @return How many spells can appear on each logical page 
+	 */
+	public int getSpellsPerPage (final SpellBookViewMode viewMode);
+	
+	/**
 	 * When we learn a new spell, updates the spells in the spell book to include it.
 	 * That may involve shuffling pages around if a page is now full, or adding new pages if the spell is a kind we didn't previously have.
 	 * 
@@ -77,12 +84,13 @@ public interface SpellClientUtils
 	 * So here we don't need to pay any attention to the cast type (except that in combat, heroes can make additional spells appear
 	 * in the spell book if they know any spells that their controlling wizard does not)
 	 * 
+	 * @param viewMode Current view mode of the spell book UI
 	 * @param castType Whether to generate the spell book for overland or combat casting
 	 * @return List of spell book, broken into pages for the UI
 	 * @throws MomException If we encounter an unknown research unexpected status
 	 * @throws RecordNotFoundException If we can't find a research status for a particular spell
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 */
-	public List<SpellBookPage> generateSpellBookPages (final SpellCastType castType)
+	public List<SpellBookPage> generateSpellBookPages (final SpellBookViewMode viewMode, final SpellCastType castType)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException;
 }

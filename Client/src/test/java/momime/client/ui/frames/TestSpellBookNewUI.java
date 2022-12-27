@@ -17,6 +17,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.config.MomImeClientConfig;
 import momime.client.config.SpellBookViewMode;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
@@ -192,12 +193,19 @@ public final class TestSpellBookNewUI extends ClientTestData
 		when (spellClientUtils.generateSpellBookPages (any (SpellBookViewMode.class), any (SpellCastType.class))).thenReturn
 			(Arrays.asList (summoningPage, overlandEnchantmentsPage, researchPage));
 		
+		when (spellClientUtils.getSpellsPerPage (SpellBookViewMode.STANDARD)).thenReturn (4);
+		when (spellClientUtils.getSpellsPerPage (SpellBookViewMode.COMPACT)).thenReturn (11);
+		
 		// Mock client
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getOurPlayerID ()).thenReturn (2);
 		when (client.getSessionDescription ()).thenReturn (sd);
+		
+		// Client config
+		final MomImeClientConfig config = new MomImeClientConfig ();
+		config.setSpellBookViewMode (SpellBookViewMode.STANDARD);
 
 		// Layout
 		final XmlLayoutContainerEx bookLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SpellBookUI.xml"));
@@ -212,6 +220,7 @@ public final class TestSpellBookNewUI extends ClientTestData
 		book.setSpellBookLayout (bookLayout);
 		book.setSpellLayout (spellLayout);
 		book.setCompactLayout (compactLayout);
+		book.setClientConfig (config);
 		book.setUtils (utils);
 		book.setLanguageHolder (langHolder);
 		book.setClient (client);
@@ -229,7 +238,7 @@ public final class TestSpellBookNewUI extends ClientTestData
 
 		// Display form		
 		book.setVisible (true);
-		Thread.sleep (20000);
+		Thread.sleep (5000);
 		book.setVisible (false);
 	}	
 }

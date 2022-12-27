@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -30,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.utils.swing.actions.LoggingAction;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -263,6 +265,9 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 	
+	/** Action for switching to standard view */
+	private Action viewModeStandardAction;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -278,6 +283,12 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		final BufferedImage pageRightCorner = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-right-corner.png");
 		final BufferedImage pageLeftShading = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-left-shading.png");
 		final BufferedImage pageRightShading = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/page-right-shading.png");
+		
+		final BufferedImage viewModeStandardNormal = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/viewModeStandardNormal.png");
+		final BufferedImage viewModeStandardPressed = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/viewModeStandardPressed.png");
+		final BufferedImage viewModeStandardDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/viewModeStandardDisabled.png");
+		final BufferedImage viewModeCompactNormal = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/viewModeCompactNormal.png");
+		final BufferedImage viewModeCompactPressed = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/viewModeCompactPressed.png");
 		
 		if ((pageLeftFrames.get (0).getWidth () != pageRightFrames.get (0).getWidth ()) || (pageLeftFrames.get (0).getHeight () != pageRightFrames.get (0).getHeight ()))
 			throw new IOException ("Left and right page images are different sizes");
@@ -315,6 +326,21 @@ public final class SpellBookNewUI extends MomClientFrameUI
 			pageState.add (pageStateCount - 1);
 		
 		desiredPagesOnLeft = 1;
+		
+		// Actions
+		viewModeStandardAction = new LoggingAction ((ev) ->
+		{
+			getClientConfig ().setSpellBookViewMode (SpellBookViewMode.STANDARD);
+			updateSpellBook ();
+			saveConfigFile ();
+		});
+
+		final Action viewModeCompactAction = new LoggingAction ((ev) ->
+		{
+			getClientConfig ().setSpellBookViewMode (SpellBookViewMode.COMPACT);
+			updateSpellBook ();
+			saveConfigFile ();
+		});
 		
 		// Initialize the content pane
 		contentPane = new JPanel ()
@@ -427,6 +453,12 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getSpellBookLayout ()));
+
+		// Buttons
+		contentPane.add ("frmSpellBookViewModeStandard", getUtils ().createImageButton
+			(viewModeStandardAction, null, null, null, viewModeStandardNormal, viewModeStandardPressed, viewModeStandardDisabled));
+		contentPane.add ("frmSpellBookViewModeCompact", getUtils ().createImageButton
+			(viewModeCompactAction, null, null, null, viewModeCompactNormal, viewModeCompactPressed, viewModeCompactNormal));
 		
 		// Logical pages
 		for (final SpellBookViewMode viewMode : SpellBookViewMode.values ())
@@ -1288,6 +1320,25 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	{
 		pages.clear ();
 		pages.addAll (getSpellClientUtils ().generateSpellBookPages (getClientConfig ().getSpellBookViewMode (), getCastType ()));
+		
+		// If we've got too many spells for standard mode, force into compact mode
+		if ((pages.size () > LOGICAL_PAGE_COUNT) && (getClientConfig ().getSpellBookViewMode () == SpellBookViewMode.STANDARD))
+		{
+			getClientConfig ().setSpellBookViewMode (SpellBookViewMode.COMPACT);
+			
+			// Try again
+			pages.clear ();
+			pages.addAll (getSpellClientUtils ().generateSpellBookPages (getClientConfig ().getSpellBookViewMode (), getCastType ()));
+			
+			saveConfigFile ();
+		}
+		
+		// If we're in compact mode, its not straightforward working out whether the spells would also fix in standard mode - just have to try it.
+		// This isn't very optmized - it means generateSpellBookPages is doing 90% of the work twice.
+		// Maybe it could return a map with pages organized in standard AND compact mode at the same time?
+		viewModeStandardAction.setEnabled ((getClientConfig ().getSpellBookViewMode () == SpellBookViewMode.STANDARD) ||
+			(getSpellClientUtils ().generateSpellBookPages (SpellBookViewMode.STANDARD, getCastType ()).size () <= LOGICAL_PAGE_COUNT));
+		
 		languageOrPageChanged ();
 	}
 	

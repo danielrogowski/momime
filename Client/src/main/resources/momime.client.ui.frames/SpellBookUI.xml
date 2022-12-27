@@ -8,6 +8,18 @@
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmSpellBookViewModeStandard">
+		<left>4</left>
+		<top>152</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellBookViewModeCompact">
+		<left>550</left>
+		<top>152</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmSpellBookPage1Spell1">
 		<left>17</left>
 		<top>208</top>

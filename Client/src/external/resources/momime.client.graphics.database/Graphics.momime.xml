@@ -258,22 +258,6 @@
 			<imageFile>/momime.client.graphics/ui/mainMenu/title-frame20.png</imageFile>
 		</frame>
 	</animation>
-	<animation animationID="SPELL_BOOK_PAGE_TURN">
-		<animationDescription>Page flipping from right to left when we turn the page in the spell book</animationDescription>
-		<animationSpeed>5</animationSpeed>
-		<frame>
-			<imageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame1.png</imageFile>
-		</frame>
-		<frame>
-			<imageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame2.png</imageFile>
-		</frame>
-		<frame>
-			<imageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame3.png</imageFile>
-		</frame>
-		<frame>
-			<imageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame4.png</imageFile>
-		</frame>
-	</animation>
 	<animation animationID="OVERLAND_ENCHANTMENTS_MIRROR">
 		<animationDescription>Swirl fading from one image in the mirror to another</animationDescription>
 		<animationSpeed>8</animationSpeed>

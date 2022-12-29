@@ -37,6 +37,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
 import momime.client.config.SpellBookViewMode;
 import momime.client.config.WindowID;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -89,7 +90,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	private final static int BACKGROUND_PADDING_TOP = 83;
 	
 	/** How much space to leave below the cover background */
-	private final static int BACKGROUND_PADDING_BOTTOM = 30;
+	private final static int BACKGROUND_PADDING_BOTTOM = 3;
 	
 	/** Y coordinate of first (lowest) pages */
 	private final static int FIRST_PAGE_BOTTOM = (BACKGROUND_PADDING_TOP * 2) + 322;
@@ -147,6 +148,9 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	
 	/** Animation for the blue swirl */
 	private final static String ANIM_SWIRL = "SPELL_BOOK_SWIRL";
+	
+	/** Sound effect for the page flips */
+	private final static String PAGE_FLIP_SOUND = "/momime.client.sounds/spell-book-page-turn.mp3";
 	
 	/** Images of left pages at various stages of turning */
 	private List<BufferedImage> pageLeftFrames = new ArrayList<BufferedImage> ();
@@ -280,6 +284,9 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
+	
+	/** Sound effects player */
+	private AudioPlayer soundPlayer;
 	
 	/** Action for switching to standard view */
 	private Action viewModeStandardAction;
@@ -958,6 +965,17 @@ public final class SpellBookNewUI extends MomClientFrameUI
 						// If changing FROM or TO a fully flat page, this will alter which pages the text needs to appear on
 						if ((leftPageState == 0) || (leftPageState == pageStateCount - 1) || (leftPageNewState == 0) || (leftPageNewState == pageStateCount - 1))
 							refreshPages = true;
+						
+						// If changing FROM a fully flat page, trigger sound effect
+						if ((leftPageState == 0) || (leftPageState == pageStateCount - 1))
+							try
+							{
+								getSoundPlayer ().playAudioFile (PAGE_FLIP_SOUND);
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
 					}
 				}
 			}
@@ -2241,5 +2259,21 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	public final void setGraphicsDB (final GraphicsDatabaseEx db)
 	{
 		graphicsDB = db;
+	}
+
+	/**
+	 * @return Sound effects player
+	 */
+	public final AudioPlayer getSoundPlayer ()
+	{
+		return soundPlayer;
+	}
+
+	/**
+	 * @param player Sound effects player
+	 */
+	public final void setSoundPlayer (final AudioPlayer player)
+	{
+		soundPlayer = player;
 	}
 }

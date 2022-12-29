@@ -32,6 +32,7 @@ import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.LanguageText;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -317,6 +318,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 			// Finished researching a spell, so open up spell book to pick another one
 			case RESEARCHED_SPELL:
 				getSpellBookUI ().setVisible (true);
+				getSpellBookUI ().showSection (SpellBookSectionID.RESEARCHABLE_NOW);
 				break;
 		
 			// Cast a city/unit enchantment/curse, so need to pick a target for it

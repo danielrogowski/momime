@@ -783,6 +783,8 @@ public final class SpellBookNewUI extends MomClientFrameUI
 			{
 				if (SwingUtilities.isLeftMouseButton (ev))
 				{
+					final BufferedImage closeSectionPage = pageRightFrames.get (0);
+					
 					// We basically have to duplicate the logic from paintComponent, when all we're really trying to spot is find is the location of the
 					// pages drawn with corners so we can tell if the corners were clicked on
 					Integer leftCorner = null;
@@ -796,6 +798,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 							rightCorner = index;
 					}
 					
+					boolean handled = false;
 					if (ev.getPoint ().x < cover.getWidth ())
 					{
 						// Possible click on left corner
@@ -806,8 +809,10 @@ public final class SpellBookNewUI extends MomClientFrameUI
 
 							if ((ev.getPoint ().x >= imageLeft) && (ev.getPoint ().y >= imageTop) &&
 								(ev.getPoint ().x < imageLeft + PAGE_CORNER_WIDTH) && (ev.getPoint ().y < imageTop + PAGE_CORNER_HEIGHT))
-								
+							{
 								desiredPagesOnLeft--;
+								handled = true;
+							}
 						}
 					}
 					else
@@ -821,8 +826,95 @@ public final class SpellBookNewUI extends MomClientFrameUI
 							
 							if ((ev.getPoint ().x >= imageRight - PAGE_CORNER_WIDTH) && (ev.getPoint ().y >= imageTop) &&
 								(ev.getPoint ().x < imageRight) && (ev.getPoint ().y < imageTop + PAGE_CORNER_HEIGHT))
-									
+							{
 								desiredPagesOnLeft++;
+								handled = true;
+							}
+						}
+						
+						// Possible click on close tab
+						final int closeTabX = FIRST_RIGHT_PAGE - SECTION_RIGHT_X - (closeSectionIndex * SECTION_SPACING) + closeSectionPage.getWidth ();
+						final int closeTabY = FIRST_PAGE_BOTTOM + SECTION_TOP - closeTabImage.getHeight () - (closeSectionIndex / 2);
+						
+						if ((ev.getPoint ().x >= closeTabX) && (ev.getPoint ().y >= closeTabY) &&
+							(ev.getPoint ().x < closeTabX + closeTabImage.getWidth ()) && (ev.getPoint ().y < closeTabY + closeTabImage.getHeight ()))
+							
+							try
+							{
+								handled = true;
+								setVisible (false);
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
+					}
+					
+					if (!handled)
+					{
+						// Check if mouse clicked within any of the section tabs
+						int logicalPageNumber = 0;
+						while ((!handled) && (logicalPageNumber < pages.size ()))
+						{
+							final SpellBookPage logicalPage = pages.get (logicalPageNumber);						
+							if (logicalPage.isFirstPageOfSection ())
+							{
+								// Convert to physical page numbering
+								final int leftIndex = (logicalPageNumber + 1) / 2;
+								if (leftIndex < pageState.size ())
+									try
+									{
+										final int thisPageState = pageState.get (leftIndex);
+										if (thisPageState == 0)
+										{
+											// Fully flat left page - check tab location
+											final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (logicalPage.getSectionID (), "SpellBookUI");
+											if ((section.getTabImageFile () != null) && (section.getTopperImageFile () != null))
+											{
+												final int sectionIndex = getClient ().getClientDB ().getSpellBookSection ().indexOf (section);
+												final BufferedImage tabImage = getUtils ().loadImage (section.getTabImageFile ());
+												final int sectionTabX = FIRST_LEFT_PAGE + (leftIndex * PAGE_SPACING_X) + SECTION_LEFT_X + (sectionIndex * SECTION_SPACING);
+												final int sectionTabY = FIRST_PAGE_BOTTOM  - (leftIndex * PAGE_SPACING_Y) + SECTION_TOP - tabImage.getHeight () - (sectionIndex / 2);
+	
+												if ((ev.getPoint ().x >= sectionTabX) && (ev.getPoint ().y >= sectionTabY) &&
+													(ev.getPoint ().x < sectionTabX + tabImage.getWidth ()) && (ev.getPoint ().y < sectionTabY + tabImage.getHeight ()))
+												{
+													desiredPagesOnLeft = leftIndex + ((logicalPageNumber % 2) == 0 ? 1 : 0);
+													handled = true;
+												}
+											}
+										}
+										else if (thisPageState == pageStateCount - 1)
+										{
+											// Fully flat right page - check tab location
+											final int rightIndex = pageState.size () - 1 - leftIndex;
+											final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (logicalPage.getSectionID (), "SpellBookUI");
+											if ((section.getTabImageFile () != null) && (section.getTopperImageFile () != null))
+											{
+												final int sectionIndex = getClient ().getClientDB ().getSpellBookSection ().indexOf (section);
+												final BufferedImage tabImage = getUtils ().loadImage (section.getTabImageFile ());
+
+												final int sectionTabX = FIRST_RIGHT_PAGE - (rightIndex * PAGE_SPACING_X) - SECTION_RIGHT_X - (sectionIndex * SECTION_SPACING) + closeSectionPage.getWidth ();
+												final int sectionTabY = FIRST_PAGE_BOTTOM - (rightIndex * PAGE_SPACING_Y) + SECTION_TOP - tabImage.getHeight () - (sectionIndex / 2);
+												
+												if ((ev.getPoint ().x >= sectionTabX) && (ev.getPoint ().y >= sectionTabY) &&
+													(ev.getPoint ().x < sectionTabX + tabImage.getWidth ()) && (ev.getPoint ().y < sectionTabY + tabImage.getHeight ()))
+												{
+													desiredPagesOnLeft = leftIndex + ((logicalPageNumber % 2) == 0 ? 1 : 0);
+													handled = true;
+												}
+											}
+										}
+										
+										// else its a page partway through animation so ignore clicks on it
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
+									}
+							}
+							
+							logicalPageNumber++;
 						}
 					}
 				}
@@ -1383,6 +1475,29 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @param sectionID Section to flip to
+	 */
+	public final void showSection (final SpellBookSectionID sectionID)
+	{
+		Integer found = null;
+		int logicalPageNumber = 0;
+		while ((found == null) && (logicalPageNumber < pages.size ()))
+		{
+			final SpellBookPage page = pages.get (logicalPageNumber);
+			if ((page.isFirstPageOfSection ()) && (page.getSectionID () == sectionID))
+				found = logicalPageNumber;
+			else
+				logicalPageNumber++;
+		}
+		
+		if (found != null)
+		{
+			final int leftIndex = (found + 1) / 2;
+			desiredPagesOnLeft = leftIndex + ((found % 2) == 0 ? 1 : 0);
+		}
+	}
+	
+	/**
 	 * Update all labels and such from the chosen language 
 	 */
 	@Override
@@ -1424,8 +1539,9 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		// If we're in compact mode, its not straightforward working out whether the spells would also fix in standard mode - just have to try it.
 		// This isn't very optmized - it means generateSpellBookPages is doing 90% of the work twice.
 		// Maybe it could return a map with pages organized in standard AND compact mode at the same time?
-		viewModeStandardAction.setEnabled ((getClientConfig ().getSpellBookViewMode () == SpellBookViewMode.STANDARD) ||
-			(getSpellClientUtils ().generateSpellBookPages (SpellBookViewMode.STANDARD, getCastType ()).size () <= LOGICAL_PAGE_COUNT));
+		if (viewModeStandardAction != null)
+			viewModeStandardAction.setEnabled ((getClientConfig ().getSpellBookViewMode () == SpellBookViewMode.STANDARD) ||
+				(getSpellClientUtils ().generateSpellBookPages (SpellBookViewMode.STANDARD, getCastType ()).size () <= LOGICAL_PAGE_COUNT));
 		
 		languageOrPageChanged ();
 	}

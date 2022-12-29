@@ -3530,6 +3530,8 @@ this value each time a dispel attempt is made (counter magic).</xsd:documentatio
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellBookSectionName" type="momimecommon:languageText" nxe:label="Name" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellTargetPrompt" type="momimecommon:languageText" nxe:label="Targeting prompt" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellTargetStackPrompt" type="momimecommon:languageText" nxe:label="Targeting stack prompt" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="tabImageFile" type="momimecommon:imageFilename" nxe:label="Tab image file" nxe:gridwidth="350" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="topperImageFile" type="momimecommon:imageFilename" nxe:label="Topper image file" nxe:gridwidth="350" />
 		</xsd:sequence>
 		<xsd:attribute name="spellBookSectionID" type="momimecommon:spellBookSectionID" use="required" nxe:label="Spell Book Section ID" nxe:gridwidth="150" />
 	</xsd:complexType>

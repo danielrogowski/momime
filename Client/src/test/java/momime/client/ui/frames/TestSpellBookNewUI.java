@@ -5,7 +5,9 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,19 +70,27 @@ public final class TestSpellBookNewUI extends ClientTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final List<SpellBookSection> sections = new ArrayList<SpellBookSection> ();
 		int sectionNumber = 0;
 		for (final String sectionName : new String [] {"Summoning spells", "Overland enchantments", "Research spells"})
 		{
 			sectionNumber++;
-			
+
 			final SpellBookSection section = new SpellBookSection ();
+			section.setSpellBookSectionID (SpellBookSectionID.fromValue ((sectionNumber > 2) ? "SC98" : ("SC0" + sectionNumber)));
 			section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, sectionName));
+			section.setTabImageFile ("/momime.client.graphics/ui/spellBook/tab-" + section.getSpellBookSectionID ().value () + ".png");
+			
+			section.setTopperImageFile ((sectionNumber == 2) ? "/momime.client.graphics/ui/spellBook/tab-purple.png" : "/momime.client.graphics/ui/spellBook/tab-brown.png");
 			
 			if (sectionNumber > 2)
-				lenient ().when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC98"), "SpellBookUI")).thenReturn (section);
+				lenient ().when (db.findSpellBookSection (section.getSpellBookSectionID (), "SpellBookUI")).thenReturn (section);
 			else
-				when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + sectionNumber), "SpellBookUI")).thenReturn (section);
+				when (db.findSpellBookSection (section.getSpellBookSectionID (), "SpellBookUI")).thenReturn (section);
+			
+			sections.add (section);
 		}
+		when (db.getSpellBookSection ()).thenReturn (sections);
 		
 		final ProductionTypeEx research = new ProductionTypeEx ();
 		research.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "RP"));

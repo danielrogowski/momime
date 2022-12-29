@@ -56,6 +56,7 @@ import momime.common.database.LanguageText;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSection;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SwitchResearch;
 import momime.common.messages.KnownWizardDetails;
@@ -122,6 +123,21 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	
 	/** Height of the fold down */
 	private final static int PAGE_CORNER_HEIGHT = 38;
+	
+	/** Horizontal spacing between one section tab and the next */
+	private final static int SECTION_SPACING = 15;
+	
+	/** X positions of tabs attached to left pages */
+	private final static int SECTION_LEFT_X = 4;
+
+	/** X positions of tabs attached to right pages */
+	private final static int SECTION_RIGHT_X = 19;
+	
+	/** Y spacing relative to the bottom of the page image */
+	private final static int SECTION_TOP = 14;
+	
+	/** Y spacing of the topper circle */
+	private final static int SECTION_TOPPER = 7;
 
 	/** Colour to draw arcane spells */
 	private final static Color ARCANE_SPELL_COLOUR = new Color (0xA0A0A0);
@@ -289,6 +305,9 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		final BufferedImage viewModeStandardDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/viewModeStandardDisabled.png");
 		final BufferedImage viewModeCompactNormal = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/viewModeCompactNormal.png");
 		final BufferedImage viewModeCompactPressed = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/viewModeCompactPressed.png");
+
+		final BufferedImage closeTabImage = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/tab-close.png");
+		final BufferedImage closeTopperImage = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/tab-red.png");
 		
 		if ((pageLeftFrames.get (0).getWidth () != pageRightFrames.get (0).getWidth ()) || (pageLeftFrames.get (0).getHeight () != pageRightFrames.get (0).getHeight ()))
 			throw new IOException ("Left and right page images are different sizes");
@@ -301,6 +320,10 @@ public final class SpellBookNewUI extends MomClientFrameUI
 		
 		final Dimension fixedSize = new Dimension (cover.getWidth () * 2,
 			(cover.getHeight () + BACKGROUND_PADDING_TOP + BACKGROUND_PADDING_BOTTOM) * 2);
+
+		// We draw the close button like an additional section tab, but only count tabs with images
+		final int closeSectionIndex = (int) getClient ().getClientDB ().getSpellBookSection ().stream ().filter
+			(s -> (s.getTabImageFile () != null) && (s.getTopperImageFile () != null)).count ();
 		
 		// Find animations we need
 		castingAnim = getGraphicsDB ().findAnimation (ANIM_SWIRL, "SpellBookUI");
@@ -381,8 +404,43 @@ public final class SpellBookNewUI extends MomClientFrameUI
 						// Shading in between pages, so they blend into a brown blob near the spine
 						if (leftIndex > 0)
 							g.drawImage (pageLeftShading, imageX + 31, imageY + image.getHeight () - 15, null);
+						
+						// Draw any tabs on this page AFTER the page is drawn, so they appear on top of it
+						final int logicalLeftPage = leftIndex * 2;
+						for (int logicalPageNumber = logicalLeftPage; logicalPageNumber <= logicalLeftPage + 1; logicalPageNumber++)
+							if (logicalPageNumber < pages.size ())
+							{
+								final SpellBookPage logicalPage = pages.get (logicalPageNumber);
+								if (logicalPage.isFirstPageOfSection ())
+									try
+									{
+										final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (logicalPage.getSectionID (), "SpellBookUI");
+										if ((section.getTabImageFile () != null) && (section.getTopperImageFile () != null))
+										{
+											final int sectionIndex = getClient ().getClientDB ().getSpellBookSection ().indexOf (section);
+											final BufferedImage topperImage = getUtils ().loadImage (section.getTopperImageFile ());
+											final BufferedImage tabImage = getUtils ().loadImage (section.getTabImageFile ());
+											
+											g.drawImage (topperImage, imageX + SECTION_LEFT_X + (sectionIndex * SECTION_SPACING),
+												imageY + SECTION_TOPPER + image.getHeight () - tabImage.getHeight () - (sectionIndex / 2), null);
+											g.drawImage (tabImage, imageX + SECTION_LEFT_X + (sectionIndex * SECTION_SPACING),
+												imageY + SECTION_TOP + image.getHeight () - tabImage.getHeight () - (sectionIndex / 2), null);
+										}
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
+									}								
+							}
 					}
 				}
+				
+				// Close tab is hard coded to be to be after the last section and under the last page
+				final BufferedImage closeSectionPage = pageRightFrames.get (0);
+				g.drawImage (closeTopperImage, FIRST_RIGHT_PAGE - SECTION_RIGHT_X - (closeSectionIndex * SECTION_SPACING) + closeSectionPage.getWidth (),
+					FIRST_PAGE_BOTTOM + SECTION_TOPPER - closeTabImage.getHeight () - (closeSectionIndex / 2), null);
+				g.drawImage (closeTabImage, FIRST_RIGHT_PAGE - SECTION_RIGHT_X - (closeSectionIndex * SECTION_SPACING) + closeSectionPage.getWidth (),
+					FIRST_PAGE_BOTTOM + SECTION_TOP - closeTabImage.getHeight () - (closeSectionIndex / 2), null);
 				
 				for (int fromRight = 0; fromRight < pageState.size (); fromRight++)
 				{
@@ -394,6 +452,36 @@ public final class SpellBookNewUI extends MomClientFrameUI
 						final BufferedImage image = ((rightCorner != null) && (rightCorner == rightIndex)) ? pageRightCorner : pageRightFrames.get (pageStateCount - 1 - rightPageState);
 						final int imageX = FIRST_RIGHT_PAGE - (fromRight * PAGE_SPACING_X);
 						final int imageY = FIRST_PAGE_BOTTOM - image.getHeight () - (fromRight * PAGE_SPACING_Y);
+						
+						// Draw any tabs on this page BEFORE the page is drawn, so they appear underneath it
+						final int logicalRightPage = rightIndex * 2;
+						for (int logicalPageNumber = logicalRightPage; logicalPageNumber <= logicalRightPage + 1; logicalPageNumber++)
+							if (logicalPageNumber < pages.size ())
+							{
+								final SpellBookPage logicalPage = pages.get (logicalPageNumber);
+								if (logicalPage.isFirstPageOfSection ())
+									try
+									{
+										final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (logicalPage.getSectionID (), "SpellBookUI");
+										if ((section.getTabImageFile () != null) && (section.getTopperImageFile () != null))
+										{
+											final int sectionIndex = getClient ().getClientDB ().getSpellBookSection ().indexOf (section);		// But now section 0 is drawn on the right
+											final BufferedImage topperImage = getUtils ().loadImage (section.getTopperImageFile ());
+											final BufferedImage tabImage = getUtils ().loadImage (section.getTabImageFile ());
+											
+											g.drawImage (topperImage, imageX - SECTION_RIGHT_X - (sectionIndex * SECTION_SPACING) + image.getWidth (),
+												imageY + SECTION_TOPPER + image.getHeight () - tabImage.getHeight () - (sectionIndex / 2), null);
+											g.drawImage (tabImage, imageX - SECTION_RIGHT_X - (sectionIndex * SECTION_SPACING) + image.getWidth (),
+												imageY + SECTION_TOP + image.getHeight () - tabImage.getHeight () - (sectionIndex / 2), null);
+										}
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
+									}								
+							}
+						
+						// Now draw the page on top of the tabs
 						g.drawImage (image, imageX, imageY, null);
 						
 						// Shading in between pages, so they blend into a brown blob near the spine

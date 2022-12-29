@@ -416,10 +416,17 @@
 	<bean id="spellBookSectionGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
 		<property name="firstDescriptionColumnIndex" value="1" />
 		<property name="descriptionColumns">
 			<list>
 				<value>spellBookSectionName</value>
+			</list>
+		</property>
+		<property name="imageColumns">
+			<list>
+				<value>tabImageFile</value>
+				<value>topperImageFile</value>
 			</list>
 		</property>
 	</bean>

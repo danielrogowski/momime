@@ -367,6 +367,11 @@ public interface CommonDatabase
 	 * @throws RecordNotFoundException If the spellRankID doesn't exist
 	 */
 	public SpellRank findSpellRank (final String spellRankID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return Complete list of all spell book sections in game
+	 */
+	public List<SpellBookSection> getSpellBookSection ();
 	
 	/**
 	 * @param sectionID Spell book section ID to search for

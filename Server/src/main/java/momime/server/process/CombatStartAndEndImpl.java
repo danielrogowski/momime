@@ -414,15 +414,29 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 			final MomPersistentPlayerPrivateKnowledge defPriv = (defendingPlayer == null) ? null : (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
 			
+			final KnownWizardDetails defWizard = (defendingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
+			
 			if ((useCaptureCityDecision != null) && (defendingPlayer != null))
 			{
 				// Calc as a long since the the multiplication could give a really big number
 				final long cityPopulation = tc.getCityData ().getCityPopulation ();
-				final long totalGold = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-				final long totalPopulation = getOverlandMapServerUtils ().totalPlayerPopulation
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID (),
-					mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
-				goldSwiped = (totalGold * cityPopulation) / totalPopulation;
+				if (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ()))
+				{
+					// For capturing cities from other wizards, gold is distributed evenly among their cities, in proportion to the population of each
+					final long totalGold = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+					final long totalPopulation = getOverlandMapServerUtils ().totalPlayerPopulation
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID (),
+						mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+					goldSwiped = (totalGold * cityPopulation) / totalPopulation;
+				}
+				else
+				{
+					// For capturing cities from raiders, get population d10 rolls
+					final int rolls = (int) cityPopulation / 1000;
+					for (int n = 0; n < rolls; n++)
+						goldSwiped = goldSwiped + getRandomUtils ().nextInt (10) + 1;
+				}
 				msg.setGoldSwiped ((int) goldSwiped);
 				
 				// Any gold from razing buildings?
@@ -575,9 +589,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				attackerFameChange = attackerFameChange - combatDetails.getAttackerSpecialFameLost ();
 			
 			// Update fame
-			final KnownWizardDetails defWizard = (defendingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
-				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
-
 			if ((attackerFameChange != 0) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())))
 			{
 				// Fame cannot go negative

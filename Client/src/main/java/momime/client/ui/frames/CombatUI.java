@@ -1242,10 +1242,20 @@ public final class CombatUI extends MomClientFrameUI
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		manaValue.setText (getTextUtils ().intToStrCommas (manaStored));
 	
-		rangeValue.setText ("x " + getTextUtils ().halfIntToStr (doubleRangePenalty));
+		final int manaAvailable;
+		if (doubleRangePenalty == null)
+		{
+			rangeValue.setVisible (false);
+			manaAvailable = 0;
+		}
+		else
+		{
+			rangeValue.setVisible (true);
+			rangeValue.setText ("x " + getTextUtils ().halfIntToStr (doubleRangePenalty));
+			manaAvailable = (manaStored * 2) / doubleRangePenalty;
+		}
 		
 		// How much mana can we put into a spell, given the range?
-		final int manaAvailable = (manaStored * 2) / doubleRangePenalty;
 		maxCastable = Math.min (manaAvailable, currentSkill);
 		castableValue.setText (getTextUtils ().intToStrCommas (maxCastable));
 		

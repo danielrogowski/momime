@@ -36,8 +36,31 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.6.1</b></td>
-			<td align=left><b>20 Dec 2022</b></td>
+			<td align=left><b>Current version: 1.6.2</b></td>
+			<td align=left><b>31 Dec 2022</b></td>
+			<td align=left>
+				<b>Spell book rework:</b>
+				<ul>
+					<li>Spell book pages are now drawn separately, so the book looks visuallly correct for how far "through" the book you are, rather than always looking like you're in the middle of the book no matter how many pages you turn
+					<li>Can turn multiple pages at once, without having to wait for one page to turn fully before clicking the folded corner on the next page
+					<li>Page turn animation has more frames so looks a lot more flowing
+					<li>Tabs added to the bottom of the spell book at the start of each section, so you can jump to for example the Attack Spells section with one click
+					<li>Clicking the message on the new turn messages scroll saying that you finished researching a spell and must pick another jumps straight to the Research section
+					<li>Standard and Compact mode - in compact mode the spell descriptions are hidden, so then 11 spells fit on each page instead of 4
+					<li>Will auto switch to compact mode if you acquire so many spells that they will overflow the book in standard mode (only really if you have books of multiple magic realms and collect a LOT of spells)
+					<li>Sound effect added on page turns
+					<li>The downside to all this is the spell book window used to be cropped to the exact shape of the book - this is no longer possible because the dynamic pages and tabs mean the shape of the book is changing all the time
+				</ul>
+				
+				<b>Rule changes:</b>
+				<ul>
+					<li>Gold awarded from capturing raider cities has been changed to work like the original MoM, to stop players (and AI wizards) raking in 1000s of gold early in game just by capturing easy towns
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6.1</td>
+			<td align=left>20 Dec 2022</td>
 			<td align=left>
 				<b>Performance:</b>
 				<ul>

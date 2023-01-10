@@ -394,19 +394,33 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		
 		// Is it an order that requires us to only have a single unit with the skill?
 		if ((error == null) && (!allowMultipleUnits) && (unitsWithNecessarySkillID.size () > 1))
-			switch (specialOrder)
-			{
-				case BUILD_CITY:
-					error = "You must select only a single settler to build a city with";
-					break;
-					
-				case MELD_WITH_NODE:
-					error = "You must select only a single spirit to meld with a node";
-					break;
-					
-				default:
-					error = "You must select only a single unit with the relevant skill";
+		{
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+			{ 
+				switch (specialOrder)
+				{
+					case BUILD_CITY:
+						error = "You must select only a single settler to build a city with";
+						break;
+						
+					case MELD_WITH_NODE:
+						error = "You must select only a single spirit to meld with a node";
+						break;
+						
+					default:
+						error = "You must select only a single unit with the relevant skill";
+				}
 			}
+			
+			// AI players often make this mistake, so for them just pick a random one of the allowed units
+			else
+			{
+				log.debug ("AI player had multiple units in a stack all trying to do " + specialOrder + ", so picked one at random");
+				final ExpandedUnitDetails keep = unitsWithNecessarySkillID.get (getRandomUtils ().nextInt (unitsWithNecessarySkillID.size ()));
+				unitsWithNecessarySkillID.clear ();
+				unitsWithNecessarySkillID.add (keep);
+			}
+		}
 		
 		// Skill-specific validation
 		if (error == null)

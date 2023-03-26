@@ -3,10 +3,14 @@ package momime.client.ui.frames;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.ndg.utils.swing.ModifiedImageCache;
 import com.ndg.utils.swing.NdgUIUtils;
 import com.ndg.utils.swing.NdgUIUtilsImpl;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -59,6 +63,14 @@ public final class TestHeroItemInfoUI extends ClientTestData
 		
 		when (db.findHeroItemType ("IT01", "HeroItemInfoUI")).thenReturn (itemTypeGfx);
 		
+		// Image sizing
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		final String imageFilename = itemTypeGfx.getHeroItemTypeImageFile ().get (2);
+		
+		final BufferedImage originalImage = utils.loadImage (imageFilename);
+		final Image doubleSize = originalImage.getScaledInstance (originalImage.getWidth () * 2, originalImage.getHeight () * 2, Image.SCALE_FAST);
+		when (cache.doubleSize (imageFilename)).thenReturn (doubleSize);
+		
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
 		simpleLang.getClose ().add (createLanguageText (Language.ENGLISH, "Close"));
@@ -99,6 +111,7 @@ public final class TestHeroItemInfoUI extends ClientTestData
 		final HeroItemInfoUI itemInfo = new HeroItemInfoUI ();
 		itemInfo.setHeroItemInfoLayout (layout);
 		itemInfo.setUtils (utils);
+		itemInfo.setModifiedImageCache (cache);
 		itemInfo.setLanguageHolder (langHolder);
 		itemInfo.setLanguageChangeMaster (langMaster);
 		itemInfo.setClient (client);

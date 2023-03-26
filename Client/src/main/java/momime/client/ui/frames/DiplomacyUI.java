@@ -38,6 +38,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.utils.random.RandomUtils;
 import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.ModifiedImageCache;
 import com.ndg.utils.swing.actions.LoggingAction;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -150,6 +151,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** Which wizard we are talking to */
 	private int talkingWizardID;
@@ -938,8 +942,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 			if (getVisibleRelationScoreID () != null)
 			{
 				relationScore = getClient ().getClientDB ().findRelationScore (getVisibleRelationScoreID (), "DiplomacyUI");
-				final Image eyesLeft = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesLeftImage ()));
-				final Image eyesRight = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesRightImage ()));
+				final Image eyesLeft = getModifiedImageCache ().doubleSize (relationScore.getEyesLeftImage ());
+				final Image eyesRight = getModifiedImageCache ().doubleSize (relationScore.getEyesRightImage ());
 				
 				// Create new eyes
 				eyesLeftLabel = getUtils ().createImage (eyesLeft);
@@ -2165,6 +2169,22 @@ public final class DiplomacyUI extends MomClientFrameUI
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
+	}
+	
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
 	}
 	
 	/**

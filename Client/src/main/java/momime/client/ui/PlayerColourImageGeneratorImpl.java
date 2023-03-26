@@ -1,16 +1,17 @@
 package momime.client.ui;
 
-import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.utils.swing.ModifiedImageCache;
 import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
@@ -41,6 +42,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
+	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -65,15 +69,16 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	/**
 	 * @param unitDef Unit to get the image for
 	 * @param playerID Player ID
+	 * @param doubleSize Whether to double the size of the unit image
 	 * @return Overland image for this unit, with the correct flag colour already drawn on; background square is not included
 	 * @throws IOException If there is a problem loading the images
 	 */
 	@Override
-	public final BufferedImage getOverlandUnitImage (final UnitEx unitDef, final int playerID) throws IOException
+	public final Image getOverlandUnitImage (final UnitEx unitDef, final int playerID, final boolean doubleSize) throws IOException
 	{
 		return getModifiedImage (unitDef.getUnitOverlandImageFile (), false,
 			unitDef.getUnitOverlandImageFlag (), unitDef.getFlagOffsetX (), unitDef.getFlagOffsetY (),
-			playerID, null);
+			playerID, null, doubleSize ? 2d : null);
 	}
 	
 	/**
@@ -84,12 +89,12 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	 * @throws IOException If there is a problem loading the flag image
 	 */
 	@Override
-	public final BufferedImage getNodeAuraImage (final int frameNumber, final int playerID, final boolean warped) throws IOException
+	public final Image getNodeAuraImage (final int frameNumber, final int playerID, final boolean warped) throws IOException
 	{
 		final String imageName = getGraphicsDB ().findAnimation ("NODE_AURA", "getNodeAuraImage").getFrame ().get (frameNumber).getImageFile ();
 		final List<String> shadingColours = warped ? Arrays.asList ("505050") : null;
 		
-		return getModifiedImage (imageName, true, null, null, null, playerID, shadingColours);
+		return getModifiedImage (imageName, true, null, null, null, playerID, shadingColours, null);
 	}
 	
 	/**
@@ -99,10 +104,10 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	 * @throws IOException If there is a problem loading the border image
 	 */
 	@Override
-	public final BufferedImage getFriendlyZoneBorderImage (final int d, final int playerID) throws IOException
+	public final Image getFriendlyZoneBorderImage (final int d, final int playerID) throws IOException
 	{
 		final String imageName = "/momime.client.graphics/overland/friendlyZoneBorder/border-d" + d + ".png";
-		return getModifiedImage (imageName, true, null, null, null, playerID, null);
+		return getModifiedImage (imageName, true, null, null, null, playerID, null, null);
 	}
 
 	/**
@@ -119,13 +124,14 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	 * @param flagOffsetY Y offset to draw flag
 	 * @param playerID Player who owns the unit; if this is not supplied then the flag image will be ignored (if there is one) 
 	 * @param shadingColours List of shading colours to apply to the image
+	 * @param resizeFactor Factor to multiply the size of the image by
 	 * @return Image with modified colours
 	 * @throws IOException If there is a problem loading the image
 	 */
 	@Override
-	public final BufferedImage getModifiedImage (final String imageName, final boolean playerColourEntireImage,
+	public final Image getModifiedImage (final String imageName, final boolean playerColourEntireImage,
 		final String flagName, final Integer flagOffsetX, final Integer flagOffsetY,
-		final Integer playerID, final List<String> shadingColours) throws IOException
+		final Integer playerID, final List<String> shadingColours, final Double resizeFactor) throws IOException
 	{
 		boolean colourEntireImageApplies = (playerColourEntireImage) && (playerID != null);
 		boolean flagApplies = (!playerColourEntireImage) && (flagName != null) && (flagOffsetX != null) && (flagOffsetY != null) && (playerID != null);
@@ -150,79 +156,23 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 		}
 		
 		// If there are no modifications to make at all, just use the normal image cache
-		BufferedImage image;
+		Image image;
 		if ((!colourEntireImageApplies) && (!flagApplies) && (!shadingApplies))
 			image = wasMonsters ? null : getUtils ().loadImage (imageName);
 		else
 		{
-			// Generate the entire key - maybe the image already exists in the cache
-			final StringBuilder key = new StringBuilder (imageName);
-			if (colourEntireImageApplies)
-				key.append (":W" + playerID);
-			else if (flagApplies)
-				key.append (":P" + playerID);
-
-			List<String> sortedColours = null;
-			if (shadingApplies)
+			// Delegate to general version, but first need the player colour if we have one
+			final List<String> shadingColoursIncludingPlayerColour = new ArrayList<String> ();
+			if (player != null)
 			{
-				sortedColours = shadingColours.stream ().sorted ().collect (Collectors.toList ());
-				sortedColours.forEach (s -> key.append (":" + s));
+				final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+				shadingColoursIncludingPlayerColour.add (trans.getFlagColour ());
 			}
 			
-			image = modifiedImages.get (key.toString ());
-			if (image == null)
-			{
-				// Generate new image - first deal with the flag colours
-				if ((!colourEntireImageApplies) && (!flagApplies))
-					image = getUtils ().loadImage (imageName);
-				else
-				{
-					// Need modified image, and its not in the cache.. but maybe only the coloured image or image with flag is in the cache, only missing the extra shading
-					final String partialKey = imageName + (colourEntireImageApplies ? ":W" : ":P") + playerID;
-					image = modifiedImages.get (partialKey);
-					
-					if (image == null)
-					{
-						// Generate a new one
-						final BufferedImage baseImage = getUtils ().loadImage (imageName);
-						if (colourEntireImageApplies)
-						{
-							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
-							image = getUtils ().multiplyImageByColour (baseImage, Integer.parseInt (trans.getFlagColour (), 16));
-						}
-						else
-						{
-							// Recursive call to get the coloured flag
-							final BufferedImage flagImage = getModifiedImage (flagName, true, null, null, null, playerID, null);
-							
-							image = new BufferedImage (baseImage.getWidth (), baseImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
-							final Graphics2D g = image.createGraphics ();
-							try
-							{
-								g.drawImage (baseImage, 0, 0, null);
-								g.drawImage (flagImage, flagOffsetX, flagOffsetY, null);
-							}
-							finally
-							{
-								g.dispose ();
-							}
-						}
-				
-						// Store base image + flag or coloured image, prior to applying shading, in the map
-						modifiedImages.put (partialKey, image);
-					}
-				}
-				
-				if (shadingApplies)
-					for (final String colour : sortedColours)
-						if (colour.length () == 8)
-							image = getUtils ().multiplyImageByColourAndAlpha (image, (int) Long.parseLong (colour, 16));
-						else
-							image = getUtils ().multiplyImageByColour (image, Integer.parseInt (colour, 16));
-				
-				// Store it in the map
-				modifiedImages.put (key.toString (), image);
-			}
+			if (shadingApplies)
+				shadingColoursIncludingPlayerColour.addAll (shadingColours);
+			
+			image = getModifiedImageCache ().getModifiedImage (imageName, flagName, !colourEntireImageApplies, flagOffsetX, flagOffsetY, shadingColoursIncludingPlayerColour, resizeFactor, false); 
 		}
 		
 		return image;
@@ -244,6 +194,22 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 		utils = util;
 	}
 
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
+	}
+	
 	/**
 	 * @return Multiplayer client
 	 */

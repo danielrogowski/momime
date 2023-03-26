@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
@@ -472,7 +473,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		
 											for (final SquareMapDirection d : directions)
 											{
-												final BufferedImage borderImage = getPlayerColourImageGenerator ().getFriendlyZoneBorderImage
+												final Image borderImage = getPlayerColourImageGenerator ().getFriendlyZoneBorderImage
 													(d.getDirectionID (), wizardDetails.getPlayerID ());
 		
 												for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
@@ -532,16 +533,16 @@ public final class OverlandMapUI extends MomClientFrameUI
 								if (drawUnit)
 									try
 									{
-										final BufferedImage unitBackground = getPlayerColourImageGenerator ().getModifiedImage
-											(GraphicsDatabaseConstants.UNIT_BACKGROUND, true, null, null, null, unit.getOwningPlayerID (), null);
+										final Image unitBackground = getPlayerColourImageGenerator ().getModifiedImage
+											(GraphicsDatabaseConstants.UNIT_BACKGROUND, true, null, null, null, unit.getOwningPlayerID (), null, null);
 										final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent");
-										final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID ());
+										final Image unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID (), false);
 	
-										final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
-										final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
+										final int unitZoomedWidth = (unitImage.getWidth (null) * mapViewZoom) / 10;
+										final int unitZoomedHeight = (unitImage.getHeight (null) * mapViewZoom) / 10;
 									
-										final int xpos = (((x * overlandMapTileSet.getTileWidth ()) - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
-										final int ypos = (((y * overlandMapTileSet.getTileHeight ()) - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+										final int xpos = (((x * overlandMapTileSet.getTileWidth ()) - ((unitImage.getWidth (null) - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
+										final int ypos = (((y * overlandMapTileSet.getTileHeight ()) - ((unitImage.getHeight (null) - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
 	
 										for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
 											for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
@@ -581,16 +582,16 @@ public final class OverlandMapUI extends MomClientFrameUI
 					if (unit != null)
 						try
 						{
-							final BufferedImage unitBackground = getPlayerColourImageGenerator ().getModifiedImage
-								(GraphicsDatabaseConstants.UNIT_BACKGROUND, true, null, null, null, unit.getOwningPlayerID (), null);
+							final Image unitBackground = getPlayerColourImageGenerator ().getModifiedImage
+								(GraphicsDatabaseConstants.UNIT_BACKGROUND, true, null, null, null, unit.getOwningPlayerID (), null, null);
 							final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent");
-							final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID ());
+							final Image unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID (), false);
 	
-							final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
-							final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
+							final int unitZoomedWidth = (unitImage.getWidth (null) * mapViewZoom) / 10;
+							final int unitZoomedHeight = (unitImage.getHeight (null) * mapViewZoom) / 10;
 						
-							final int xpos = ((getUnitStackMoving ().getCurrentX () - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
-							final int ypos = ((getUnitStackMoving ().getCurrentY () - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+							final int xpos = ((getUnitStackMoving ().getCurrentX () - ((unitImage.getWidth (null) - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
+							final int ypos = ((getUnitStackMoving ().getCurrentY () - ((unitImage.getHeight (null) - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
 	
 							for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
 								for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)

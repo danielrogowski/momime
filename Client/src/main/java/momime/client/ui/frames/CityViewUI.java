@@ -40,6 +40,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.ModifiedImageCache;
 import com.ndg.utils.swing.actions.LoggingAction;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -199,6 +200,9 @@ public final class CityViewUI extends MomClientFrameUI
 
 	/** Sample unit method */
 	private SampleUnitUtils sampleUnitUtils;
+	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
@@ -998,18 +1002,18 @@ public final class CityViewUI extends MomClientFrameUI
 		final RaceEx race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "cityDataChanged");
 		
 		// Start with farmers
-		Image civilianImage = getUtils ().doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "cityDataChanged")));
+		Image civilianImage = getModifiedImageCache ().doubleSize (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "cityDataChanged"));
 		final int civvyCount = cityData.getCityPopulation () / 1000;
 		int x = 0;
 		for (int civvyNo = 1; civvyNo <= civvyCount; civvyNo++)
 		{
 			// Is this the first rebel?
 			if (civvyNo == civvyCount - cityData.getNumberOfRebels () + 1)
-				civilianImage = getUtils ().doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, "cityDataChanged")));
+				civilianImage = getModifiedImageCache ().doubleSize (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, "cityDataChanged"));
 			
 			// Is this the first worker?
 			else if (civvyNo == cityData.getMinimumFarmers () + cityData.getOptionalFarmers () + 1)
-				civilianImage = getUtils ().doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, "cityDataChanged")));
+				civilianImage = getModifiedImageCache ().doubleSize (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, "cityDataChanged"));
 			
 			// Is this civilian changeable (between farmer and worker) - if so, create a button for them instead of a plain image
 			final Action action;
@@ -1834,5 +1838,21 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
 		sampleUnitUtils = s;
+	}
+
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
 	}
 }

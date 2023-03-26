@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.utils.swing.ModifiedImageCache;
 import com.ndg.utils.swing.NdgUIUtils;
 import com.ndg.utils.swing.NdgUIUtilsImpl;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -80,7 +82,7 @@ public final class TestCityViewUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
-
+		
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
@@ -119,6 +121,15 @@ public final class TestCityViewUI extends ClientTestData
 		final CityViewElement granaryGfx = new CityViewElement ();
 		granaryGfx.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
 		when (db.findCityViewElementBuilding (eq ("BL01"), anyString ())).thenReturn (granaryGfx);
+		
+		// Image sizing
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		for (final RacePopulationTask racePopulationTask : race.getRacePopulationTask ())
+		{
+			final BufferedImage originalSize = utils.loadImage (racePopulationTask.getCivilianImageFile ());
+			final Image doubleSize = originalSize.getScaledInstance (originalSize.getWidth () * 2, originalSize.getHeight () * 2, Image.SCALE_FAST);
+			when (cache.doubleSize (racePopulationTask.getCivilianImageFile ())).thenReturn (doubleSize);
+		}
 		
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
@@ -301,6 +312,7 @@ public final class TestCityViewUI extends ClientTestData
 		// Set up form
 		final CityViewUI cityView = new CityViewUI ();
 		cityView.setUtils (utils);
+		cityView.setModifiedImageCache (cache);
 		cityView.setLanguageHolder (langHolder);
 		cityView.setLanguageChangeMaster (langMaster);
 		cityView.setCityLocation (new MapCoordinates3DEx (20, 10, 0));

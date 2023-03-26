@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,6 +33,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.utils.swing.GridBagConstraintsNoFill;
 import com.ndg.utils.swing.JPanelWithConstantRepaints;
+import com.ndg.utils.swing.ModifiedImageCache;
 import com.ndg.utils.swing.actions.LoggingAction;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -234,6 +236,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Methods dealing with checking whether we can see units or not */
 	private UnitVisibilityUtils unitVisibilityUtils;
+
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -1451,9 +1456,9 @@ public final class CombatUI extends MomClientFrameUI
 					// Add the image - caeList.size () is a sneaky way of generating the 'x' values for the GridBagLayout
 					if (caePanel != null)
 					{
-						final BufferedImage image = getUtils ().loadImage (getClient ().getClientDB ().findCombatAreaEffect
-							(cae.getCombatAreaEffectID (), "generateCombatAreaEffectIcons").getCombatAreaEffectImageFile ());
-						final JLabel label = getUtils ().createImage (getUtils ().doubleSize (image));
+						final String image = getClient ().getClientDB ().findCombatAreaEffect
+							(cae.getCombatAreaEffectID (), "generateCombatAreaEffectIcons").getCombatAreaEffectImageFile ();
+						final JLabel label = getUtils ().createImage (getModifiedImageCache ().doubleSize (image));
 						
 						caePanel.add (label, getUtils ().createConstraintsNoFill (caeList.size (), 0, 1, 1, new Insets (0, 1, 0, 1), GridBagConstraintsNoFill.CENTRE));
 						caeList.add (label);
@@ -1679,8 +1684,8 @@ public final class CombatUI extends MomClientFrameUI
 				(getUnitCalculations ().findPreferredMovementSkillGraphics (xu, getClient ().getClientDB ()).getMovementIconImageFile ())));
 			
 			// Unit image
-			final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (xu.getUnitDefinition (), xu.getOwningPlayerID ());
-			selectedUnitImage.setIcon (new ImageIcon (getUtils ().doubleSize (unitImage)));
+			final Image unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (xu.getUnitDefinition (), xu.getOwningPlayerID (), true);
+			selectedUnitImage.setIcon (new ImageIcon (unitImage));
 		}
 		
 		enableOrDisableSpellAction ();
@@ -2505,5 +2510,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
 		unitVisibilityUtils = u;
+	}
+
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
 	}
 }

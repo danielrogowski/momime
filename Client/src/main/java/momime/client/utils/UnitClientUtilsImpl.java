@@ -2,6 +2,7 @@ package momime.client.utils;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -486,12 +487,12 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
 		final AnimationFrame frame = getAnim ().getUnitCombatImageFrame (unitImage, registeredAnimation, AnimationContainer.COMMON_XML);
 		final String imageName = ((newShadows) && (frame.getShadowlessImageFile () != null)) ? frame.getShadowlessImageFile () : frame.getImageFile (); 
-		final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (imageName, false, frame.getImageFlag (),
-			frame.getFlagOffsetX (), frame.getFlagOffsetY (), playerID, shadingColours);
+		final Image image = getPlayerColourImageGenerator ().getModifiedImage (imageName, false, frame.getImageFlag (),
+			frame.getFlagOffsetX (), frame.getFlagOffsetY (), playerID, shadingColours, null);
 		
-		final BufferedImage shadowImage;
+		final Image shadowImage;
 		if ((newShadows) && (frame.getShadowImageFile () != null))
-			shadowImage = getPlayerColourImageGenerator ().getModifiedImage (frame.getShadowImageFile (), false, null, null, null, null, shadingColours);
+			shadowImage = getPlayerColourImageGenerator ().getModifiedImage (frame.getShadowImageFile (), false, null, null, null, null, shadingColours, null);
 		else
 			shadowImage = null;
 		
@@ -502,8 +503,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		for (final int [] position : figurePositions)
 		{
 			// Last array element tells us what to multiply the image size up by; shadows are multiplied in X direction but not y
-			final int doubleWidth = image.getWidth () * 2;
-			final int doubleHeight = image.getHeight () * 2;
+			final int doubleWidth = image.getWidth (null) * 2;
+			final int doubleHeight = image.getHeight (null) * 2;
 			final int figureX = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (doubleWidth / 2);
 			int figureY = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - doubleHeight;
 			
@@ -515,7 +516,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			{
 				if (shadowImage != null)
 					g.drawStretchedImage (shadowImage, figureX + shadowOffset.getShadowOffsetX (), figureY + shadowOffset.getShadowOffsetY (),
-						doubleWidth, shadowImage.getHeight (), 0);
+						doubleWidth, shadowImage.getHeight (null), 0);
 
 				if (newShadows)
 					figureY = figureY + newShadowsUnitAdjustY;
@@ -527,15 +528,15 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			{
 				if (shadowImage != null)
 					g.drawStretchedClippedImage (shadowImage,
-						0, 0, shadowImage.getWidth (), (int) (shadowImage.getHeight () * (1d - mergingRatio)),
-						figureX + shadowOffset.getShadowOffsetX (), figureY  + shadowOffset.getShadowOffsetY () + ((int) (shadowImage.getHeight () * mergingRatio)),
-						doubleWidth, (int) (shadowImage.getHeight () * (1d - mergingRatio)), 0);
+						0, 0, shadowImage.getWidth (null), (int) (shadowImage.getHeight (null) * (1d - mergingRatio)),
+						figureX + shadowOffset.getShadowOffsetX (), figureY  + shadowOffset.getShadowOffsetY () + ((int) (shadowImage.getHeight (null) * mergingRatio)),
+						doubleWidth, (int) (shadowImage.getHeight (null) * (1d - mergingRatio)), 0);
 
 				if (newShadows)
 					figureY = figureY + newShadowsUnitAdjustY;
 				
 				g.drawStretchedClippedImage (image,
-					0, 0, image.getWidth (), (int) (image.getHeight () * (1d - mergingRatio)),
+					0, 0, image.getWidth (null), (int) (image.getHeight (null) * (1d - mergingRatio)),
 					figureX, figureY + ((int) (doubleHeight * mergingRatio)),
 					doubleWidth, (int) (doubleHeight * (1d - mergingRatio)),
 					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);

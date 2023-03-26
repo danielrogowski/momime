@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -282,7 +283,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					(mu.getStatus () == UnitStatusID.ALIVE))
 				{
 					final UnitEx unitDef = getClient ().getClientDB ().findUnit (mu.getUnitID (), "CitiesListCellRenderer");
-					final BufferedImage image = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID ());
+					final Image image = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID (), false);
 					
 					// Left justify all the units
 					final GridBagConstraints imageConstraints = getUtils ().createConstraintsNoFill (x, 0, 1, 1, INSET, GridBagConstraintsNoFill.SOUTHWEST);

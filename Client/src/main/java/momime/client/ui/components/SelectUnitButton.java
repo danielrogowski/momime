@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -101,17 +102,17 @@ public final class SelectUnitButton extends JToggleButton
 				// Only draw patch of player colour if this unit has been selected to move or belongs to somebody else
 				if ((isSelected ()) || (!Integer.valueOf (getUnit ().getOwningPlayerID ()).equals (getClient ().getOurPlayerID ())))
 				{
-					final BufferedImage playerColour = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.UNIT_BACKGROUND,
-						true, null, null, null, getUnit ().getOwningPlayerID (), null);
+					final Image playerColour = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.UNIT_BACKGROUND,
+						true, null, null, null, getUnit ().getOwningPlayerID (), null, null);
 					if (playerColour != null)
-						g.drawImage (playerColour, 5 + offset, 5 + offset, playerColour.getWidth () * 2, playerColour.getHeight () * 2, null);
+						g.drawImage (playerColour, 5 + offset, 5 + offset, playerColour.getWidth (null) * 2, playerColour.getHeight (null) * 2, null);
 				}
 			
 				// Draw the unit itself
 				final UnitEx unitDef = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton");
 				
-				final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getUnit ().getOwningPlayerID ());
-				g.drawImage (unitImage, 5 + offset, 5 + offset, unitImage.getWidth () * 2, unitImage.getHeight () * 2, null);
+				final Image unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getUnit ().getOwningPlayerID (), false);
+				g.drawImage (unitImage, 5 + offset, 5 + offset, unitImage.getWidth (null) * 2, unitImage.getHeight (null) * 2, null);
 
 				// Experience rings
 				final ExperienceLevel expLevel = getUnit ().getModifiedExperienceLevel ();				

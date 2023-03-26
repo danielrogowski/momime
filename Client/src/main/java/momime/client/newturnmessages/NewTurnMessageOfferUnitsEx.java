@@ -3,7 +3,6 @@ package momime.client.newturnmessages;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
@@ -101,8 +100,7 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 			try
 			{
 				final UnitEx unitDef = getClient ().getClientDB ().findUnit (xu.getUnitID (), "NewTurnMessageOfferUnitsEx");
-				final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID ());
-				image = getUtils ().doubleSize (unitImage);
+				image = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID (), true);
 			}
 			catch (final Exception e)
 			{

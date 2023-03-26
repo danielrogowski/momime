@@ -141,7 +141,7 @@ public final class TestArmyListUI extends ClientTestData
 
 		// Image generator
 		final PlayerColourImageGenerator generator = mock (PlayerColourImageGenerator.class);
-		when (generator.getOverlandUnitImage (unitDef, 1)).thenReturn (utils.loadImage (unitDef.getUnitOverlandImageFile ()));
+		when (generator.getOverlandUnitImage (unitDef, 1, false)).thenReturn (utils.loadImage (unitDef.getUnitOverlandImageFile ()));
 		
 		// Renderer
 		final ArmyListCellRenderer renderer = new ArmyListCellRenderer ();

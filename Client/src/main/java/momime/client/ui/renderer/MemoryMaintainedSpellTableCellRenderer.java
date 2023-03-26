@@ -2,6 +2,7 @@ package momime.client.ui.renderer;
 
 import java.awt.Component;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -55,9 +56,9 @@ public final class MemoryMaintainedSpellTableCellRenderer extends JLabel impleme
 					final BufferedImage spellImage = getUtils ().loadImage (imageName);
 					
 					// Now that we got the spell image OK, get the coloured mirror for the caster
-					final BufferedImage mirrorImage = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
-						true, null, null, null, spell.getCastingPlayerID (), null);
-					final BufferedImage mergedImage = new BufferedImage (mirrorImage.getWidth (), mirrorImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+					final Image mirrorImage = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
+						true, null, null, null, spell.getCastingPlayerID (), null, null);
+					final BufferedImage mergedImage = new BufferedImage (mirrorImage.getWidth (null), mirrorImage.getHeight (null), BufferedImage.TYPE_INT_ARGB);
 					final Graphics2D g = mergedImage.createGraphics ();
 					try
 					{

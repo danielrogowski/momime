@@ -1,6 +1,6 @@
 package momime.client.ui;
 
-import java.awt.image.BufferedImage;
+import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
 
@@ -20,10 +20,11 @@ public interface PlayerColourImageGenerator
 	/**
 	 * @param unitDef Unit to get the image for
 	 * @param playerID Player ID
+	 * @param doubleSize Whether to double the size of the unit image
 	 * @return Overland image for this unit, with the correct flag colour already drawn on; background square is not included
 	 * @throws IOException If there is a problem loading the images
 	 */
-	public BufferedImage getOverlandUnitImage (final UnitEx unitDef, final int playerID) throws IOException;
+	public Image getOverlandUnitImage (final UnitEx unitDef, final int playerID, final boolean doubleSize) throws IOException;
 	
 	/**
 	 * @param frameNumber Frame number of the node aura animation
@@ -32,7 +33,7 @@ public interface PlayerColourImageGenerator
 	 * @return Node aura image in their correct colour
 	 * @throws IOException If there is a problem loading the flag image
 	 */
-	public BufferedImage getNodeAuraImage (final int frameNumber, final int playerID, final boolean warped) throws IOException;
+	public Image getNodeAuraImage (final int frameNumber, final int playerID, final boolean warped) throws IOException;
 	
 	/**
 	 * @param d Direction of border edge to draw
@@ -40,7 +41,7 @@ public interface PlayerColourImageGenerator
 	 * @return Border edge in player colour
 	 * @throws IOException If there is a problem loading the border image
 	 */
-	public BufferedImage getFriendlyZoneBorderImage (final int d, final int playerID) throws IOException;
+	public Image getFriendlyZoneBorderImage (final int d, final int playerID) throws IOException;
 
 	/**
 	 * Images (typically of unit figures) shaded by one or more unit skills that change a unit's appearance, e.g. Black Sleep or Invisibility
@@ -56,10 +57,11 @@ public interface PlayerColourImageGenerator
 	 * @param flagOffsetY Y offset to draw flag
 	 * @param playerID Player who owns the unit; if this is not supplied then the flag image will be ignored (if there is one) 
 	 * @param shadingColours List of shading colours to apply to the image
+	 * @param resizeFactor Factor to multiply the size of the image by
 	 * @return Image with modified colours
 	 * @throws IOException If there is a problem loading the image
 	 */
-	public BufferedImage getModifiedImage (final String imageName, final boolean playerColourEntireImage,
+	public Image getModifiedImage (final String imageName, final boolean playerColourEntireImage,
 		final String flagName, final Integer flagOffsetX, final Integer flagOffsetY,
-		final Integer playerID, final List<String> shadingColours) throws IOException;
+		final Integer playerID, final List<String> shadingColours, final Double resizeFactor) throws IOException;
 }

@@ -140,8 +140,8 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		final int castingPlayerID = (getAddSpellMessage () != null) ? getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () :
 			getShowSpellAnimationMessage ().getCastingPlayerID ();
 		
-		final BufferedImage mirror = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
-			true, null, null, null, castingPlayerID, null);
+		final Image mirror = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
+			true, null, null, null, castingPlayerID, null, null);
 		
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), castingPlayerID, "OverlandEnchantmentsUI");
 		
@@ -253,7 +253,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 				}
 				
 				// Always draw the mirror frame last, to cover up whatever has been drawn in the circle
-				g.drawImage (mirror, 0, 0, mirror.getWidth () * 2, mirror.getHeight () * 2, null);
+				g.drawImage (mirror, 0, 0, mirror.getWidth (null) * 2, mirror.getHeight (null) * 2, null);
 			}
 		};
 

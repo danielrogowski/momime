@@ -3,6 +3,7 @@ package momime.client.ui.components;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -77,13 +78,13 @@ public final class UnitRowDisplayButton extends JButton
 			try
 			{
 				// Draw player colour patch
-				final BufferedImage playerColour = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.UNIT_BACKGROUND,
-					true, null, null, null, getUnit ().getOwningPlayerID (), null);
+				final Image playerColour = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.UNIT_BACKGROUND,
+					true, null, null, null, getUnit ().getOwningPlayerID (), null, null);
 				g.drawImage (playerColour, offset, offset, null);
 			
 				// Draw the unit itself
 				final UnitEx unitDef = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitRowDisplayButton");
-				final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getUnit ().getOwningPlayerID ());
+				final Image unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getUnit ().getOwningPlayerID (), false);
 				g.drawImage (unitImage, offset, offset, null);
 			}
 			catch (final IOException e)

@@ -29,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.utils.swing.ModifiedImageCacheImpl;
 import com.ndg.utils.swing.NdgUIUtils;
 import com.ndg.utils.swing.NdgUIUtilsImpl;
 import com.ndg.utils.swing.zorder.ZOrderGraphicsImmediateImpl;
@@ -553,11 +554,15 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		anim.setUtils (utils);
 		
 		// Image generator
+		final ModifiedImageCacheImpl cache = new ModifiedImageCacheImpl ();
+		cache.setUtils (utils);
+		
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
 		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		gen.setKnownWizardUtils (knownWizardUtils);
+		gen.setModifiedImageCache (cache);
 		
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();

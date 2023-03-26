@@ -3,6 +3,7 @@ package momime.client.ui.renderer;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,13 +73,13 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 		final Entry<MapCoordinates3DEx, List<MemoryUnit>> value, final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		// Pre-load the unit images, rather than doing it every redraw
-		final List<BufferedImage> unitImages = new ArrayList<BufferedImage> ();
+		final List<Image> unitImages = new ArrayList<Image> ();
 		try
 		{		
 			for (final MemoryUnit unit : value.getValue ())
 			{
 				final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "ArmyListCellRenderer");
-				unitImages.add (getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID ()));
+				unitImages.add (getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID (), false));
 			}
 		}
 		catch (final IOException e)
@@ -98,10 +99,10 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 				
 				// Draw all the units
 				int x = LEFT_BORDER;
-				for (final BufferedImage unitImage : unitImages)
+				for (final Image unitImage : unitImages)
 				{
-					g.drawImage (unitImage, x, TOP_BORDER, unitImage.getWidth () * 2, unitImage.getHeight () * 2, null);
-					x = x + unitImage.getWidth () * 2;
+					g.drawImage (unitImage, x, TOP_BORDER, unitImage.getWidth (null) * 2, unitImage.getHeight (null) * 2, null);
+					x = x + unitImage.getWidth (null) * 2;
 				}
 			}
 		};

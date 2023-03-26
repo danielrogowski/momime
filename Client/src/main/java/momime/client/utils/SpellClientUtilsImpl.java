@@ -237,9 +237,9 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 						else
 						{
 							// Now that we got the spell image OK, get the coloured mirror for the caster
-							final BufferedImage mirrorImage = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
-								true, null, null, null, castingPlayerID, null);
-							image = new BufferedImage (mirrorImage.getWidth (), mirrorImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+							final Image mirrorImage = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
+								true, null, null, null, castingPlayerID, null, null);
+							image = new BufferedImage (mirrorImage.getWidth (null), mirrorImage.getHeight (null), BufferedImage.TYPE_INT_ARGB);
 							final Graphics2D g = image.createGraphics ();
 							try
 							{

@@ -565,8 +565,8 @@ public final class WizardsUI extends MomClientFrameUI
 						"/momime.client.graphics/ui/backgrounds/gem.png" : "/momime.client.graphics/ui/backgrounds/gemCracked.png";
 					final String gemPressedImageName = "/momime.client.graphics/ui/backgrounds/gemPressed.png";
 
-					BufferedImage wizardNormalImage;
-					BufferedImage wizardPressedImage;
+					Image wizardNormalImage;
+					Image wizardPressedImage;
 					if (wizardDetails == null)
 					{
 						// Don't know what colour to make the gem if we've never met them
@@ -576,9 +576,9 @@ public final class WizardsUI extends MomClientFrameUI
 					else
 					{
 						wizardNormalImage = getPlayerColourImageGenerator ().getModifiedImage
-							(gemNormalImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
+							(gemNormalImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null);
 						wizardPressedImage = getPlayerColourImageGenerator ().getModifiedImage
-							(gemPressedImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
+							(gemPressedImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null);
 					}
 					
 					// Find the wizard's photo
@@ -597,13 +597,13 @@ public final class WizardsUI extends MomClientFrameUI
 						
 						// Add the wizard portrait onto the gems
 						final BufferedImage mergedNormalImage = new BufferedImage
-							(wizardNormalImage.getWidth (), wizardNormalImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+							(wizardNormalImage.getWidth (null), wizardNormalImage.getHeight (null), BufferedImage.TYPE_INT_ARGB);
 						final Graphics2D g = mergedNormalImage.createGraphics ();
 						try
 						{
 							g.drawImage (wizardNormalImage, 0, 0, null);
-							g.drawImage (scaledPortrait, (wizardNormalImage.getWidth () - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2,
-								(wizardNormalImage.getHeight () - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2, null);
+							g.drawImage (scaledPortrait, (wizardNormalImage.getWidth (null) - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2,
+								(wizardNormalImage.getHeight (null) - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2, null);
 						}
 						finally
 						{
@@ -611,13 +611,13 @@ public final class WizardsUI extends MomClientFrameUI
 						}
 						
 						final BufferedImage mergedPressedImage = new BufferedImage
-							(wizardNormalImage.getWidth (), wizardNormalImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+							(wizardNormalImage.getWidth (null), wizardNormalImage.getHeight (null), BufferedImage.TYPE_INT_ARGB);
 						final Graphics2D g2 = mergedPressedImage.createGraphics ();
 						try
 						{
 							g2.drawImage (wizardPressedImage, 0, 0, null);
-							g2.drawImage (scaledPortrait, ((wizardPressedImage.getWidth () - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2) + 1,
-								((wizardPressedImage.getHeight () - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2) + 1, null);
+							g2.drawImage (scaledPortrait, ((wizardPressedImage.getWidth (null) - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2) + 1,
+								((wizardPressedImage.getHeight (null) - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2) + 1, null);
 						}
 						finally
 						{
@@ -689,7 +689,7 @@ public final class WizardsUI extends MomClientFrameUI
 									throw new IOException ("Don't know image to draw for pact type " + pact.getPactType ());
 							}
 							
-							final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (pactTypeImage, true, null, null, null, pact.getPactWithPlayerID (), null);
+							final Image image = getPlayerColourImageGenerator ().getModifiedImage (pactTypeImage, true, null, null, null, pact.getPactWithPlayerID (), null, null);
 							final JLabel label = new JLabel (new ImageIcon (image));
 							pactIcons.add (label);
 							

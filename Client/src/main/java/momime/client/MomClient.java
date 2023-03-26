@@ -1,15 +1,8 @@
 package momime.client;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-
-import com.ndg.multiplayer.base.client.ClientToServerConnection;
-import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.client.MultiplayerSessionClient;
 
 import momime.client.database.NewGameDatabase;
 import momime.client.ui.frames.ChangeConstructionUI;
@@ -28,71 +21,12 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
  * mocked out in unit tests.  So instead this interface exists as the reference point for any places that
  * obtain data structures from the client so we don't have to use the real MomClientImpl in unit tests.
  */
-public interface MomClient
+public interface MomClient extends MultiplayerSessionClient
 {
-	// Methods implemented in MultiplayerBaseClient
-	
-	/**
-	 * @return Connection to server
-	 */
-	public ClientToServerConnection getServerConnection ();
-	
-	/**
-	 * @param addr IP or DNS name of the server
-	 */
-	public void setServerAddress (final String addr);
-	
-	/**
-	 * @param port Port TCP/IP port number that the server is listening on
-	 */
-	public void setServerPort (final int port);
-	
-	/**
-	 * Initiate connection to the server
-	 * @throws IOException If there is a problem making the connection
-	 * @throws InterruptedException If there is a problem waiting for the thread to start up
-	 * @throws JAXBException If there is a problem sending something to connecting client
-	 * @throws XMLStreamException If there is a problem sending something to connecting client
-	 */
-	public void connect () throws IOException, InterruptedException, JAXBException, XMLStreamException;
-	
-	/**
-	 * Finishes a custom duration message, or an animated message with isFinishAfterDuration = false
-	 * 
-	 * @param msg Message to finish
-	 * @throws IOException If we are unable to process the message
-	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
-	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
-	 */
-	public void finishCustomDurationMessage (final CustomDurationServerToClientMessage msg) throws IOException, JAXBException, XMLStreamException;
-	
-	// Methods implemented in MultiplayerSessionClient
-	
-	/**
-	 * @return Publicly available information about all players in our current session; this is how we access our own public details too, by searching for our player ID
-	 */
-	public List<PlayerPublicDetails> getPlayers ();
-
-	/**
-	 * @return The player ID we're currently logged as; null if not currently logged in
-	 */
-	public Integer getOurPlayerID ();
-	
-	// Methods implemented in MomClientImpl
-	
-	/**
-	 * @return Name that we logged in using
-	 */
-	public String getOurPlayerName ();
-	
-	/**
-	 * @param name Name that we logged in using
-	 */
-	public void setOurPlayerName (final String name);
-	
 	/**
 	 * @return Public knowledge structure, typecasted to MoM specific type
 	 */
+	@Override
 	public MomGeneralPublicKnowledge getGeneralPublicKnowledge ();
 
 	/**
@@ -103,16 +37,19 @@ public interface MomClient
 	/**
 	 * @return Session description, typecasted to MoM specific type
 	 */
+	@Override
 	public MomSessionDescription getSessionDescription ();
 	
 	/**
 	 * @return Private knowledge about our player that is persisted to save game files,  typecasted to MoM specific type
 	 */
+	@Override
 	public MomPersistentPlayerPrivateKnowledge getOurPersistentPlayerPrivateKnowledge ();
 	
 	/**
 	 * @return Private knowledge about our player that is not persisted to save game files,  typecasted to MoM specific type
 	 */
+	@Override
 	public MomTransientPlayerPrivateKnowledge getOurTransientPlayerPrivateKnowledge ();
 
 	/**

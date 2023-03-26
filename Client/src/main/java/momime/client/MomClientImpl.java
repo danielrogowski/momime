@@ -14,8 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.exception.XMLUnexpectedElement;
-import com.ndg.multiplayer.client.MultiplayerSessionClient;
 import com.ndg.multiplayer.client.MultiplayerSessionClientEvent;
+import com.ndg.multiplayer.client.MultiplayerSessionClientImpl;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.BrowseSavePointsFailedReason;
@@ -89,13 +89,10 @@ import momime.common.messages.TurnSystem;
 /**
  * Main multiplayer controller class for the client
  */
-public final class MomClientImpl extends MultiplayerSessionClient implements MomClient
+public final class MomClientImpl extends MultiplayerSessionClientImpl implements MomClient
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (MomClientImpl.class);
-	
-	/** Name that we logged in using */
-	private String ourPlayerName;
 	
 	/** Main menu with options to connect to a server and create or join games */
 	private MainMenuUI mainMenuUI;
@@ -899,24 +896,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final MomTransientPlayerPrivateKnowledge getOurTransientPlayerPrivateKnowledge ()
 	{
 		return (MomTransientPlayerPrivateKnowledge) super.getOurTransientPlayerPrivateKnowledge ();
-	}
-	
-	/**
-	 * @return Name that we logged in using
-	 */
-	@Override
-	public final String getOurPlayerName ()
-	{
-		return ourPlayerName;
-	}
-
-	/**
-	 * @param name Name that we logged in using
-	 */
-	@Override
-	public final void setOurPlayerName (final String name)
-	{
-		ourPlayerName = name;
 	}
 	
 	/**

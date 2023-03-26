@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.utils.swing.ModifiedImageCacheImpl;
 import com.ndg.utils.swing.NdgUIUtils;
 import com.ndg.utils.swing.NdgUIUtilsImpl;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -182,11 +183,15 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		spellMessage.setNewlyCast (true);
 
 		// Using the real image generator is easier than mocking it out
+		final ModifiedImageCacheImpl cache = new ModifiedImageCacheImpl ();
+		cache.setUtils (utils);
+
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
 		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		gen.setKnownWizardUtils (knownWizardUtils);
+		gen.setModifiedImageCache (cache);
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/OverlandEnchantmentsUI.xml"));

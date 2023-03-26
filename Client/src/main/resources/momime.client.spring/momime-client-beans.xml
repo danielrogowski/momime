@@ -991,6 +991,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	
+	<bean id="modifiedImageCache" class="com.ndg.utils.swing.ModifiedImageCacheImpl">
+		<property name="utils" ref="uiUtils" />
+	</bean>
+	
 	<bean id="clientCityCalculations" class="momime.client.calculations.ClientCityCalculationsImpl">
 		<property name="client" ref="client" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
@@ -1064,6 +1068,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
@@ -1620,6 +1625,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
 		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
@@ -1841,6 +1847,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 	
 	<bean id="citiesListLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1895,6 +1902,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="helpUI" ref="helpUI" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 
 	<bean id="historyLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1942,6 +1950,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 	
 	<!-- Prototype UI components -->
@@ -2006,6 +2015,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="mediumFont" ref="mediumFont" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 
 	<bean id="citiesListEntryLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -2041,6 +2051,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="mediumFont" ref="mediumFont" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 
 	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
@@ -2154,6 +2165,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 		<property name="cityViewPanel" ref="cityViewPanel" />																				<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 		<property name="memoryMaintainedSpellListCellRenderer" ref="memoryMaintainedSpellListCellRenderer" />	<!-- So Spring will create and inject a new spell list renderer for each city view UI -->
 	</bean>
@@ -2321,6 +2333,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="heroItemInfoUI" class="momime.client.ui.frames.HeroItemInfoUI" scope="prototype">
 		<property name="heroItemInfoLayout" ref="heroItemInfoLayout" />
 		<property name="client" ref="client" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="languageHolder" ref="languageHolder" />
@@ -2338,6 +2351,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 	
 	<bean id="treasureLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

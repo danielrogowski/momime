@@ -27,6 +27,7 @@ import javax.swing.SwingConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.utils.swing.ModifiedImageCache;
 import com.ndg.utils.swing.actions.LoggingAction;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -92,6 +93,9 @@ public final class CreateArtifactUI extends MomClientFrameUI
 
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** OK action */
 	private Action okAction;
@@ -479,7 +483,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			imageNumber = imageNumber - heroItemType.getHeroItemTypeImageFile ().size ();
 		
 		// Update icon
-		itemImage.setIcon (new ImageIcon (getUtils ().doubleSize (getUtils ().loadImage (heroItemType.getHeroItemTypeImageFile ().get (imageNumber)))));
+		itemImage.setIcon (new ImageIcon (getModifiedImageCache ().doubleSize (heroItemType.getHeroItemTypeImageFile ().get (imageNumber))));
 	}
 	
 	/**
@@ -810,5 +814,21 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
 	}
 }

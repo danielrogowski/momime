@@ -633,7 +633,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 				mirror.setRGB (x, y, Color.BLUE.getRGB ());
 		
 		final PlayerColourImageGenerator gen = mock (PlayerColourImageGenerator.class);
-		when (gen.getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR, true, null, null, null, 3, null)).thenReturn (mirror);
+		when (gen.getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR, true, null, null, null, 3, null, null)).thenReturn (mirror);
 		
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);

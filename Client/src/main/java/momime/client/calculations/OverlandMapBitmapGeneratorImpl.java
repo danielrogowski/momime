@@ -2,6 +2,7 @@ package momime.client.calculations;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Set;
@@ -301,8 +302,8 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						final int ypos = (y * overlandMapTileSet.getTileHeight ()) - ((image.getHeight () - overlandMapTileSet.getTileHeight ()) / 2);
 	
 						// Use same image for all frames
-						final BufferedImage cityFlagImage = getPlayerColourImageGenerator ().getModifiedImage
-							("/momime.client.graphics/flags/cityFlag.png", true, null, null, null, gc.getCityData ().getCityOwnerID (), null);
+						final Image cityFlagImage = getPlayerColourImageGenerator ().getModifiedImage
+							("/momime.client.graphics/flags/cityFlag.png", true, null, null, null, gc.getCityData ().getCityOwnerID (), null, null);
 						
 						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 						{
@@ -365,7 +366,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						// Copy each animation frame over to each bitmap
 						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 						{
-							final BufferedImage nodeAuraImage = getPlayerColourImageGenerator ().getNodeAuraImage (frameNo, mc.getTerrainData ().getNodeOwnerID (),
+							final Image nodeAuraImage = getPlayerColourImageGenerator ().getNodeAuraImage (frameNo, mc.getTerrainData ().getNodeOwnerID (),
 								(mc.getTerrainData ().isWarped () != null) && (mc.getTerrainData ().isWarped ()));
 	
 							g [frameNo].drawImage (nodeAuraImage, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);

@@ -393,14 +393,17 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			try
 			{
 				// Attacker - just draw it as one kind of damage during the animation
-				attackerUnit.getUnitDamage ().clear ();
-				final int attackerDamageAnim = attackerDamageTakenStart + (int) ((attackerDamageTakenEnd - attackerDamageTakenStart) * ratio);
-				if (attackerDamageAnim > 0)
+				if (attackerUnit != null)
 				{
-					final UnitDamage dmg = new UnitDamage ();
-					dmg.setDamageType (StoredDamageTypeID.HEALABLE);
-					dmg.setDamageTaken (attackerDamageAnim);
-					attackerUnit.getUnitDamage ().add (dmg);
+					attackerUnit.getUnitDamage ().clear ();
+					final int attackerDamageAnim = attackerDamageTakenStart + (int) ((attackerDamageTakenEnd - attackerDamageTakenStart) * ratio);
+					if (attackerDamageAnim > 0)
+					{
+						final UnitDamage dmg = new UnitDamage ();
+						dmg.setDamageType (StoredDamageTypeID.HEALABLE);
+						dmg.setDamageTaken (attackerDamageAnim);
+						attackerUnit.getUnitDamage ().add (dmg);
+					}
 				}
 
 				final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());

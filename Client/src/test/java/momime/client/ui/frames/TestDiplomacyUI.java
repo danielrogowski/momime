@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.swing.ModifiedImageCache;
 import com.ndg.utils.swing.NdgUIUtils;
 import com.ndg.utils.swing.NdgUIUtilsImpl;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -103,6 +106,15 @@ public final class TestDiplomacyUI extends ClientTestData
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation (OverlandEnchantmentsUI.MIRROR_ANIM, "DiplomacyUI")).thenReturn (fade);
+		
+		// Image sizes
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		for (int n = 0; n < 2; n++)
+		{
+			final BufferedImage originalSize = utils.loadImage ((n == 0) ? relationScore.getEyesLeftImage () : relationScore.getEyesRightImage ());
+			final Image doubleSize = originalSize.getScaledInstance (originalSize.getWidth () * 2, originalSize.getHeight () * 2, Image.SCALE_FAST);
+			when (cache.doubleSize ((n == 0) ? relationScore.getEyesLeftImage () : relationScore.getEyesRightImage ())).thenReturn (doubleSize);
+		}
 		
 		// Mock entries from the language XML
 		final DiplomacyScreen diplomacyScreenLang = new DiplomacyScreen ();
@@ -194,6 +206,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		final DiplomacyUI diplomacy = new DiplomacyUI ();
 		diplomacy.setDiplomacyLayout (layout);
 		diplomacy.setUtils (utils);
+		diplomacy.setModifiedImageCache (cache);
 		diplomacy.setClient (client);
 		diplomacy.setGraphicsDB (gfx);
 		diplomacy.setMultiplayerSessionUtils (multiplayerSessionUtils);

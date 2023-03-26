@@ -31,6 +31,8 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.utils.swing.GridBagConstraintsNoFill;
 import com.ndg.utils.swing.JPanelWithConstantRepaints;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.ModifiedImageCacheImpl;
 import com.ndg.utils.swing.NdgUIUtils;
 import com.ndg.utils.swing.NdgUIUtilsImpl;
 import com.ndg.utils.swing.actions.MessageDialogAction;
@@ -63,6 +65,9 @@ public final class LineUpShadows
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
+	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** Parsed database XML */
 	private MomDatabase db;
@@ -298,13 +303,12 @@ public final class LineUpShadows
 							}
 							
 							final String imageFilename = (frame.getShadowlessImageFile () != null) ? frame.getShadowlessImageFile () : frame.getImageFile ();
-							final BufferedImage originalImage = getUtils ().loadImage (imageFilename);
-							final Image image = getUtils ().doubleSize (originalImage);
+							final Image image = getModifiedImageCache ().doubleSize (imageFilename);
 							g.drawImage (image, x * 100, baseY, null);
 							
 							// Circle should be in the centre of the base of the unit
 							final int r = 4;
-							g.drawOval ((x * 100) + originalImage.getWidth () - (r / 2), (y * 100) + 47 - (r / 2), r, r);
+							g.drawOval ((x * 100) + (image.getWidth (null) / 2) - (r / 2), (y * 100) + 47 - (r / 2), r, r);
 						}
 						catch (final IOException e)
 						{
@@ -419,14 +423,36 @@ public final class LineUpShadows
 	}
 	
 	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
+	}
+	
+	/**
 	 * @param args Command line arguments, ignored
 	 */
 	public final static void main (final String [] args)
 	{
 		try
 		{
+			final NdgUIUtilsImpl utils = new NdgUIUtilsImpl ();
+			
+			final ModifiedImageCacheImpl cache = new ModifiedImageCacheImpl ();
+			cache.setUtils (utils);
+			
 			final LineUpShadows shad = new LineUpShadows ();
-			shad.setUtils (new NdgUIUtilsImpl ());
+			shad.setUtils (utils);
+			shad.setModifiedImageCache (cache);
 			shad.init ();
 		}
 		catch (final Exception e)

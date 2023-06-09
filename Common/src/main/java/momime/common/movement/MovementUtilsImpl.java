@@ -337,7 +337,7 @@ public final class MovementUtilsImpl implements MovementUtils
 			
 			astralGates = new HashSet<MapCoordinates2DEx> ();
 		else
-			astralGates = spells.stream ().filter (s -> (s.getCastingPlayerID () == movingPlayerID) && (s.getSpellID ().equals
+			astralGates = spells.stream ().filter (s -> (s.getCastingPlayerID () == movingPlayerID) && (s.getCityLocation () != null) && (s.getSpellID ().equals
 				(CommonDatabaseConstants.SPELL_ID_ASTRAL_GATE))).map (s -> new MapCoordinates2DEx (s.getCityLocation ().getX (), s.getCityLocation ().getY ())).collect
 					(Collectors.toSet ());
 		

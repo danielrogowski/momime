@@ -135,6 +135,17 @@
 		</property>
 	</bean>
 
+	<bean id="fatBookImageFileGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>fatBookImageFile</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="wizardGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
@@ -630,6 +641,7 @@
 				<entry key="pickType" value="pickTypeGrid" />
 				<entry key="pickTypeCount" value="pickTypeCountGrid" />
 				<entry key="bookImageFile" value="bookImageFileGrid" />
+				<entry key="fatBookImageFile" value="fatBookImageFileGrid" />
 				<entry key="wizard" value="wizardGrid" />
 				<entry key="wizardPickCount" value="wizardPickCountGrid" />
 				<entry key="populationTask" value="populationTaskGrid" />

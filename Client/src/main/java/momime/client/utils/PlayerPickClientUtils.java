@@ -21,4 +21,11 @@ public interface PlayerPickClientUtils
 	 * @throws RecordNotFoundException If this wizard has no combat music playlists defined
 	 */
 	public String chooseRandomBookImageFilename (final Pick pick) throws RecordNotFoundException;	
+
+	/**
+	 * @param pick Magic realm we want a fat book image for
+	 * @return Randomly selected image for this type of pick
+	 * @throws RecordNotFoundException If this wizard has no combat music playlists defined
+	 */
+	public String chooseRandomFatBookImageFilename (final Pick pick) throws RecordNotFoundException;	
 }

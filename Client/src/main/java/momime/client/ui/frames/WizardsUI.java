@@ -742,7 +742,23 @@ public final class WizardsUI extends MomClientFrameUI
 				// Pick must exist in the graphics XML file, but may not have any image(s)
 				final Pick pickDef = getClient ().getClientDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks");
 				if (pickDef.getBookImageFile ().size () > 0)
-					for (int n = 0; n < pick.getQuantity (); n++)
+				{
+					int booksLeft = pick.getQuantity ();
+					while ((booksLeft > 10) && (!pickDef.getFatBookImageFile ().isEmpty ()))
+					{
+						// Choose random image for the pick
+						final BufferedImage bookImage = getUtils ().loadImage (getPlayerPickClientUtils ().chooseRandomFatBookImageFilename (pickDef));
+						
+						// Add on merged bookshelf
+						mergedBookshelfGridx++;
+						final JLabel mergedBookshelfImg = getUtils ().createImage (bookImage);
+						bookshelf.add (mergedBookshelfImg, getUtils ().createConstraintsNoFill (mergedBookshelfGridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
+						bookImages.add (mergedBookshelfImg);
+
+						booksLeft = booksLeft - 10;
+					}
+					
+					while (booksLeft > 0)
 					{
 						// Choose random image for the pick
 						final BufferedImage bookImage = getUtils ().loadImage (getPlayerPickClientUtils ().chooseRandomBookImageFilename (pickDef));
@@ -752,7 +768,10 @@ public final class WizardsUI extends MomClientFrameUI
 						final JLabel mergedBookshelfImg = getUtils ().createImage (bookImage);
 						bookshelf.add (mergedBookshelfImg, getUtils ().createConstraintsNoFill (mergedBookshelfGridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
 						bookImages.add (mergedBookshelfImg);
+						
+						booksLeft--;
 					}
+				}
 			}
 		
 		// Redrawing only the bookshelf isn't enough, because the new books might be smaller than before so only the smaller so

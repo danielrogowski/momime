@@ -126,6 +126,20 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 		final String filename = pick.getBookImageFile ().get (getRandomUtils ().nextInt (pick.getBookImageFile ().size ()));
 		return filename;
 	}
+	/**
+	 * @param pick Magic realm we want a fat book image for
+	 * @return Randomly selected image for this type of pick
+	 * @throws RecordNotFoundException If this wizard has no combat music playlists defined
+	 */
+	@Override
+	public final String chooseRandomFatBookImageFilename (final Pick pick) throws RecordNotFoundException
+	{
+		if (pick.getFatBookImageFile ().size () == 0)
+			throw new RecordNotFoundException ("BookImage", null, "chooseRandomFatBookImageFilename");
+		
+		final String filename = pick.getFatBookImageFile ().get (getRandomUtils ().nextInt (pick.getFatBookImageFile ().size ()));
+		return filename;
+	}
 
 	/**
 	 * @return Language database holder

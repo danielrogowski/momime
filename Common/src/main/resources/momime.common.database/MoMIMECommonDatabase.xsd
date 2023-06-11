@@ -2479,6 +2479,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 		        </xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="bookImageFile" type="momimecommon:imageFilename" nxe:label="Book image file" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fatBookImageFile" type="momimecommon:imageFilename" nxe:label="Fat book image file" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickPrerequisite" type="momimecommon:pickPrerequisite" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickProductionBonus" type="momimecommon:pickProductionBonus" />
 		</xsd:sequence>

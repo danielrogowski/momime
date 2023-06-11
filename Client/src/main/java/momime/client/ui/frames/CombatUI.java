@@ -989,7 +989,7 @@ public final class CombatUI extends MomClientFrameUI
 							getClient ().getSessionDescription ().getCombatMapSize (), false);
 						if (xu != null)
 						{
-							if ((xu == getSelectedUnitInCombat ()) || (xu.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
+							if ((xu.getMemoryUnit () == getSelectedUnitInCombat ()) || (xu.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
 								(xu.getDoubleCombatMovesLeft () == null) || (xu.getDoubleCombatMovesLeft () <= 0))
 							{
 								// Is there a unit info screen already open for this unit?

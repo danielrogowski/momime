@@ -317,7 +317,7 @@ public final class MovementUtilsImpl implements MovementUtils
 	@Override
 	public final Set<MapCoordinates3DEx> findEarthGates (final int movingPlayerID, final List<MemoryMaintainedSpell> spells)
 	{
-		return spells.stream ().filter (s -> (s.getCastingPlayerID () == movingPlayerID) && (s.getSpellID ().equals
+		return spells.stream ().filter (s -> (s.getCastingPlayerID () == movingPlayerID) && (s.getCityLocation () != null) && (s.getSpellID ().equals
 			(CommonDatabaseConstants.SPELL_ID_EARTH_GATE))).map (s -> (MapCoordinates3DEx) s.getCityLocation ()).collect
 				(Collectors.toSet ());
 	}

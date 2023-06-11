@@ -1277,7 +1277,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 						singular = getLanguages ().getDiplomacyScreen ().getThanksForExchangingSpell ();
 						break;
 						
-					// Other wizard broke telling us they are breaking our wizard pact or alliance nicely, via diplomacy screen
+					// Other wizard telling us they are breaking our wizard pact or alliance nicely, via diplomacy screen
 					case BREAK_WIZARD_PACT_OR_ALLIANCE:
 						variants = getLanguages ().getDiplomacyScreen ().getBreakPactPhrase ();
 						break;

@@ -2,6 +2,7 @@ package momime.server.ai;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -23,6 +24,7 @@ import momime.common.utils.KnownWizardUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.messages.process.RequestDiplomacyMessageImpl;
+import momime.server.process.DiplomacyProcessing;
 import momime.server.process.PlayerMessageProcessing;
 
 /**
@@ -44,6 +46,9 @@ public final class DiplomacyProposalsAIImpl implements DiplomacyProposalsAI
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
+	
+	/** Methods for processing agreed diplomatic actions */
+	private DiplomacyProcessing diplomacyProcessing; 
 	
 	/**
 	 * @param aiPlayer AI player whose turn to take
@@ -172,9 +177,9 @@ public final class DiplomacyProposalsAIImpl implements DiplomacyProposalsAI
 			final DiplomacyProposal proposal = mom.getPendingDiplomacyProposals ().get (0);
 			mom.getPendingDiplomacyProposals ().remove (0);
 			
+			// Proposing spell exchanges needs to send TradeableSpellsMessage instead, and tell the client the list of spells they can choose from
 			if (proposal.getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
 			{
-				// Proposing spell exchanges needs to send TradeableSpellsMessage instead, and tell the client the list of spells they can choose from
 				final MomPersistentPlayerPrivateKnowledge aiPlayerPriv = (MomPersistentPlayerPrivateKnowledge) aiPlayer.getPersistentPlayerPrivateKnowledge ();
 				final MomPersistentPlayerPrivateKnowledge talkToPlayerPriv = (MomPersistentPlayerPrivateKnowledge) talkToPlayer.getPersistentPlayerPrivateKnowledge ();
 				
@@ -189,9 +194,17 @@ public final class DiplomacyProposalsAIImpl implements DiplomacyProposalsAI
 				
 				talkToPlayer.getConnection ().sendMessageToClient (msg);
 			}
+			
+			// Proposals where the player doesn't get a yes/no choice - they're just being told its happening
+			else if (proposal.getAction () == DiplomacyAction.BREAK_WIZARD_PACT_NICELY)
+				getDiplomacyProcessing ().breakWizardPactNicely (aiPlayer, talkToPlayer, mom);
+
+			else if (proposal.getAction () == DiplomacyAction.BREAK_ALLIANCE_NICELY)
+				getDiplomacyProcessing ().breakAllianceNicely (aiPlayer, talkToPlayer, mom);
+			
+			// Normal proposal
 			else
 			{
-				// Normal proposal
 				final DiplomacyMessage msg = new DiplomacyMessage ();
 				msg.setTalkFromPlayerID (aiPlayer.getPlayerDescription ().getPlayerID ());
 				msg.setAction (proposal.getAction ());
@@ -283,5 +296,21 @@ public final class DiplomacyProposalsAIImpl implements DiplomacyProposalsAI
 	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return Methods for processing agreed diplomatic actions
+	 */
+	public final DiplomacyProcessing getDiplomacyProcessing ()
+	{
+		return diplomacyProcessing;
+	}
+	
+	/**
+	 * @param p Methods for processing agreed diplomatic actions
+	 */
+	public final void setDiplomacyProcessing (final DiplomacyProcessing p)
+	{
+		diplomacyProcessing = p;
 	}
 }

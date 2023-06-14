@@ -36,8 +36,35 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.6.2</b></td>
-			<td align=left><b>31 Dec 2022</b></td>
+			<td align=left><b>Current version: 1.6.3</b></td>
+			<td align=left><b>14 Jun 2023</b></td>
+			<td align=left>
+				<b>Bug fixes:</b>
+				<ul>
+					<li>You can't pick multiple settlers and then build city as it won't know which one to use.  Unfortunately the AI wizards make this mistake a lot, sending piles of settlers to a space they want a
+						new city.  The validation catches it and stops them building a town, leaving a pile of settlers who just sit there.  Fixed this so in this situation, the AI will pick a random settler to make the new town.
+					<li>Fixed AI players telling you they are breaking a wizard pact or alliance with you.  Previously the pact or alliance wouldn't actually be removed.
+					<li>Fixed crash sometimes when you have completed casting Astral Game or Earth Gate but haven't yet chosen which city target it on
+					<li>If you right click on the unit that's already selected in combat, will show its unit info screen (worked before but was broken since 0.9.9.3)
+					<li>Fixed one Myrror overland tile that had a magenta line on the side (its like that in the original MoM too, and thanks Simbey for pointing this out)
+					<li>Fixed positions of some of the pact icons (wizard pact, alliance or war) on the diplomacy screen; some of them overlapped and displayed against the wrong wizard
+				</ul>
+				
+				<b>New features:</b>
+				<ul>
+					<li>On the bookshelf on the wizards screen, if a wizard has more than 10 of a particular spell book, now shows an extra large book to represent 10 spell books, so the shelf does not overflow if you collect a very large number of books
+				</ul>
+				
+				<b>Performance:</b>
+				<ul>
+					<li>Cities get updated a lot, especially during AI player turns.  Made this so the client only regenerates the overland map bitmap and other elements when it actually needs to, rather than on every city update.
+						This helps a lot with the client not locking up during AI player turns.
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6.2</td>
+			<td align=left>31 Dec 2022</td>
 			<td align=left>
 				<b>Spell book rework:</b>
 				<ul>

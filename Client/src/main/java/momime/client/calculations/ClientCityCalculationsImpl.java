@@ -377,7 +377,12 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		
 		// Production from population irrespective of what task they're performing (taxes)
 		if (calc.getDoubleProductionAmountAllPopulation () > 0)
+		{
 			productionBeforeBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldFromTaxes ())));
+			
+			if (calc.getRaceTaxIncomeMultiplier () > 1)
+				productionBeforeBreakdowns.add (INDENT + getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldFromTaxesAfterMultiplier ())));
+		}
 		
 		// Consumption from population irrespective of what task they're performing (eating rations)
 		if (calc.getConsumptionAmountAllPopulation () > 0)

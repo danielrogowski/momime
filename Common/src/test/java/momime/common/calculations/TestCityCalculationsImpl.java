@@ -3506,11 +3506,16 @@ public final class TestCityCalculationsImpl
 		final TaxRate taxRate = new TaxRate ();
 		taxRate.setDoubleTaxGold (3);
 		when (db.findTaxRate ("TR02", "addGoldFromTaxes")).thenReturn (taxRate);
+		
+		final RaceEx race = new RaceEx ();
+		race.setTaxIncomeMultiplier (2);
+		when (db.findRace ("RC01", "addGoldFromTaxes")).thenReturn (race);
 
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityPopulation (8723);
 		cityData.setNumberOfRebels (2);
+		cityData.setCityRaceID ("RC01");
 
 		// Additions
 		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
@@ -3529,8 +3534,10 @@ public final class TestCityCalculationsImpl
 		assertEquals (6, gold.getApplicablePopulation ());
 		assertEquals (3, gold.getDoubleProductionAmountEachPopulation ());
 		assertEquals (18, gold.getDoubleProductionAmountAllPopulation ());
+		assertEquals (2, gold.getRaceTaxIncomeMultiplier ());
+		assertEquals (36, gold.getDoubleProductionAmountAllPopulationAfterMultiplier ());
 		
-		verify (cityProductionUtils).addProductionAmountToBreakdown (gold, 18, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (gold, 36, null, db);
 		verifyNoMoreInteractions (cityProductionUtils);
 	}
 	

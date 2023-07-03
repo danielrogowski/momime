@@ -38,7 +38,6 @@ import momime.common.database.Plane;
 import momime.common.database.ProductionAmountBucketID;
 import momime.common.database.ProductionType;
 import momime.common.database.ProductionTypeAndDoubledValue;
-import momime.common.database.Race;
 import momime.common.database.RaceEx;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RaceUnrest;
@@ -276,7 +275,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Nomad's bonus
 		final OverlandMapCityData cityData = centreTile.getCityData ();
 		final String raceID = (cityData != null) ? cityData.getCityRaceID () : null;
-		final Race race = (raceID != null) ? db.findRace (raceID, "calculateGoldTradeBonus") : null;
+		final RaceEx race = (raceID != null) ? db.findRace (raceID, "calculateGoldTradeBonus") : null;
 		final Integer raceBonus = (race != null) ? race.getGoldTradeBonus () : null;
 		gold.setTradePercentageBonusFromRace ((raceBonus != null) ? raceBonus : 0);
 		
@@ -939,12 +938,16 @@ public final class CityCalculationsImpl implements CityCalculations
 		final CityProductionBreakdown gold;
 		if ((taxRate.getDoubleTaxGold () > 0) && (taxPayers > 0))
 		{
+			final RaceEx cityRace = db.findRace (cityData.getCityRaceID (), "addGoldFromTaxes");
+			
 			gold = new CityProductionBreakdown ();
 			gold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 			gold.setApplicablePopulation (taxPayers);
 			gold.setDoubleProductionAmountEachPopulation (taxRate.getDoubleTaxGold ());
 			gold.setDoubleProductionAmountAllPopulation (taxPayers * taxRate.getDoubleTaxGold ());
-			getCityProductionUtils ().addProductionAmountToBreakdown (gold, gold.getDoubleProductionAmountAllPopulation (), null, db);
+			gold.setDoubleProductionAmountAllPopulationAfterMultiplier (taxPayers * taxRate.getDoubleTaxGold () * cityRace.getTaxIncomeMultiplier ());
+			gold.setRaceTaxIncomeMultiplier (cityRace.getTaxIncomeMultiplier ());
+			getCityProductionUtils ().addProductionAmountToBreakdown (gold, gold.getDoubleProductionAmountAllPopulationAfterMultiplier (), null, db);
 		}
 		else
 			gold = null;
@@ -996,7 +999,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @throws MomException If there is a problem totalling up the production values
 	 */
 	@Override
-	public final void addProductionFromPopulation (final CityProductionBreakdownsEx productionValues, final Race race, final String populationTaskID,
+	public final void addProductionFromPopulation (final CityProductionBreakdownsEx productionValues, final RaceEx race, final String populationTaskID,
 		final int numberDoingTask, final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{

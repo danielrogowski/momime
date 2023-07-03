@@ -1501,20 +1501,23 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL each producing PRODUCTION_PER_TASK PRODUCTION_TYPE = PRODUCTION_ALL_PEOPLE_DOING_TASK PRODUCTION_TYPE</text>
 		</productionFromMultiplePopulation>
 		<productionFromMultiplePopulation language="fr">
-			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL produisent chacun PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL produisent chacun PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_ALL_PEOPLE_DOING_TASK PRODUCTION_TYPE</text>
 		</productionFromMultiplePopulation>
 		<productionFromMultiplePopulation language="pl">
-			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL każdy produkuje PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL każdy produkuje PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_ALL_PEOPLE_DOING_TASK PRODUCTION_TYPE</text>
 		</productionFromMultiplePopulation>
 		<goldFromTaxes language="en">
 			<text>APPLICABLE_POPULATION population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_ALL_PEOPLE PRODUCTION_TYPE</text>
 		</goldFromTaxes>
 		<goldFromTaxes language="fr">
-			<text>NUMBER_DOING_TASK personnes payant chacun PRODUCTION_PER_PERSON PRODUCTION_TYPE de taxes = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+			<text>NUMBER_DOING_TASK personnes payant chacun PRODUCTION_PER_PERSON PRODUCTION_TYPE de taxes = PRODUCTION_ALL_PEOPLE PRODUCTION_TYPE</text>
 		</goldFromTaxes>
 		<goldFromTaxes language="pl">
-			<text>NUMBER_DOING_TASK population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+			<text>NUMBER_DOING_TASK population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_ALL_PEOPLE PRODUCTION_TYPE</text>
 		</goldFromTaxes>
+		<goldFromTaxesAfterMultiplier language="en">
+			<text>xTAX_INCOME_MULTIPLIER_FROM_RACE due to Race = PRODUCTION_ALL_PEOPLE_AFTER_MULTIPLIER PRODUCTION_TYPE</text>
+		</goldFromTaxesAfterMultiplier>
 		<productionFromSingleTile language="en">
 			<text>TILE_TYPE tile producing PRODUCTION_ALL_TILES PRODUCTION_TYPE</text>
 		</productionFromSingleTile>

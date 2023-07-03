@@ -16,7 +16,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Event;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
-import momime.common.database.Race;
+import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
 import momime.common.internal.CityProductionBreakdown;
@@ -89,7 +89,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		final OverlandMapCityData cityData = mc.getCityData ();
 		
 		final String raceID = (cityData != null) ? cityData.getCityRaceID () : null;
-		final Race cityRace = (raceID != null) ? db.findRace (raceID, "calculateAllCityProductions") : null;
+		final RaceEx cityRace = (raceID != null) ? db.findRace (raceID, "calculateAllCityProductions") : null;
 
 		final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
 		final PlayerPublicDetails cityOwnerPlayer = ((players != null) && (cityOwnerID != null)) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;

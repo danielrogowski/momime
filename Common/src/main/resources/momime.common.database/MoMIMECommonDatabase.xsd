@@ -2661,6 +2661,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="mineralBonusMultiplier" type="momimecommon:mineralBonusMultiplier" nxe:label="Mineral Bonus Multipler" nxe:gridwidth="130" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="taxIncomeMultiplier" type="momimecommon:taxIncomeMultiplier" nxe:label="Tax Income Multipler" nxe:gridwidth="130" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="outpostRacialGrowthModifier" type="momimecommon:percentage" nxe:label="% bonus to chance of outpost growing" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateModifier" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Modifier" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="goldTradeBonus" type="momimecommon:percentage" nxe:label="Gold Trade Bonus" nxe:gridwidth="130" />
@@ -5361,6 +5362,12 @@ this is Disenchant Area / True; if cannot be cast in combat then this is Disjunc
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="mineralBonusMultiplier">
+		<xsd:restriction base="xsd:unsignedShort">
+			<xsd:minInclusive value="1"></xsd:minInclusive>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="taxIncomeMultiplier">
 		<xsd:restriction base="xsd:unsignedShort">
 			<xsd:minInclusive value="1"></xsd:minInclusive>
 		</xsd:restriction>

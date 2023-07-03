@@ -848,6 +848,10 @@
 						<xsd:selector xpath="goldFromTaxes" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="cityProductionGoldFromTaxesAfterMultiplierPK">
+						<xsd:selector xpath="goldFromTaxesAfterMultiplier" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="cityProductionProductionFromSingleTilePK">
 						<xsd:selector xpath="productionFromSingleTile" />
 						<xsd:field xpath="@language" />
@@ -3553,6 +3557,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSinglePopulation" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMultiplePopulation" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldFromTaxes" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldFromTaxesAfterMultiplier" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSingleTile" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMultipleTiles" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSingleMapFeature" />

@@ -648,7 +648,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			
 			for (final KnownWizardDetails trueWizard : mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ())
 				if ((trueWizard.getPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (getPlayerKnowledgeUtils ().isWizard (trueWizard.getWizardID ())) &&
-					(getKnownWizardUtils ().findPactWith (castingWizard.getPact (), trueWizard.getPlayerID ()) != PactType.WAR))
+					(getKnownWizardUtils ().findPactWith (castingWizard.getPact (), trueWizard.getPlayerID ()) != PactType.WAR) && (trueWizard.getWizardState () != WizardState.DEFEATED))
 				{
 					getKnownWizardServerUtils ().updatePact (castingPlayer.getPlayerDescription ().getPlayerID (), trueWizard.getPlayerID (), PactType.WAR, mom);
 					getKnownWizardServerUtils ().updatePact (trueWizard.getPlayerID (), castingPlayer.getPlayerDescription ().getPlayerID (), PactType.WAR, mom);

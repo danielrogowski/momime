@@ -1212,7 +1212,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		// 'Build city or road' isn't really right, maybe once you can actually build roads I'll make B=built city, R=build road
 		// since you could have both a settler and engineer in the same stack and hit 'B' and it can't be ambigious which happens.
 		contentPane.getActionMap ().put (Shortcut.ARMIES_SCREEN,										armiesAction);
-		contentPane.getActionMap ().put (Shortcut.GAME_SCREEN,											planeAction);
+		contentPane.getActionMap ().put (Shortcut.GAME_SCREEN,											gameAction);
 		contentPane.getActionMap ().put (Shortcut.MAGIC_SCREEN,											magicAction);
 		contentPane.getActionMap ().put (Shortcut.SWITCH_PLANE,											planeAction);
 		contentPane.getActionMap ().put (Shortcut.SPELLBOOK,												spellsAction);

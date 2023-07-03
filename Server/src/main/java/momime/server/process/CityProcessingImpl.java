@@ -882,14 +882,6 @@ public final class CityProcessingImpl implements CityProcessing
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 			priv.setTaxRateID (taxRateID);
 			
-			// Set on client
-			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-			{
-				final TaxRateChangedMessage reply = new TaxRateChangedMessage ();
-				reply.setTaxRateID (taxRateID);
-				player.getConnection ().sendMessageToClient (reply);
-			}
-			
 			// Recalc stats for all cities based on the new tax rate
 			final FogOfWarMemory trueMap = mom.getGeneralServerKnowledge ().getTrueMap ();
 			for (final Plane plane : mom.getServerDB ().getPlane ())
@@ -911,6 +903,14 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			// Recalculate all global production based on the new tax rate
 			getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
+			
+			// Set on client - do this last, as it will trigger refreshing all the city screens open on the client
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+			{
+				final TaxRateChangedMessage reply = new TaxRateChangedMessage ();
+				reply.setTaxRateID (taxRateID);
+				player.getConnection ().sendMessageToClient (reply);
+			}
 		}
 	}
 	

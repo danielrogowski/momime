@@ -2,12 +2,13 @@ package momime.client.messages.process;
 
 import java.io.IOException;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
+import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.TaxRateUI;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 
@@ -31,6 +32,9 @@ public final class TaxRateChangedMessageImpl extends TaxRateChangedMessage imple
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().setTaxRateID (getTaxRateID ());
+
+		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+			cityView.cityDataChanged ();
 		
 		// Move the * showing the current tax rate
 		getTaxRateUI ().languageChanged ();

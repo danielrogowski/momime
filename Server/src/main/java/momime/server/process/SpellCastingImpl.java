@@ -157,16 +157,12 @@ public final class SpellCastingImpl implements SpellCasting
 					if (newUnit.getStatus () == UnitStatusID.NOT_GENERATED)
 						getUnitServerUtils ().generateHeroNameAndRandomSkills (newUnit, mom.getServerDB ());
 
-					getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, true, mom);
+					getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, true, true, mom);
 				}
 				else
 					// For non-heroes, create a new unit
 					newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (summonedUnit.getUnitID (), addLocation.getUnitLocation (), null, null, null,
-						player, UnitStatusID.ALIVE, true, mom);
-				
-				// Let it move this turn
-				newUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (newUnit, null, null, null,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
+						player, UnitStatusID.ALIVE, true, true, mom);
 			}
 
 			// Show on new turn messages for the player who summoned it

@@ -328,7 +328,7 @@ public final class CityProcessingImpl implements CityProcessing
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
 							final MapCoordinates3DEx unitCoords = new MapCoordinates3DEx (cityLocation);
-							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (thisUnit.getUnitID (), unitCoords, cityLocation, null, null, thisPlayer, UnitStatusID.ALIVE, false, mom);
+							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (thisUnit.getUnitID (), unitCoords, cityLocation, null, null, thisPlayer, UnitStatusID.ALIVE, false, false, mom);
 						}
 			}
 			
@@ -528,7 +528,7 @@ public final class CityProcessingImpl implements CityProcessing
 	
 												// Now actually add the unit
 												final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unit.getUnitID (), addLocation.getUnitLocation (),
-													cityLocation, null, null, cityOwner, UnitStatusID.ALIVE, true, mom);
+													cityLocation, null, null, cityOwner, UnitStatusID.ALIVE, true, true, mom);
 												
 												// If the caster has Doom Mastery cast then cast Chaos Channels on the new unit
 												if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),

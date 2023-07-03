@@ -426,11 +426,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 						if (hero.getStatus () == UnitStatusID.NOT_GENERATED)
 							getUnitServerUtils ().generateHeroNameAndRandomSkills (hero, mom.getServerDB ());
 
-						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, true, mom);
-					
-						// Let it move this turn
-						hero.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (hero, null, null, null,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
+						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, true, true, mom);
 					}
 					break;
 

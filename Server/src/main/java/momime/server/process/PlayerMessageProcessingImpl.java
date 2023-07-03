@@ -412,7 +412,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					if (thisPlayer.getPlayerDescription ().getPlayerID () != monstersWizard.getPlayerID ())
 						
 						getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (thisUnit.getUnitID (), null, null, null, null,
-							thisPlayer, UnitStatusID.NOT_GENERATED, false, mom);
+							thisPlayer, UnitStatusID.NOT_GENERATED, false, false, mom);
 	}
 
 

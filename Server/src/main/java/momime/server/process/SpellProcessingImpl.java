@@ -773,7 +773,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 				
 				// Set it back to alive; this also sends the updates from above
-				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, summonLocation, castingPlayer, true, mom);
+				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, summonLocation, castingPlayer, true, false, mom);
 	
 				// Show the "summoning" animation for it
 				final ExpandedUnitDetails xuTargetUnit = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
@@ -809,7 +809,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// Now can add it
 					final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unitID, summonLocation, null, null, combatLocation,
-						castingPlayer, UnitStatusID.ALIVE, true, mom);
+						castingPlayer, UnitStatusID.ALIVE, true, false, mom);
 					
 					// What direction should the unit face?
 					final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
@@ -1169,11 +1169,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						targetUnit.getUnitDamage ().clear ();
 						
 						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, resurrectLocation.getUnitLocation (),
-							castingPlayer, true, mom);
-					
-						// Let it move this turn
-						targetUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
+							castingPlayer, true, true, mom);
 					}
 				}
 			}

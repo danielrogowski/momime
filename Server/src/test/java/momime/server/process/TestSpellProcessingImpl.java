@@ -840,7 +840,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		summonedUnit.setUnitID ("UN004");
 		
 		when (midTurn.addUnitOnServerAndClients ("UN004", attackingFrom, null, null,
-			combatLocation, attackingPlayer, UnitStatusID.ALIVE, true, mom)).thenReturn (summonedUnit);
+			combatLocation, attackingPlayer, UnitStatusID.ALIVE, true, false, mom)).thenReturn (summonedUnit);
 		
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);

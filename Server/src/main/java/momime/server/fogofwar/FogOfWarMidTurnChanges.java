@@ -107,6 +107,7 @@ public interface FogOfWarMidTurnChanges
 	 * @param unitOwner Player who will own the new unit
 	 * @param initialStatus Initial status of the unit, typically ALIVE
 	 * @param addOnClients Usually true, can set to false when monsters are initially added to the map and don't need to worry about who can see them
+	 * @param giveFullOverlandMovement If true, doubleOverlandMovesLeft will be initialized to its full value
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Newly created unit
 	 * @throws MomException If there is a problem with any of the calculations
@@ -117,7 +118,7 @@ public interface FogOfWarMidTurnChanges
 	 */
 	public MemoryUnit addUnitOnServerAndClients (final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation,
 		final Integer overrideStartingExperience, final MapCoordinates3DEx combatLocation, final PlayerServerDetails unitOwner, final UnitStatusID initialStatus,
-		final boolean addOnClients, final MomSessionVariables mom)
+		final boolean addOnClients, final boolean giveFullOverlandMovement, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
@@ -130,6 +131,7 @@ public interface FogOfWarMidTurnChanges
 	 * @param locationToAddUnit Location to add the new unit, must be filled in
 	 * @param unitOwner Player who will own the new unit, note the reason this has to be passed in separately is because the players list is allowed to be null
 	 * @param addOnClients Usually true, can set to false when monsters are initially added to the map and don't need to worry about who can see them
+	 * @param giveFullOverlandMovement If true, doubleOverlandMovesLeft will be initialized to its full value
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
@@ -138,7 +140,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final MapCoordinates3DEx locationToAddUnit,
-		final PlayerServerDetails unitOwner, final boolean addOnClients, final MomSessionVariables mom)
+		final PlayerServerDetails unitOwner, final boolean addOnClients, final boolean giveFullOverlandMovement, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**

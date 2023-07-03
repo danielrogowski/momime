@@ -426,13 +426,13 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Check units were added
 		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN001", humanLocation, humanLocation, null, null,
-			humanPlayer, UnitStatusID.ALIVE, false, mom);
+			humanPlayer, UnitStatusID.ALIVE, false, false, mom);
 		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN002", aiLocation, aiLocation, null, null,
-			aiPlayer, UnitStatusID.ALIVE, false, mom);
+			aiPlayer, UnitStatusID.ALIVE, false, false, mom);
 		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN003", raidersArcanusLocation, raidersArcanusLocation, null, null,
-			raidersPlayer, UnitStatusID.ALIVE, false, mom);
+			raidersPlayer, UnitStatusID.ALIVE, false, false, mom);
 		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN004", raidersMyrrorLocation, raidersMyrrorLocation, null, null,
-			raidersPlayer, UnitStatusID.ALIVE, false, mom);
+			raidersPlayer, UnitStatusID.ALIVE, false, false, mom);
 		
 		// Check buildings were added.
 		// Note players intentionally left as null so that building is only added on the server.
@@ -826,7 +826,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals (new MapCoordinates3DEx (25, 15, 1), ntm.getCityLocation ());
 
 		verify (midTurn).addUnitOnServerAndClients ("UN001", new MapCoordinates3DEx (26, 15, 1), new MapCoordinates3DEx (25, 15, 1), null, null,
-			cityOwner, UnitStatusID.ALIVE, true, mom);
+			cityOwner, UnitStatusID.ALIVE, true, true, mom);
 		
 		verify (wu).recalculateCity (new MapCoordinates3DEx (25, 15, 1));
 		verify (wu).process (mom);

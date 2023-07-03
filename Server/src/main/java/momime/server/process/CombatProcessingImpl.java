@@ -924,7 +924,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// Now create them
 			for (int zombieNo = 0; zombieNo < zombieCount; zombieNo++)
 				zombiesCreated.add (getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (CommonDatabaseConstants.UNIT_ID_ZOMBIE, newLocation, null, null, null,
-					winningPlayer, UnitStatusID.ALIVE, true, mom));
+					winningPlayer, UnitStatusID.ALIVE, true, false, mom));
 		}
 	
 		log.debug ("zombiesCreated created zombies from " + zombiesCreated.size ()  + " dead normal units");

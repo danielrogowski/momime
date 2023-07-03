@@ -60,6 +60,14 @@
 			<normalKey>M</normalKey>
 		</keyLang>
 	</shortcutKey>
+	<shortcutKey shortcut="CITIES_SCREEN">
+		<keyLang language="en">
+			<shift>false</shift>
+			<alt>false</alt>
+			<ctrl>false</ctrl>
+			<normalKey>T</normalKey>
+		</keyLang>
+	</shortcutKey>
 	<shortcutKey shortcut="NEXT_TURN">
 		<keyLang language="en">
 			<shift>false</shift>

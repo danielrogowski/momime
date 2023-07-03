@@ -1214,6 +1214,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		contentPane.getActionMap ().put (Shortcut.ARMIES_SCREEN,										armiesAction);
 		contentPane.getActionMap ().put (Shortcut.GAME_SCREEN,											gameAction);
 		contentPane.getActionMap ().put (Shortcut.MAGIC_SCREEN,											magicAction);
+		contentPane.getActionMap ().put (Shortcut.CITIES_SCREEN,											citiesAction);
 		contentPane.getActionMap ().put (Shortcut.SWITCH_PLANE,											planeAction);
 		contentPane.getActionMap ().put (Shortcut.SPELLBOOK,												spellsAction);
 		contentPane.getActionMap ().put (Shortcut.ZOOM_IN,													zoomInAction);

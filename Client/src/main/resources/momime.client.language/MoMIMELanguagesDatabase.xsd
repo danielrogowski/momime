@@ -5390,6 +5390,7 @@
 			<xsd:enumeration value="CENTRE_OVERLAND_ON_SELECTED_UNIT" />
 			<xsd:enumeration value="GAME_SCREEN" />
 			<xsd:enumeration value="MAGIC_SCREEN" />
+			<xsd:enumeration value="CITIES_SCREEN" />
 			<xsd:enumeration value="NEXT_TURN" />
 			<xsd:enumeration value="SWITCH_PLANE" />
 			<xsd:enumeration value="SPELLBOOK" />

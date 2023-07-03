@@ -1652,12 +1652,12 @@ public final class CityCalculationsImpl implements CityCalculations
 	@Override
 	public final int goldToRushBuy (final int totalCost, final int builtSoFar)
 	{
-		// See p200 in the strategy guide
 		final int result;
 		if (builtSoFar <= 0)
 			result = totalCost * 4;
 		
-		else if (builtSoFar < totalCost/2)
+		// p200 in the strategy guide is out of date, this says the cutoff here is at totalCost/2, but the wiki says its totalCost/3
+		else if (builtSoFar < totalCost/3)
 			result = (totalCost - builtSoFar) * 3;
 		
 		else

@@ -4966,11 +4966,11 @@ public final class TestCityCalculationsImpl
 	public final void testGoldToRushBuy ()
 	{
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		assertEquals (240, calc.goldToRushBuy (60, 0));
-		assertEquals (177, calc.goldToRushBuy (60, 1));		// The above 2 are the actual examples in the strategy guide
+		assertEquals (60 * 4, calc.goldToRushBuy (60, 0));
+		assertEquals (59 * 3, calc.goldToRushBuy (60, 1));		// The above 2 are the actual examples in the strategy guide
 		
-		assertEquals (93, calc.goldToRushBuy (60, 29));
-		assertEquals (60, calc.goldToRushBuy (60, 30));
+		assertEquals (41 * 3, calc.goldToRushBuy (60, 19));
+		assertEquals (40 * 2, calc.goldToRushBuy (60, 20));
 		assertEquals (2, calc.goldToRushBuy (60, 59));
 	}
 	

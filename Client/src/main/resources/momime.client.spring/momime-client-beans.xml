@@ -2037,6 +2037,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatUI" ref="combatUI" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 	</bean>
@@ -2478,6 +2479,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 	
 </beans>

@@ -547,6 +547,16 @@ public final class CityViewUI extends MomClientFrameUI
 		miniMapPanel.setBackground (Color.BLACK);
 		contentPane.add (miniMapPanel, "frmCityMiniMap");
 
+		miniMapPanel.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (SwingUtilities.isLeftMouseButton (ev))
+					getOverlandMapUI ().scrollTo (getCityLocation ().getX (), getCityLocation ().getY (), getCityLocation ().getZ (), true);
+			}
+		});
+		
 		// Set up the mini panel to hold all the civilians - this also has a 2 pixel gap to correct the labels above it
 		civilianPanel = new JPanel ();
 		civilianPanel.setOpaque (false);

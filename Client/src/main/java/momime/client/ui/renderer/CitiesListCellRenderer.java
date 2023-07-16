@@ -49,6 +49,7 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
@@ -122,6 +123,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
+	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
 	
 	/** Text utils */
 	private TextUtils textUtils;
@@ -405,6 +409,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 				// Clicking the units column selects those units to move
 				case "frmCitiesListRowUnits":
 					getOverlandMapProcessing ().showSelectUnitBoxes (city.getCityLocation ());
+					getOverlandMapUI ().scrollTo (city.getCityLocation ().getX (), city.getCityLocation ().getY (), city.getCityLocation ().getZ (), true);
 					break;
 					
 				// Clicking the enchantments column brings up a popup list of enchantments we can switch off
@@ -825,6 +830,22 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+	
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param u Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI u)
+	{
+		overlandMapUI = u;
 	}
 
 	/**

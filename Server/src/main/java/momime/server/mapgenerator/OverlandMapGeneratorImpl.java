@@ -19,6 +19,8 @@ import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.map.generator.HeightMapGenerator;
+import com.ndg.map.generator.HeightMapGeneratorImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.utils.random.RandomUtils;
@@ -478,9 +480,12 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 		{
 			// Generate height-based scenery
-			final HeightMapGenerator heightMap = new HeightMapGenerator (mom.getSessionDescription ().getOverlandMapSize (),
-				mom.getSessionDescription ().getOverlandMapSize ().getZoneWidth (), mom.getSessionDescription ().getOverlandMapSize ().getZoneHeight (),
-				mom.getSessionDescription ().getLandProportion ().getTundraRowCount ());
+			final HeightMapGenerator heightMap = new HeightMapGeneratorImpl ();
+			heightMap.setCoordinateSystem (mom.getSessionDescription ().getOverlandMapSize ());
+			heightMap.setZoneWidth (mom.getSessionDescription ().getOverlandMapSize ().getZoneWidth ());
+			heightMap.setZoneHeight (mom.getSessionDescription ().getOverlandMapSize ().getZoneHeight ());
+			heightMap.getNumberOfRowsFromMapEdgeToAvoid ().add (7);		// This was baked into the map generator before, so keep it the same
+			heightMap.getNumberOfRowsFromMapEdgeToAvoid ().add (mom.getSessionDescription ().getLandProportion ().getTundraRowCount ());
 			heightMap.setRandomUtils (getRandomUtils ());
 			heightMap.generateHeightMap ();
 

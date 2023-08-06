@@ -12,6 +12,7 @@ import com.ndg.utils.swing.GridBagConstraintsHorizontalFill;
 import com.ndg.utils.swing.actions.MessageDialogAction;
 import com.ndg.utils.swing.filefilters.ExtensionFileFilter;
 import com.ndg.xmleditor.editor.XmlEditorException;
+import com.ndg.xmleditor.grid.XmlEditorGridWithDescriptionsAndImages;
 
 /**
  * Shows a file open dialog asking for the location of an LBX file to import when the Import button is clicked.

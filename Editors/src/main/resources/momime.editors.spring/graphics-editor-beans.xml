@@ -23,7 +23,7 @@
 
 	<!-- MoM IME Graphics specific -->
 
-	<bean id="unitSkillComponentImageGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+	<bean id="unitSkillComponentImageGrid" class="com.ndg.xmleditor.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
@@ -34,7 +34,7 @@
 		</property>
 	</bean>
 
-	<bean id="unitSpecialOrderGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+	<bean id="unitSpecialOrderGrid" class="com.ndg.xmleditor.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
@@ -45,7 +45,7 @@
 		</property>
 	</bean>
 
-	<bean id="frameGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+	<bean id="frameGrid" class="com.ndg.xmleditor.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="100" />

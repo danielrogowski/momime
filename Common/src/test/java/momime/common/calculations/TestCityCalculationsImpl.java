@@ -3,6 +3,7 @@ package momime.common.calculations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,9 +38,11 @@ import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.BuildingRequiresTileType;
 import momime.common.database.CitySpellEffect;
+import momime.common.database.CitySpellEffectProductionModifier;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
+import momime.common.database.Event;
 import momime.common.database.GenerateTestData;
 import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
@@ -64,6 +67,8 @@ import momime.common.internal.CityGrowthRateBreakdownGrowing;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownSpell;
+import momime.common.internal.OutpostDeathChanceBreakdown;
+import momime.common.internal.OutpostGrowthChanceBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -1683,7 +1688,186 @@ public final class TestCityCalculationsImpl
 		assertEquals (-50, underCap.getInitialTotal ());
 		assertEquals (-20, underCap.getCappedTotal ());
 	}
+	
+	/**
+	 * Tests the calculateOutpostGrowthChance method, with no modifiers past the base max population and racial modifier
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateOutpostGrowthChance_Base () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final RaceEx race = new RaceEx ();
+		race.setOutpostRacialGrowthModifier (3);
+		when (db.findRace ("RC01", "calculateOutpostGrowthChance")).thenReturn (race);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Call method
+		final OutpostGrowthChanceBreakdown breakdown = calc.calculateOutpostGrowthChance (map, spells, new MapCoordinates3DEx (20, 10, 1), 15, sys, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getMaximumPopulation ());
+		assertEquals (18, breakdown.getTotalChance ());
+		assertEquals (0, breakdown.getMapFeatureModifier ().size ());
+		assertEquals (0, breakdown.getSpellModifier ().size ());
+	}
+
+	/**
+	 * Tests the calculateOutpostGrowthChance method, with examples of all modifiers
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateOutpostGrowthChance_Modifiers () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		for (int x = 1; x <= 3; x++)
+		{
+			final MapFeatureEx mapFeature = new MapFeatureEx ();
+			when (db.findMapFeature ("MF0" + x, "calculateOutpostGrowthChance")).thenReturn (mapFeature);
+			
+			if (x < 3)
+				mapFeature.setOutpostMapFeatureGrowthModifier (x * 2);
+		}		
+		
+		final RaceEx race = new RaceEx ();
+		race.setOutpostRacialGrowthModifier (3);
+		when (db.findRace ("RC01", "calculateOutpostGrowthChance")).thenReturn (race);
+		
+		final CitySpellEffect citySpellEffect = new CitySpellEffect ();
+		citySpellEffect.setOutpostSpellGrowthModifier (5);
+		when (db.findCitySpellEffect ("CSE01", "calculateOutpostGrowthChance")).thenReturn (citySpellEffect);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// The first/last cells are in the top corners so not included
+		for (int x = 0; x <= 4; x++)
+		{
+			final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+			terrainData.setMapFeatureID ("MF0" + x);
+			map.getPlane ().get (1).getRow ().get (8).getCell ().get (18 + x).setTerrainData (terrainData);
+		}
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCitySpellEffectID ("CSE01");
+		spell.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spells.add (spell);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Call method
+		final OutpostGrowthChanceBreakdown breakdown = calc.calculateOutpostGrowthChance (map, spells, new MapCoordinates3DEx (20, 10, 1), 15, sys, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getMaximumPopulation ());
+		assertEquals (29, breakdown.getTotalChance ());
+
+		assertEquals (2, breakdown.getMapFeatureModifier ().size ());
+		assertEquals ("MF01", breakdown.getMapFeatureModifier ().get (0).getMapFeatureID ());
+		assertEquals (2, breakdown.getMapFeatureModifier ().get (0).getMapFeatureModifier ());
+		assertEquals ("MF02", breakdown.getMapFeatureModifier ().get (1).getMapFeatureID ());
+		assertEquals (4, breakdown.getMapFeatureModifier ().get (1).getMapFeatureModifier ());
+
+		assertEquals (1, breakdown.getSpellModifier ().size ());
+		assertEquals ("SP001", breakdown.getSpellModifier ().get (0).getSpellID ());
+		assertEquals (5, breakdown.getSpellModifier ().get (0).getSpellModifier ());
+	}
+
+	/**
+	 * Tests the calculateOutpostDeathChance method, with no modifiers past the fixed 5%
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateOutpostDeathChance_Base () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		final OutpostDeathChanceBreakdown breakdown = calc.calculateOutpostDeathChance (spells, new MapCoordinates3DEx (20, 10, 1), db);
+		
+		// Check results
+		assertEquals (5, breakdown.getBaseChance ());
+		assertEquals (5, breakdown.getTotalChance ());
+		assertEquals (0, breakdown.getSpellModifier ().size ());
+	}
+
+	/**
+	 * Tests the calculateOutpostDeathChance method, with examples of all modifiers
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateOutpostDeathChance_Modifiers () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect citySpellEffect = new CitySpellEffect ();
+		citySpellEffect.setOutpostSpellDeathModifier (4);
+		when (db.findCitySpellEffect ("CSE01", "calculateOutpostDeathChance")).thenReturn (citySpellEffect);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCitySpellEffectID ("CSE01");
+		spell.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spells.add (spell);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Call method
+		final OutpostDeathChanceBreakdown breakdown = calc.calculateOutpostDeathChance (spells, new MapCoordinates3DEx (20, 10, 1), db);
+		
+		// Check results
+		assertEquals (5, breakdown.getBaseChance ());
+		assertEquals (9, breakdown.getTotalChance ());
+		
+		assertEquals (1, breakdown.getSpellModifier ().size ());
+		assertEquals ("SP001", breakdown.getSpellModifier ().get (0).getSpellID ());
+		assertEquals (4, breakdown.getSpellModifier ().get (0).getSpellModifier ());
+	}
+	
 	/**
 	 * Tests the calculateCityRebels method, when tax rate is set to none, and so no rebels are generated
 	 * @throws Exception If there is a problem
@@ -3901,7 +4085,378 @@ public final class TestCityCalculationsImpl
 		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 3, null, db);
 		verifyNoMoreInteractions (cityProductionUtils);
 	}
+
+	/**
+	 * Tests the addProductionFromSpell method on a spell that isn't Dark Rituals and has no city spell effect
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionFromSpell_IrrelevantSpell () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		
+		// Existing production values
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		calc.addProductionFromSpell (productionValues, spell, 0, db);
+		
+		// Check results
+		assertEquals (0, productionValues.getProductionType ().size ());
+	}
 	
+	/**
+	 * Tests the addProductionFromSpell method on the Dark Rituals spell when there aren't any religious buildings
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionFromSpell_DarkRituals_NoReligiousBuildings () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID (CommonDatabaseConstants.SPELL_ID_DARK_RITUALS);
+		
+		// Existing production values
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		calc.addProductionFromSpell (productionValues, spell, 0, db);
+		
+		// Check results
+		assertEquals (0, productionValues.getProductionType ().size ());
+	}
+	
+	/**
+	 * Tests the addProductionFromSpell method on the Dark Rituals spell when there are some religious buildings
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionFromSpell_DarkRituals_SomeReligiousBuildings () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID (CommonDatabaseConstants.SPELL_ID_DARK_RITUALS);
+		
+		// Existing production values
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
+		
+		final CityProductionBreakdown magicPower = new CityProductionBreakdown ();
+		magicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		productionValues.getProductionType ().add (magicPower);
+		
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (magicPower, 4, null, db)).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCityProductionUtils (cityProductionUtils);
+		
+		// Run method
+		calc.addProductionFromSpell (productionValues, spell, 4, db);
+		
+		// Check results
+		assertEquals (1, productionValues.getProductionType ().size ());
+		assertSame (magicPower, productionValues.getProductionType ().get (0));
+		
+		assertEquals (1, magicPower.getSpellBreakdown ().size ());
+		assertEquals (CommonDatabaseConstants.SPELL_ID_DARK_RITUALS, magicPower.getSpellBreakdown ().get (0).getSpellID ());
+		assertEquals (4, magicPower.getSpellBreakdown ().get (0).getDoubleProductionAmount ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, magicPower.getSpellBreakdown ().get (0).getProductionAmountBucketID ());
+	}
+	
+	/**
+	 * Tests the addProductionFromSpell method on a spell that grants some effect that isn't a percentage bonus
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionFromSpell_NoPercentageBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		when (db.findCitySpellEffect ("CSE01", "addProductionFromSpell")).thenReturn (effect);
+		
+		final CitySpellEffectProductionModifier modifier = new CitySpellEffectProductionModifier ();
+		effect.getCitySpellEffectProductionModifier ().add (modifier);
+		
+		// Spell
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCitySpellEffectID ("CSE01");
+		
+		// Existing production values
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		calc.addProductionFromSpell (productionValues, spell, 0, db);
+		
+		// Check results
+		assertEquals (0, productionValues.getProductionType ().size ());
+	}
+	
+	/**
+	 * Tests the addProductionFromSpell method on a spell that grants a percentage bonus, but to a value we don't have any of
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionFromSpell_PercentageBonusToEmptyValue () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		when (db.findCitySpellEffect ("CSE01", "addProductionFromSpell")).thenReturn (effect);
+		
+		final CitySpellEffectProductionModifier modifier = new CitySpellEffectProductionModifier ();
+		modifier.setProductionTypeID ("RE01");
+		modifier.setPercentageBonus (50);
+		effect.getCitySpellEffectProductionModifier ().add (modifier);
+		
+		// Spell
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCitySpellEffectID ("CSE01");
+		
+		// Existing production values
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		calc.addProductionFromSpell (productionValues, spell, 0, db);
+		
+		// Check results
+		assertEquals (0, productionValues.getProductionType ().size ());
+	}
+
+	/**
+	 * Tests the addProductionFromSpell method on a spell that grants a percentage bonus to a value we have some of
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionFromSpell_PercentageBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		when (db.findCitySpellEffect ("CSE01", "addProductionFromSpell")).thenReturn (effect);
+		
+		final CitySpellEffectProductionModifier modifier = new CitySpellEffectProductionModifier ();
+		modifier.setProductionTypeID ("RE01");
+		modifier.setPercentageBonus (50);
+		effect.getCitySpellEffectProductionModifier ().add (modifier);
+		
+		// Spell
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCitySpellEffectID ("CSE01");
+		
+		// Existing production values
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
+
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE01");
+		breakdown.setPercentageBonus (20);
+		breakdown.setPercentagePenalty (30);
+		productionValues.getProductionType ().add (breakdown);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		calc.addProductionFromSpell (productionValues, spell, 0, db);
+		
+		// Check results
+		assertEquals (1, productionValues.getProductionType ().size ());
+		assertSame (breakdown, productionValues.getProductionType ().get (0));
+		
+		assertEquals (1, breakdown.getSpellBreakdown ().size ());
+		assertEquals ("SP001", breakdown.getSpellBreakdown ().get (0).getSpellID ());
+		assertEquals (50, breakdown.getSpellBreakdown ().get (0).getPercentageBonus ());
+		
+		assertEquals (70, breakdown.getPercentageBonus ());
+		assertEquals (30, breakdown.getPercentagePenalty ());
+	}
+	
+	/**
+	 * Tests the addProductionFromSpell method on a spell that grants a percentage penalty to a value we have some of
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionFromSpell_PercentagePenalty () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		when (db.findCitySpellEffect ("CSE01", "addProductionFromSpell")).thenReturn (effect);
+		
+		final CitySpellEffectProductionModifier modifier = new CitySpellEffectProductionModifier ();
+		modifier.setProductionTypeID ("RE01");
+		modifier.setPercentageBonus (-50);
+		effect.getCitySpellEffectProductionModifier ().add (modifier);
+		
+		// Spell
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCitySpellEffectID ("CSE01");
+		
+		// Existing production values
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
+
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE01");
+		breakdown.setPercentageBonus (20);
+		breakdown.setPercentagePenalty (30);
+		productionValues.getProductionType ().add (breakdown);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		calc.addProductionFromSpell (productionValues, spell, 0, db);
+		
+		// Check results
+		assertEquals (1, productionValues.getProductionType ().size ());
+		assertSame (breakdown, productionValues.getProductionType ().get (0));
+		
+		assertEquals (1, breakdown.getSpellBreakdown ().size ());
+		assertEquals ("SP001", breakdown.getSpellBreakdown ().get (0).getSpellID ());
+		assertEquals (-50, breakdown.getSpellBreakdown ().get (0).getPercentageBonus ());
+		
+		assertEquals (20, breakdown.getPercentageBonus ());
+		assertEquals (80, breakdown.getPercentagePenalty ());
+	}
+	
+	/**
+	 * Test the addProductionOrConsumptionFromEvent method when we have the right kind of books and so our value get doubled
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionOrConsumptionFromEvent_Double () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Player picks
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (picks, "MB01")).thenReturn (1);
+		
+		// Existing production values
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
+		
+		final CityProductionBreakdown magicPower = new CityProductionBreakdown ();
+		magicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		productionValues.getProductionType ().add (magicPower);
+		
+		// Event
+		final Event event = new Event ();
+		event.setEventID ("EV01");
+		event.setEventMagicRealm ("MB01");
+		
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (magicPower, 4, null, db)).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setCityProductionUtils (cityProductionUtils);
+		
+		// Run method
+		assertEquals (8, calc.addProductionOrConsumptionFromEvent (productionValues, event, 4, picks, db));
+		
+		// Check results
+		assertEquals (1, productionValues.getProductionType ().size ());
+		assertSame (magicPower, productionValues.getProductionType ().get (0));
+		
+		assertEquals (1, magicPower.getEventBreakdown ().size ());
+		assertEquals ("EV01", magicPower.getEventBreakdown ().get (0).getEventID ());
+		assertEquals (4, magicPower.getEventBreakdown ().get (0).getDoubleProductionAmount ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, magicPower.getEventBreakdown ().get (0).getProductionAmountBucketID ());
+	}
+	
+	/**
+	 * Test the addProductionOrConsumptionFromEvent method when we have the wrong kind of books and so our value get halved
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionOrConsumptionFromEvent_Halve () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Pick rightPick = new Pick ();
+		rightPick.getPickExclusiveFrom ().add ("MB02");
+		when (db.findPick ("MB01", "addProductionOrConsumptionFromEvent")).thenReturn (rightPick);
+
+		// Player picks
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (picks, "MB01")).thenReturn (0);
+		when (playerPickUtils.getQuantityOfPick (picks, "MB02")).thenReturn (1);
+		
+		// Existing production values
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
+		
+		final CityProductionBreakdown magicPower = new CityProductionBreakdown ();
+		magicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		productionValues.getProductionType ().add (magicPower);
+		
+		// Event
+		final Event event = new Event ();
+		event.setEventID ("EV01");
+		event.setEventMagicRealm ("MB01");
+		
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (magicPower, -2, null, db)).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setCityProductionUtils (cityProductionUtils);
+		
+		// Run method
+		assertEquals (2, calc.addProductionOrConsumptionFromEvent (productionValues, event, 4, picks, db));
+		
+		// Check results
+		assertEquals (1, productionValues.getProductionType ().size ());
+		assertSame (magicPower, productionValues.getProductionType ().get (0));
+		
+		assertEquals (1, magicPower.getEventBreakdown ().size ());
+		assertEquals ("EV01", magicPower.getEventBreakdown ().get (0).getEventID ());
+		assertEquals (-2, magicPower.getEventBreakdown ().get (0).getDoubleProductionAmount ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, magicPower.getEventBreakdown ().get (0).getProductionAmountBucketID ());
+	}
+
 	/**
 	 * Tests the addProductionFromMapFeatures method
 	 * @throws Exception If there is a problem

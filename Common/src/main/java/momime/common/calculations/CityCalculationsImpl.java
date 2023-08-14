@@ -651,7 +651,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				if (terrainData.getMapFeatureID () != null)
+				if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
 				{
 					final MapFeatureEx mapFeature = db.findMapFeature (terrainData.getMapFeatureID (), "calculateOutpostGrowthChance");
 					if (mapFeature.getOutpostMapFeatureGrowthModifier () != null)
@@ -1239,17 +1239,21 @@ public final class CityCalculationsImpl implements CityCalculations
 			{
 				if ((thisProduction.getPercentageBonus () != null) && (thisProduction.getPercentageBonus () != 0))
 				{
-					final CityProductionBreakdownSpell spellBreakdown = new CityProductionBreakdownSpell ();
-					spellBreakdown.setSpellID (spell.getSpellID ());
-					spellBreakdown.setPercentageBonus (thisProduction.getPercentageBonus ());
-					
+					// There is no point adding a +ve or -ve percentage modifier to a value that doesn't even exist
 					final CityProductionBreakdown breakdown = productionValues.findProductionType (thisProduction.getProductionTypeID ());
-					breakdown.getSpellBreakdown ().add (spellBreakdown);
-					
-					if (spellBreakdown.getPercentageBonus () > 0)
-						breakdown.setPercentageBonus (breakdown.getPercentageBonus () + spellBreakdown.getPercentageBonus ());
-					else
-						breakdown.setPercentagePenalty (breakdown.getPercentagePenalty () - spellBreakdown.getPercentageBonus ());
+					if (breakdown != null)
+					{
+						final CityProductionBreakdownSpell spellBreakdown = new CityProductionBreakdownSpell ();
+						spellBreakdown.setSpellID (spell.getSpellID ());
+						spellBreakdown.setPercentageBonus (thisProduction.getPercentageBonus ());
+						
+						breakdown.getSpellBreakdown ().add (spellBreakdown);
+						
+						if (spellBreakdown.getPercentageBonus () > 0)
+							breakdown.setPercentageBonus (breakdown.getPercentageBonus () + spellBreakdown.getPercentageBonus ());
+						else
+							breakdown.setPercentagePenalty (breakdown.getPercentagePenalty () - spellBreakdown.getPercentageBonus ());
+					}
 				}
 			}
 		}

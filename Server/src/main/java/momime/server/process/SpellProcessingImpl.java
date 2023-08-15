@@ -1229,8 +1229,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
 						targetUnits.add (targetUnit);
 						
+						final MapCoordinates3DEx oldLocation = new MapCoordinates3DEx ((MapCoordinates3DEx) targetUnit.getUnitLocation ());
 						getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, (MapCoordinates3DEx) targetUnit.getUnitLocation (),
 							recallLocation.getUnitLocation (), mom);
+						
+						// Recheck the cell the unit was moved from - maybe it was a transport
+						mom.getWorldUpdates ().recheckTransportCapacity (oldLocation);
+						mom.getWorldUpdates ().process (mom);
 					}
 				}
 			}

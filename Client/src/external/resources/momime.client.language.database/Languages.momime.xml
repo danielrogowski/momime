@@ -1162,6 +1162,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<planarSeal language="en">
 			<text>No travel between planes is possible while Planar Seal is in effect.</text>
 		</planarSeal>
+		<combatSummon language="en">
+			<text>SPELL_NAME cannot be cast on units that were summoned in combat.</text>
+		</combatSummon>
 		<cancelTitle language="en">
 			<text>Cancel Spell</text>
 		</cancelTitle>

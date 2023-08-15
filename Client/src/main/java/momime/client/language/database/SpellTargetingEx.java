@@ -110,6 +110,10 @@ public final class SpellTargetingEx extends SpellTargeting
 				languageText = getInvalidTileType ();
 				break;
 				
+			case COMBAT_SUMMON:
+				languageText = getCombatSummon ();
+				break;
+				
 			default:
 				throw new MomException ("SpellTargetingEx.getUnitLanguageText doesn't know what to do with enum value " + targetSpellResult);
 		 }

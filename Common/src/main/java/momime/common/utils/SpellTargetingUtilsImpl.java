@@ -176,6 +176,10 @@ public final class SpellTargetingUtilsImpl implements SpellTargetingUtils
     		(mem.getMap ().getPlane ().get (targetUnit.getUnitLocation ().getZ ()).getRow ().get (targetUnit.getUnitLocation ().getY ()).getCell ().get (targetUnit.getUnitLocation ().getX ()).getTerrainData ())))
     		result = TargetSpellResult.INVALID_MAP_FEATURE;
     	
+    	// Trying to Word of Recall a combat summon
+    	else if ((kind == KindOfSpell.RECALL) && (targetUnit.wasSummonedInCombat ()))
+    		result = TargetSpellResult.COMBAT_SUMMON;
+    	
     	else
     	{
     		// Now check unitSpellEffectIDs

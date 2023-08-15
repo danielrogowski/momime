@@ -3590,6 +3590,47 @@ public final class TestSpellTargetingUtilsImpl
 	}
 
 	/**
+	 * Tests the isUnitValidTargetForSpell method trying to recall a combat summon, e.g. phantom warriors
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell_Recall_CombatSummon () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Spell
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
+	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RECALL);
+		
+		// Intended target
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getUnitURN ()).thenReturn (50);
+		when (xu.wasSummonedInCombat ()).thenReturn (true);
+		
+		// Set up object to test
+		final SpellTargetingUtilsImpl utils = new SpellTargetingUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setMemoryMaintainedSpellUtils (mock (MemoryMaintainedSpellUtils.class));
+
+		// Run method
+		assertEquals (TargetSpellResult.COMBAT_SUMMON, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), null, 1, null, null, xu, false, fow, null, null, db));
+	}
+
+	/**
 	 * Tests the isUnitValidTargetForSpell method recalling our unit from combat, except that it isn't in a combat
 	 * @throws Exception If there is a problem
 	 */

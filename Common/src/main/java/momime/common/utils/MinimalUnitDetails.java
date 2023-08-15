@@ -73,6 +73,12 @@ public interface MinimalUnitDetails
 	 * @return Whether or not the unit is a summoned creature
 	 */
 	public boolean isSummoned ();
+
+	/**
+	 * @return Whether or not the unit was summoned in combat, e.g. phantom warriors
+	 * @throws MomException This won't happen since we check if the unit is a memory unit 
+	 */
+	public boolean wasSummonedInCombat () throws MomException;
 	
 	/**
 	 * @return Experience level of this unit (0-5 for regular units, 0-8 for heroes) excluding bonuses from Warlord/Crusade; for units that don't gain experience (e.g. summoned), returns null

@@ -129,5 +129,8 @@ public enum TargetSpellResult
 	PLANAR_SEAL,
 	
 	/** Warp node can only be used on nodes that have been captured by an enemy wizard */
-	UNOWNED_NODE;
+	UNOWNED_NODE,
+	
+	/** Can't use Word of Recall on combat summoned units like phantom warriors */
+	COMBAT_SUMMON;
 }

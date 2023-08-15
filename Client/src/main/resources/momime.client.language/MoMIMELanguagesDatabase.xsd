@@ -484,6 +484,10 @@
 						<xsd:selector xpath="planarSeal" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellTargetingCombatSummonPK">
+						<xsd:selector xpath="combatSummon" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="spellTargetingCancelTitlePK">
 						<xsd:selector xpath="cancelTitle" />
 						<xsd:field xpath="@language" />
@@ -3448,6 +3452,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="insufficientMana" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planeShiftTower" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planarSeal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="combatSummon" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelText" />
 		</xsd:sequence>

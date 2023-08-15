@@ -60,10 +60,10 @@ import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.ResourceValueUtils;
 
 /**
- * Tests the OverlandMapUI class
+ * Tests the OverlandMapUIImpl class
  */
 @ExtendWith(MockitoExtension.class)
-public final class TestOverlandMapUI extends ClientTestData
+public final class TestOverlandMapUIImpl extends ClientTestData
 {
 	/**
 	 * Tests the OverlandMapUI form
@@ -256,7 +256,7 @@ public final class TestOverlandMapUI extends ClientTestData
 		when (gen.generateOverlandMapBitmaps (0, 0, 0, overlandMapSize.getWidth (), overlandMapSize.getHeight ())).thenReturn (overlandMapBitmaps);
 		
 		// Set up form
-		final OverlandMapUI map = new OverlandMapUI ();
+		final OverlandMapUIImpl map = new OverlandMapUIImpl ();
 		map.setUtils (utils);
 		map.setGraphicsDB (gfx);
 		map.setLanguageHolder (langHolder);

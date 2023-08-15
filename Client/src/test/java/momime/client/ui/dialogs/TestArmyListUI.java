@@ -28,8 +28,10 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.ArmyListScreen;
 import momime.client.languages.database.Simple;
+import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.renderer.ArmyListCellRenderer;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabase;
@@ -171,6 +173,8 @@ public final class TestArmyListUI extends ClientTestData
 		army.setWizardClientUtils (wizardClientUtils);
 		army.setMiniMapBitmapGenerator (gen);
 		army.setArmyListCellRenderer (renderer);
+		army.setOverlandMapProcessing (mock (OverlandMapProcessing.class));
+		army.setOverlandMapUI (mock (OverlandMapUI.class));
 		
 		// Display form		
 		army.setModal (false);

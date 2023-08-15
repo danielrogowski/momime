@@ -327,7 +327,7 @@ public final class TestCityViewUI extends ClientTestData
 		cityView.setOverlandMapBitmapGenerator (gen);
 		cityView.setTextUtils (new TextUtilsImpl ());
 		cityView.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		cityView.setOverlandMapUI (new OverlandMapUI ());		// Just to read the zero anim counter
+		cityView.setOverlandMapUI (mock (OverlandMapUI.class));
 		cityView.setResourceValueClientUtils (resourceValueClientUtils);
 		cityView.setMemoryMaintainedSpellListCellRenderer (spellsRenderer);
 		cityView.setSmallFont (CreateFontsForTests.getSmallFont ());

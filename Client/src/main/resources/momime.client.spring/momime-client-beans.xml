@@ -1433,7 +1433,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="diplomacyUI" ref="diplomacyUI" />
 	</bean>
 
-	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">
+	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUIImpl">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />

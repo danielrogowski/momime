@@ -963,8 +963,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 						if (summoningCircleLocation != null)
 						{
 							// Maybe summoning circle location is full (making assumption here that all recall spells target a single unit only)
-							final UnitAddLocation recallLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-								((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), targetUnit.getUnitID (), castingPlayer.getPlayerDescription ().getPlayerID (), mom);
+							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
+								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+							final UnitAddLocation recallLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeMoved
+								((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), xu, mom);
 							if (recallLocation.getUnitLocation () != null)
 							{							
 								// Recall spells - first take the unit(s) out of combat
@@ -1216,8 +1219,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (summoningCircleLocation != null)
 				{
 					// Maybe summoning circle location is full
-					final UnitAddLocation recallLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-						((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), targetUnit.getUnitID (), maintainedSpell.getCastingPlayerID (), mom);
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					
+					final UnitAddLocation recallLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeMoved
+						((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), xu, mom);
 					if ((recallLocation.getUnitLocation () != null) && (!recallLocation.getUnitLocation ().equals (targetUnit.getUnitLocation ())))
 					{
 						final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();

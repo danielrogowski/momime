@@ -962,20 +962,27 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						if (summoningCircleLocation != null)
 						{
-							// Recall spells - first take the unit(s) out of combat
-							for (final MemoryUnit tu : targetUnits)
-								getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
-									combatLocation, null, null, null, castingSide, spell.getSpellID (), mom);
-							
-							// Now teleport it back to our summoning circle
-							getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
-								(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), mom);
-							
-							// If we recalled our last remaining unit(s) out of combat, then we lose
-							if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide,
-								mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
+							// Maybe summoning circle location is full (making assumption here that all recall spells target a single unit only)
+							final UnitAddLocation recallLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
+								((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), targetUnit.getUnitID (), castingPlayer.getPlayerDescription ().getPlayerID (), mom);
+							if (recallLocation.getUnitLocation () != null)
+							{							
+								// Recall spells - first take the unit(s) out of combat
+								for (final MemoryUnit tu : targetUnits)
+									getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
+										combatLocation, null, null, null, castingSide, spell.getSpellID (), mom);
 								
-								winningPlayer = (castingPlayer == defendingPlayer) ? attackingPlayer : defendingPlayer;
+								// Now teleport it back to our summoning circle
+								if (!recallLocation.getUnitLocation ().equals (targetUnit.getUnitLocation ()))
+									getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
+										recallLocation.getUnitLocation (), mom);
+								
+								// If we recalled our last remaining unit(s) out of combat, then we lose
+								if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide,
+									mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
+									
+									winningPlayer = (castingPlayer == defendingPlayer) ? attackingPlayer : defendingPlayer;
+							}
 						}
 					}
 					else
@@ -1208,11 +1215,17 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				if (summoningCircleLocation != null)
 				{
-					final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
-					targetUnits.add (targetUnit);
-					
-					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, (MapCoordinates3DEx) targetUnit.getUnitLocation (),
-						(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), mom);
+					// Maybe summoning circle location is full
+					final UnitAddLocation recallLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
+						((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), targetUnit.getUnitID (), maintainedSpell.getCastingPlayerID (), mom);
+					if ((recallLocation.getUnitLocation () != null) && (!recallLocation.getUnitLocation ().equals (targetUnit.getUnitLocation ())))
+					{
+						final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+						targetUnits.add (targetUnit);
+						
+						getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, (MapCoordinates3DEx) targetUnit.getUnitLocation (),
+							recallLocation.getUnitLocation (), mom);
+					}
 				}
 			}
 			

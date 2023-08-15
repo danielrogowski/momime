@@ -847,7 +847,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1000,7 +1000,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1160,7 +1160,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1378,7 +1378,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1606,7 +1606,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1771,7 +1771,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	    assertNull (msg1.getGoldFromRazing ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1923,7 +1923,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	    assertNull (msg1.getGoldFromRazing ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);

@@ -532,7 +532,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			msg.setRegeneratedCount (getCombatProcessing ().regenerateUnits (combatDetails.getCombatLocation (), winningPlayer, mom));
 			
 			// Cancel any spells that were cast in combat, note doing so can actually kill some units
-			getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombat (combatDetails.getCombatLocation (), mom);
+			getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombatAtLocation (combatDetails.getCombatLocation (), mom);
 
 			// Undead created from ghouls / life stealing?
 			// Note these are always moved to the "moveTo" i.e. defending location - if the attacker won, their main force will advance

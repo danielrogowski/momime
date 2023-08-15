@@ -972,11 +972,20 @@ public final class SpellProcessingImpl implements SpellProcessing
 							{							
 								// Recall spells - first take the unit(s) out of combat
 								for (final MemoryUnit tu : targetUnits)
+								{
 									getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
 										combatLocation, null, null, null, castingSide, spell.getSpellID (), mom);
+
+									// Its possible this could kill the unit, if it has extra HP from Lionheart cast in combat that we now lose
+									getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombatOnUnit (tu.getUnitURN (), mom);
+								}
 								
-								// Now teleport it back to our summoning circle
-								if (!recallLocation.getUnitLocation ().equals (targetUnit.getUnitLocation ()))
+								mom.getWorldUpdates ().process (mom);
+								
+								// If the unit is still alive, teleport it back to our summoning circle
+								if ((getUnitUtils ().findUnitURN (targetUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) != null) &&
+									(!recallLocation.getUnitLocation ().equals (targetUnit.getUnitLocation ())))
+									
 									getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
 										recallLocation.getUnitLocation (), mom);
 								

@@ -70,11 +70,11 @@ import momime.server.worldupdates.WorldUpdates;
 public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 {
 	/**
-	 * Tests the switchOffSpellsCastInCombat method
+	 * Tests the switchOffSpellsCastInCombatAtLocation method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testSwitchOffSpellsCastInCombat () throws Exception
+	public final void testSwitchOffSpellsCastInCombatAtLocation () throws Exception
 	{
 		// 3 location spells, one combat spell in the right location, one combat spell in the wrong location, one overland spell in the right location		
 		final MemoryMaintainedSpell spellOne = new MemoryMaintainedSpell ();
@@ -132,8 +132,8 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 
 		// Units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (unitFour.getUnitURN (), trueMap.getUnit (), "switchOffSpellsCastInCombat")).thenReturn (unitFour);
-		when (unitUtils.findUnitURN (unitSix.getUnitURN (), trueMap.getUnit (), "switchOffSpellsCastInCombat")).thenReturn (unitSix);
+		when (unitUtils.findUnitURN (unitFour.getUnitURN (), trueMap.getUnit (), "switchOffSpellsCastInCombatAtLocation")).thenReturn (unitFour);
+		when (unitUtils.findUnitURN (unitSix.getUnitURN (), trueMap.getUnit (), "switchOffSpellsCastInCombatAtLocation")).thenReturn (unitSix);
 		
 		// Session variables
 		final WorldUpdates wu = mock (WorldUpdates.class);
@@ -150,7 +150,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setUnitUtils (unitUtils);
 		
 		// Run method
-		multi.switchOffSpellsCastInCombat (new MapCoordinates3DEx (20, 10, 1), mom);
+		multi.switchOffSpellsCastInCombatAtLocation (new MapCoordinates3DEx (20, 10, 1), mom);
 		
 		// Check results
 		verify (wu).switchOffSpell (3, false);

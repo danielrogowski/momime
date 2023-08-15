@@ -145,7 +145,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final void switchOffSpellsCastInCombat (final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+	public final void switchOffSpellsCastInCombatAtLocation (final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		for (final MemoryMaintainedSpell trueSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
@@ -157,12 +157,30 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			// Spells cast on units
 			else if ((trueSpell.isCastInCombat ()) && (trueSpell.getUnitURN () != null))
 			{
-				final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "switchOffSpellsCastInCombat");
+				final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "switchOffSpellsCastInCombatAtLocation");
 				if (combatLocation.equals (thisUnit.getCombatLocation ()))
 					mom.getWorldUpdates ().switchOffSpell (trueSpell.getSpellURN (), false);
 			}
 
 		mom.getWorldUpdates ().process (mom);
+	}
+	
+	/**
+	 * @param unitURN Unit being taken out of combat
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws IOException If there is another kind of problem
+	 */
+	@Override
+	public final void switchOffSpellsCastInCombatOnUnit (final int unitURN, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, IOException
+	{
+		for (final MemoryMaintainedSpell trueSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+
+			// Spells cast on units
+			if ((trueSpell.isCastInCombat ()) && (trueSpell.getUnitURN () != null) && (trueSpell.getUnitURN () == unitURN))
+				mom.getWorldUpdates ().switchOffSpell (trueSpell.getSpellURN (), false);
 	}
 	
 	/**

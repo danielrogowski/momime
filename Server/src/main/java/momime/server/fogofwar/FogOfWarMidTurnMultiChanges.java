@@ -34,7 +34,17 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws IOException If there is another kind of problem
 	 */
-	public void switchOffSpellsCastInCombat (final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+	public void switchOffSpellsCastInCombatAtLocation (final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, IOException;
+
+	/**
+	 * @param unitURN Unit being taken out of combat
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws IOException If there is another kind of problem
+	 */
+	public void switchOffSpellsCastInCombatOnUnit (final int unitURN, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
 	
 	/**

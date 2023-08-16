@@ -653,12 +653,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Put all the attackers in a list, and figure out moveFrom.
 				// NB. We intentionally don't check combatPosition and heading here because we DO want units to advance if they
 				// were land units sitting in transports during a naval combat.
-				// Also find any similar defenders, who didn't participate in the combat.
+				// Also find any similar defenders, who didn't participate in the combat (floating islands, or units Word of Recalled out of combat into the same cell as the attackers are about to advance into) 
 				MapCoordinates3DEx moveFrom = null;
 				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 				
 				for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatDetails.getCombatLocation ().equals (trueUnit.getCombatLocation ())) && (trueUnit.getCombatSide () != null))
+					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) &&
+						(((combatDetails.getCombatLocation ().equals (trueUnit.getCombatLocation ())) && (trueUnit.getCombatSide () != null)) ||
+							((trueUnit.getUnitLocation ().equals (moveTo)) && (trueUnit.getCombatSide () == null))))
 					{
 						if (trueUnit.getCombatSide () == UnitCombatSideID.ATTACKER)
 						{

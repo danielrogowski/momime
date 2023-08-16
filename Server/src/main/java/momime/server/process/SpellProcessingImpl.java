@@ -974,7 +974,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 								for (final MemoryUnit tu : targetUnits)
 								{
 									getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
-										combatLocation, null, null, null, castingSide, spell.getSpellID (), mom);
+										combatLocation, null, null, null, null, spell.getSpellID (), mom);
 
 									// Its possible this could kill the unit, if it has extra HP from Lionheart cast in combat that we now lose
 									getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombatOnUnit (tu.getUnitURN (), mom);

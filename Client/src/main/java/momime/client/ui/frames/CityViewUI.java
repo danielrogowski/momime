@@ -394,7 +394,7 @@ public final class CityViewUI extends MomClientFrameUI
 		
 			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
-			if (cityData.getCityPopulation () >= 1000)
+			if (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION)
 			{
 				// Normal city growth/death rate calculation
 				final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate (getClient ().getPlayers (),
@@ -1210,7 +1210,7 @@ public final class CityViewUI extends MomClientFrameUI
 			
 				// Growth rate
 				final String cityPopulation = getTextUtils ().intToStrCommas (cityData.getCityPopulation ());
-				if (cityData.getCityPopulation () < 1000)
+				if (cityData.getCityPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 					currentPopulationAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCityScreen ().getPopulationOutpost ()).replaceAll
 						("POPULATION", cityPopulation));
 				else if (cityData.getCityPopulation () == maxCitySize * 1000)
@@ -1230,7 +1230,7 @@ public final class CityViewUI extends MomClientFrameUI
 				
 				// Turns until construction completed
 				Integer turns = null;
-				if ((getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) && (cityData.getCityPopulation () >= 1000))
+				if ((getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
 					turns = getClientCityCalculations ().calculateProductionTurnsRemaining (getCityLocation ());
 				
 				if (turns != null)

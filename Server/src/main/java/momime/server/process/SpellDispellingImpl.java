@@ -573,8 +573,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 					final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
 
 					int thisCount = 0;					
-					if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
-						(mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 						
 						// How many enemy spells are here?
 						thisCount = (int) priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
@@ -609,8 +608,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
 
 						int thisCount = 0;					
-						if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
-							(mc.getCityData ().getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
+						if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 						{
 							if (priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().anyMatch
 								(s -> (s.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()) && (s.getCastingPlayerID () != mc.getCityData ().getCityOwnerID ()) &&

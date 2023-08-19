@@ -107,7 +107,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	
 		// If its still an outpost, it produces and consumes nothing (especially that it doesn't get bonuses from map features like Gold mines)
 		// But allow calculating food (max city size) and production % bonus and gold % bonus
-		if ((cityData == null) || (cityData.getCityPopulation () >= 1000))
+		if ((cityData == null) || (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
 		{
 			// Deal with people
 			if (includeProductionAndConsumptionFromPopulation)

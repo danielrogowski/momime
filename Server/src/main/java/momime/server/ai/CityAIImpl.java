@@ -200,7 +200,7 @@ public final class CityAIImpl implements CityAI
 				{
 					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
+					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
 					{
 						cityData.setOptionalFarmers (0);
 
@@ -282,7 +282,7 @@ public final class CityAIImpl implements CityAI
 				{
 					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
+					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
 					{
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 
@@ -602,7 +602,7 @@ public final class CityAIImpl implements CityAI
 					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
 						final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 							final Integer productionCost = getCityProductionCalculations ().calculateProductionCost

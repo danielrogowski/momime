@@ -358,7 +358,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		if ((winningPlayer == attackingPlayer) && (useCaptureCityDecision == null) && (tc.getCityData () != null) &&
 			(attackingPlayer.getPlayerDescription ().getPlayerID () != tc.getCityData ().getCityOwnerID ()))
 		{
-			if (tc.getCityData ().getCityPopulation () < 1000)
+			if (tc.getCityData ().getCityPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 			{
 				log.debug ("Captured an outpost, automatic raze");
 				useCaptureCityDecision = CaptureCityDecisionID.RAZE;

@@ -2075,7 +2075,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				{
 					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityPopulation () >= 1000) && (CommonDatabaseConstants.EVENT_ID_PLAGUE.equals (cityData.getPopulationEventID ())) &&
+					if ((cityData != null) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION) && (CommonDatabaseConstants.EVENT_ID_PLAGUE.equals (cityData.getPopulationEventID ())) &&
 						(!pestilenceAll.contains (new MapCoordinates3DEx (x, y, z))) &&
 							((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())))
 						

@@ -91,7 +91,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 		else if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCityData ().getCityOwnerID ()))
 			msg = "You tried to rush buy the construction of a city which isn't yours.";
 		
-		else if (tc.getCityData ().getCityPopulation () < 1000)
+		else if (tc.getCityData ().getCityPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 			msg = "You must wait for an Outpost to reach 1,000 population and grow into a Hamlet before you can rush buy its construction"; 
 		
 		else if (productionCost == null)

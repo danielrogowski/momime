@@ -470,7 +470,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Start off calculation
 		final int currentPopulation = cityData.getCityPopulation ();
 		final int maximumPopulation = Math.max (maxCitySize, 1)  * 1000;
-		final int minimumPopulation = 1000;
 
 		// Work out the direction the population is changing in
 		final int spaceLeft = maximumPopulation - currentPopulation;
@@ -603,8 +602,8 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Don't allow population to shrink under minimum
 		else if (breakdown.getInitialTotal () < 0)
 		{
-			if (currentPopulation + breakdown.getInitialTotal () < minimumPopulation)
-				breakdown.setCappedTotal (minimumPopulation - currentPopulation);
+			if (currentPopulation + breakdown.getInitialTotal () < CommonDatabaseConstants.MIN_CITY_POPULATION)
+				breakdown.setCappedTotal (CommonDatabaseConstants.MIN_CITY_POPULATION - currentPopulation);
 			else
 				breakdown.setCappedTotal (breakdown.getInitialTotal ());
 		}

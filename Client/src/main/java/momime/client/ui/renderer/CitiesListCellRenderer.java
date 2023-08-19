@@ -531,7 +531,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					final MapCoordinates3DEx cityLocation = city.getCityLocation ();
 					final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-					if (cityData.getCityPopulation () >= 1000)
+					if (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION)
 					{
 						// Build popup menu listing everything this city can construct
 						final JPopupMenu popup = new JPopupMenu ();

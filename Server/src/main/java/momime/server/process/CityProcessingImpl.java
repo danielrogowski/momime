@@ -436,7 +436,7 @@ public final class CityProcessingImpl implements CityProcessing
 				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				{
 					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())) && (cityData.getCityPopulation () >= 1000))
+					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
 					{
 						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "progressConstructionProjects");
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
@@ -592,7 +592,7 @@ public final class CityProcessingImpl implements CityProcessing
 							cityLocation, cityOwnerPriv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
 							CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 
-						if (cityData.getCityPopulation () >= 1000)
+						if (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION)
 						{
 							// Normal city growth rate calculation
 							final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
@@ -653,7 +653,7 @@ public final class CityProcessingImpl implements CityProcessing
 							if (outpostGrowthRate != 0)
 							{
 								final int oldPopulation = cityData.getCityPopulation ();
-								int newPopulation = Math.min (oldPopulation + outpostGrowthRate, 1000);
+								int newPopulation = Math.min (oldPopulation + outpostGrowthRate, CommonDatabaseConstants.MIN_CITY_POPULATION);
 								
 								if (newPopulation > 0)
 									cityData.setCityPopulation (newPopulation);
@@ -661,7 +661,7 @@ public final class CityProcessingImpl implements CityProcessing
 									razeCity (cityLocation, mom);		// Outposts can die off completely
 								
 								// Show on new turn messages?
-								if ((cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((newPopulation >= 1000) || (newPopulation <= 0)))
+								if ((cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((newPopulation >= CommonDatabaseConstants.MIN_CITY_POPULATION) || (newPopulation <= 0)))
 								{
 									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
 									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
@@ -889,7 +889,7 @@ public final class CityProcessingImpl implements CityProcessing
 					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					{
 						final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 							

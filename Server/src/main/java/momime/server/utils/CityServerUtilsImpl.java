@@ -145,7 +145,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		if ((cityData == null) || (cityData.getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 			msg = "You tried to change the construction of a city which isn't yours - change ignored.";
 		
-		else if (cityData.getCityPopulation () < 1000)
+		else if (cityData.getCityPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 			msg = "You must wait for an Outpost to reach 1,000 population and grow into a Hamlet before you can set its construction"; 
 		
 		else
@@ -227,7 +227,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		if ((cityData == null) || (cityData.getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 			msg = "You tried to change the number of farmers & workers in a city which isn't yours - change ignored.";
 
-		else if (cityData.getCityPopulation () < 1000)
+		else if (cityData.getCityPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 			msg = "You must wait for an Outpost to reach 1,000 population and grow into a Hamlet before you can change the number of farmers"; 
 		
 		else if ((optionalFarmers < 0) || (optionalFarmers + cityData.getMinimumFarmers () + cityData.getNumberOfRebels () > cityData.getCityPopulation () / 1000))
@@ -344,7 +344,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 				for (final MemoryGridCell cell : row.getCell ())
 				{
 					final OverlandMapCityData cityData = cell.getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == playerID) && ((includeOutposts) || (cityData.getCityPopulation () >= 1000)))
+					if ((cityData != null) && (cityData.getCityOwnerID () == playerID) && ((includeOutposts) || (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION)))
 						numberOfCities++;
 				}
 		

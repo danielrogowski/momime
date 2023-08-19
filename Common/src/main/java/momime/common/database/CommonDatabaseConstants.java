@@ -62,6 +62,9 @@ public final class CommonDatabaseConstants
 	/** Relation score for a wizard we hate */
 	public final static int MIN_RELATION_SCORE = -100;
 	
+	/** Minimum population for a city; less than this and its only an outpost */
+	public final static int MIN_CITY_POPULATION = 1000;
+	
 	/*------------------------------------------------------
 	 * Special values the various XML fields can take
 	 *-------------------------------------------------- */

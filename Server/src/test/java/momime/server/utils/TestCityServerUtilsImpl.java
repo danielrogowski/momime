@@ -757,7 +757,59 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		assertNull (utils.findCityWithinRadius (new MapCoordinates3DEx (22, 12, 1), terrain, sys));
 		assertNull (utils.findCityWithinRadius (new MapCoordinates3DEx (21, 12, 0), terrain, sys));
 	}
+	
+	/**
+	 * Tests the countCities method when we ignore outposts
+	 */
+	@Test
+	public final void testCountCities_ExcludingOutposts ()
+	{
+		// Set up map
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
+		
+		// Place some cities
+		for (int n = 0; n < 6; n++)
+		{
+			final OverlandMapCityData cityData = new OverlandMapCityData ();
+			cityData.setCityPopulation (998 + n);			// 2 are undersize
+			cityData.setCityOwnerID ((n == 4) ? 4 : 3);	// 1 is owned by wrong player
+			terrain.getPlane ().get (1).getRow ().get (10 + n).getCell ().get (20 + n).setCityData (cityData);
+		}
 
+		// Set up object to test
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		
+		// Call method
+		assertEquals (3, utils.countCities (terrain, 3, false));
+	}
+
+	/**
+	 * Tests the countCities method when we include outposts
+	 */
+	@Test
+	public final void testCountCities_IncludingOutposts ()
+	{
+		// Set up map
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
+		
+		// Place some cities
+		for (int n = 0; n < 6; n++)
+		{
+			final OverlandMapCityData cityData = new OverlandMapCityData ();
+			cityData.setCityPopulation (998 + n);			// 2 are undersize
+			cityData.setCityOwnerID ((n == 4) ? 4 : 3);	// 1 is owned by wrong player
+			terrain.getPlane ().get (1).getRow ().get (10 + n).getCell ().get (20 + n).setCityData (cityData);
+		}
+
+		// Set up object to test
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		
+		// Call method
+		assertEquals (5, utils.countCities (terrain, 3, true));
+	}
+	
 	/**
 	 * Tests the calculateDoubleFarmingRate method on the simple case where there's no modifiers
 	 * @throws Exception If there is a problem

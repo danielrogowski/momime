@@ -96,9 +96,10 @@ public interface CityServerUtils
 	/**
 	 * @param terrain Terrain to search
 	 * @param playerID Player whose cities to look for
-	 * @return Number of cities the player has.  Will not count outposts.
+	 * @param includeOutposts Whether to also count outposts
+	 * @return Number of cities the player has
 	 */
-	public int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID);
+	public int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID, final boolean includeOutposts);
 
 	/**
 	 * Attempts to find all the cells that we need to build a road on in order to join up two cities.  We don't know that its actually possible yet - maybe they're on two different islands.

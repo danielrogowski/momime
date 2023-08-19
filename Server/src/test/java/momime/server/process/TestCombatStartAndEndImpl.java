@@ -1332,7 +1332,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
 		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
-		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID ())).thenReturn (10);
+		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID (), true)).thenReturn (10);
 		
 		// Combat details
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
@@ -1562,7 +1562,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// It isn't their Wizard's Fortress
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
-		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID ())).thenReturn (10);
+		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID (), true)).thenReturn (10);
 		
 		// Combat details
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);

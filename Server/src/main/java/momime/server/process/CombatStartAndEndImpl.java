@@ -703,7 +703,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// If they're already banished and this was their last city being taken, then treat it just like their wizard's fortress being taken
 				boolean canStealSpells = true;
 				if ((!wasWizardsFortress) && (useCaptureCityDecision != null) &&
-					(getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0))
+					(getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID (), true) == 0))
 				{
 					wasWizardsFortress = true;
 					canStealSpells = false;		// Except their wizard's fortress was not really taken, so you don't steal spells / MP from it

@@ -1052,7 +1052,7 @@ public final class CityProcessingImpl implements CityProcessing
 		
 		// Do they have another city to try to return to?  Record it on server
 		final WizardState wizardState = (getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-			defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0) ? WizardState.DEFEATED : WizardState.BANISHED;
+			defendingPlayer.getPlayerDescription ().getPlayerID (), true) == 0) ? WizardState.DEFEATED : WizardState.BANISHED;
 		
 		getKnownWizardServerUtils ().updateWizardState (defendingPlayer.getPlayerDescription ().getPlayerID (), wizardState, mom);
 		

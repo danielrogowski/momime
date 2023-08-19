@@ -332,10 +332,11 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	/**
 	 * @param terrain Terrain to search
 	 * @param playerID Player whose cities to look for
+	 * @param includeOutposts Whether to also count outposts
 	 * @return Number of cities the player has.  Will not count outposts.
 	 */
 	@Override
-	public final int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID)
+	public final int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID, final boolean includeOutposts)
 	{
 		int numberOfCities = 0;
 		for (final MapAreaOfMemoryGridCells plane : terrain.getPlane ())
@@ -343,7 +344,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 				for (final MemoryGridCell cell : row.getCell ())
 				{
 					final OverlandMapCityData cityData = cell.getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == playerID) && (cityData.getCityPopulation () >= 1000))
+					if ((cityData != null) && (cityData.getCityOwnerID () == playerID) && ((includeOutposts) || (cityData.getCityPopulation () >= 1000)))
 						numberOfCities++;
 				}
 		

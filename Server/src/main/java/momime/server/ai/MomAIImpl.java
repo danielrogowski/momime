@@ -199,7 +199,7 @@ public final class MomAIImpl implements MomAI
 			}
 		}
 		
-		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID ());
+		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID (), false);
 		
 		// First find out what the best units we can construct or summon are - this gives us
 		// something to gauge existing units by, to know if they're now obsolete or not

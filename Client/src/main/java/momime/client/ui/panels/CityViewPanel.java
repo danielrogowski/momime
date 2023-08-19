@@ -91,6 +91,8 @@ public final class CityViewPanel extends JPanel
 					elementSetsDone = elementSetsDone + element.getCityViewElementSetID ();
 			}
 		
+		repaint ();
+		
 		// Sell buildings when they're clicked on
 		// init can get called multiple times to refresh the image from the cityViewUI, so make sure we don't add the mouse listener multiple times
 		if (!mouseListenerAdded)

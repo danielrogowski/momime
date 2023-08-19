@@ -23,9 +23,6 @@ public enum TargetSpellResult
 	/** Spell has spellEffectIDs defined, but they're all already cast on this city or unit */
 	ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS,
 	
-	/** Cannot create buildings in outposts */
-	CANT_CREATE_BUILDINGS_IN_OUTPOSTS,
-	
 	/** This spell creates a building (wall of stone, summoning circle or move fortress, null) and the target city already has that building */
 	CITY_ALREADY_HAS_BUILDING,
 	

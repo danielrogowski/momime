@@ -1052,9 +1052,6 @@
 		<alreadyHasAllPossibleCitySpellEffects language="en">
 			<text>This city already has SPELL_NAME cast on it.</text>
 		</alreadyHasAllPossibleCitySpellEffects>
-		<cantCreateBuildingsInOutposts language="en">
-			<text>You cannot create a BUILDING_NAME in an Outpost until it grows into a Hamlet.</text>
-		</cantCreateBuildingsInOutposts>
 		<alreadyHasBuilding language="en">
 			<text>This city already has a BUILDING_NAME.</text>
 		</alreadyHasBuilding>

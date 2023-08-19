@@ -147,10 +147,6 @@ public final class SpellTargetingEx extends SpellTargeting
 				languageText = getAlreadyHasAllPossibleCitySpellEffects ();
 				break;
 				
-			case CANT_CREATE_BUILDINGS_IN_OUTPOSTS:
-				languageText = getCantCreateBuildingsInOutposts ();
-				break;
-				
 			case CITY_ALREADY_HAS_BUILDING:
 				languageText = getAlreadyHasBuilding ();
 				break;

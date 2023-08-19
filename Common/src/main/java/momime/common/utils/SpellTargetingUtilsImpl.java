@@ -369,9 +369,7 @@ public final class SpellTargetingUtilsImpl implements SpellTargetingUtils
     	// Is it a spell that creates a building?
     	else if (spell.getBuildingID () != null)
     	{
-    		if (cityData.getCityPopulation () < 1000)
-    			result = TargetSpellResult.CANT_CREATE_BUILDINGS_IN_OUTPOSTS;
-    		else if (getMemoryBuildingUtils ().findBuilding (buildingsList, cityLocation, spell.getBuildingID ()) != null)
+    		if (getMemoryBuildingUtils ().findBuilding (buildingsList, cityLocation, spell.getBuildingID ()) != null)
     			result = TargetSpellResult.CITY_ALREADY_HAS_BUILDING;
     		else
     			result = TargetSpellResult.VALID_TARGET;

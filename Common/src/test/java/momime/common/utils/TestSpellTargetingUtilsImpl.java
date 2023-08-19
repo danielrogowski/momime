@@ -4335,40 +4335,6 @@ public final class TestSpellTargetingUtilsImpl
 	}
 	
 	/**
-	 * Tests the isCityValidTargetForSpell method when we cast a spell that creates a building in an outpost
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testIsCityValidTargetForSpell_CreateBuilding_Outpost () throws Exception
-	{
-		// Spell being targeted
-		final Spell spellDef = new Spell ();
-		spellDef.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
-		spellDef.setBuildingID ("BL01");
-
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
-		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
-		
-		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		
-		// City
-		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityOwnerID (1);
-		cityData.setCityPopulation (999);
-		
-		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
-		
-		// Set up object to test
-		final SpellTargetingUtilsImpl utils = new SpellTargetingUtilsImpl ();
-		
-		// Can't see location
-		assertEquals (TargetSpellResult.CANT_CREATE_BUILDINGS_IN_OUTPOSTS, utils.isCityValidTargetForSpell
-			(null, spellDef, 1, new MapCoordinates3DEx (20, 10, 1), terrain, fow, null, null, null));
-	}
-	
-	/**
 	 * Tests the isCityValidTargetForSpell method when we cast a spell that creates a building, but the city already has that building
 	 * @throws Exception If there is a problem
 	 */

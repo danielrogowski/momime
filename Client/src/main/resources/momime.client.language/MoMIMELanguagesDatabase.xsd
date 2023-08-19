@@ -340,10 +340,6 @@
 						<xsd:selector xpath="alreadyHasAllPossibleCitySpellEffects" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargetingCantCreateBuildingsInOutpostsPK">
-						<xsd:selector xpath="cantCreateBuildingsInOutposts" />
-						<xsd:field xpath="@language" />
-					</xsd:key>
 					<xsd:key name="spellTargetingAlreadyHasBuildingPK">
 						<xsd:selector xpath="alreadyHasBuilding" />
 						<xsd:field xpath="@language" />
@@ -3416,7 +3412,6 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enchantingEnemyCity" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cursingOwnCity" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyHasAllPossibleCitySpellEffects" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cantCreateBuildingsInOutposts" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyHasBuilding" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="tooHighResistance" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="immune" />

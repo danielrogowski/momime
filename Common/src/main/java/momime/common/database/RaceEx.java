@@ -1,5 +1,7 @@
 package momime.common.database;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -33,5 +35,35 @@ public final class RaceEx extends Race
 			throw new RecordNotFoundException (RacePopulationTask.class, populationTaskID, caller);
 		
 		return found;
+	}
+	
+	/**
+	 * The raceCannotBuild entries only list buildings the race explicitly cannot build, but doesn't take into account other buildings that depend on those buildings.
+	 * For example Klackons list that they cannot build a Ship Yard, but that implicitly means they cannot build Martime Guild too.
+	 * 
+	 * @param db Database, so we can get the full building list
+	 * @return Fully resolved list of buildings this race cannot build
+	 */
+	public final List<String> getRaceCannotBuildFullList (final CommonDatabase db)
+	{
+		// First copy the list of buildings they explicitly cannot build
+		final List<String> cannotBuild = new ArrayList<String> ();
+		cannotBuild.addAll (getRaceCannotBuild ());
+		
+		// Now scan through all buildings looking for any that require a building in the cannotBuild list, and keep doing it until we don't find any more
+		boolean keepGoing = true;
+		while (keepGoing)
+		{
+			keepGoing = false;
+			
+			for (final Building building : db.getBuilding ())
+				if ((!cannotBuild.contains (building.getBuildingID ())) && (building.getBuildingPrerequisite ().stream ().anyMatch (b -> cannotBuild.contains (b))))
+				{
+					cannotBuild.add (building.getBuildingID ());
+					keepGoing = true;
+				}
+		}
+		
+		return cannotBuild;
 	}
 }

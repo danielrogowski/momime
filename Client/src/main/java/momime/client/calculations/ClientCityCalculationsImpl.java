@@ -33,7 +33,7 @@ import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionAmountBucketID;
-import momime.common.database.Race;
+import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
@@ -701,10 +701,11 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		
 		try
 		{
-			final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "describeWhatBuildingAllows");
+			final RaceEx race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "describeWhatBuildingAllows");
+			final List<String> cannotBuild = race.getRaceCannotBuildFullList (getClient ().getClientDB ());
 		
 			// Buildings
-			for (final momime.common.database.Building building : getClient ().getClientDB ().getBuilding ())
+			for (final Building building : getClient ().getClientDB ().getBuilding ())
 			
 				// Don't list buildings we already have
 				if (getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), cityLocation, building.getBuildingID ()) == null)
@@ -716,23 +717,13 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 						if (iter.next ().equals (buildingID))
 							prereq = true;
 				
-					if (prereq)
+					if ((prereq) && (!cannotBuild.contains (building.getBuildingID ())))
 					{
-						// Check the city's race can build it
-						boolean canBuild = true;
-						final Iterator<String> cannot = race.getRaceCannotBuild ().iterator ();
-						while ((canBuild) && (cannot.hasNext ()))
-							if (cannot.next ().equals (building.getBuildingID ()))
-								canBuild = false;
+						// Got one!
+						if (allows.length () > 0)
+							allows.append (", ");
 					
-						if (canBuild)
-						{
-							// Got one!
-							if (allows.length () > 0)
-								allows.append (", ");
-						
-							allows.append (getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (building.getBuildingID (), "describeWhatBuildingAllows").getBuildingName ()));
-						}
+						allows.append (getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (building.getBuildingID (), "describeWhatBuildingAllows").getBuildingName ()));
 					}
 				}
 
@@ -786,7 +777,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		
-		final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "listBuildingsCityCanConstruct");
+		final RaceEx race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "listBuildingsCityCanConstruct");
 		
 		final List<Building> buildList = new ArrayList<Building> ();
 		for (final Building thisBuilding : getClient ().getClientDB ().getBuilding ())

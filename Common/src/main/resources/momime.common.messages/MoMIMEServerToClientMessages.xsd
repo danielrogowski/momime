@@ -1453,7 +1453,7 @@ So this is what drives the Spell of Return animation on the client, not the AddB
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="banishingPlayerID" type="mps:playerID">
 						    <xsd:annotation>
-	  							<xsd:documentation>The wizard who is doing the banishing.  May be raiders.  Omitted for spell of return.</xsd:documentation>
+	  							<xsd:documentation>The wizard who is doing the banishing.  May be raiders.  Omitted for spell of return or if the wizard banished themselves by being in a shrinking outpost.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />

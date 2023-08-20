@@ -175,7 +175,7 @@ public interface CityProcessing
 	/**
 	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
 	 * 
-	 * @param attackingPlayer Player who won the combat, who is doing the banishing
+	 * @param attackingPlayer Player who won the combat, who is doing the banishing; if an outpost shrinks and disappears then its possible this can be null
 	 * @param defendingPlayer Player who lost the combat, who is the one being banished
 	 * @param canStealSpells Whether the attacking wizard gets to steal any spells from the defending wizard as a result of banishing them
 	 * @param mom Allows accessing server knowledge structures, player list and so on

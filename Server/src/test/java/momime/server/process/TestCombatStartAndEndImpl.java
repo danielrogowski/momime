@@ -1017,9 +1017,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), mom);
 		
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
+		verifyNoMoreInteractions	 (midTurnMulti, fowProcessing, serverResourceCalculations);
 	}
 
 	/**
@@ -1177,9 +1175,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 0), mom);
 
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
+		verifyNoMoreInteractions	 (midTurnMulti, fowProcessing, serverResourceCalculations);
 	}
 	
 	/**
@@ -1332,7 +1328,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
 		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
-		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID (), true)).thenReturn (10);
 		
 		// Combat details
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
@@ -1342,7 +1337,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
-		final CityProcessing cityProcessing = mock (CityProcessing.class);
+		final CityUpdates cityUpdates = mock (CityUpdates.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnMultiChanges (midTurnMulti);
@@ -1353,13 +1348,13 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setOverlandMapServerUtils (overlandMapServerUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		cse.setCityProcessing (cityProcessing);
 		cse.setMemoryBuildingUtils (memoryBuildingUtils);
 		cse.setCityServerUtils (cityServerUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
 		cse.setRandomUtils (mock (RandomUtils.class));
 		cse.setSpellCasting (mock (SpellCasting.class));
 		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		cse.setCityUpdates (cityUpdates);
 		
 		// Run method
 		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
@@ -1392,7 +1387,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the city owner was updated
-		verify (cityProcessing).captureCity (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (cityUpdates).conquerCity (combatLocation, attackingPlayer, defendingPlayer, CaptureCityDecisionID.CAPTURE, goldSwiped, mom);
 		
 		// Check the attacker's units advanced forward into the city
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -1402,11 +1397,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped);
 		verify (resourceValueUtils).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
 		
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
-		verifyNoMoreInteractions	(resourceValueUtils);
-		verifyNoMoreInteractions	(cityProcessing);
+		verifyNoMoreInteractions	(midTurnMulti, fowProcessing, serverResourceCalculations, resourceValueUtils, cityUpdates);
 	}
 	
 	/**
@@ -1562,7 +1553,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// It isn't their Wizard's Fortress
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
-		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID (), true)).thenReturn (10);
 		
 		// Combat details
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
@@ -1572,7 +1562,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
-		final CityProcessing cityProcessing = mock (CityProcessing.class);
+		final CityUpdates cityUpdates = mock (CityUpdates.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnMultiChanges (midTurnMulti);
@@ -1584,10 +1574,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setOverlandMapServerUtils (overlandMapServerUtils);
 		cse.setCityServerUtils (cityServerUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		cse.setCityProcessing (cityProcessing);
 		cse.setMemoryBuildingUtils (memoryBuildingUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
 		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		cse.setCityUpdates (cityUpdates);
 		
 		// Run method
 		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
@@ -1620,7 +1610,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the city was trashed
-		verify (cityProcessing).razeCity (combatLocation, mom);
+		verify (cityUpdates).conquerCity (combatLocation, attackingPlayer, defendingPlayer, CaptureCityDecisionID.RAZE, goldSwiped, mom);
 		
 		// Check the attacker's units advanced forward into where the city used to be
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -1630,11 +1620,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);
 		verify (resourceValueUtils).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
 		
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
-		verifyNoMoreInteractions	(resourceValueUtils);
-		verifyNoMoreInteractions	(cityProcessing);
+		verifyNoMoreInteractions	(midTurnMulti, fowProcessing, serverResourceCalculations, resourceValueUtils, cityUpdates);
 	}
 
 	/**
@@ -1792,9 +1778,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (1, attackingPriv.getPendingMovement ().size ());
 		assertSame (attackerOtherPendingMovement, attackingPriv.getPendingMovement ().get (0));
 		
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
+		verifyNoMoreInteractions	 (midTurnMulti, fowProcessing, serverResourceCalculations);
 	}
 
 	/**

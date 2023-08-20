@@ -41,9 +41,10 @@ public final class TestWizardBanishedUI extends ClientTestData
 	 * Tests the WizardBanishedUI form
 	 * 
 	 * @param isEnemyWizard Whether banished by an enemy wizard, or raiders
+	 * @param isEnemyAtAll Whether banished by anyone at all, or by their own stupid mistake
 	 * @throws Exception If there is a problem
 	 */
-	private final void testWizardBanishedUI (final boolean isEnemyWizard) throws Exception
+	private final void testWizardBanishedUI (final boolean isEnemyWizard, final boolean isEnemyAtAll) throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -67,7 +68,8 @@ public final class TestWizardBanishedUI extends ClientTestData
 		
 		// Wizards
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.isWizard (null)).thenReturn (true);
+		if (isEnemyAtAll)
+			when (playerKnowledgeUtils.isWizard ("WZ03")).thenReturn (isEnemyWizard);
 		
 		// Client
 		final MomClient client = mock (MomClient.class);
@@ -111,6 +113,7 @@ public final class TestWizardBanishedUI extends ClientTestData
 		final WizardBanishedScreen wizardBanishedScreenLang = new WizardBanishedScreen ();
 		wizardBanishedScreenLang.getBanishedByWizard ().add (createLanguageText (Language.ENGLISH, "BANISHING_WIZARD banishes BANISHED_WIZARD"));
 		wizardBanishedScreenLang.getBanishedByRaiders ().add (createLanguageText (Language.ENGLISH, "BANISHING_WIZARD banish BANISHED_WIZARD"));
+		wizardBanishedScreenLang.getBanishedByNobody ().add (createLanguageText (Language.ENGLISH, "BANISHED_WIZARD is banished"));
 		
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		when (lang.getWizardBanishedScreen ()).thenReturn (wizardBanishedScreenLang);
@@ -125,18 +128,25 @@ public final class TestWizardBanishedUI extends ClientTestData
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		
 		final KnownWizardDetails banishedWizardDetails = new KnownWizardDetails ();
+		banishedWizardDetails.setWizardID ("WZ01");
 		banishedWizardDetails.setStandardPhotoID ("WZ01");
 		
 		final PlayerPublicDetails banishedWizard = new PlayerPublicDetails (null, null, null);
 		when (wizardClientUtils.getPlayerName (banishedWizard)).thenReturn ("Merlin");
 		
-		final PlayerPublicDetails banishingWizard = new PlayerPublicDetails (null, null, null);
-
-		when (wizardClientUtils.getPlayerName (banishingWizard)).thenReturn (isEnemyWizard ? "Kali" : "Raiders");
-		
-		final KnownWizardDetails banishingWizardDetails = new KnownWizardDetails ();
-		if (isEnemyWizard)
-			banishingWizardDetails.setStandardPhotoID ("WZ03");
+		PlayerPublicDetails banishingWizard = null;
+		KnownWizardDetails banishingWizardDetails = null;
+		if (isEnemyAtAll)
+		{
+			banishingWizard = new PlayerPublicDetails (null, null, null);
+	
+			when (wizardClientUtils.getPlayerName (banishingWizard)).thenReturn (isEnemyWizard ? "Kali" : "Raiders");
+			
+			banishingWizardDetails = new KnownWizardDetails ();
+			banishingWizardDetails.setWizardID ("WZ03");
+			if (isEnemyWizard)
+				banishingWizardDetails.setStandardPhotoID ("WZ03");
+		}
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/WizardBanishedUI.xml"));
@@ -175,7 +185,7 @@ public final class TestWizardBanishedUI extends ClientTestData
 	@Test
 	public final void testWizardBanishedUI_Wizard () throws Exception
 	{
-		testWizardBanishedUI (true);
+		testWizardBanishedUI (true, true);
 	}
 
 	/**
@@ -186,6 +196,17 @@ public final class TestWizardBanishedUI extends ClientTestData
 	@Test
 	public final void testWizardBanishedUI_Raiders () throws Exception
 	{
-		testWizardBanishedUI (false);
+		testWizardBanishedUI (false, true);
+	}
+
+	/**
+	 * Tests the WizardBanishedUI form, being banished by their own stupidity
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testWizardBanishedUI_Nobody () throws Exception
+	{
+		testWizardBanishedUI (false, false);
 	}
 }

@@ -723,7 +723,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		}
 		
 		// Generate more rampaging monsters
-		if (timeStop == null)
+		if ((mom.getPlayers ().size () > 0) && (timeStop == null))
 			for (final KnownWizardDetails thisWizard : mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ())
 				if ((useOnlyOnePlayerID == 0) || (useOnlyOnePlayerID == thisWizard.getPlayerID ()))
 				{

@@ -873,7 +873,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		priv.setTaxRateID ("TR01");
 		
 		final PlayerServerDetails cityOwnerPlayer = new PlayerServerDetails (pd, null, priv, null, trans);
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<PlayerServerDetails> players = Arrays.asList (cityOwnerPlayer);
 
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd.getPlayerID (), "growCities")).thenReturn (cityOwnerPlayer);

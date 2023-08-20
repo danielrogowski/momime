@@ -4585,12 +4585,18 @@ Bonus Or +GOLD_BONUS%</text>
 		<banishedByRaiders language="en">
 			<text>BANISHING_WIZARD banish BANISHED_WIZARD</text>
 		</banishedByRaiders>
+		<banishedByNobody language="en">
+			<text>BANISHED_WIZARD is banished</text>
+		</banishedByNobody>
 		<defeatedByWizard language="en">
 			<text>BANISHING_WIZARD defeats BANISHED_WIZARD</text>
 		</defeatedByWizard>
 		<defeatedByRaiders language="en">
 			<text>BANISHING_WIZARD defeat BANISHED_WIZARD</text>
 		</defeatedByRaiders>
+		<defeatedByNobody language="en">
+			<text>BANISHED_WIZARD is defeated</text>
+		</defeatedByNobody>
 	</wizardBanishedScreen>
 	<wizardWonScreen>
 		<title language="en">

@@ -2479,12 +2479,20 @@
 						<xsd:selector xpath="banishedByRaiders" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="wizardBanishedScreenBanishedByNobodyPK">
+						<xsd:selector xpath="banishedByNobody" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="wizardBanishedScreenDefeatedByWizardPK">
 						<xsd:selector xpath="defeatedByWizard" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="wizardBanishedScreenDefeatedByRaidersPK">
 						<xsd:selector xpath="defeatedByRaiders" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardBanishedScreenDefeatedByNobodyPK">
+						<xsd:selector xpath="defeatedByNobody" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
@@ -5095,8 +5103,10 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="banishedByWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="banishedByRaiders" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="banishedByNobody" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defeatedByWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defeatedByRaiders" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defeatedByNobody" />
 		</xsd:sequence>
     </xsd:complexType>
 	

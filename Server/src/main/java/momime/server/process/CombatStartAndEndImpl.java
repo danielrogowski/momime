@@ -138,9 +138,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
 	
-	/** City processing methods */
-	private CityProcessing cityProcessing;
-	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
@@ -167,6 +164,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 
 	/** For calculating relation scores between two wizards */
 	private RelationAI relationAI;
+	
+	/** Server side city updates */
+	private CityUpdates cityUpdates;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -686,38 +686,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (unitStack.size () > 0)
 					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer, moveFrom, moveTo, mom);
 				
-				// Before we remove buildings, check if this was the wizard's fortress and/or summoning circle
-				final boolean wasSummoningCircle = (useCaptureCityDecision != null) && (getMemoryBuildingUtils ().findBuilding
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatDetails.getCombatLocation (), CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE) != null);
-				
 				// Deal with cities
-				if (useCaptureCityDecision == CaptureCityDecisionID.CAPTURE)
-					getCityProcessing ().captureCity (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, mom);
+				if (useCaptureCityDecision != null)
+					getCityUpdates ().conquerCity (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, useCaptureCityDecision, (int) goldSwiped, mom);
 				
-				else if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
-					getCityProcessing ().razeCity (combatDetails.getCombatLocation (), mom);
-
-				else if (useCaptureCityDecision == CaptureCityDecisionID.RUIN)
-					getCityProcessing ().ruinCity (combatDetails.getCombatLocation (), (int) goldSwiped, mom);
-				
-				// If they're already banished and this was their last city being taken, then treat it just like their wizard's fortress being taken
-				boolean canStealSpells = true;
-				if ((!wasWizardsFortress) && (useCaptureCityDecision != null) &&
-					(getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID (), true) == 0))
-				{
-					wasWizardsFortress = true;
-					canStealSpells = false;		// Except their wizard's fortress was not really taken, so you don't steal spells / MP from it
-				}
-				
-				// Deal with wizard being banished
-				if ((wasWizardsFortress) && (useCaptureCityDecision != CaptureCityDecisionID.RAMPAGE))
-					getCityProcessing ().banishWizard (attackingPlayer, defendingPlayer, canStealSpells, mom);
-				
-				// From here on have to be really careful, as banishWizard may have completely tore down the session, which we can tell because the players list will be empty
-				
-				// If their summoning circle was taken, but they still have their fortress elsewhere, then move summoning circle to there
-				if ((wasSummoningCircle) && (useCaptureCityDecision != CaptureCityDecisionID.RAMPAGE) && (mom.getPlayers ().size () > 0))
-					getCityProcessing ().moveSummoningCircleToWizardsFortress (defendingPlayer.getPlayerDescription ().getPlayerID (), mom);
+				// From here on have to be really careful, as conquerCity may have completely tore down the session, which we can tell because the players list will be empty
 			}
 			else
 			{
@@ -1130,22 +1103,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	}
 
 	/**
-	 * @return City processing methods
-	 */
-	public final CityProcessing getCityProcessing ()
-	{
-		return cityProcessing;
-	}
-
-	/**
-	 * @param obj City processing methods
-	 */
-	public final void setCityProcessing (final CityProcessing obj)
-	{
-		cityProcessing = obj;
-	}
-
-	/**
 	 * @return MemoryBuilding utils
 	 */
 	public final MemoryBuildingUtils getMemoryBuildingUtils ()
@@ -1287,5 +1244,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setRelationAI (final RelationAI ai)
 	{
 		relationAI = ai;
+	}
+
+	/**
+	 * @return Server side city updates
+	 */
+	public final CityUpdates getCityUpdates ()
+	{
+		return cityUpdates;
+	}
+
+	/**
+	 * @param u Server side city updates
+	 */
+	public final void setCityUpdates (final CityUpdates u)
+	{
+		cityUpdates = u;
 	}
 }

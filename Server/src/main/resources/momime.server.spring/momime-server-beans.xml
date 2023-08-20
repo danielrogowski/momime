@@ -648,6 +648,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 		<property name="relationAI" ref="relationAI" />
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
+		<property name="cityUpdates" ref="cityUpdates" />
+	</bean>
+
+	<bean id="cityUpdates" class="momime.server.process.CityUpdatesImpl">
+		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
 	</bean>
 
 	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->
@@ -814,7 +821,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
 		<property name="momAI" ref="momAI" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
-		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="randomUtils" ref="randomUtils" />
@@ -824,6 +830,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 		<property name="relationAI" ref="relationAI" />
+		<property name="cityUpdates" ref="cityUpdates" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">

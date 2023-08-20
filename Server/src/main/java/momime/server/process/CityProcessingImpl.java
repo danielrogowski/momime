@@ -37,6 +37,7 @@ import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpellEffect;
+import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
@@ -176,6 +177,9 @@ public final class CityProcessingImpl implements CityProcessing
 	
 	/** City production calculations */
 	private CityProductionCalculations cityProductionCalculations;
+	
+	/** Server side city updates */
+	private CityUpdates cityUpdates;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -574,9 +578,14 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void growCities (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
-			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+		int z = 0;
+		while ((z < mom.getSessionDescription ().getOverlandMapSize ().getDepth ()) && (mom.getPlayers ().size () > 0))
+		{
+			int y = 0;
+			while ((y < mom.getSessionDescription ().getOverlandMapSize ().getHeight ()) && (mom.getPlayers ().size () > 0))
+			{
+				int x = 0;
+				while ((x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()) && (mom.getPlayers ().size () > 0))
 				{
 					final ServerGridCellEx mc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
 					final OverlandMapCityData cityData = mc.getCityData ();
@@ -658,28 +667,40 @@ public final class CityProcessingImpl implements CityProcessing
 								if (newPopulation > 0)
 									cityData.setCityPopulation (newPopulation);
 								else
-									razeCity (cityLocation, mom);		// Outposts can die off completely
+									getCityUpdates ().conquerCity (cityLocation, null, cityOwnerPlayer, CaptureCityDecisionID.RAZE, 0, mom);
 								
-								// Show on new turn messages?
-								if ((cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((newPopulation >= CommonDatabaseConstants.MIN_CITY_POPULATION) || (newPopulation <= 0)))
+								if (mom.getPlayers ().size () > 0)
 								{
-									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
-									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
-									populationChange.setCityLocation (cityLocation);
-									populationChange.setCityName (cityData.getCityName ());
-									populationChange.setOldPopulation (oldPopulation);
-									populationChange.setNewPopulation (newPopulation);
-									((MomTransientPlayerPrivateKnowledge) cityOwnerPlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
+									// Show on new turn messages?
+									if ((cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((newPopulation >= CommonDatabaseConstants.MIN_CITY_POPULATION) || (newPopulation <= 0)))
+									{
+										final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
+										populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
+										populationChange.setCityLocation (cityLocation);
+										populationChange.setCityName (cityData.getCityName ());
+										populationChange.setOldPopulation (oldPopulation);
+										populationChange.setNewPopulation (newPopulation);
+										((MomTransientPlayerPrivateKnowledge) cityOwnerPlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
+									}
+		
+									// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change; if not we still need to update player memory about the city
+									mom.getWorldUpdates ().recalculateCity (cityLocation);
 								}
-	
-								// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change; if not we still need to update player memory about the city
-								mom.getWorldUpdates ().recalculateCity (cityLocation);
 							}
 						}
 					}
+					
+					x++;
 				}
+				
+				y++;
+			}
+			
+			z++;
+		}
 		
-		mom.getWorldUpdates ().process (mom);
+		if (mom.getPlayers ().size () > 0)
+			mom.getWorldUpdates ().process (mom);
 	}
 	
 	/**
@@ -1027,7 +1048,7 @@ public final class CityProcessingImpl implements CityProcessing
 	/**
 	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
 	 * 
-	 * @param attackingPlayer Player who won the combat, who is doing the banishing
+	 * @param attackingPlayer Player who won the combat, who is doing the banishing; if an outpost shrinks and disappears then its possible this can be null
 	 * @param defendingPlayer Player who lost the combat, who is the one being banished
 	 * @param canStealSpells Whether the attacking wizard gets to steal any spells from the defending wizard as a result of banishing them
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -1039,16 +1060,18 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final boolean canStealSpells, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		getKnownWizardServerUtils ().meetWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
+		if (attackingPlayer != null)
+			getKnownWizardServerUtils ().meetWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
+		
 		getKnownWizardServerUtils ().meetWizard (defendingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge attackerPriv = (attackingPlayer == null) ? null : (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
 		final KnownWizardDetails defenderWizard = getKnownWizardUtils ().findKnownWizardDetails
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "banishWizard");
-		final KnownWizardDetails attackerWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "banishWizard");
+		final KnownWizardDetails attackerWizard = (attackingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), attackingPlayer.getPlayerDescription ().getPlayerID (), "banishWizard");
 		
 		// Do they have another city to try to return to?  Record it on server
 		final WizardState wizardState = (getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
@@ -1059,12 +1082,15 @@ public final class CityProcessingImpl implements CityProcessing
 		// Update wizardState on client, and this triggers showing the banish animation as well
 		final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();
 		msg.setBanishedPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
-		msg.setBanishingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
+		
+		if (attackingPlayer != null)
+			msg.setBanishingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
+		
 		msg.setWizardState (wizardState);
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 
 		// Things that only apply if two wizards (so the defending wizard's fortress was captured)
-		if ((canStealSpells) && (getPlayerKnowledgeUtils ().isWizard (defenderWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (attackerWizard.getWizardID ())))
+		if ((canStealSpells) && (attackingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (defenderWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (attackerWizard.getWizardID ())))
 		{
 			// Does the attacker get to steal any spells?
 			final List<String> stolenSpellIDs = getSpellProcessing ().stealSpells (defendingPlayer, attackingPlayer,
@@ -1756,5 +1782,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setCityProductionCalculations (final CityProductionCalculations c)
 	{
 		cityProductionCalculations = c;
+	}
+
+	/**
+	 * @return Server side city updates
+	 */
+	public final CityUpdates getCityUpdates ()
+	{
+		return cityUpdates;
+	}
+
+	/**
+	 * @param u Server side city updates
+	 */
+	public final void setCityUpdates (final CityUpdates u)
+	{
+		cityUpdates = u;
 	}
 }

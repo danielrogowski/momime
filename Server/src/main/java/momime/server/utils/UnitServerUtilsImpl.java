@@ -634,11 +634,19 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			{
 				final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (desiredLocation);
 				if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), adjacentLocation, direction))
+				{
+					// If the city is on Myrror and the adjacent location happens to be a Tower of Wizardry, the unit gets bumped to plane 0
+					if ((adjacentLocation.getZ () == 1) && (getMemoryGridCellUtils ().isTerrainTowerOfWizardry
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (adjacentLocation.getZ ()).getRow ().get (adjacentLocation.getY ()).getCell ().get (adjacentLocation.getX ()).getTerrainData ())))
+						
+						adjacentLocation.setZ (0);
+					
 					if (canUnitBeAddedHere (adjacentLocation, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()))
 					{
 						addLocation = adjacentLocation;
 						bumpType = UnitAddBumpTypeID.BUMPED;
 					}
+				}
 
 				direction++;
 			}

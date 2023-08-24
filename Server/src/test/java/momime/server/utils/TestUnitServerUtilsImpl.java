@@ -54,6 +54,7 @@ import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
@@ -1193,6 +1194,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		utils.setUnitCalculations (calc);
 		utils.setSampleUnitUtils (sampleUnitUtils);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		utils.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -1262,6 +1264,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		utils.setUnitCalculations (calc);
 		utils.setSampleUnitUtils (sampleUnitUtils);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		utils.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);

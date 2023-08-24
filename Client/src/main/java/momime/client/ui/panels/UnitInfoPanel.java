@@ -712,6 +712,11 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		basicAndModifiedSkillIDs.addAll (getUnit ().listBasicSkillIDs ());
 		basicAndModifiedSkillIDs.addAll (getUnit ().listModifiedSkillIDs ());
 		
+		// Don't show unit caster skill for heroes - which comes from hero items with +spell skill on them.
+		// This can't be done in expandUnitDetails itself, as calculateManaTotal relies on the unit caster skill being there with its correctly calculated value.
+		if (getUnit ().isHero ())
+			basicAndModifiedSkillIDs.remove (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
+		
 		getUnitSkillListCellRenderer ().setUnit (getUnit ());
 		for (final String unitSkillID : basicAndModifiedSkillIDs.stream ().sorted ().collect (Collectors.toList ()))
 		{

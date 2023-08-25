@@ -650,7 +650,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
+				if ((terrainData != null) && (terrainData.getCorrupted () == null) && (terrainData.getMapFeatureID () != null))
 				{
 					final MapFeatureEx mapFeature = db.findMapFeature (terrainData.getMapFeatureID (), "calculateOutpostGrowthChance");
 					if (mapFeature.getOutpostMapFeatureGrowthModifier () != null)

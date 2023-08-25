@@ -16,12 +16,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageType;
 import momime.common.database.DamageTypeImmunity;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
@@ -545,4 +547,62 @@ public final class TestExpandedUnitDetailsImpl
 		
 		assertEquals (102, xu.calculateManaTotal ());
 	}
-}
+
+	/**
+	 * Tests the unitIgnoresCombatTerrain method on a unit which doesn't have any skills which make it ignore combat terrain
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testUnitIgnoresCombatTerrain_No () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitSkillEx skillA = new UnitSkillEx ();
+		when (db.findUnitSkill ("A", "unitIgnoresCombatTerrain")).thenReturn (skillA);
+
+		final UnitSkillEx skillB = new UnitSkillEx ();
+		skillB.setIgnoreCombatTerrain (false);
+		when (db.findUnitSkill ("B", "unitIgnoresCombatTerrain")).thenReturn (skillB);
+
+		// Has skills, but none that ignore combat terrain
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("A", null);
+		modifiedSkillValues.put ("B", null);
+
+		// Set up object to test
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 1, null, modifiedSkillValues, null, null, null);
+		
+		// Call method
+		assertFalse (xu.unitIgnoresCombatTerrain (db));
+	}
+
+	/**
+	 * Tests the unitIgnoresCombatTerrain method on a unit which has a skill which make it ignore combat terrain
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testUnitIgnoresCombatTerrain_Yes () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitSkillEx skillA = new UnitSkillEx ();
+		when (db.findUnitSkill ("A", "unitIgnoresCombatTerrain")).thenReturn (skillA);
+
+		final UnitSkillEx skillC = new UnitSkillEx ();
+		skillC.setIgnoreCombatTerrain (true);
+		when (db.findUnitSkill ("C", "unitIgnoresCombatTerrain")).thenReturn (skillC);
+		
+		// Has skill that ignores combat terrain
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("A", null);
+		modifiedSkillValues.put ("C", null);
+
+		// Set up object to test
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 1, null, modifiedSkillValues, null, null, null);
+		
+		// Call method
+		assertTrue (xu.unitIgnoresCombatTerrain (db));
+	}
+	}

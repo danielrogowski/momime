@@ -9,9 +9,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
@@ -124,13 +122,6 @@ public interface MinimalUnitDetails
 	 * @return Number of figures in this unit before it takes any damage
 	 */
 	public int getFullFigureCount ();
-
-	/**
-	 * @param db Lookup lists built over the XML database
-	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
-	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
-	 */
-	public boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @return How much fame a player loses when this unit dies

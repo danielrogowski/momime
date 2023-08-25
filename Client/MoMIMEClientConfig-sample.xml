@@ -13,7 +13,7 @@
 	<overlandShowEnemyBorders>false</overlandShowEnemyBorders>
 	<overlandAnimateUnitsMoving>true</overlandAnimateUnitsMoving>
 	<combatSmoothTerrain>true</combatSmoothTerrain>
-	<newShadows>false</newShadows>
+	<newShadows>true</newShadows>
 	<showHeroPortraits>true</showHeroPortraits>
 	<displayUnitSkillsAsAttributes>A</displayUnitSkillsAsAttributes>
     <spellBookViewMode>STANDARD</spellBookViewMode>

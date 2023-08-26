@@ -744,8 +744,9 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 						if (iter.next ().equals (buildingID))
 							prereq = true;
 				
-					if (prereq)
-					{
+					// Make sure none of the OTHER pre-requisite buildings are ones this race cannot build
+					if ((prereq) && (unit.getUnitPrerequisite ().stream ().noneMatch (r -> cannotBuild.contains (r))))
+					{						
 						// Got one!
 						if (allows.length () > 0)
 							allows.append (", ");

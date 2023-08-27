@@ -36,8 +36,51 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.6.4</b></td>
-			<td align=left><b>16 Jul 2023</b></td>
+			<td align=left><b>Current version: 1.6.5</b></td>
+			<td align=left><b>27 Aug 2023</b></td>
+			<td align=left>
+				<b>Bug fixes relating to Word of Recall and Recall Hero:</b>
+				<ul>
+					<li>Word of Recall and Recall Hero will bump the unit outside the town where your summoning circle is located if the town already has 9 units in it
+					<li>Word of Recall and Recall Hero now consider the type of terrain the unit is being moved onto and spells cast on the unit, for example you can't use Word of Recall to get a Warship to defend your city, but you can if it has Flight cast on it
+					<li>Word of Recall and Recall Hero when cast overland now rechecks the tile the unit was moved from, so for example if you recall a boat that was carrying units, the units will drown
+					<li>Word of Recall and Recall Hero when cast in combat will now cancel any enchantments or curses cast on the unit in combat
+					<li>Can no longer Word of Recall combat summons, for example Phantom Warriors
+					<li>If the defenders remove a unit via Word of Recall or Recall Hero from a combat taking place at the location of their summoning circle and subsequently lose the combat, the recalled unit(s) are lost
+				</ul>
+				
+				<b>Bug fixes relating to Outposts:</b>
+				<ul>
+					<li>Removed restriction that stopped you targeting spells that create "buildings" on outposts (Summoning Circle, Wall of Stone, Move Fortress &amp; Spell of Return)
+					<li>When a wizard loses their Fortress and only has outposts remaining, they are now only considered banished not defeated, and can cast Spell of Return to return to one of their outposts
+					<li>AI players will target spells at outposts
+					<li>Random events (mineral discovery/depletion, rebellion, population boom and plague) may now happen to outposts (but population boom and plague have no effect until the outpost grows into a city)
+					<li>Now correctly handles if your summoning circle and/or Wizard's Fortress is in an outpost that dies out due to shrinkage
+					<li>Percentage modifiers for spells would cause an error if the value the modifier applies to didn't exist (for example casting Famine on an Outpost)
+					<li>Outpost growth rate would be boosted by nearby minerals even if the tiles were corrupted
+				</ul>
+				
+				<b>Other bug fixes:</b>
+				<ul>
+					<li>Hasted units now get 2x movement
+					<li>Caster skill would appear twice on heroes using items with +spell skill on them
+					<li>Units constructed or summoned in a city that already has 9 units in get bumped to an adjacent tile; if the city was on Myrror and the adjacent tile is a Tower of Wizardry, the units would be added incorrectly, even stacking with enemy units guarding the tower
+					<li>Flying units could still cross city walls even after being webbed
+					<li>When selecting a building to construct and the game shows you what the building will allow you to make after, buildings explicitly not allowed for the race would not be listed (e.g. Klackons building a Ship Wrights' Guild do not say "Allows Ship Yard")
+						but would still list buildings that are only implicitly excluded (e.g. Klackons building an Armoury would still say "Allows Maritime Guild" even though they can't get one because they cannot build a Ship Yard), so fixed
+					<li>When selecting a building to construct, units which require two different buildings to construct them would show one of the buildings "allows" that unit even if the race couldn't construct the other pre-requisite building
+						(e.g. Gnolls building a Barracks would still say "Allows Warship" even though they can't get one because they cannot build a Maritime Guild), so fixed
+				</ul>
+				
+				<b>Other changes:</b>
+				<ul>
+					<li>Turned on new shadows by default
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6.4</td>
+			<td align=left>16 Jul 2023</td>
 			<td align=left>
 				<b>Bug fixes (thanks to Dratinimaster for finding or suggesting most of these):</b>
 				<ul>

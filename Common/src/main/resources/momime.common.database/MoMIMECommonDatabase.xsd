@@ -5971,6 +5971,10 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 				<xsd:documentation>Skill value is locked to this exact value, regardless of previous modifiers, e.g. Shatter sets melee strength to exactly 1.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="LOCK" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="X"><xsd:annotation>
+				<xsd:documentation>Skill value is raised to this exact value if it was lower, e.g. Flight grants minimum movement speed of 3.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MINIMUM" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="D"><xsd:annotation>
 				<xsd:documentation>Skill value is divided by this value, so 2 means halve the skill value, e.g. Warp Creature halves melee strength.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DIVIDE" /></xsd:appinfo>

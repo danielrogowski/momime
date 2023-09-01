@@ -197,11 +197,11 @@ public final class TestUnitAIImpl extends ServerTestData
 		ai.setMemoryGridCellUtils (memoryGridCellUtils);
 		
 		// Unit can move over this terrain, it doesn't need a transport
-		when (calc.calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), "TT01", db)).thenReturn (2);
+		when (calc.isTileTypeImpassable (xu, xu.listModifiedSkillIDs (), "TT01", db)).thenReturn (false);
 		assertFalse (ai.unitMatchesCategory (xu, category, mem, db));
 		
 		// Unit can't move over this terrain, but it can't find a transport to get in either
-		when (calc.calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), "TT01", db)).thenReturn (null);
+		when (calc.isTileTypeImpassable (xu, xu.listModifiedSkillIDs (), "TT01", db)).thenReturn (true);
 		
 		final MemoryUnit nonTransport = new MemoryUnit ();
 		nonTransport.setOwningPlayerID (3);

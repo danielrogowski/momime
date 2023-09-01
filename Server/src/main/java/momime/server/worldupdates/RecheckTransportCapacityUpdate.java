@@ -117,8 +117,8 @@ public final class RecheckTransportCapacityUpdate implements WorldUpdate
 		int spaceRequired = 0;
 		for (final ExpandedUnitDetails tu : unitStack)
 		{
-			final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills,
-				getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), mom.getServerDB ()) == null);
+			final boolean impassable = getUnitCalculations ().isTileTypeImpassable (tu, unitStackSkills,
+				getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), mom.getServerDB ());
 				
 			// Count space granted by transports
 			final Integer unitTransportCapacity = tu.getUnitDefinition ().getTransportCapacity ();

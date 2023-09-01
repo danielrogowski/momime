@@ -134,7 +134,7 @@ public final class MovementUtilsImpl implements MovementUtils
 					else
 					{
 						final String tileTypeID = getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false);
-						if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, unitStackSkills, tileTypeID, db) == null)
+						if (getUnitCalculations ().isTileTypeImpassable (xu, unitStackSkills, tileTypeID, db))
 							cellTransportCapacity [z] [y] [x]--;
 					}
 				}			
@@ -372,8 +372,8 @@ public final class MovementUtilsImpl implements MovementUtils
 			boolean impassableToTransport = false;
 			for (final ExpandedUnitDetails thisUnit : unitStack.getUnits ())
 			{															
-				final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills,
-					getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
+				final boolean impassable = getUnitCalculations ().isTileTypeImpassable (thisUnit, unitStackSkills,
+					getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db);
 				
 				// Count space granted by transports
 				final Integer unitTransportCapacity = thisUnit.getUnitDefinition ().getTransportCapacity ();

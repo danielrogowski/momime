@@ -439,6 +439,24 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	}
 	
 	/**
+	 * This is same as calling calculateDoubleMovementToEnterTileType and checking if the result == null
+	 * 
+	 * @param unit Unit that we want to move
+	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
+	 * @param tileTypeID Type of tile we are moving onto
+	 * @param db Lookup lists built over the XML database
+	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
+	 */
+	@Override
+	public final boolean isTileTypeImpassable (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db)
+	{
+		// There can't be rows in the movement rate table that set combinations as impassable - they're all "allows" rows.  So just test whether every rule fails to match.
+		return db.getMovementRateRule ().stream ().noneMatch (thisRule -> ((thisRule.getTileTypeID () == null) || (thisRule.getTileTypeID ().equals (tileTypeID))) &&
+			((thisRule.getUnitSkillID () == null) || (unit.hasModifiedSkill (thisRule.getUnitSkillID ()))) &&
+			((thisRule.getUnitStackSkillID () == null) || (unitStackSkills.contains (thisRule.getUnitStackSkillID ()))));
+	}
+	
+	/**
 	 * @param unit Unit that we want to move
 	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
 	 * @param db Lookup lists built over the XML database
@@ -454,7 +472,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		{
 			final TileTypeEx tileType = iter.next ();
 			if ((!tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN)) &&
-				(calculateDoubleMovementToEnterTileType (unit, unitStackSkills, tileType.getTileTypeID (), db) == null))
+				(isTileTypeImpassable (unit, unitStackSkills, tileType.getTileTypeID (), db)))
 				
 				result = false;
 		}

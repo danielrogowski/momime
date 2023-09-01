@@ -145,6 +145,17 @@ public interface UnitCalculations
 	public Integer calculateDoubleMovementToEnterTileType (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db);
 	
 	/**
+	 * This is same as calling calculateDoubleMovementToEnterTileType and checking if the result == null
+	 * 
+	 * @param unit Unit that we want to move
+	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
+	 * @param tileTypeID Type of tile we are moving onto
+	 * @param db Lookup lists built over the XML database
+	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
+	 */
+	public boolean isTileTypeImpassable (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db);
+	
+	/**
 	 * @param unit Unit that we want to move
 	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
 	 * @param db Lookup lists built over the XML database

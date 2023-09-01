@@ -125,7 +125,7 @@ public final class TestMovementUtilsImpl
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		when (xu1.getUnitDefinition ()).thenReturn (unitDef);
 		when (expand.expandUnitDetails (unit1, null, null, null, players, map, db)).thenReturn (xu1);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu1, unitStackSkills, "TT01", db)).thenReturn (null);
+		when (unitCalculations.isTileTypeImpassable (xu1, unitStackSkills, "TT01", db)).thenReturn (true);
 		
 		// At 0, 0, 2 there's a transport with capacity 2
 		final MemoryUnit unit2 = new MemoryUnit ();
@@ -158,7 +158,7 @@ public final class TestMovementUtilsImpl
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
 		when (xu4.getUnitDefinition ()).thenReturn (unitDef);
 		when (expand.expandUnitDetails (unit4, null, null, null, players, map, db)).thenReturn (xu4);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu4, unitStackSkills, "TT01", db)).thenReturn (null);
+		when (unitCalculations.isTileTypeImpassable (xu4, unitStackSkills, "TT01", db)).thenReturn (true);
 		
 		// At 0, 0, 4 there's a transport with capacity 2 with 1 unit standing next to it but not inside it (terrain is passable to that unit)
 		final MemoryUnit unit5 = new MemoryUnit ();
@@ -180,7 +180,7 @@ public final class TestMovementUtilsImpl
 		final ExpandedUnitDetails xu6 = mock (ExpandedUnitDetails.class);
 		when (xu6.getUnitDefinition ()).thenReturn (unitDef);
 		when (expand.expandUnitDetails (unit6, null, null, null, players, map, db)).thenReturn (xu6);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu6, unitStackSkills, "TT01", db)).thenReturn (2);
+		when (unitCalculations.isTileTypeImpassable (xu6, unitStackSkills, "TT01", db)).thenReturn (false);
 		
 		// At 0, 0, 5 there's somebody else's unit which makes no difference, we can "move onto it" to attack it
 		final MemoryUnit unit7 = new MemoryUnit ();

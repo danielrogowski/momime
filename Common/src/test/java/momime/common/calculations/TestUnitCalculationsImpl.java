@@ -499,6 +499,86 @@ public final class TestUnitCalculationsImpl
 	}
 	
 	/**
+	 * Tests the isTileTypeImpassable method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsTileTypeImpassable () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up some movement rate rules to say:
+		// 1) Regular units on foot (US001) can move over TT01 at cost of 4 points and TT02 at cost of 6 points
+		// 2) Flying (US002) units move over everything at a cost of 2 points, including water (TT03)
+		// 3) Units with a pathfinding-like skill (US003) allow their entire stack to move over any land at a cost of 1 point, but not water 
+		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
+		for (int n = 1; n <= 2; n++)
+		{
+			final MovementRateRule pathfindingRule = new MovementRateRule ();
+			pathfindingRule.setTileTypeID ("TT0" + n);
+			pathfindingRule.setUnitStackSkillID ("US003");
+			pathfindingRule.setDoubleMovement (1);
+			rules.add (pathfindingRule);
+		}
+		
+		final MovementRateRule flyingRule = new MovementRateRule ();
+		flyingRule.setUnitSkillID ("US002");
+		flyingRule.setDoubleMovement (2);
+		rules.add (flyingRule);
+
+		final MovementRateRule hillsRule = new MovementRateRule ();
+		hillsRule.setUnitSkillID ("US001");
+		hillsRule.setTileTypeID ("TT01");
+		hillsRule.setDoubleMovement (4);
+		rules.add (hillsRule);
+		
+		final MovementRateRule mountainsRule = new MovementRateRule ();
+		mountainsRule.setUnitSkillID ("US001");
+		mountainsRule.setTileTypeID ("TT02");
+		mountainsRule.setDoubleMovement (6);
+		rules.add (mountainsRule);
+		
+		when (db.getMovementRateRule ()).thenReturn (rules);
+		
+		// Sample unit
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+		when (unit.hasModifiedSkill ("US001")).thenReturn (true);
+		when (unit.hasModifiedSkill ("US002")).thenReturn (false);
+
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+
+		// Regular walking unit can walk over the two types of land tiles, but not water
+		final Set<String> unitStackSkills = new HashSet<String> ();
+
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT01", db));
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT02", db));
+		assertTrue (calc.isTileTypeImpassable (unit, unitStackSkills, "TT03", db));
+		
+		// Stack with a pathfinding unit
+		unitStackSkills.add ("US003");
+
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT01", db));
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT02", db));
+		assertTrue (calc.isTileTypeImpassable (unit, unitStackSkills, "TT03", db));
+		
+		// Cast flight spell - pathfinding takes preference, with how the demo rules above are ordered
+		when (unit.hasModifiedSkill ("US002")).thenReturn (true);
+
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT01", db));
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT02", db));
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT03", db));
+		
+		// Now without the pathfinding to take preference
+		unitStackSkills.clear ();
+		
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT01", db));
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT02", db));
+		assertFalse (calc.isTileTypeImpassable (unit, unitStackSkills, "TT03", db));
+	}
+	
+	/**
 	 * Tests the areAllTerrainTypesPassable method
 	 * @throws Exception If there is a problem
 	 */

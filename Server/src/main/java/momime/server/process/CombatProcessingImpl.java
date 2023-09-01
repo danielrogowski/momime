@@ -556,7 +556,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		{
 			final ExpandedUnitDetails tu = iter.next ();
 			if (((tu.getUnitDefinition ().isNonCombatUnit () != null) && (tu.getUnitDefinition ().isNonCombatUnit ())) ||
-				(getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills, tileTypeID, mom.getServerDB ()) == null))
+				(getUnitCalculations ().isTileTypeImpassable (tu, unitStackSkills, tileTypeID, mom.getServerDB ())))
 			{
 				// Set combatLocation and side (we need these to handle units left behind properly when the combat ends), but not position and heading.
 				// Also note we don't send these values to the client.

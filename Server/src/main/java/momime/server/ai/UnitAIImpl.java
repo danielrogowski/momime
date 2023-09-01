@@ -463,7 +463,7 @@ public final class UnitAIImpl implements UnitAI
 			
 			// If the current terrain is passable to us, then we aren't in a transport, and so the category doesn't match
 			matches = false;
-			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null)
+			if (getUnitCalculations ().isTileTypeImpassable (xu, xu.listModifiedSkillIDs (), getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db))
 			{
 				// Look for a transport in the same space that can carry us
 				final Iterator<MemoryUnit> iter = mem.getUnit ().iterator ();

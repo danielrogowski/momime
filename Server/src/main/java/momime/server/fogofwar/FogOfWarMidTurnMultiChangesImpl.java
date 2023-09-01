@@ -1148,8 +1148,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			{
 				final ExpandedUnitDetails tu = iter.next ();
 				
-				final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills,
-					getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), mom.getServerDB ()) == null);
+				final boolean impassable = getUnitCalculations ().isTileTypeImpassable (tu, unitStackSkills,
+					getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), mom.getServerDB ());
 					
 				// Count space granted by transports
 				final Integer unitTransportCapacity = tu.getUnitDefinition ().getTransportCapacity ();

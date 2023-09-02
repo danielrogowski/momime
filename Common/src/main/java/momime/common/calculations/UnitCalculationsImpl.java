@@ -411,13 +411,16 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 	/**
 	 * @param unit Unit that we want to move
+	 * @param unitStack Unit stack we are moving; if we're only trying to test whether the terrain is impassable or not (result == null or not) then can pass in null for this
 	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
 	 * @param tileTypeID Type of tile we are moving onto
 	 * @param db Lookup lists built over the XML database
 	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
+	 * @throws MomException If the list includes something other than MemoryUnits
 	 */
 	@Override
-	public final Integer calculateDoubleMovementToEnterTileType (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db)
+	public final Integer calculateDoubleMovementToEnterTileType (final ExpandedUnitDetails unit, final List<ExpandedUnitDetails> unitStack, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db)
+		throws MomException
 	{
 		// We basically run down the movement rate rules and stop as soon as we find the first applicable one
 		// Terrain is impassable if we check every movement rule and none of them are applicable
@@ -431,8 +434,29 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			if (((thisRule.getTileTypeID () == null) || (thisRule.getTileTypeID ().equals (tileTypeID))) &&
 				((thisRule.getUnitSkillID () == null) || (unit.hasModifiedSkill (thisRule.getUnitSkillID ()))) &&
 				((thisRule.getUnitStackSkillID () == null) || (unitStackSkills.contains (thisRule.getUnitStackSkillID ()))))
-
-				doubleMovement = thisRule.getDoubleMovement ();
+			{
+				boolean applies = true;
+				
+				// Checking the special wind walking flag is a bit more complicated
+				if ((thisRule.isOnlyIfWeHaveLessMovementRemainingThanTheUnitWithTheStackSkill () != null) && (thisRule.isOnlyIfWeHaveLessMovementRemainingThanTheUnitWithTheStackSkill ()))
+				{
+					if ((thisRule.getUnitStackSkillID () != null) && (unitStack != null))
+					{
+						// Find the maximum movement remaining of any unit in the stack who has the "unitStackSkillID" skill (it may be us, if we are the wind walker)
+						int maximumWindWalkingMovementRemaining = 0;
+						for (final ExpandedUnitDetails windWalker : unitStack)
+							if ((windWalker.hasModifiedSkill (thisRule.getUnitStackSkillID ())) && (windWalker.getDoubleOverlandMovesLeft () > maximumWindWalkingMovementRemaining))
+								maximumWindWalkingMovementRemaining = windWalker.getDoubleOverlandMovesLeft ();
+						
+						applies = (unit.getDoubleOverlandMovesLeft () < maximumWindWalkingMovementRemaining);
+					}
+					else
+						applies = false;
+				}
+				
+				if (applies)
+					doubleMovement = thisRule.getDoubleMovement ();
+			}
 		}
 
 		return doubleMovement;

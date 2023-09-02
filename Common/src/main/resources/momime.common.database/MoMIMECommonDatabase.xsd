@@ -3931,6 +3931,15 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="onlyIfWeHaveLessMovementRemainingThanTheUnitWithTheStackSkill" type="xsd:boolean" nxe:label="Only if we have less movement remaining than the unit with the stack skill" nxe:gridwidth="200">
+		        <xsd:annotation>
+		        	<xsd:documentation>Original MoM has a rule whereby, if a unit is stacked with a Wind Walker, the speed of the unit is ignored and the whole stack moves at the same speed as the wind walker.
+But its not as simple as just when MP are reset at start of a turn saying, if unit is stacked with a Wind Walker, give the unit the Wind Walker's movement for the turn, because they might break off in different directions,
+and original MoM seems to handle this correctly too.  It appears that the unit consumes no MP as long as it has less movement than the Wind Walker, then when their remaining MP is equal, both units will
+consume MP at the same rate and then they'll run out of MP at the same time.  So a couple of very special entries in the movement rate table are to try to reproduce this effect, so even though the unit would've
+been able to fly costing 1 MP, if they meet these conditions, they get to move for 0 MP instead.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="500" />
 		</xsd:sequence>
 	</xsd:complexType>

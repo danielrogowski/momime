@@ -244,9 +244,9 @@ public final class TestMovementUtilsImpl
 		final List<ExpandedUnitDetails> units = new ArrayList<ExpandedUnitDetails> ();
 		
 		final ExpandedUnitDetails spearmenUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT01"), eq (db))).thenReturn (4);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT02"), eq (db))).thenReturn (6);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT03"), eq (db))).thenReturn (null);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), eq (units), anySet (), eq ("TT01"), eq (db))).thenReturn (4);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), eq (units), anySet (), eq ("TT02"), eq (db))).thenReturn (6);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), eq (units), anySet (), eq ("TT03"), eq (db))).thenReturn (null);
 		
 		units.add (spearmenUnit);
 
@@ -258,7 +258,7 @@ public final class TestMovementUtilsImpl
 		
 		// Stacking a faster unit with it makes no difference - it always chooses the slowest movement rate
 		final ExpandedUnitDetails flyingUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (flyingUnit), anySet (), any (String.class), eq (db))).thenReturn (2);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (flyingUnit), eq (units), anySet (), any (String.class), eq (db))).thenReturn (2);
 		
 		units.add (flyingUnit);
 		
@@ -270,7 +270,7 @@ public final class TestMovementUtilsImpl
 		
 		// Stack a slower unit
 		final ExpandedUnitDetails pathfindingUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (pathfindingUnit), anySet (), any (String.class), eq (db))).thenReturn (5);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (pathfindingUnit), eq (units), anySet (), any (String.class), eq (db))).thenReturn (5);
 		
 		units.add (pathfindingUnit);
 		

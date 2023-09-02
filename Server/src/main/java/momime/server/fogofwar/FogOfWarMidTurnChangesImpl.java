@@ -1090,11 +1090,15 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void reduceMovementRemaining (final List<ExpandedUnitDetails> unitStack, final Set<String> unitStackSkills, final String tileTypeID,
 		final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
+		// The movement remaining of one unit can affect the movement remaining of a different unit in the stack (weird wind walking distance rule)
+		// so we have to work out ALL the new values in one hit before applying them to the units, then apply them all afterwards
+		final List<Integer> newDoubleOverlandMovesLeft = new ArrayList<Integer> ();
+		
 		for (final ExpandedUnitDetails thisUnit : unitStack)
 		{
 			// Don't just work out the distance it took for the whole stack to get here - if e.g. one unit can fly it might be able to
 			// move into mountains taking only 1 MP whereas another unit in the same stack might take 3 MP
-			Integer doubleMovementCost = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileTypeID, db);
+			Integer doubleMovementCost = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStack, unitStackSkills, tileTypeID, db);
 			
 			// The only way we can get impassable here as a valid move is if we're loading onto a transport, in which case force movement spent to 2
 			if (doubleMovementCost == null)
@@ -1102,10 +1106,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 			// Entirely valid for doubleMovementCost to be > doubleOverlandMovesLeft, if e.g. a spearmen with 1 MP is moving onto mountains which cost 3 MP
 			if (doubleMovementCost > thisUnit.getDoubleOverlandMovesLeft ())
-				thisUnit.setDoubleOverlandMovesLeft (0);
+				newDoubleOverlandMovesLeft.add (0);
 			else
-				thisUnit.setDoubleOverlandMovesLeft (thisUnit.getDoubleOverlandMovesLeft () - doubleMovementCost);
+				newDoubleOverlandMovesLeft.add (thisUnit.getDoubleOverlandMovesLeft () - doubleMovementCost);
 		}
+		
+		// Now apply the new values
+		for (int n = 0; n < unitStack.size (); n++)
+			unitStack.get (n).setDoubleOverlandMovesLeft (newDoubleOverlandMovesLeft.get (n));
 	}
 	
 	/**

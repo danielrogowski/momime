@@ -170,7 +170,7 @@ public final class MovementUtilsImpl implements MovementUtils
 				{
 					final ExpandedUnitDetails thisUnit = unitIter.next ();
 
-					final Integer thisMovementRate = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileType.getTileTypeID (), db);
+					final Integer thisMovementRate = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStack, unitStackSkills, tileType.getTileTypeID (), db);
 					if (thisMovementRate == null)
 						worstMovementRate = null;
 					else if (thisMovementRate > worstMovementRate)

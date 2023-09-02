@@ -472,30 +472,30 @@ public final class TestUnitCalculationsImpl
 		// Regular walking unit can walk over the two types of land tiles, but not water
 		final Set<String> unitStackSkills = new HashSet<String> ();
 
-		assertEquals (4, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", db).intValue ());
-		assertEquals (6, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", db).intValue ());
-		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", db));
+		assertEquals (4, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT01", db).intValue ());
+		assertEquals (6, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT02", db).intValue ());
+		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT03", db));
 		
 		// Stack with a pathfinding unit
 		unitStackSkills.add ("US003");
 
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", db).intValue ());
-		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", db));
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT01", db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT02", db).intValue ());
+		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT03", db));
 		
 		// Cast flight spell - pathfinding takes preference, with how the demo rules above are ordered
 		when (unit.hasModifiedSkill ("US002")).thenReturn (true);
 
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT01", db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT02", db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT03", db).intValue ());
 		
 		// Now without the pathfinding to take preference
 		unitStackSkills.clear ();
 		
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT01", db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT02", db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, null, unitStackSkills, "TT03", db).intValue ());
 	}
 	
 	/**

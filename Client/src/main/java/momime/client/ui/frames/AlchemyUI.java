@@ -27,6 +27,7 @@ import com.ndg.utils.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.config.WindowID;
+import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.common.database.CommonDatabaseConstants;
@@ -100,6 +101,9 @@ public final class AlchemyUI extends MomClientFrameUI
 
 	/** Default to converting gold > mana */
 	private String toProductionTypeID = CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA;
+	
+	/** Content pane */
+	private JPanel contentPane;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -180,7 +184,7 @@ public final class AlchemyUI extends MomClientFrameUI
 		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 
 		// Initialize the content pane
-		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
+		contentPane = getUtils ().createPanelWithBackgroundImage (background);
  		contentPane.setOpaque (false);
 		
 		// Set up layout - I tried to do this in one 5x3 grid but just couldn't get it to behave correctly, so had to split it into a 1x3 grid and deal with each row separately
@@ -280,8 +284,11 @@ public final class AlchemyUI extends MomClientFrameUI
 		getFrame ().setShape (new Polygon
 			(new int [] {0, TL_CORNER, background.getWidth () - BR_CORNER, background.getWidth () , background.getWidth () , background.getWidth () - BR_CORNER, TL_CORNER, 0},
 			new int [] {TL_CORNER, 0, 0, TL_CORNER, background.getHeight () - BR_CORNER, background.getHeight () , background.getHeight () , background.getHeight () - BR_CORNER},
-			8));		
-	}		
+			8));
+		
+		// Shortcut keys
+		contentPane.getActionMap ().put (Shortcut.ALCHEMY_CONFIRM, okAction);
+	}
 
 	/**
 	 * Update all labels and such from the chosen language 
@@ -295,6 +302,9 @@ public final class AlchemyUI extends MomClientFrameUI
 		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		
 		directionChanged ();
+		
+		// Shortcut keys
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 	}
 	
 	/**

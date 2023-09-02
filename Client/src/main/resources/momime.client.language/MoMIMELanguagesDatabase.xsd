@@ -5453,6 +5453,9 @@
 			<xsd:enumeration value="MESSAGE_BOX_CLOSE" />
 			<xsd:enumeration value="MESSAGE_BOX_YES" />
 			<xsd:enumeration value="MESSAGE_BOX_NO" />
+			
+			<xsd:enumeration value="VARIABLE_MANA_CONFIRM" />
+			<xsd:enumeration value="ALCHEMY_CONFIRM" />
 		</xsd:restriction>
 	</xsd:simpleType>
 

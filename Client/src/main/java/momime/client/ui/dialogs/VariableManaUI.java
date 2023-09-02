@@ -26,6 +26,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
+import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.SpellBookNewUI;
@@ -100,6 +101,9 @@ public final class VariableManaUI extends MomClientDialogUI
 	/** Maximum allowed value for this spell - whether this value represents MP or damage depends on getMode () */
 	private int sliderMaximum;
 	
+	/** Content pane */
+	private JPanel contentPane;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -133,7 +137,7 @@ public final class VariableManaUI extends MomClientDialogUI
 		});
 		
 		// Initialize the content pane
-		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
+		contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		contentPane.setBorder (BorderFactory.createEmptyBorder (2, 19, 8, 19));
 		
 		// Set up layout
@@ -179,6 +183,9 @@ public final class VariableManaUI extends MomClientDialogUI
 		// Lock frame size
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
+
+		// Shortcut keys
+		contentPane.getActionMap ().put (Shortcut.VARIABLE_MANA_CONFIRM, okAction);
 	}
 	
 	/**
@@ -192,7 +199,10 @@ public final class VariableManaUI extends MomClientDialogUI
 		// No action text to set, because the button has OK on it as part of the image
 		
 		// Update slider labels
-		sliderPositionChanged ();		
+		sliderPositionChanged ();
+		
+		// Shortcut keys
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 	}
 
 	/**

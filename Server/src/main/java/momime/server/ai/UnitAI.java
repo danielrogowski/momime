@@ -18,6 +18,7 @@ import momime.common.database.AiUnitCategory;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.movement.OverlandMovementCell;
@@ -176,15 +177,18 @@ public interface UnitAI
 	 * @param isMonsters Whether it is the rampaging monsters player
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
+	 * @param players Players list
+	 * @param wizards True wizard details list
 	 * @return See AIMovementDecision for explanation of return values
 	 * @throws RecordNotFoundException If an expected record cannot be found
+	 * @throws PlayerNotFoundException If the player owning a unit stack can't be found
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
 	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final OverlandMovementCell [] [] [] moves,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations,
-		final boolean isRaiders, final boolean isMonsters, final CoordinateSystem sys, final CommonDatabase db)
-		throws MomException, RecordNotFoundException;
+		final boolean isRaiders, final boolean isMonsters, final CoordinateSystem sys, final CommonDatabase db, final List<PlayerServerDetails> players, final List<KnownWizardDetails> wizards)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException;
 	
 	/**
 	 * AI decides where to move a unit to on the overland map and actually does the move.

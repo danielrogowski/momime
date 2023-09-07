@@ -10,6 +10,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.utils.ExpandedUnitDetails;
 
 /**
@@ -43,4 +44,17 @@ public interface AIUnitRatingCalculations
 	 */
 	public int calculateUnitPotentialRating (final AvailableUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+
+	/**
+	 * If a unit stack is controlled by a wizard, bump up the rating of the unit stack to account for spells the wizard may cast to change the outcome of the battle
+	 * 
+	 * @param ratings Unit stack being evaluated
+	 * @param players Players list
+	 * @param wizards True wizard details list
+	 * @return Bonus to add to unit stack rating
+	 * @throws PlayerNotFoundException If the player who owns the unit stack cannot be found
+	 * @throws RecordNotFoundException If the wizard who owns the unit stack cannot be found
+	 */
+	public int ratingBonusFromPowerBase (final AIUnitsAndRatings ratings, final List<PlayerServerDetails> players, final List<KnownWizardDetails> wizards)
+		throws PlayerNotFoundException, RecordNotFoundException;
 }

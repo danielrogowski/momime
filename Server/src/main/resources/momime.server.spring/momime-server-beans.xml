@@ -1086,6 +1086,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="cityAI" ref="cityAI" />
+		<property name="aiUnitRatingCalculations" ref="aiUnitRatingCalculations" />
 	</bean>
 
 	<bean id="aiUnitCalculations" class="momime.server.ai.AIUnitCalculationsImpl">
@@ -1099,6 +1100,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 		<property name="aiHeroItemRatingCalculations" ref="aiHeroItemRatingCalculations" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="aiHeroItemRatingCalculations" class="momime.server.ai.AIHeroItemRatingCalculationsImpl" />

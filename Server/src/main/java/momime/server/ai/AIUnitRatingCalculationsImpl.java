@@ -3,6 +3,7 @@ package momime.server.ai;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -15,12 +16,18 @@ import momime.common.database.Unit;
 import momime.common.database.UnitSkill;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitDamage;
+import momime.common.messages.WizardState;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.server.utils.UnitSkillDirectAccess;
 
 /**
@@ -36,6 +43,18 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	
 	/** Methods that the AI uses to calculate ratings about how good hero items are */
 	private AIHeroItemRatingCalculations aiHeroItemRatingCalculations;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @param xu Unit to calculate value for
@@ -186,6 +205,39 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 		
 		return rating;
 	}
+	
+	/**
+	 * If a unit stack is controlled by a wizard, bump up the rating of the unit stack to account for spells the wizard may cast to change the outcome of the battle
+	 * 
+	 * @param ratings Unit stack being evaluated
+	 * @param players Players list
+	 * @param wizards True wizard details list
+	 * @return Bonus to add to unit stack rating
+	 * @throws PlayerNotFoundException If the player who owns the unit stack cannot be found
+	 * @throws RecordNotFoundException If the wizard who owns the unit stack cannot be found
+	 */
+	@Override
+	public final int ratingBonusFromPowerBase (final AIUnitsAndRatings ratings, final List<PlayerServerDetails> players, final List<KnownWizardDetails> wizards)
+		throws PlayerNotFoundException, RecordNotFoundException
+	{
+		int bonus = 0;
+		if (ratings.size () > 0)
+		{
+			final int playerID = ratings.get (0).getUnit ().getOwningPlayerID ();
+			
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (wizards, playerID, "ratingBonusFromPowerBase");
+			
+			if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (wizardDetails.getWizardState () == WizardState.ACTIVE))
+			{
+				final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, playerID, "ratingBonusFromPowerBase");
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				
+				final int powerBase = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+				bonus = powerBase * 15;
+			}
+		}
+		return bonus;
+	}
 
 	/**
 	 * @return expandUnitDetails method
@@ -233,5 +285,69 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	public final void setAiHeroItemRatingCalculations (final AIHeroItemRatingCalculations calc)
 	{
 		aiHeroItemRatingCalculations = calc;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param utils Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
+	{
+		resourceValueUtils = utils;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

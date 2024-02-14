@@ -126,6 +126,21 @@ public interface UnitServerUtils
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
+	 * When a unit already exists but is being moved, works out where it can actually be moved.
+	 * If the city is already full, will resort to bumping the moved unit into one of the outlying 8 squares instead.
+	 *
+	 * @param desiredLocation Location that we're trying to add a unit
+	 * @param xu Unit being moved
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Location + bump type; note class and bump type will always be filled in, but location may be null if the unit cannot fit anywhere
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	public UnitAddLocation findNearestLocationWhereUnitCanBeMoved (final MapCoordinates3DEx desiredLocation, final ExpandedUnitDetails xu, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
 	 * @param units List of units to check through
 	 * @param order Type of order to look for
 	 * @return List of all units, regardless of which player they belong to, with the requested order

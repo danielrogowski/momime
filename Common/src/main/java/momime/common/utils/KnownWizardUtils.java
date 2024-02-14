@@ -4,6 +4,8 @@ import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.Pact;
+import momime.common.messages.PactType;
 
 /**
  * Methods for finding KnownWizardDetails from the list.
@@ -28,4 +30,25 @@ public interface KnownWizardUtils
 	 */
 	public KnownWizardDetails findKnownWizardDetails (final List<KnownWizardDetails> knownWizards, final int playerID, final String caller)
 		throws RecordNotFoundException;
+
+	/**
+	 * @param pacts List of packs for a player
+	 * @param pactPlayerID Player we are interested in the pact with
+	 * @return Type of pact in effect; null = there isn't one (default state)
+	 */
+	public PactType findPactWith (final List<Pact> pacts, final int pactPlayerID);
+	
+	/**
+	 * @param pacts List of packs for a player
+	 * @param pactPlayerID Player we are interested in the pact with
+	 * @param pactType Type of pact in effect; null = there isn't one (default state)
+	 */
+	public void updatePactWith (final List<Pact> pacts, final int pactPlayerID, final PactType pactType);
+	
+	/**
+	 * @param maximumGoldTribute Maximum gold tribute allowed, from DiplomacyWizardDetails
+	 * @param tier Gold offer tier 1..4
+	 * @return Actual gold amount for this tier
+	 */
+	public int convertGoldOfferTierToAmount (final int maximumGoldTribute, final int tier);
 }

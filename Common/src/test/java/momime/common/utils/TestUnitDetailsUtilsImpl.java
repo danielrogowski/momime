@@ -1,10 +1,15 @@
 package momime.common.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -12,12 +17,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.database.AddsToSkill;
 import momime.common.database.AddsToSkillValueType;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.Pick;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillEx;
+import momime.common.database.UnitTypeEx;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 
 /**
  * Tests the UnitDetailsUtilsImpl class
@@ -25,6 +44,397 @@ import momime.common.database.UnitSkillComponent;
 @ExtendWith(MockitoExtension.class)
 public final class TestUnitDetailsUtilsImpl
 {
+	/**
+	 * Tests the expandMinimalUnitDetails method on a unit that doesn't get experience (like a summoned unit)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandMinimalUnitDetails_NoExperience () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitMagicRealm ("MB01");
+		when (db.findUnit ("UN001", "expandMinimalUnitDetails")).thenReturn (unitDef);
+		
+		final Pick magicRealm = new Pick ();
+		magicRealm.setUnitTypeID ("S");
+		when (db.findPick ("MB01", "expandMinimalUnitDetails")).thenReturn (magicRealm);
+		
+		final UnitTypeEx summoned = new UnitTypeEx ();
+		when (db.findUnitType ("S", "expandMinimalUnitDetails")).thenReturn (summoned);
+		
+		// Owning player
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (null, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 2, "expandMinimalUnitDetails")).thenReturn (owningPlayer);
+				
+		// Owning wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails owningWizard = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2, "expandMinimalUnitDetails")).thenReturn (owningWizard);
+		
+		// Unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (2);
+
+		final UnitSkillAndValue valuedSkill = new UnitSkillAndValue ();
+		valuedSkill.setUnitSkillID ("US001");
+		valuedSkill.setUnitSkillValue (5);
+		unit.getUnitHasSkill ().add (valuedSkill);
+		
+		final UnitSkillAndValue valuelessSkill = new UnitSkillAndValue ();
+		valuelessSkill.setUnitSkillID ("US002");
+		unit.getUnitHasSkill ().add (valuelessSkill);
+		
+		// Set up object to test
+		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
+		
+		// Run method
+		final MinimalUnitDetails mu = utils.expandMinimalUnitDetails (unit, players, mem, db);
+		
+		// Check results
+		assertSame (unit, mu.getUnit ());
+		assertSame (unitDef, mu.getUnitDefinition ());
+		assertSame (summoned, mu.getUnitType ());
+		assertSame (owningPlayer, mu.getOwningPlayer ());
+		assertSame (owningWizard, mu.getOwningWizard ());
+		assertNull (mu.getBasicExperienceLevel ());
+		assertNull (mu.getModifiedExperienceLevel ());
+		
+		assertEquals (2, mu.getBasicSkillValues ().size ());
+		assertTrue (mu.hasBasicSkill ("US001"));
+		assertTrue (mu.hasBasicSkill ("US002"));
+		assertEquals (5, mu.getBasicSkillValue ("US001"));
+		assertNull (mu.getBasicSkillValue ("US002"));
+	}
+	
+	/**
+	 * Tests the expandMinimalUnitDetails method on a unit that has experience, with no modifiers (Warlord + Crusade)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandMinimalUnitDetails_BasicExperience () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		when (db.findUnit ("UN001", "expandMinimalUnitDetails")).thenReturn (unitDef);
+		
+		final Pick lifeformType = new Pick ();
+		lifeformType.setUnitTypeID ("N");
+		when (db.findPick (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "expandMinimalUnitDetails")).thenReturn (lifeformType);
+
+		final ExperienceLevel veteran = new ExperienceLevel ();
+		veteran.setLevelNumber (2);
+		veteran.setExperienceRequired (60);
+
+		final ExperienceLevel elite = new ExperienceLevel ();
+		elite.setLevelNumber (3);
+		elite.setExperienceRequired (120);
+		
+		final ExperienceLevel ultraElite = new ExperienceLevel ();
+		ultraElite.setLevelNumber (4);
+		
+		final UnitTypeEx normalUnit = new UnitTypeEx ();
+		normalUnit.getExperienceLevel ().add (veteran);
+		normalUnit.getExperienceLevel ().add (elite);
+		normalUnit.getExperienceLevel ().add (ultraElite);
+		when (db.findUnitType ("N", "expandMinimalUnitDetails")).thenReturn (normalUnit);
+		
+		// Owning player
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (null, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 2, "expandMinimalUnitDetails")).thenReturn (owningPlayer);
+				
+		// Owning wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails owningWizard = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2, "expandMinimalUnitDetails")).thenReturn (owningWizard);
+		
+		// Unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (2);
+
+		final UnitSkillAndValue valuedSkill = new UnitSkillAndValue ();
+		valuedSkill.setUnitSkillID ("US001");
+		valuedSkill.setUnitSkillValue (5);
+		unit.getUnitHasSkill ().add (valuedSkill);
+		
+		final UnitSkillAndValue valuelessSkill = new UnitSkillAndValue ();
+		valuelessSkill.setUnitSkillID ("US002");
+		unit.getUnitHasSkill ().add (valuelessSkill);
+		
+		final UnitSkillAndValue experience = new UnitSkillAndValue ();
+		experience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		experience.setUnitSkillValue (60);
+		unit.getUnitHasSkill ().add (experience);
+		
+		// Set up object to test
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils = mock (MemoryCombatAreaEffectUtils.class);
+		
+		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setMemoryCombatAreaEffectUtils (memoryCombatAreaEffectUtils);
+		
+		// Run method
+		final MinimalUnitDetails mu = utils.expandMinimalUnitDetails (unit, players, mem, db);
+		
+		// Check results
+		assertSame (unit, mu.getUnit ());
+		assertSame (unitDef, mu.getUnitDefinition ());
+		assertSame (normalUnit, mu.getUnitType ());
+		assertSame (owningPlayer, mu.getOwningPlayer ());
+		assertSame (owningWizard, mu.getOwningWizard ());
+		assertSame (veteran, mu.getBasicExperienceLevel ());
+		assertSame (veteran, mu.getModifiedExperienceLevel ());
+		
+		assertEquals (3, mu.getBasicSkillValues ().size ());
+		assertTrue (mu.hasBasicSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
+		assertTrue (mu.hasBasicSkill ("US002"));
+		assertTrue (mu.hasBasicSkill ("US002"));
+		assertEquals (60, mu.getBasicSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
+		assertEquals (5, mu.getBasicSkillValue ("US001"));
+		assertNull (mu.getBasicSkillValue ("US002"));
+	}
+	
+	/**
+	 * Tests the expandMinimalUnitDetails method on a unit that has heroism cast on it to raise its experience
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandMinimalUnitDetails_Heroism () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		when (db.findUnit ("UN001", "expandMinimalUnitDetails")).thenReturn (unitDef);
+		
+		final Pick lifeformType = new Pick ();
+		lifeformType.setUnitTypeID ("N");
+		when (db.findPick (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "expandMinimalUnitDetails")).thenReturn (lifeformType);
+
+		final ExperienceLevel veteran = new ExperienceLevel ();
+		veteran.setLevelNumber (2);
+		veteran.setExperienceRequired (60);
+
+		final ExperienceLevel elite = new ExperienceLevel ();
+		elite.setLevelNumber (3);
+		elite.setExperienceRequired (120);
+		
+		final ExperienceLevel ultraElite = new ExperienceLevel ();
+		ultraElite.setLevelNumber (4);
+		
+		final UnitTypeEx normalUnit = new UnitTypeEx ();
+		normalUnit.getExperienceLevel ().add (veteran);
+		normalUnit.getExperienceLevel ().add (elite);
+		normalUnit.getExperienceLevel ().add (ultraElite);
+		when (db.findUnitType ("N", "expandMinimalUnitDetails")).thenReturn (normalUnit);
+		
+		final AddsToSkill heroismAddsToExperience = new AddsToSkill ();
+		heroismAddsToExperience.setAddsToSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		heroismAddsToExperience.setAddsToSkillValueType (AddsToSkillValueType.LOCK);
+		heroismAddsToExperience.setAddsToSkillValue (120);
+		
+		final UnitSkillEx heroismSkill = new UnitSkillEx ();
+		heroismSkill.getAddsToSkill ().add (heroismAddsToExperience);
+		when (db.findUnitSkill ("US001", "expandMinimalUnitDetails")).thenReturn (heroismSkill);
+		
+		// Owning player
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (null, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 2, "expandMinimalUnitDetails")).thenReturn (owningPlayer);
+				
+		// Owning wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails owningWizard = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2, "expandMinimalUnitDetails")).thenReturn (owningWizard);
+		
+		// Unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (6);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (2);
+
+		final UnitSkillAndValue valuedSkill = new UnitSkillAndValue ();
+		valuedSkill.setUnitSkillID ("US001");
+		valuedSkill.setUnitSkillValue (5);
+		unit.getUnitHasSkill ().add (valuedSkill);
+		
+		final UnitSkillAndValue valuelessSkill = new UnitSkillAndValue ();
+		valuelessSkill.setUnitSkillID ("US002");
+		unit.getUnitHasSkill ().add (valuelessSkill);
+		
+		final UnitSkillAndValue experience = new UnitSkillAndValue ();
+		experience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		experience.setUnitSkillValue (60);
+		unit.getUnitHasSkill ().add (experience);
+		
+		// Heroism cast on it
+		final MemoryMaintainedSpell heroism = new MemoryMaintainedSpell ();
+		heroism.setUnitURN (6);
+		heroism.setUnitSkillID ("US001");
+		mem.getMaintainedSpell ().add (heroism);
+		
+		// Set up object to test
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils = mock (MemoryCombatAreaEffectUtils.class);
+		
+		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setMemoryCombatAreaEffectUtils (memoryCombatAreaEffectUtils);
+		
+		// Run method
+		final MinimalUnitDetails mu = utils.expandMinimalUnitDetails (unit, players, mem, db);
+		
+		// Check results
+		assertSame (unit, mu.getUnit ());
+		assertSame (unitDef, mu.getUnitDefinition ());
+		assertSame (normalUnit, mu.getUnitType ());
+		assertSame (owningPlayer, mu.getOwningPlayer ());
+		assertSame (owningWizard, mu.getOwningWizard ());
+		assertSame (elite, mu.getBasicExperienceLevel ());
+		assertSame (elite, mu.getModifiedExperienceLevel ());
+		
+		assertEquals (3, mu.getBasicSkillValues ().size ());
+		assertTrue (mu.hasBasicSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
+		assertTrue (mu.hasBasicSkill ("US002"));
+		assertTrue (mu.hasBasicSkill ("US002"));
+		assertEquals (60, mu.getBasicSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
+		assertEquals (5, mu.getBasicSkillValue ("US001"));
+		assertNull (mu.getBasicSkillValue ("US002"));
+	}
+	
+	/**
+	 * Tests the expandMinimalUnitDetails method on a unit that has experience levels raised by Warlord + Crusade
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandMinimalUnitDetails_ModifiedExperience () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		when (db.findUnit ("UN001", "expandMinimalUnitDetails")).thenReturn (unitDef);
+		
+		final Pick lifeformType = new Pick ();
+		lifeformType.setUnitTypeID ("N");
+		when (db.findPick (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "expandMinimalUnitDetails")).thenReturn (lifeformType);
+
+		final ExperienceLevel veteran = new ExperienceLevel ();
+		veteran.setLevelNumber (2);
+		veteran.setExperienceRequired (60);
+
+		final ExperienceLevel elite = new ExperienceLevel ();
+		elite.setLevelNumber (3);
+		elite.setExperienceRequired (120);
+		
+		final ExperienceLevel ultraElite = new ExperienceLevel ();
+		ultraElite.setLevelNumber (4);
+		
+		final UnitTypeEx normalUnit = new UnitTypeEx ();
+		normalUnit.getExperienceLevel ().add (veteran);
+		normalUnit.getExperienceLevel ().add (elite);
+		normalUnit.getExperienceLevel ().add (ultraElite);
+		when (db.findUnitType ("N", "expandMinimalUnitDetails")).thenReturn (normalUnit);
+		
+		// Owning player
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (null, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 2, "expandMinimalUnitDetails")).thenReturn (owningPlayer);
+				
+		// Owning wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails owningWizard = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2, "expandMinimalUnitDetails")).thenReturn (owningWizard);
+		
+		// Unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (2);
+
+		final UnitSkillAndValue valuedSkill = new UnitSkillAndValue ();
+		valuedSkill.setUnitSkillID ("US001");
+		valuedSkill.setUnitSkillValue (5);
+		unit.getUnitHasSkill ().add (valuedSkill);
+		
+		final UnitSkillAndValue valuelessSkill = new UnitSkillAndValue ();
+		valuelessSkill.setUnitSkillID ("US002");
+		unit.getUnitHasSkill ().add (valuelessSkill);
+		
+		final UnitSkillAndValue experience = new UnitSkillAndValue ();
+		experience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		experience.setUnitSkillValue (60);
+		unit.getUnitHasSkill ().add (experience);
+
+		// Warlord
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (owningWizard.getPick (), CommonDatabaseConstants.RETORT_ID_WARLORD)).thenReturn (1);
+		
+		// Crusade
+		final MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils = mock (MemoryCombatAreaEffectUtils.class);
+		when (memoryCombatAreaEffectUtils.findCombatAreaEffect (mem.getCombatAreaEffect (), null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, 2)).thenReturn (new MemoryCombatAreaEffect ());
+		
+		// Set up object to test
+		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setMemoryCombatAreaEffectUtils (memoryCombatAreaEffectUtils);
+		
+		// Run method
+		final MinimalUnitDetails mu = utils.expandMinimalUnitDetails (unit, players, mem, db);
+		
+		// Check results
+		assertSame (unit, mu.getUnit ());
+		assertSame (unitDef, mu.getUnitDefinition ());
+		assertSame (normalUnit, mu.getUnitType ());
+		assertSame (owningPlayer, mu.getOwningPlayer ());
+		assertSame (owningWizard, mu.getOwningWizard ());
+		assertSame (veteran, mu.getBasicExperienceLevel ());
+		assertSame (ultraElite, mu.getModifiedExperienceLevel ());
+		
+		assertEquals (3, mu.getBasicSkillValues ().size ());
+		assertTrue (mu.hasBasicSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
+		assertTrue (mu.hasBasicSkill ("US002"));
+		assertTrue (mu.hasBasicSkill ("US002"));
+		assertEquals (60, mu.getBasicSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
+		assertEquals (5, mu.getBasicSkillValue ("US001"));
+		assertNull (mu.getBasicSkillValue ("US002"));
+	}
+	
 	/**
 	 * Tests the addSkillBonus method when we don't have the necessary requisite skill to get the bonus
 	 * @throws Exception If there is a problem

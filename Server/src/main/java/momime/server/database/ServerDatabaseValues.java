@@ -21,6 +21,9 @@ public final class ServerDatabaseValues
 	
 	/** Life stealing / create undead damage */
 	public final static String DAMAGE_TYPE_ID_LIFE_STEALING = "DT13";
+
+	/** Advanced life stealing / create undead damage, for the Life Stealing mod */
+	public final static String DAMAGE_TYPE_ID_ADVANCED_LIFE_STEALING = "DT13X";
 	
 	// spells
 
@@ -29,6 +32,11 @@ public final class ServerDatabaseValues
 
 	/** Awareness - see areas around enemy cities */
 	public final static String SPELL_ID_AWARENESS = "SP209";
+	
+	// diplomacy
+	
+	/** Initial maximum gold tribute between any two wizards */
+	public final static int INITIAL_MAXIMUM_GOLD_TRIBUTE = 150;
 	
 	/**
 	 * Prevent instantiation

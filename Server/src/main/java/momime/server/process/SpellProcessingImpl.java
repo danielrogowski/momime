@@ -23,7 +23,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -48,6 +48,7 @@ import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -90,10 +91,12 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.ai.RelationAI;
 import momime.server.ai.SpellAI;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
@@ -134,6 +137,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
@@ -258,6 +264,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Server-side only spell utils */
 	private SpellServerUtils spellServerUtils;
 	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -279,7 +288,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 		// Does the magic realm of the cast spell trigger an affect from any overland enchantments?  e.g. casting Death/Chaos spells while Nature's Wrath in effect
 		boolean passesCounteringAttempts = true;
-		if (spell.getSpellRealm () != null)
+		if (!spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
 		{
 			final int unmodifiedOverlandCastingCost = getSpellUtils ().getUnmodifiedOverlandCastingCost (spell, heroItem, variableDamage, castingWizard.getPick (), mom.getServerDB ());
 			
@@ -295,7 +304,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					if ((triggerSpellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
 							
 						// Any spell with a dispel power defined can also be triggered with an empty spell realm list (for Suppress Magic)
-						((triggerSpellDef.getTriggeredBySpellRealm ().contains (spell.getSpellRealm ())) ||
+						(((spell.getSpellRealm () != null) && (triggerSpellDef.getTriggeredBySpellRealm ().contains (spell.getSpellRealm ()))) ||
 							((triggerSpellDef.getTriggeredBySpellRealm ().size () == 0) && (triggerSpellDef.getTriggerDispelPower () != null))) &&
 						
 						((triggerSpell.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) ||
@@ -454,7 +463,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final List<MapCoordinates3DEx> unitLocations = targetUnits.stream ().map (u -> (MapCoordinates3DEx) u.getUnitLocation ()).distinct ().collect (Collectors.toList ());
 					
 						// Roll all units at once
-						getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, variableDamage, unitLocations, mom);
+						getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, variableDamage, unitLocations, 40, mom);
 					}
 				}
 			}
@@ -688,7 +697,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					areaBridge.setCoordinateSystem (mom.getSessionDescription ().getCombatMapSize ());
 					
 					final Set<String> muddableTiles = mom.getServerDB ().getCombatTileType ().stream ().filter
-						(tt -> tt.getCombatTileTypeRequiresSkill ().isEmpty ()).map (tt -> tt.getCombatTileTypeID ()).collect (Collectors.toSet ());
+						(tt -> (tt.isLand () != null) && (tt.isLand ())).map (tt -> tt.getCombatTileTypeID ()).collect (Collectors.toSet ());
 					
 					getCombatMapOperations ().processCellsWithinRadius (areaBridge, targetLocation.getX (), targetLocation.getY (),
 						spell.getSpellRadius (), (tile) ->
@@ -764,7 +773,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 				
 				// Set it back to alive; this also sends the updates from above
-				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, summonLocation, castingPlayer, true, mom);
+				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, summonLocation, castingPlayer, true, false, mom);
 	
 				// Show the "summoning" animation for it
 				final ExpandedUnitDetails xuTargetUnit = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
@@ -800,7 +809,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// Now can add it
 					final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unitID, summonLocation, null, null, combatLocation,
-						castingPlayer, UnitStatusID.ALIVE, true, mom);
+						castingPlayer, UnitStatusID.ALIVE, true, false, mom);
 					
 					// What direction should the unit face?
 					final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
@@ -847,7 +856,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							final int thisCastingPlayerID = ((randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_HEALING)) ||
 								(randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS))) ? thisUnit.getOwningPlayerID () : castingPlayer.getPlayerDescription ().getPlayerID ();
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (randomSpell, null, combatLocation, combatDetails.getCombatMap (), thisCastingPlayerID,
+							if (getSpellTargetingUtils ().isUnitValidTargetForSpell (randomSpell, null, combatLocation, combatDetails.getCombatMap (), thisCastingPlayerID,
 								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							{
@@ -883,7 +892,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, combatDetails.getCombatMap (),
+							if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, combatDetails.getCombatMap (),
 								castingPlayer.getPlayerDescription ().getPlayerID (),
 								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
@@ -912,7 +921,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						// If its Cracks Call, is there a wall segment to attack in addition to the unit we're attacking?
 						Integer wreckTileChance = null;
 						MapCoordinates2DEx wreckTilePosition = null;
-						if ((spell.getSpellValidBorderTarget ().size () > 0) && (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell
+						if ((spell.getSpellValidBorderTarget ().size () > 0) && (getSpellTargetingUtils ().isCombatLocationValidTargetForSpell
 							(spell, (MapCoordinates2DEx) targetUnit.getCombatPosition (), combatDetails.getCombatMap (), mom.getServerDB ())))
 						{
 							wreckTileChance = 1;
@@ -953,20 +962,39 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						if (summoningCircleLocation != null)
 						{
-							// Recall spells - first take the unit(s) out of combat
-							for (final MemoryUnit tu : targetUnits)
-								getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
-									combatLocation, null, null, null, castingSide, spell.getSpellID (), mom);
-							
-							// Now teleport it back to our summoning circle
-							getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
-								(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), mom);
-							
-							// If we recalled our last remaining unit(s) out of combat, then we lose
-							if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide,
-								mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
+							// Maybe summoning circle location is full (making assumption here that all recall spells target a single unit only)
+							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
+								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+							final UnitAddLocation recallLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeMoved
+								((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), xu, mom);
+							if (recallLocation.getUnitLocation () != null)
+							{							
+								// Recall spells - first take the unit(s) out of combat
+								for (final MemoryUnit tu : targetUnits)
+								{
+									getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
+										combatLocation, null, null, null, null, spell.getSpellID (), mom);
+
+									// Its possible this could kill the unit, if it has extra HP from Lionheart cast in combat that we now lose
+									getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombatOnUnit (tu.getUnitURN (), mom);
+								}
 								
-								winningPlayer = (castingPlayer == defendingPlayer) ? attackingPlayer : defendingPlayer;
+								mom.getWorldUpdates ().process (mom);
+								
+								// If the unit is still alive, teleport it back to our summoning circle
+								if ((getUnitUtils ().findUnitURN (targetUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) != null) &&
+									(!recallLocation.getUnitLocation ().equals (targetUnit.getUnitLocation ())))
+									
+									getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
+										recallLocation.getUnitLocation (), mom);
+								
+								// If we recalled our last remaining unit(s) out of combat, then we lose
+								if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide,
+									mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
+									
+									winningPlayer = (castingPlayer == defendingPlayer) ? attackingPlayer : defendingPlayer;
+							}
 						}
 					}
 					else
@@ -988,9 +1016,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 							defendingPlayer.getConnection ().sendMessageToClient (anim);
 						
 						// Now get a list of all enchantments cast on all the units in the list by other wizards
+		    			final List<String> spellsImmuneToDispelling = mom.getServerDB ().getSpell ().stream ().filter
+	        				(s -> (s.isImmuneToDispelling () != null) && (s.isImmuneToDispelling ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
+						
 						final List<Integer> targetUnitURNs = targetUnits.stream ().map (u -> u.getUnitURN ()).collect (Collectors.toList ());
 						final List<MemoryMaintainedSpell> spellsToDispel = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
-							(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ()))).collect (Collectors.toList ());
+							(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ())) &&
+								(!spellsImmuneToDispelling.contains (s.getSpellID ()))).collect (Collectors.toList ());
 						spellsToDispel.addAll (targetSpells);
 						
 						// Is the combat taking place at a warped node?
@@ -1003,7 +1035,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						// Common method does the rest
 						if (getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, spellsToDispel, targetCAEs,
-							targetWarpedNode ? combatLocation : null, targetVortexes, mom))
+							targetWarpedNode ? combatLocation : null, targetVortexes, 0, mom))
 							
 							// Its possible we dispelled Lionheart on the last enemy unit thereby winning the combat, so check to be sure
 							if (getDamageProcessor ().countUnitsInCombat (combatLocation,
@@ -1156,11 +1188,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						targetUnit.getUnitDamage ().clear ();
 						
 						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, resurrectLocation.getUnitLocation (),
-							castingPlayer, true, mom);
-					
-						// Let it move this turn
-						targetUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
+							castingPlayer, true, true, mom);
 					}
 				}
 			}
@@ -1199,11 +1227,25 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				if (summoningCircleLocation != null)
 				{
-					final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
-					targetUnits.add (targetUnit);
+					// Maybe summoning circle location is full
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
-					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, (MapCoordinates3DEx) targetUnit.getUnitLocation (),
-						(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), mom);
+					final UnitAddLocation recallLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeMoved
+						((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), xu, mom);
+					if ((recallLocation.getUnitLocation () != null) && (!recallLocation.getUnitLocation ().equals (targetUnit.getUnitLocation ())))
+					{
+						final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+						targetUnits.add (targetUnit);
+						
+						final MapCoordinates3DEx oldLocation = new MapCoordinates3DEx ((MapCoordinates3DEx) targetUnit.getUnitLocation ());
+						getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, (MapCoordinates3DEx) targetUnit.getUnitLocation (),
+							recallLocation.getUnitLocation (), mom);
+						
+						// Recheck the cell the unit was moved from - maybe it was a transport
+						mom.getWorldUpdates ().recheckTransportCapacity (oldLocation);
+						mom.getWorldUpdates ().process (mom);
+					}
 				}
 			}
 			
@@ -1217,7 +1259,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
+						if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{
@@ -1235,7 +1277,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final List<MemoryMaintainedSpell> targetSpells;
 				boolean targetWarpedNode = false;
 				
-				if (kind == KindOfSpell.DISPEL_OVERLAND_ENCHANTMENTS)
+				if ((kind == KindOfSpell.DISPEL_OVERLAND_ENCHANTMENTS) || (kind == KindOfSpell.SPELL_BINDING))
 				{
 					// Disjunction is easy - just targeted at one single spell, and we've already got it
 					targetSpells = Arrays.asList (targetSpell);
@@ -1247,8 +1289,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 		    			(u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
 		    		
 		    		// Now look for any spells cast by somebody else either targeted directly on the location, or on a unit at the location
+	    			final List<String> spellsImmuneToDispelling = mom.getServerDB ().getSpell ().stream ().filter
+           				(s -> (s.isImmuneToDispelling () != null) && (s.isImmuneToDispelling ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
+
 		    		targetSpells = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
-		    			(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
+		    			(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (!spellsImmuneToDispelling.contains (s.getSpellID ())) &&
 		    				((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))).collect (Collectors.toList ());
 		    		
 					final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -1259,7 +1304,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 				
 	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null,
-	    			targetWarpedNode ? targetLocation : null, null, mom);
+	    			targetWarpedNode ? targetLocation : null, null, 25, mom);
 			}
 
 			// The only targeted overland summoning spell is Floating Island
@@ -1267,7 +1312,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, true, mom);
 			
 			else if (kind == KindOfSpell.CORRUPTION)
+			{
 				getSpellCasting ().corruptTile (targetLocation, mom);
+				getCityProcessing ().penaltyToVisibleRelationFromNearbyCityOwner (targetLocation, maintainedSpell.getCastingPlayerID (), mom);
+			}
 			
 			else if (kind == KindOfSpell.ENCHANT_ROAD)
 			{
@@ -1306,7 +1354,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			else if (kind == KindOfSpell.CHANGE_TILE_TYPE)
+			{
 				getSpellCasting ().changeTileType (spell, targetLocation, castingPlayer.getPlayerDescription ().getPlayerID (), mom);
+				getCityProcessing ().penaltyToVisibleRelationFromNearbyCityOwner (targetLocation, maintainedSpell.getCastingPlayerID (), mom);
+			}
 			
 			else if (kind == KindOfSpell.CHANGE_MAP_FEATURE)
 			{
@@ -1330,8 +1381,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 				
 				if (found)
+				{
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+					getCityProcessing ().penaltyToVisibleRelationFromNearbyCityOwner (targetLocation, maintainedSpell.getCastingPlayerID (), mom);
+				}
 			}
 			
 			else if (kind == KindOfSpell.SPELL_BLAST)
@@ -1346,7 +1400,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					final int blastingCost = targetPriv.getManaSpentOnCastingCurrentSpell ();
 
-					// Remove on client
+					// Remove on client of the player who got blasted
 					if (targetPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						final NewTurnMessageSpellBlast ntm = new NewTurnMessageSpellBlast ();
@@ -1370,7 +1424,18 @@ public final class SpellProcessingImpl implements SpellProcessing
 					targetPriv.setManaSpentOnCastingCurrentSpell (0);
 					
 					// Charge additional MP
-					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -blastingCost);;
+					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -blastingCost);
+					
+					// On the caster's client, show that the targeted wizard is now casting nothing (if they don't have Detect Magic in effect, method will check this and do nothing)
+					getSpellCasting ().sendOverlandCastingInfo (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, castingPlayer.getPlayerDescription ().getPlayerID (), mom);
+					
+					// Wizards get annoyed at being targeted personally by nasty spells
+					if (spell.getNastyCondition () != null)
+					{
+						final KnownWizardDetails targetOpinionOfCaster = getKnownWizardUtils ().findKnownWizardDetails (targetPriv.getFogOfWarMemory ().getWizardDetails (), maintainedSpell.getCastingPlayerID ());
+						if (targetOpinionOfCaster != null)
+							getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) targetOpinionOfCaster, 40);
+					}
 				}
 			}
 			
@@ -1417,8 +1482,33 @@ public final class SpellProcessingImpl implements SpellProcessing
 						break;
 					}
 
+					case CommonDatabaseConstants.SPELL_ID_SUBVERSION:
+					{
+						// Look for all wizards who know the target wizard
+						for (final PlayerServerDetails subversionPlayer : mom.getPlayers ())
+						{
+							final KnownWizardDetails subversionWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), subversionPlayer.getPlayerDescription ().getPlayerID (), "targetOverlandSpell (S)");
+							if (getPlayerKnowledgeUtils ().isWizard (subversionWizard.getWizardID ()))
+							{
+								final MomPersistentPlayerPrivateKnowledge subversionPriv = (MomPersistentPlayerPrivateKnowledge) subversionPlayer.getPersistentPlayerPrivateKnowledge ();
+								final KnownWizardDetails subvertedWizard = getKnownWizardUtils ().findKnownWizardDetails (subversionPriv.getFogOfWarMemory ().getWizardDetails (), targetPlayerID);
+								if (subvertedWizard != null)
+									getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) subvertedWizard, 25);
+							}
+						}
+						break;
+					}
+					
 					default:
 						throw new MomException ("No code to handle casting enemy wizard spell " + spell.getSpellID ());
+				}
+				
+				// Wizards get annoyed at being targeted personally by nasty spells
+				if (spell.getNastyCondition () != null)
+				{
+					final KnownWizardDetails targetOpinionOfCaster = getKnownWizardUtils ().findKnownWizardDetails (targetPriv.getFogOfWarMemory ().getWizardDetails (), maintainedSpell.getCastingPlayerID ());
+					if (targetOpinionOfCaster != null)
+						getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) targetOpinionOfCaster, 40);
 				}
 			}
 			
@@ -1433,7 +1523,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
+						if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
@@ -1457,7 +1547,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			else if (kind == KindOfSpell.ATTACK_UNITS)
-				getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), mom);
+			{
+				// Are the units in a city or outside any city?  Bigger diplomatic penalty for attacking units in a city
+				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
+
+				getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), (cityData == null) ? 10 : 30, mom);
+			}
 			
 			else if (kind == KindOfSpell.WARP_NODE)
 			{
@@ -1500,6 +1596,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			// Remove the maintained spell on the server (clients would never have gotten it to begin with)
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
+			
+			// This method is overkill when we know we have the exact location of the city, but still better to reuse it
+			getCityProcessing ().penaltyToVisibleRelationFromNearbyCityOwner (targetLocation, maintainedSpell.getCastingPlayerID (), mom);
 		}
 
 		else if (spell.getBuildingID () == null)
@@ -1515,7 +1614,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
+						if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{
@@ -1589,7 +1688,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							{
 								final Spell spellToRemoveDef = mom.getServerDB ().findSpell (spellToRemove.getSpellID (), "targetOverlandSpell");
 								if (citySpellEffect.getProtectsAgainstSpellRealm ().contains (spellToRemoveDef.getSpellRealm ()))
-									mom.getWorldUpdates ().switchOffSpell (spellToRemove.getSpellURN ());
+									mom.getWorldUpdates ().switchOffSpell (spellToRemove.getSpellURN (), false);
 							}
 							
 							mom.getWorldUpdates ().process (mom);
@@ -1976,7 +2075,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				{
 					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityPopulation () >= 1000) && (CommonDatabaseConstants.EVENT_ID_PLAGUE.equals (cityData.getPopulationEventID ())) &&
+					if ((cityData != null) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION) && (CommonDatabaseConstants.EVENT_ID_PLAGUE.equals (cityData.getPopulationEventID ())) &&
 						(!pestilenceAll.contains (new MapCoordinates3DEx (x, y, z))) &&
 							((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())))
 						
@@ -2056,7 +2155,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							}
 							
 							if (removeSpell)
-								mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN ());
+								mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN (), false);
 						}
 					}
 				}
@@ -2142,6 +2241,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 		memoryMaintainedSpellUtils = utils;
 	}
 
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
+	}
+	
 	/**
 	 * @return Memory CAE utils
 	 */
@@ -2796,5 +2911,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setSpellServerUtils (final SpellServerUtils utils)
 	{
 		spellServerUtils = utils;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

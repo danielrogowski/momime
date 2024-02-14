@@ -611,7 +611,11 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 					{
 						final UnitSkillValueBreakdown breakdown = modifiedSkillValues.get (basicStat.getUnitSkillID ());
 						if ((breakdown != null) && (basicStat.getUnitSkillValue () != null))
-							breakdown.getComponents ().put (UnitSkillComponent.HERO_ITEMS, basicStat.getUnitSkillValue ());
+						{
+							Integer bonusValue = breakdown.getComponents ().get (UnitSkillComponent.HERO_ITEMS);
+							bonusValue = ((bonusValue == null) ? 0 : bonusValue) + basicStat.getUnitSkillValue ();
+							breakdown.getComponents ().put (UnitSkillComponent.HERO_ITEMS, bonusValue);
+						}
 					}
 				
 				// Bonuses imbued on the item

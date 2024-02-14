@@ -18,7 +18,7 @@ import javax.swing.WindowConstants;
 import com.ndg.graphics.lbx.LbxImageReaderSpi;
 import com.ndg.graphics.ndgbmp.NdgBmpReaderSpi;
 import com.ndg.graphics.ndgbmp.NdgBmpWriterSpi;
-import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
 
 /**
  * Tests the image cache, and that it will load in specialised image formats like .ndgbmp files contained in .ndgarc files

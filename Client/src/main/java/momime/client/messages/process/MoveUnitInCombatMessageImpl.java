@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -14,8 +13,9 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
@@ -35,6 +35,7 @@ import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 
 /**
  * Server breaks down client move requests into a series of directions and sends them back to the client
@@ -79,6 +80,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
 	/** Work the duration out once only */
 	private double duration;
@@ -176,7 +180,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		getCombatUI ().clearUnitToDrawFromLocation (mu.getCombatPosition ().getX (), mu.getCombatPosition ().getY (), mu.getUnitID ());
 		
 		// Don't draw unit moving if we can't see it
-		if (getUnitUtils ().canSeeUnitInCombat (unit, getClient ().getOurPlayerID (), getClient ().getPlayers (),
+		if (getUnitVisibilityUtils ().canSeeUnitInCombat (unit, getClient ().getOurPlayerID (), getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
 			getClient ().getSessionDescription ().getCombatMapSize ()))
 			
@@ -536,6 +540,22 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+	
+	/**
+	 * @return Methods dealing with checking whether we can see units or not
+	 */
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
+	{
+		return unitVisibilityUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with checking whether we can see units or not
+	 */
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
+	{
+		unitVisibilityUtils = u;
 	}
 	
 	/**

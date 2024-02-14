@@ -1,7 +1,6 @@
 package momime.server.messages.process;
 
 import jakarta.xml.bind.annotation.XmlRegistry;
-
 import momime.common.messages.clienttoserver.AlchemyMessage;
 import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
 import momime.common.messages.clienttoserver.CancelTargetSpellMessage;
@@ -24,6 +23,7 @@ import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.ObjectFactory;
 import momime.common.messages.clienttoserver.RequestAcceptOfferMessage;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
+import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.messages.clienttoserver.RequestMoveHeroItemMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
@@ -353,6 +353,15 @@ public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 	public final RequestAcceptOfferMessage createRequestAcceptOfferMessage ()
 	{
 		return getFactory ().createRequestAcceptOfferMessage ();
+	}
+	
+	/**
+	 * @return Newly created RequestDiplomacyMessage
+	 */
+	@Override
+	public final RequestDiplomacyMessage createRequestDiplomacyMessage ()
+	{
+		return getFactory ().createRequestDiplomacyMessage ();
 	}
 	
 	/**

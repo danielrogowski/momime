@@ -7,13 +7,13 @@ import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import momime.editors.server.ServerEditorDatabaseConstants;
-
 import org.jdom2.Element;
 
-import com.ndg.swing.UneditableArrayTableModel;
-import com.ndg.xml.JdomUtils;
+import com.ndg.utils.swing.UneditableArrayTableModel;
+import com.ndg.xmleditor.jdom.JdomUtils;
 import com.ndg.xmleditor.single.EditXmlRecord;
+
+import momime.editors.server.ServerEditorDatabaseConstants;
 
 /**
  * Adds a grid underneath the record details showing the calculated movement rates for this unit over every type of terrain

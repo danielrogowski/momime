@@ -17,10 +17,10 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtilsImpl;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.random.RandomUtilsImpl;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import jakarta.xml.bind.Unmarshaller;
 import momime.client.ClientTestData;
@@ -145,6 +145,7 @@ public final class TestNewGameUI extends ClientTestData
 		heroItemSettings.getHeroItemSettingDescription ().add (createLanguageText (Language.ENGLISH, "Open"));
 		newGameDB.getHeroItemSetting ().add (heroItemSettings);
 		
+		dbs.getModName ().add ("Awesome mod");
 		return dbs;
 	}
 	

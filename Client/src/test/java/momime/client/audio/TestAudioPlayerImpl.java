@@ -16,7 +16,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 /**
  * Tests the AudioPlayerImpl class

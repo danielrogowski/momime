@@ -127,18 +127,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- XML layouts -->
 
 	<bean id="xmlLayoutSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg type="java.net.URL" value="/com.ndg.swing.layoutmanagers/XmlLayout.xsd" />
+		<constructor-arg type="java.net.URL" value="/com.ndg.utils.swing.layoutmanagers/XmlLayout.xsd" />
 	</bean>
 	
 	<bean id="xmlLayoutJaxbContext" class="jakarta.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer</value>
+    			<value>com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainer</value>
     		</list>
    		</constructor-arg>
 	</bean>
 	
-	<bean id="xmlLayoutObjectFactory" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory" />
+	<bean id="xmlLayoutObjectFactory" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory" />
 	
 	<bean id="xmlLayoutUnmarshaller" class="jakarta.xml.bind.Unmarshaller" factory-bean="xmlLayoutJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="xmlLayoutSchema" />
@@ -180,7 +180,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="historyUI" ref="historyUI" />
-		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="diplomacyUI" ref="diplomacyUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype">
@@ -226,8 +227,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="startGameMessage" class="momime.client.messages.process.StartGameMessageImpl" scope="prototype">
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="taxRateUI" ref="taxRateUI" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
+		<property name="alchemyUI" ref="alchemyUI" />
+		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
+		<property name="citiesListUI" ref="citiesListUI" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="selectAdvisorUI" ref="selectAdvisorUI" />
+		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
+		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
+		<property name="historyUI" ref="historyUI" />
 		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="clientConfig" ref="clientConfig" />
 	</bean>
 
 	<bean id="updateGlobalEconomyMessage" class="momime.client.messages.process.UpdateGlobalEconomyMessageImpl" scope="prototype">
@@ -320,6 +334,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="citiesListUI" ref="citiesListUI" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 	</bean>
 
 	<bean id="spellResearchChangedMessage" class="momime.client.messages.process.SpellResearchChangedMessageImpl" scope="prototype">
@@ -386,6 +401,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 	</bean>	
 
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype">
@@ -628,6 +644,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
+	<bean id="diplomacyMessage" class="momime.client.messages.process.DiplomacyMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="diplomacyUI" ref="diplomacyUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+	</bean>
+
+	<bean id="pactMessage" class="momime.client.messages.process.PactMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="wizardsUI" ref="wizardsUI" />
+	</bean>
+
+	<bean id="tradeableSpellsMessage" class="momime.client.messages.process.TradeableSpellsMessageImpl" scope="prototype">
+		<property name="diplomacyUI" ref="diplomacyUI" />
+	</bean>
+
 	<!-- Create extended versions of NTMs which include drawing implementations -->
 
 	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">
@@ -686,8 +719,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype">
@@ -886,6 +921,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="createArtifactUI" ref="createArtifactUI" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="historyUI" ref="historyUI" />
+		<property name="diplomacyUI" ref="diplomacyUI" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
@@ -893,6 +929,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="musicPlayer" ref="musicPlayer" />
 	</bean>
 	
@@ -954,6 +991,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	
+	<bean id="modifiedImageCache" class="com.ndg.utils.swing.ModifiedImageCacheImpl">
+		<property name="utils" ref="uiUtils" />
+	</bean>
+	
 	<bean id="clientCityCalculations" class="momime.client.calculations.ClientCityCalculationsImpl">
 		<property name="client" ref="client" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
@@ -969,6 +1010,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 	</bean>
 
 	<bean id="tileSetBitmaskGenerator" class="momime.client.calculations.TileSetBitmaskGeneratorImpl">
@@ -1004,7 +1046,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="overlandMapProcessing" class="momime.client.process.OverlandMapProcessingImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
@@ -1026,6 +1068,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
@@ -1052,6 +1095,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+		<property name="combatUI" ref="combatUI" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
 	<bean id="playerPickClientUtils" class="momime.client.utils.PlayerPickClientUtilsImpl">
@@ -1065,7 +1110,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="memoryMaintainedSpellClientUtils" class="momime.client.utils.MemoryMaintainedSpellClientUtilsImpl">
 		<property name="client" ref="client" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 	</bean>
 	
 	<bean id="combatSpellClientUtils" class="momime.client.utils.CombatSpellClientUtilsImpl">
@@ -1073,7 +1118,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="variableManaUI" ref="variableManaUI" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="languageHolder" ref="languageHolder" />
@@ -1217,71 +1262,71 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
-	<bean id="newGameLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutMain" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Main.xml" />
 	</bean>
 
-	<bean id="newGameLayoutNew" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutNew" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-New.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutMapSize" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutMapSize" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-MapSize.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutLandProportion" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutLandProportion" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-LandProportion.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutNodes" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutNodes" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Nodes.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutDifficulty1" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutDifficulty1" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Difficulty1.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutDifficulty2" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutDifficulty2" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Difficulty2.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutDifficulty3" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutDifficulty3" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Difficulty3.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutNodeDifficulty" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutNodeDifficulty" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutFogOfWar" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutFogOfWar" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-FogOfWar.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutUnits" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutUnits" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-UnitSettings.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutSpells" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutSpells" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-SpellSettings.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutHeroItems" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutHeroItems" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-HeroItemSettings.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutDebug" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutDebug" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Debug.xml" />
 	</bean>
 
-	<bean id="newGameLayoutFlagColour" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutFlagColour" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-FlagColour.xml" />
 	</bean>
 	
-	<bean id="newGameLayoutPicks" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutPicks" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Picks.xml" />
 	</bean>
 
-	<bean id="newGameLayoutWait" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newGameLayoutWait" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Wait.xml" />
 	</bean>
 	
@@ -1322,7 +1367,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
-	<bean id="joinGameLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="joinGameLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/JoinGameUI.xml" />
 	</bean>
 
@@ -1347,15 +1392,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
-	<bean id="overlandMapRightHandPanelLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="overlandMapRightHandPanelLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/OverlandMapRightHandPanel.xml" />
 	</bean>
 	
-	<bean id="surveyorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="surveyorLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml" />
 	</bean>
 	
-	<bean id="economyLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="economyLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/OverlandMapRightHandPanel-Economy.xml" />
 	</bean>
 	
@@ -1385,9 +1430,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="diplomacyUI" ref="diplomacyUI" />
 	</bean>
 
-	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">
+	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUIImpl">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
@@ -1408,10 +1454,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="zoneAI" ref="zoneAI" />
 		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
@@ -1420,7 +1469,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
-	<bean id="magicSlidersLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="magicSlidersLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/MagicSlidersUI.xml" />
 	</bean>
 
@@ -1433,6 +1482,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="skillCalculations" ref="skillCalculations" />
 		<property name="spellUtils" ref="spellUtils" />
@@ -1455,6 +1507,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
@@ -1465,7 +1520,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 
-	<bean id="newTurnMessagesLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="newTurnMessagesLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewTurnMessagesUI.xml" />
 	</bean>
 
@@ -1473,16 +1528,37 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newTurnMessagesLayout" ref="newTurnMessagesLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="utils" ref="uiUtils" />
 		<property name="anim" ref="anim" />
 		<property name="newTurnMessageRenderer" ref="newTurnMessageRenderer" />
 	</bean>
 	
-	<bean id="spellBookUI" class="momime.client.ui.frames.SpellBookUI">
+	<bean id="spellBookLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/SpellBookUI.xml" />
+	</bean>
+	
+	<bean id="spellLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/SpellBookUI-Spell.xml" />
+	</bean>
+
+	<bean id="compactLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/SpellBookUI-Compact.xml" />
+	</bean>
+	
+	<bean id="spellBookUI" class="momime.client.ui.frames.SpellBookNewUI">
+		<property name="spellBookLayout" ref="spellBookLayout" />
+		<property name="spellLayout" ref="spellLayout" />
+		<property name="compactLayout" ref="compactLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
@@ -1491,6 +1567,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="helpUI" ref="helpUI" />
@@ -1500,13 +1577,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="memoryMaintainedSpellClientUtils" ref="memoryMaintainedSpellClientUtils" />		
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="spellClientUtils" ref="spellClientUtils" />
+		<property name="soundPlayer" ref="soundPlayer" />
 	</bean>
 
-	<bean id="combatLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="combatLayoutMain" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CombatUI-Main.xml" />
 	</bean>
 
-	<bean id="combatLayoutBottom" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="combatLayoutBottom" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CombatUI-Bottom.xml" />
 	</bean>
 
@@ -1545,6 +1624,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatSpellClientUtils" ref="combatSpellClientUtils" />
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 	</bean>
 
 	<bean id="castCombatSpellFromUI" class="momime.client.ui.dialogs.CastCombatSpellFromUI">
@@ -1568,7 +1652,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 
-	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="razeCityLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/RazeCityUI.xml" />
 	</bean>
 
@@ -1581,7 +1665,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 	</bean>
 
-	<bean id="selectAdvisorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="selectAdvisorLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/SelectAdvisorUI.xml" />
 	</bean>
 
@@ -1590,6 +1674,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
 		<property name="taxRateUI" ref="taxRateUI" />
@@ -1603,12 +1690,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="client" ref="client" />
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 
-	<bean id="queuedSpellsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="queuedSpellsLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/QueuedSpellsUI.xml" />
 	</bean>
 
@@ -1618,13 +1708,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="queuedSpellListCellRenderer" ref="queuedSpellListCellRenderer" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
-	<bean id="wizardsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="wizardsLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/WizardsUI.xml" />
 	</bean>
 
@@ -1634,6 +1727,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="largeFont" ref="largeFont" />
@@ -1644,13 +1740,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="diplomacyUI" ref="diplomacyUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 	
-	<bean id="optionsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="optionsLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/OptionsUI.xml" />
 	</bean>
 
@@ -1691,7 +1791,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
-	<bean id="damageCalculationsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="damageCalculationsLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/DamageCalculationsUI.xml" />
 	</bean>
 
@@ -1700,11 +1800,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="tinyFont" ref="tinyFont" />
 	</bean>
 	
-	<bean id="variableManaLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="variableManaLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/VariableManaUI.xml" />
 	</bean>
 	
@@ -1723,7 +1826,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
-	<bean id="createArtifactLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="createArtifactLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CreateArtifactUI.xml" />
 	</bean>
 
@@ -1735,15 +1838,19 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 		<property name="heroItemClientUtils" ref="heroItemClientUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 	
-	<bean id="citiesListLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="citiesListLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CitiesListUI.xml" />
 	</bean>
 
@@ -1755,6 +1862,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
@@ -1763,9 +1873,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="citiesListCellRenderer" ref="citiesListCellRenderer" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="clientCityCalculations" ref="clientCityCalculations" />
 	</bean>
 	
-	<bean id="heroItemsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="heroItemsLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HeroItemsUI.xml" />
 	</bean>
 
@@ -1778,6 +1889,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="transferableFactory" ref="transferableFactory" />
 		<property name="alchemyUI" ref="alchemyUI" />
@@ -1788,9 +1902,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="helpUI" ref="helpUI" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 
-	<bean id="historyLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="historyLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HistoryUI.xml" />
 	</bean>
 
@@ -1802,11 +1917,42 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
+	<bean id="diplomacyLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/DiplomacyUI.xml" />
+	</bean>
+
+	<bean id="diplomacyUI" class="momime.client.ui.frames.DiplomacyUI">
+		<property name="diplomacyLayout" ref="diplomacyLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="client" ref="client" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="spellClientUtils" ref="spellClientUtils" />
+		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
+	</bean>
+	
 	<!-- Prototype UI components -->
 
 	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">
@@ -1860,7 +2006,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
-	<bean id="unassignedHeroItemLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="unassignedHeroItemLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HeroItemsUI-Unassigned.xml" />
 	</bean>
 
@@ -1869,9 +2015,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="mediumFont" ref="mediumFont" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 
-	<bean id="citiesListEntryLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="citiesListEntryLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CitiesListUI-Row.xml" />
 	</bean>
 
@@ -1890,10 +2037,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatUI" ref="combatUI" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 	</bean>
 
-	<bean id="heroLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="heroLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HeroItemsUI-Hero.xml" />
 	</bean>
 
@@ -1903,6 +2052,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="mediumFont" ref="mediumFont" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 
 	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
@@ -1931,7 +2081,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serviceLocatorInterface" value="momime.client.ui.frames.PrototypeFrameCreator" />
 	</bean>
 
-	<bean id="messageBoxLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="messageBoxLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/MessageBoxUI.xml" />
 	</bean>
 	
@@ -1948,7 +2098,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 
-	<bean id="calculationBoxLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="calculationBoxLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CalculationBoxUI.xml" />
 	</bean>
 	
@@ -1960,7 +2110,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 
-	<bean id="editStringLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="editStringLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/EditStringUI.xml" />
 	</bean>
 	
@@ -1979,7 +2129,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 	</bean>
 
-	<bean id="cityViewLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="cityViewLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CityViewUI.xml" />
 	</bean>
 	
@@ -1993,7 +2143,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="textUtils" ref="textUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
@@ -2016,11 +2166,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 		<property name="cityViewPanel" ref="cityViewPanel" />																				<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 		<property name="memoryMaintainedSpellListCellRenderer" ref="memoryMaintainedSpellListCellRenderer" />	<!-- So Spring will create and inject a new spell list renderer for each city view UI -->
 	</bean>
 	
-	<bean id="miniCityViewLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="miniCityViewLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/MiniCityViewUI.xml" />
 	</bean>
 	
@@ -2040,7 +2191,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityViewPanel" ref="cityViewPanel" />									<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 
-	<bean id="unitInfoLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="unitInfoLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/UnitInfoPanel.xml" />
 	</bean>
 
@@ -2065,6 +2216,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="helpUI" ref="helpUI" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="unitAttributeListCellRenderer" ref="unitAttributeListCellRenderer" />		<!-- So Spring will create and inject a new attribute list renderer for each unitInfoPanel -->
 		<property name="unitSkillListCellRenderer" ref="unitSkillListCellRenderer" />					<!-- So Spring will create and inject a new skill list renderer for each unitInfoPanel -->
 	</bean>	
@@ -2115,7 +2267,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each heroOrUnitsOfferUI -->
 	</bean>
 	
-	<bean id="overlandEnchantmentsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="overlandEnchantmentsLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/OverlandEnchantmentsUI.xml" />
 	</bean>
 	
@@ -2138,7 +2290,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 	
-	<bean id="combatEndedLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="combatEndedLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/CombatEndedUI.xml" />
 	</bean>
 	
@@ -2152,7 +2304,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 
-	<bean id="unitRowDisplayLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="unitRowDisplayLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/UnitRowDisplayUI.xml" />
 	</bean>
 	
@@ -2168,20 +2320,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
-	<bean id="heroItemInfoLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="heroItemInfoLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HeroItemInfoUI.xml" />
 	</bean>
 	
 	<bean id="heroItemInfoUI" class="momime.client.ui.frames.HeroItemInfoUI" scope="prototype">
 		<property name="heroItemInfoLayout" ref="heroItemInfoLayout" />
 		<property name="client" ref="client" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="languageHolder" ref="languageHolder" />
@@ -2199,9 +2352,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="modifiedImageCache" ref="modifiedImageCache" />
 	</bean>
 	
-	<bean id="treasureLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="treasureLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/TreasureUI.xml" />
 	</bean>
 	
@@ -2218,7 +2372,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
-	<bean id="randomEventLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="randomEventLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/RandomEventUI.xml" />
 	</bean>
 	
@@ -2235,7 +2389,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 
-	<bean id="wizardBanishedLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="wizardBanishedLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/WizardBanishedUI.xml" />
 	</bean>
 
@@ -2253,7 +2407,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 	
-	<bean id="wizardWonLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="wizardWonLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/WizardWonUI.xml" />
 	</bean>
 
@@ -2268,7 +2422,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 	</bean>
 	
-	<bean id="spellOfMasteryStartLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="spellOfMasteryStartLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/SpellOfMasteryStartUI.xml" />
 	</bean>
 
@@ -2284,7 +2438,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 	</bean>
 	
-	<bean id="spellOfMasteryEndLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="spellOfMasteryEndLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/SpellOfMasteryEndUI.xml" />
 	</bean>
 
@@ -2302,7 +2456,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
-	<bean id="armyListLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="armyListLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/ArmyListUI.xml" />
 	</bean>
 
@@ -2325,26 +2479,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
-	</bean>
-	
-	<bean id="diplomacyLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/DiplomacyUI.xml" />
-	</bean>
-
-	<bean id="diplomacyUI" class="momime.client.ui.dialogs.DiplomacyUI" scope="prototype">
-		<property name="diplomacyLayout" ref="diplomacyLayout" />
-		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="optionsUI" />
-		<property name="utils" ref="uiUtils" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
-		<property name="client" ref="client" />
-		<property name="knownWizardUtils" ref="knownWizardUtils" />
-		<property name="spellClientUtils" ref="spellClientUtils" />
-		<property name="musicPlayer" ref="musicPlayer" />
-		<property name="mediumFont" ref="mediumFont" />
-		<property name="randomUtils" ref="randomUtils" />
-		<property name="wizardClientUtils" ref="wizardClientUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 	
 </beans>

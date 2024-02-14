@@ -14,8 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.exception.XMLUnexpectedElement;
-import com.ndg.multiplayer.client.MultiplayerSessionClient;
 import com.ndg.multiplayer.client.MultiplayerSessionClientEvent;
+import com.ndg.multiplayer.client.MultiplayerSessionClientImpl;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.BrowseSavePointsFailedReason;
@@ -25,6 +25,7 @@ import com.ndg.multiplayer.sessionbase.CreateAccountFailedReason;
 import com.ndg.multiplayer.sessionbase.DeleteSavedGameFailedReason;
 import com.ndg.multiplayer.sessionbase.JoinFailedReason;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
+import com.ndg.multiplayer.sessionbase.LeaveSession;
 import com.ndg.multiplayer.sessionbase.LeaveSessionFailedReason;
 import com.ndg.multiplayer.sessionbase.LoadGameFailedReason;
 import com.ndg.multiplayer.sessionbase.LoginFailedReason;
@@ -33,7 +34,7 @@ import com.ndg.multiplayer.sessionbase.RequestSessionListFailedReason;
 import com.ndg.multiplayer.sessionbase.SavedGamePoint;
 import com.ndg.multiplayer.sessionbase.SavedGameSession;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.audio.AudioPlayer;
@@ -42,6 +43,7 @@ import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.NewGameDatabase;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.dialogs.CastCombatSpellFromUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.RazeCityUI;
@@ -54,6 +56,7 @@ import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.ConnectToServerUI;
 import momime.client.ui.frames.CreateArtifactUI;
 import momime.client.ui.frames.DamageCalculationsUI;
+import momime.client.ui.frames.DiplomacyUI;
 import momime.client.ui.frames.HeroItemInfoUI;
 import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.HistoryUI;
@@ -68,7 +71,7 @@ import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.QueuedSpellsUI;
 import momime.client.ui.frames.SelectAdvisorUI;
-import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.SpellBookNewUI;
 import momime.client.ui.frames.TaxRateUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.frames.WizardsUI;
@@ -86,13 +89,10 @@ import momime.common.messages.TurnSystem;
 /**
  * Main multiplayer controller class for the client
  */
-public final class MomClientImpl extends MultiplayerSessionClient implements MomClient
+public final class MomClientImpl extends MultiplayerSessionClientImpl implements MomClient
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (MomClientImpl.class);
-	
-	/** Name that we logged in using */
-	private String ourPlayerName;
 	
 	/** Main menu with options to connect to a server and create or join games */
 	private MainMenuUI mainMenuUI;
@@ -122,7 +122,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	private AlchemyUI alchemyUI;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 
 	/** Queued spells UI */
 	private QueuedSpellsUI queuedSpellsUI;
@@ -163,6 +163,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	/** UI for screen showing power base history for each wizard */
 	private HistoryUI historyUI;
 	
+	/** Diplomacy UI */
+	private DiplomacyUI diplomacyUI;
+	
 	/** Music player */
 	private AudioPlayer musicPlayer;
 	
@@ -186,6 +189,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
 	
 	/** List of all city views currently open, keyed by coordinates.toString () */
 	private Map<String, CityViewUI> cityViews = new HashMap<String, CityViewUI> (); 
@@ -389,26 +395,42 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 					final List<Integer> offersToClose = getOffers ().keySet ().stream ().collect (Collectors.toList ());
 					offersToClose.forEach (o -> getOffers ().get (o).close ());
 					
-					getOverlandMapUI ().setVisible (false);
-					getTaxRateUI ().setVisible (false);
-					getMagicSlidersUI ().setVisible (false);
-					getAlchemyUI ().setVisible (false);
-					getSpellBookUI ().setVisible (false);
-					getQueuedSpellsUI ().setVisible (false);
-					getCitiesListUI ().setVisible (false);
-					getNewTurnMessagesUI ().setVisible (false);
-					getSelectAdvisorUI ().setVisible (false);
+					getOverlandMapUI ().closedown ();
+					getTaxRateUI ().closedown ();
+					getMagicSlidersUI ().closedown ();
+					getAlchemyUI ().closedown ();
+					getSpellBookUI ().closedown ();
+					getQueuedSpellsUI ().closedown ();
+					getCitiesListUI ().closedown ();
+					getNewTurnMessagesUI ().closedown ();
+					getSelectAdvisorUI ().closedown ();
 					
-					getCombatUI ().setVisible (false);
+					getCombatUI ().closedown ();
 					getCastCombatSpellFromUI ().setVisible (false);
 					getRazeCityUI ().setVisible (false);
-					getDamageCalculationsUI ().setVisible (false);
+					getDamageCalculationsUI ().closedown ();
 					getVariableManaUI ().setVisible (false);
 					
-					getWizardsUI ().setVisible (false);
-					getCreateArtifactUI ().setVisible (false);
-					getHeroItemsUI ().setVisible (false);
-					getHistoryUI ().setVisible (false);
+					getWizardsUI ().closedown ();
+					getCreateArtifactUI ().closedown ();
+					getHeroItemsUI ().closedown ();
+					getHistoryUI ().closedown ();
+					getDiplomacyUI ().closedown ();
+				}
+				else
+				{
+					// Someone else left so the session is still dead - inform the player and leave too.
+					// Our windows will get closed out when this method triggers again with our own player ID.
+					final PlayerPublicDetails playerLeft = getMultiplayerSessionUtils ().findPlayerWithID (getPlayers (), playerID, "beforePlayerLeft");
+					
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getMultiplayer ().getPlayerLeftSessionEndingTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getMultiplayer ().getPlayerLeftSessionEndingText ()).replaceAll
+						("PLAYER_NAME", playerLeft.getPlayerDescription ().getPlayerName ()));
+					
+					msg.setVisible (true);
+					
+					getServerConnection ().sendMessageToServer (new LeaveSession ());
 				}
 			}
 
@@ -432,6 +454,8 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 						getMainMenuUI ().playMusic ();
 						getMainMenuUI ().setVisible (true);
 					}
+					
+					getPlayerColourImageGenerator ().clearCache ();
 				}
 				else
 					getNewGameUI ().updateWaitPanelPlayersList ();
@@ -875,24 +899,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	}
 	
 	/**
-	 * @return Name that we logged in using
-	 */
-	@Override
-	public final String getOurPlayerName ()
-	{
-		return ourPlayerName;
-	}
-
-	/**
-	 * @param name Name that we logged in using
-	 */
-	@Override
-	public final void setOurPlayerName (final String name)
-	{
-		ourPlayerName = name;
-	}
-	
-	/**
 	 * @return Main menu with options to connect to a server and create or join games
 	 */
 	public final MainMenuUI getMainMenuUI ()
@@ -1039,7 +1045,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -1047,7 +1053,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}
@@ -1259,6 +1265,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	{
 		historyUI = h;
 	}
+
+	/**
+	 * @return Diplomacy UI
+	 */
+	public final DiplomacyUI getDiplomacyUI ()
+	{
+		return diplomacyUI;
+	}
+
+	/**
+	 * @param ui Diplomacy UI
+	 */
+	public final void setDiplomacyUI (final DiplomacyUI ui)
+	{
+		diplomacyUI = ui;
+	}
 	
 	/**
 	 * @return Music player
@@ -1397,6 +1419,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+	
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param gen Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
+	{
+		playerColourImageGenerator = gen;
 	}
 	
 	/**

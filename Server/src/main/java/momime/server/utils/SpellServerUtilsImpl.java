@@ -22,7 +22,7 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
@@ -35,8 +35,8 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 	/** Spell utils */
 	private SpellUtils spellUtils;
 	
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
@@ -138,7 +138,7 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 					mom.getPlayers (), mem, mom.getServerDB ());
 				
-				if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, SpellBookSectionID.ATTACK_SPELLS, null, null,
+				if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, SpellBookSectionID.ATTACK_SPELLS, null, null,
 					castingPlayer.getPlayerDescription ().getPlayerID (), null, null, xu, isTargeting, mem,
 						priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 					
@@ -165,19 +165,19 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 	}
 
 	/**
-	 * @return MemoryMaintainedSpell utils
+	 * @return Methods that determine whether something is a valid target for a spell
 	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final SpellTargetingUtils getSpellTargetingUtils ()
 	{
-		return memoryMaintainedSpellUtils;
+		return spellTargetingUtils;
 	}
 
 	/**
-	 * @param utils MemoryMaintainedSpell utils
+	 * @param s Methods that determine whether something is a valid target for a spell
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
 	{
-		memoryMaintainedSpellUtils = utils;
+		spellTargetingUtils = s;
 	}
 
 	/**

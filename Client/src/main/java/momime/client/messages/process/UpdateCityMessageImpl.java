@@ -1,13 +1,15 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CitiesListUI;
@@ -48,24 +50,56 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		processOneUpdate ();
+		final Set<UpdateUIElement> uiElements = processOneUpdate ();
 		
 		// Regenerate city images to show change in size or owner
-		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
-		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
-		getCitiesListUI ().refreshCitiesList ();
-		getCitiesListUI ().regenerateMiniMapBitmaps ();
+		if (uiElements.contains (UpdateUIElement.REGENERATE_OVERLAND_MAP_BITMAPS))
+			getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+		
+		if (uiElements.contains (UpdateUIElement.REGENERATE_MINI_MAP_BITMAPS))
+			getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
+		
+		if (uiElements.contains (UpdateUIElement.REFRESH_CITIES_LIST))
+			getCitiesListUI ().refreshCitiesList ();
+		
+		if (uiElements.contains (UpdateUIElement.REGENERATE_MINI_MAP_BITMAPS))
+			getCitiesListUI ().regenerateMiniMapBitmaps ();
 	}
 	
 	/**
 	 * Method called for each individual update; so called once if message was sent in isolation, or multiple times if part of FogOfWarVisibleAreaChangedMessage
+	 * 
+	 * @return UI elements that need updating as a result of the changes
 	 * @throws IOException If there is a problem
 	 */
-	public final void processOneUpdate () throws IOException
+	public final Set<UpdateUIElement> processOneUpdate () throws IOException
 	{
 		final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getData ().getMapLocation ().getZ ()).getRow ().get (getData ().getMapLocation ().getY ()).getCell ().get (getData ().getMapLocation ().getX ());
 		
+		// Compare the new and old data to see what UI elements we need to update
+		final Set<UpdateUIElement> uiElements = new HashSet<UpdateUIElement> ();
+		
+		// Only need to regenerate mini maps if a city was created, destroyed, or changed owner
+		if (((gc.getCityData () == null) && (getData ().getCityData () != null)) ||
+			((gc.getCityData () != null) && (getData ().getCityData () == null)) ||
+			((gc.getCityData () != null) && (getData ().getCityData () != null) && (gc.getCityData ().getCityOwnerID () != getData ().getCityData ().getCityOwnerID ())))
+		{
+			uiElements.add (UpdateUIElement.REGENERATE_MINI_MAP_BITMAPS);
+			uiElements.add (UpdateUIElement.REGENERATE_OVERLAND_MAP_BITMAPS);
+		}
+		
+		// Also regenerate overland map if the city size changed
+		if ((gc.getCityData () != null) && (getData ().getCityData () != null) && (!gc.getCityData ().getCitySizeID ().equals (getData ().getCityData ().getCitySizeID ())))
+			uiElements.add (UpdateUIElement.REGENERATE_OVERLAND_MAP_BITMAPS);
+		
+		// Only refresh cities list if the city used to be, or now is, ours
+		if (((gc.getCityData () != null) && (gc.getCityData ().getCityOwnerID () == getClient ().getOurPlayerID ())) ||
+			((getData ().getCityData () != null) && (getData ().getCityData ().getCityOwnerID () == getClient ().getOurPlayerID ())))
+			
+			uiElements.add (UpdateUIElement.REFRESH_CITIES_LIST);
+		
+		// Now accept the new data
 		gc.setCityData (getData ().getCityData ());
 		
 		// If any city screen(s) are displaying this city then we need to update the display, or close it if the city was destroyed
@@ -94,6 +128,8 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 		
 		// If any new turn message(s) are showing what this city may have just constructed, then we need to update those as well
 		getNewTurnMessagesUI ().cityDataChanged ((MapCoordinates3DEx) getData ().getMapLocation ());
+		
+		return uiElements;
 	}
 
 	/**

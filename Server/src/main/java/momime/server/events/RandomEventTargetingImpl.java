@@ -12,8 +12,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
-import com.ndg.random.WeightedChoicesImpl;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.random.WeightedChoicesImpl;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -153,7 +153,7 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 				{
 					final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "triggerEvent");
 					if (spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
-						mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN ());
+						mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN (), false);
 				}
 				
 				mom.getWorldUpdates ().process (mom);

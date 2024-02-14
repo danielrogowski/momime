@@ -19,11 +19,12 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
@@ -36,6 +37,8 @@ import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpellEffect;
+import momime.common.messages.CaptureCityDecisionID;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
@@ -52,6 +55,7 @@ import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.messages.Pact;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.PendingSaleMessage;
@@ -69,6 +73,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CityAI;
+import momime.server.ai.RelationAI;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
@@ -166,6 +171,15 @@ public final class CityProcessingImpl implements CityProcessing
 	
 	/** Process for making sure one wizard has met another wizard */
 	private KnownWizardServerUtils knownWizardServerUtils;
+	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
+	
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
+	
+	/** Server side city updates */
+	private CityUpdates cityUpdates;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -318,7 +332,7 @@ public final class CityProcessingImpl implements CityProcessing
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
 							final MapCoordinates3DEx unitCoords = new MapCoordinates3DEx (cityLocation);
-							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (thisUnit.getUnitID (), unitCoords, cityLocation, null, null, thisPlayer, UnitStatusID.ALIVE, false, mom);
+							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (thisUnit.getUnitID (), unitCoords, cityLocation, null, null, thisPlayer, UnitStatusID.ALIVE, false, false, mom);
 						}
 			}
 			
@@ -426,7 +440,7 @@ public final class CityProcessingImpl implements CityProcessing
 				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				{
 					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())) && (cityData.getCityPopulation () >= 1000))
+					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
 					{
 						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "progressConstructionProjects");
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
@@ -436,22 +450,9 @@ public final class CityProcessingImpl implements CityProcessing
 						// Use calculated values to determine construction rate
 						if ((cityData.getCurrentlyConstructingBuildingID () != null) || (cityData.getCurrentlyConstructingUnitID () != null))
 						{
-							// Check if we're constructing a building or a unit
-							Building building = null;
-							Integer productionCost = null;
-							if (cityData.getCurrentlyConstructingBuildingID () != null)
-							{
-								building = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "progressConstructionProjects");
-								productionCost = building.getProductionCost ();
-							}
-
-							Unit unit = null;
-							if (cityData.getCurrentlyConstructingUnitID () != null)
-							{
-								unit = mom.getServerDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "progressConstructionProjects");
-								productionCost = unit.getProductionCost ();
-							}
-
+							final Integer productionCost = getCityProductionCalculations ().calculateProductionCost
+								(mom.getPlayers (), priv.getFogOfWarMemory (), cityLocation, priv.getTaxRateID (),
+									mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), mom.getServerDB (), null);
 							if (productionCost != null)
 							{
 								final int productionThisTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
@@ -465,6 +466,15 @@ public final class CityProcessingImpl implements CityProcessing
 									// Is it finished?
 									if (cityData.getProductionSoFar () >= productionCost)
 									{
+										// Check if we're constructing a building or a unit
+										Building building = null;
+										if (cityData.getCurrentlyConstructingBuildingID () != null)
+											building = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "progressConstructionProjects");
+
+										Unit unit = null;
+										if (cityData.getCurrentlyConstructingUnitID () != null)
+											unit = mom.getServerDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "progressConstructionProjects");
+										
 										// Did we construct a building?
 										if (building != null)
 										{
@@ -522,7 +532,7 @@ public final class CityProcessingImpl implements CityProcessing
 	
 												// Now actually add the unit
 												final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unit.getUnitID (), addLocation.getUnitLocation (),
-													cityLocation, null, null, cityOwner, UnitStatusID.ALIVE, true, mom);
+													cityLocation, null, null, cityOwner, UnitStatusID.ALIVE, true, true, mom);
 												
 												// If the caster has Doom Mastery cast then cast Chaos Channels on the new unit
 												if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
@@ -568,9 +578,14 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void growCities (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
-			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+		int z = 0;
+		while ((z < mom.getSessionDescription ().getOverlandMapSize ().getDepth ()) && (mom.getPlayers ().size () > 0))
+		{
+			int y = 0;
+			while ((y < mom.getSessionDescription ().getOverlandMapSize ().getHeight ()) && (mom.getPlayers ().size () > 0))
+			{
+				int x = 0;
+				while ((x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()) && (mom.getPlayers ().size () > 0))
 				{
 					final ServerGridCellEx mc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
 					final OverlandMapCityData cityData = mc.getCityData ();
@@ -586,7 +601,7 @@ public final class CityProcessingImpl implements CityProcessing
 							cityLocation, cityOwnerPriv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
 							CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 
-						if (cityData.getCityPopulation () >= 1000)
+						if (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION)
 						{
 							// Normal city growth rate calculation
 							final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
@@ -647,33 +662,45 @@ public final class CityProcessingImpl implements CityProcessing
 							if (outpostGrowthRate != 0)
 							{
 								final int oldPopulation = cityData.getCityPopulation ();
-								int newPopulation = Math.min (oldPopulation + outpostGrowthRate, 1000);
+								int newPopulation = Math.min (oldPopulation + outpostGrowthRate, CommonDatabaseConstants.MIN_CITY_POPULATION);
 								
 								if (newPopulation > 0)
 									cityData.setCityPopulation (newPopulation);
 								else
-									razeCity (cityLocation, mom);		// Outposts can die off completely
+									getCityUpdates ().conquerCity (cityLocation, null, cityOwnerPlayer, CaptureCityDecisionID.RAZE, 0, mom);
 								
-								// Show on new turn messages?
-								if ((cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((newPopulation >= 1000) || (newPopulation <= 0)))
+								if (mom.getPlayers ().size () > 0)
 								{
-									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
-									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
-									populationChange.setCityLocation (cityLocation);
-									populationChange.setCityName (cityData.getCityName ());
-									populationChange.setOldPopulation (oldPopulation);
-									populationChange.setNewPopulation (newPopulation);
-									((MomTransientPlayerPrivateKnowledge) cityOwnerPlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
+									// Show on new turn messages?
+									if ((cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((newPopulation >= CommonDatabaseConstants.MIN_CITY_POPULATION) || (newPopulation <= 0)))
+									{
+										final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
+										populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
+										populationChange.setCityLocation (cityLocation);
+										populationChange.setCityName (cityData.getCityName ());
+										populationChange.setOldPopulation (oldPopulation);
+										populationChange.setNewPopulation (newPopulation);
+										((MomTransientPlayerPrivateKnowledge) cityOwnerPlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
+									}
+		
+									// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change; if not we still need to update player memory about the city
+									mom.getWorldUpdates ().recalculateCity (cityLocation);
 								}
-	
-								// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change; if not we still need to update player memory about the city
-								mom.getWorldUpdates ().recalculateCity (cityLocation);
 							}
 						}
 					}
+					
+					x++;
 				}
+				
+				y++;
+			}
+			
+			z++;
+		}
 		
-		mom.getWorldUpdates ().process (mom);
+		if (mom.getPlayers ().size () > 0)
+			mom.getWorldUpdates ().process (mom);
 	}
 	
 	/**
@@ -876,14 +903,6 @@ public final class CityProcessingImpl implements CityProcessing
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 			priv.setTaxRateID (taxRateID);
 			
-			// Set on client
-			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-			{
-				final TaxRateChangedMessage reply = new TaxRateChangedMessage ();
-				reply.setTaxRateID (taxRateID);
-				player.getConnection ().sendMessageToClient (reply);
-			}
-			
 			// Recalc stats for all cities based on the new tax rate
 			final FogOfWarMemory trueMap = mom.getGeneralServerKnowledge ().getTrueMap ();
 			for (final Plane plane : mom.getServerDB ().getPlane ())
@@ -891,7 +910,7 @@ public final class CityProcessingImpl implements CityProcessing
 					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					{
 						final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 							
@@ -905,6 +924,14 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			// Recalculate all global production based on the new tax rate
 			getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
+			
+			// Set on client - do this last, as it will trigger refreshing all the city screens open on the client
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+			{
+				final TaxRateChangedMessage reply = new TaxRateChangedMessage ();
+				reply.setTaxRateID (taxRateID);
+				player.getConnection ().sendMessageToClient (reply);
+			}
 		}
 	}
 	
@@ -1021,43 +1048,49 @@ public final class CityProcessingImpl implements CityProcessing
 	/**
 	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
 	 * 
-	 * @param attackingPlayer Player who won the combat, who is doing the banishing
+	 * @param attackingPlayer Player who won the combat, who is doing the banishing; if an outpost shrinks and disappears then its possible this can be null
 	 * @param defendingPlayer Player who lost the combat, who is the one being banished
+	 * @param canStealSpells Whether the attacking wizard gets to steal any spells from the defending wizard as a result of banishing them
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
+	public final void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final boolean canStealSpells, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		getKnownWizardServerUtils ().meetWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
+		if (attackingPlayer != null)
+			getKnownWizardServerUtils ().meetWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
+		
 		getKnownWizardServerUtils ().meetWizard (defendingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge attackerPriv = (attackingPlayer == null) ? null : (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
 		final KnownWizardDetails defenderWizard = getKnownWizardUtils ().findKnownWizardDetails
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "banishWizard");
-		final KnownWizardDetails attackerWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "banishWizard");
+		final KnownWizardDetails attackerWizard = (attackingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), attackingPlayer.getPlayerDescription ().getPlayerID (), "banishWizard");
 		
 		// Do they have another city to try to return to?  Record it on server
 		final WizardState wizardState = (getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-			defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0) ? WizardState.DEFEATED : WizardState.BANISHED;
+			defendingPlayer.getPlayerDescription ().getPlayerID (), true) == 0) ? WizardState.DEFEATED : WizardState.BANISHED;
 		
 		getKnownWizardServerUtils ().updateWizardState (defendingPlayer.getPlayerDescription ().getPlayerID (), wizardState, mom);
 		
 		// Update wizardState on client, and this triggers showing the banish animation as well
 		final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();
 		msg.setBanishedPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
-		msg.setBanishingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
+		
+		if (attackingPlayer != null)
+			msg.setBanishingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
+		
 		msg.setWizardState (wizardState);
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 
-		// Things that only apply if two wizards
-		if ((getPlayerKnowledgeUtils ().isWizard (defenderWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (attackerWizard.getWizardID ())))
+		// Things that only apply if two wizards (so the defending wizard's fortress was captured)
+		if ((canStealSpells) && (attackingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (defenderWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (attackerWizard.getWizardID ())))
 		{
 			// Does the attacker get to steal any spells?
 			final List<String> stolenSpellIDs = getSpellProcessing ().stealSpells (defendingPlayer, attackingPlayer,
@@ -1114,7 +1147,7 @@ public final class CityProcessingImpl implements CityProcessing
 			// Remove any spells the wizard still had cast
 			for (final MemoryMaintainedSpell defeatedSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 				if (defeatedSpell.getCastingPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ())
-					mom.getWorldUpdates ().switchOffSpell (defeatedSpell.getSpellURN ());
+					mom.getWorldUpdates ().switchOffSpell (defeatedSpell.getSpellURN (), false);
 
 			// Remove any units the wizard still had
 			for (final MemoryUnit defeatedUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
@@ -1157,6 +1190,14 @@ public final class CityProcessingImpl implements CityProcessing
 						}
 					}
 			
+			// Clear any pacts they had with any other wizards
+			while (!defenderWizard.getPact ().isEmpty ())
+			{
+				final Pact pact = defenderWizard.getPact ().get (0);
+				getKnownWizardServerUtils ().updatePact (defendingPlayer.getPlayerDescription ().getPlayerID (), pact.getPactWithPlayerID (), null, mom);
+				getKnownWizardServerUtils ().updatePact (pact.getPactWithPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (), null, mom);
+			}
+			
 			// If it was a human player, convert them to AI and possibly end the session
 			if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				mom.updateHumanPlayerToAI (defendingPlayer.getPlayerDescription ().getPlayerID ());
@@ -1193,7 +1234,7 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			// If they are only banished, then begin casting spell of return
 			if (wizardState == WizardState.BANISHED)
-				getSpellQueueing ().queueSpell (defendingPlayer, mom.getPlayers (), CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN, null, null);
+				getSpellQueueing ().queueSpell (defendingPlayer, mom, CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN, null, null);
 		}
 	}
 	
@@ -1268,6 +1309,44 @@ public final class CityProcessingImpl implements CityProcessing
 						
 						getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null);
 					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Casting player has cast something nasty (e.g. corruption) at a map location.  Looks to see if it affects any other wizard's cities.
+	 * If so, the owner of the city is going to get mad at the casting player for it.
+	 * 
+	 * @param targetLocation Location where spell was cast
+	 * @param castingPlayerID Who cast the spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we can't find the wizard who owns the city
+	 */
+	@Override
+	public final void penaltyToVisibleRelationFromNearbyCityOwner (final MapCoordinates3DEx targetLocation, final int castingPlayerID, final MomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException
+	{
+		final MapCoordinates3DEx cityLocation = getCityServerUtils ().findCityWithinRadius (targetLocation,
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
+		if (cityLocation != null)
+		{
+			// City probably isn't owned by the person who cast the spell
+			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			
+			if (cityData.getCityOwnerID () != castingPlayerID)
+			{
+				final KnownWizardDetails cityOwnerWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), cityData.getCityOwnerID (), "penaltyToVisibleRelationFromNearbyCityOwner");
+				if (getPlayerKnowledgeUtils ().isWizard (cityOwnerWizard.getWizardID ()))
+				{
+					final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "penaltyToVisibleRelationFromNearbyCityOwner");
+					final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+					final KnownWizardDetails cityOwnerOpinionOfCaster = getKnownWizardUtils ().findKnownWizardDetails (cityOwnerPriv.getFogOfWarMemory ().getWizardDetails (), castingPlayerID);
+					if (cityOwnerOpinionOfCaster != null)
+						getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) cityOwnerOpinionOfCaster, 30);
 				}
 			}
 		}
@@ -1671,5 +1750,53 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
 	{
 		knownWizardServerUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
+	}
+
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
+	}
+
+	/**
+	 * @return Server side city updates
+	 */
+	public final CityUpdates getCityUpdates ()
+	{
+		return cityUpdates;
+	}
+
+	/**
+	 * @param u Server side city updates
+	 */
+	public final void setCityUpdates (final CityUpdates u)
+	{
+		cityUpdates = u;
 	}
 }

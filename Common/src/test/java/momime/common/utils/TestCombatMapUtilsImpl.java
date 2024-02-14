@@ -9,12 +9,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -24,8 +26,14 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.GenerateTestData;
 import momime.common.database.UnitCombatSideID;
+import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
@@ -182,5 +190,221 @@ public final class TestCombatMapUtilsImpl
 		assertSame (attacker, result3.getAttackingPlayer ());
 		assertSame (defender, result3.getDefendingPlayer ());
 		assertTrue (result3.bothFound ());
+	}
+	
+	/**
+	 * Tests the isWithinCityWalls method when the combat tile is within city walls
+	 */
+	@Test
+	public final void testIsWithinCityWalls ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getCityWallsBuildingID ()).thenReturn ("BL01");
+		
+		final CombatTileType combatTileType = new CombatTileType ();
+		combatTileType.setCombatTileTypeID ("CTT02");
+		combatTileType.setInsideCity (true);
+		when (db.getCombatTileType ()).thenReturn (Arrays.asList (combatTileType));
+		
+		// There are city walls in this combat
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL01")).thenReturn (new MemoryBuilding ());
+		
+		// Combat map
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles combatMap = GenerateTestData.createCombatMap (sys);
+		final MomCombatTile tile = combatMap.getRow ().get (8).getCell ().get (5);
+		
+		int n = 0;
+		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+		{
+			n++;
+			final MomCombatTileLayer tileLayer = new MomCombatTileLayer ();
+			tileLayer.setLayer (layer);
+			tileLayer.setCombatTileTypeID ("CTT0" + n);
+			tile.getTileLayer ().add (tileLayer);
+		}
+		
+		// Set up object to test		
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+
+		// Run method
+		assertTrue (utils.isWithinCityWalls (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates2DEx (5, 8), combatMap, buildings, db));
+	}
+
+	/**
+	 * Tests the isWithinCityWalls method when there aren't even any city walls at the location
+	 */
+	@Test
+	public final void testIsWithinCityWalls_NoCityWallsHere ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getCityWallsBuildingID ()).thenReturn ("BL01");
+		
+		// There aren't any city walls in this combat
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		
+		// Set up object to test		
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+
+		// Run method
+		assertFalse (utils.isWithinCityWalls (new MapCoordinates3DEx (20, 10, 1), null, null, buildings, db));
+	}
+
+	/**
+	 * Tests the isWithinCityWalls method when the combat has city walls, but the location is outside of them
+	 */
+	@Test
+	public final void testIsWithinCityWalls_OutsideCityWalls ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getCityWallsBuildingID ()).thenReturn ("BL01");
+		
+		final CombatTileType combatTileType = new CombatTileType ();
+		combatTileType.setCombatTileTypeID ("CTT04");
+		combatTileType.setInsideCity (true);
+		when (db.getCombatTileType ()).thenReturn (Arrays.asList (combatTileType));
+		
+		// There are city walls in this combat
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL01")).thenReturn (new MemoryBuilding ());
+		
+		// Combat map
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles combatMap = GenerateTestData.createCombatMap (sys);
+		final MomCombatTile tile = combatMap.getRow ().get (8).getCell ().get (5);
+		
+		int n = 0;
+		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+		{
+			n++;
+			final MomCombatTileLayer tileLayer = new MomCombatTileLayer ();
+			tileLayer.setLayer (layer);
+			tileLayer.setCombatTileTypeID ("CTT0" + n);
+			tile.getTileLayer ().add (tileLayer);
+		}
+		
+		// Set up object to test		
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+
+		// Run method
+		assertFalse (utils.isWithinCityWalls (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates2DEx (5, 8), combatMap, buildings, db));
+	}
+	
+	/**
+	 * Tests the isWithinWallOfDarkness method when the combat tile is within a wall of darkness
+	 */
+	@Test
+	public final void testIsWithinWallOfDarkness ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatTileType combatTileType = new CombatTileType ();
+		combatTileType.setCombatTileTypeID ("CTT02");
+		combatTileType.setInsideCity (true);
+		when (db.getCombatTileType ()).thenReturn (Arrays.asList (combatTileType));
+		
+		// There is a wall of darkness in this combat
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_WALL_OF_DARKNESS, null, null,
+			new MapCoordinates3DEx (20, 10, 1), null)).thenReturn (new MemoryMaintainedSpell ());
+		
+		// Combat map
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles combatMap = GenerateTestData.createCombatMap (sys);
+		final MomCombatTile tile = combatMap.getRow ().get (8).getCell ().get (5);
+		
+		int n = 0;
+		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+		{
+			n++;
+			final MomCombatTileLayer tileLayer = new MomCombatTileLayer ();
+			tileLayer.setLayer (layer);
+			tileLayer.setCombatTileTypeID ("CTT0" + n);
+			tile.getTileLayer ().add (tileLayer);
+		}
+		
+		// Set up object to test		
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+
+		// Run method
+		assertTrue (utils.isWithinWallOfDarkness (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates2DEx (5, 8), combatMap, spells, db));
+	}
+	
+	/**
+	 * Tests the isWithinWallOfDarkness method when there isn't even a wall of darkness at the location
+	 */
+	@Test
+	public final void testIsWithinWallOfDarkness_NoWallOfDarknessHere ()
+	{
+		// There isn't a wall of darkness in this combat
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		// Set up object to test		
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+
+		// Run method
+		assertFalse (utils.isWithinWallOfDarkness (new MapCoordinates3DEx (20, 10, 1), null, null, spells, null));
+	}
+
+	/**
+	 * Tests the isWithinWallOfDarkness method when the combat has a wall of darkness, but the location is outside of it
+	 */
+	@Test
+	public final void testIsWithinWallOfDarkness_OutsideWallOfDarkness ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatTileType combatTileType = new CombatTileType ();
+		combatTileType.setCombatTileTypeID ("CTT04");
+		combatTileType.setInsideCity (true);
+		when (db.getCombatTileType ()).thenReturn (Arrays.asList (combatTileType));
+		
+		// There is a wall of darkness in this combat
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_WALL_OF_DARKNESS, null, null,
+			new MapCoordinates3DEx (20, 10, 1), null)).thenReturn (new MemoryMaintainedSpell ());
+		
+		// Combat map
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles combatMap = GenerateTestData.createCombatMap (sys);
+		final MomCombatTile tile = combatMap.getRow ().get (8).getCell ().get (5);
+		
+		int n = 0;
+		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+		{
+			n++;
+			final MomCombatTileLayer tileLayer = new MomCombatTileLayer ();
+			tileLayer.setLayer (layer);
+			tileLayer.setCombatTileTypeID ("CTT0" + n);
+			tile.getTileLayer ().add (tileLayer);
+		}
+		
+		// Set up object to test		
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+
+		// Run method
+		assertFalse (utils.isWithinWallOfDarkness (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates2DEx (5, 8), combatMap, spells, db));
 	}
 }

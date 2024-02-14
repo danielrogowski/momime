@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -15,7 +13,6 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.AddsToSkill;
-import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -32,7 +29,6 @@ import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.NumberedHeroItem;
@@ -44,14 +40,11 @@ import momime.common.messages.UnitStatusID;
  */
 public final class UnitUtilsImpl implements UnitUtils
 {
-	/** Coordinate system utils */
-	private CoordinateSystemUtils coordinateSystemUtils;
-	
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
-	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
 	/**
 	 * @param unitURN Unit URN to search for
@@ -219,10 +212,11 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return True if this combat area effect affects this unit
 	 * @throws RecordNotFoundException If we can't find the definition for the CAE
+	 * @throws MomException If the combat area "affects" code is unrecognized
 	 */
 	@Override
 	public final boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final CommonDatabase db)
-		throws RecordNotFoundException
+		throws RecordNotFoundException, MomException
 	{
 		final boolean applies;
 		
@@ -272,33 +266,39 @@ public final class UnitUtilsImpl implements UnitUtils
 				// Check player - if this is blank, its a combat area effect that doesn't provide unit bonuses/penalties, e.g. Call Lightning, so we can just return false
 				if (combatAreaEffect.getCombatAreaAffectsPlayers () == null)
 					applies = false;
-	
-				// All is easy, either its a global CAE that affects everyone (like Chaos Surge or Eternal Night) or its a CAE in a
-				// specific location that affects everyone, whether or not they're in combat (like Node Auras)
-				else if (combatAreaEffect.getCombatAreaAffectsPlayers ().equals (CombatAreaAffectsPlayersID.ALL_EVEN_NOT_IN_COMBAT))
-					applies = true;
-	
-				// Spells that apply only to the caster only apply to available units if they're global (like Holy Arms)
-				// Localised spells that apply only to the caster (like Prayer or Mass Invisibility) only apply to units in combat
-				// NDG 19/6/2011 - On looking at this again I think that's highly debatable - if there was a caster only buff CAE then why
-				// wouldn't it help units in the city defend against overland attacks like Call the Void?  However I've checked, there's no
-				// City Enchantments in the original MoM that grant these kind of bonuses so its pretty irrelevant, so leaving it as it is
-				else if (combatAreaEffect.getCombatAreaAffectsPlayers ().equals (CombatAreaAffectsPlayersID.CASTER_ONLY))
-					applies = ((effect.getCastingPlayerID () == unit.getOwningPlayerID ()) && ((combatLocation != null) || (effect.getMapLocation () == null)));
-	
-				// 'Both' CAEs (like Darkness) apply only to units in combat
-				// If the unit is in a combat at the right location, then by definition it is one of the two players (either attacker or defender) and so the CAE applies
-				else if (combatAreaEffect.getCombatAreaAffectsPlayers ().equals (CombatAreaAffectsPlayersID.BOTH_PLAYERS_IN_COMBAT))
-					applies = (combatLocation != null);
-	
-				// Similarly we must be in combat for 'Opponent' CAEs to apply, and to be an 'Opponent' CAE the CAE must be in combat at the same
-				// location we are... so this simply needs us to check that we're not the caster
-				else if (combatAreaEffect.getCombatAreaAffectsPlayers ().equals (CombatAreaAffectsPlayersID.COMBAT_OPPONENT))
-					applies = ((effect.getCastingPlayerID () != unit.getOwningPlayerID ()) && (combatLocation != null));
-	
-				// 'Both' CAEs (like Darkness) and 'Opponent' CAEs (like Black Prayer) can only apply to units in combat, which Available Units can never be
 				else
-					applies = false;
+					switch (combatAreaEffect.getCombatAreaAffectsPlayers ())
+					{
+						// All is easy, either its a global CAE that affects everyone (like Chaos Surge or Eternal Night) or its a CAE in a
+						// specific location that affects everyone, whether or not they're in combat (like Node Auras)
+						case ALL_EVEN_NOT_IN_COMBAT:
+							applies = true;
+							break;
+							
+						// Spells that apply only to the caster only apply to available units if they're global (like Holy Arms)
+						// Localised spells that apply only to the caster (like Prayer or Mass Invisibility) only apply to units in combat
+						// NDG 19/6/2011 - On looking at this again I think that's highly debatable - if there was a caster only buff CAE then why
+						// wouldn't it help units in the city defend against overland attacks like Call the Void?  However I've checked, there's no
+						// City Enchantments in the original MoM that grant these kind of bonuses so its pretty irrelevant, so leaving it as it is
+						case CASTER_ONLY:
+							applies = ((effect.getCastingPlayerID () == unit.getOwningPlayerID ()) && ((combatLocation != null) || (effect.getMapLocation () == null)));
+							break;
+							
+						// 'Both' CAEs (like Darkness) apply only to units in combat
+						// If the unit is in a combat at the right location, then by definition it is one of the two players (either attacker or defender) and so the CAE applies
+						case BOTH_PLAYERS_IN_COMBAT:
+							applies = (combatLocation != null);
+							break;
+							
+						// Similarly we must be in combat for 'Opponent' CAEs to apply, and to be an 'Opponent' CAE the CAE must be in combat at the same
+						// location we are... so this simply needs us to check that we're not the caster
+						case COMBAT_OPPONENT:
+							applies = ((effect.getCastingPlayerID () != unit.getOwningPlayerID ()) && (combatLocation != null));
+							break;
+							
+						default:
+							throw new MomException ("CAE " + effect.getCombatAreaEffectID () + " has an unknown \"affects\" value: " + combatAreaEffect.getCombatAreaAffectsPlayers ());
+					}
 			}
 		}
 
@@ -388,7 +388,7 @@ public final class UnitUtilsImpl implements UnitUtils
 
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () != exceptPlayerID) && (thisUnit.getUnitLocation () != null) &&
 				(thisUnit.getUnitLocation ().getX () == x) && (thisUnit.getUnitLocation ().getY () == y) && (thisUnit.getUnitLocation ().getZ () == plane) &&
-				(canSeeUnitOverland (thisUnit, ourPlayerID, mem.getMaintainedSpell (), db)))
+				(getUnitVisibilityUtils ().canSeeUnitOverland (thisUnit, ourPlayerID, mem.getMaintainedSpell (), db)))
 
 				found = thisUnit;
 		}
@@ -504,17 +504,35 @@ public final class UnitUtilsImpl implements UnitUtils
 		final CoordinateSystem combatMapCoordinateSystem, final boolean allowTargetingVortexes)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		final MemoryUnit mu = findAliveUnitInCombatAt (mem.getUnit (), combatLocation, combatPosition, db, allowTargetingVortexes);
-		ExpandedUnitDetails xu = null;
+		ExpandedUnitDetails found = null;
+		ExpandedUnitDetails foundVortex = null;
 		
-		if (mu != null)
+		final Iterator<MemoryUnit> iter = mem.getUnit ().iterator ();
+		while ((found == null) && (iter.hasNext ()))
 		{
-			xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null, players, mem, db);
-			if (!canSeeUnitInCombat (xu, ourPlayerID, players, mem, db, combatMapCoordinateSystem))
-				xu = null;
+			final MemoryUnit thisUnit = iter.next ();
+
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (combatPosition.equals (thisUnit.getCombatPosition ())) &&
+				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
+			{
+				if (!db.getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ()))
+				{
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+					if (getUnitVisibilityUtils ().canSeeUnitInCombat (xu, ourPlayerID, players, mem, db, combatMapCoordinateSystem))
+						found = xu;
+				}
+
+				// Store vortex as secondary target, but keep searching for a normal unit too and only output this if we don't find one
+				else if (allowTargetingVortexes)
+				{
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+					if (getUnitVisibilityUtils ().canSeeUnitInCombat (xu, ourPlayerID, players, mem, db, combatMapCoordinateSystem))
+						foundVortex = xu;
+				}
+			}
 		}
-		
-		return xu;
+
+		return (found == null) ? foundVortex : found;
 	}
 	
 	/**
@@ -642,108 +660,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 	
 	/**
-	 * Whether a unit can be seen *at all* in combat.  So this isn't simply asking whether it has the Invisibility skill and whether we have
-	 * True Sight or Immunity to Illusions to negate it.  Even if a unit is invisible, we can still see it if we have one of our units adjacent to it.
-	 * 
-	 * So for a unit to be completely hidden in combat it must:
-	 * 1) not be ours AND
-	 * 2) be invisible (either natively, from Invisibility spell, or from Mass Invisible CAE) AND
-	 * 3) we must have no unit with True Sight or Immunity to Illusions AND
-	 * 4) we must have no unit adjacent to it
-	 * 
-	 * @param xu Unit present on the combat map
-	 * @param ourPlayerID Our player ID
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @return Whether we can see it or its completely hidden
-	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
-	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
-	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
-	 */
-	@Override
-	public final boolean canSeeUnitInCombat (final ExpandedUnitDetails xu, final int ourPlayerID,
-		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db,
-		final CoordinateSystem combatMapCoordinateSystem)
-		throws MomException, RecordNotFoundException, PlayerNotFoundException
-	{
-		boolean invisible = false;
-		if (xu.getOwningPlayerID () != ourPlayerID)
-		{
-			// expandUnitDetails takes care of granting invisibility spell from Mass Invisibility CAE, so we don't need to check for that here
-			for (final String invisibilitySkillkID : CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY)
-				if (xu.hasModifiedSkill (invisibilitySkillkID))
-					invisible = true;
-			
-			if (invisible)
-			{
-				final List<String> skillsThatNegateInvisibility = db.findUnitSkill
-					(CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY.get (0), "canSeeUnitInCombat").getNegatedBySkill ().stream ().filter
-						(n -> n.getNegatedByUnitID () == NegatedByUnitID.ENEMY_UNIT).map (n -> n.getNegatedBySkillID ()).collect (Collectors.toList ());
-				
-				// Look through our units who are also in the combat looking for one which has True Sight or Immunity to Illusions or is adjacent to the enemy unit
-				final Iterator<MemoryUnit> iter = mem.getUnit ().iterator ();
-				while ((invisible) && (iter.hasNext ()))
-				{
-					final MemoryUnit thisUnit = iter.next ();
-					if ((thisUnit.getOwningPlayerID () == ourPlayerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
-						(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) &&
-						(xu.getCombatLocation ().equals (thisUnit.getCombatLocation ())))
-					{
-						// Check for adjacency first since its quicker
-						if (getCoordinateSystemUtils ().determineStep2DDistanceBetween (combatMapCoordinateSystem,
-							xu.getCombatPosition (), (MapCoordinates2DEx) thisUnit.getCombatPosition ()) <= 1)
-							
-							invisible = false;
-						else
-						{
-							final ExpandedUnitDetails ourXU = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
-							for (final String negatingSkillID : skillsThatNegateInvisibility)
-								if (ourXU.hasModifiedSkill (negatingSkillID))
-									invisible = false;
-						}
-					}
-				}
-			}
-		}
-		
-		return !invisible;
-	}
-	
-	/**
-	 * Needed to test whether to draw units on the overland map.  Calling expandUnitDetails continually is too
-	 * expensive so need a quicker way to check whether units are invisible or not.
-	 * 
-	 * @param mu Unit to test
-	 * @param ourPlayerID Our player ID
-	 * @param spells Known spells
-	 * @param db Lookup lists built over the XML database
-	 * @return Whether the unit should be visible on the overland map
-	 */
-	@Override
-	public final boolean canSeeUnitOverland (final MemoryUnit mu, final int ourPlayerID, final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
-	{
-		final boolean visible;
-		
-		if (mu.getOwningPlayerID () == ourPlayerID)
-			visible = true;
-		
-		else if (mu.getUnitHasSkill ().stream ().anyMatch (s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)))
-			visible = false;
-		
-		else if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells,
-			null, null, mu.getUnitURN (), CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL, null, null) != null)
-			
-			visible = false;
-		else
-			visible = mu.getHeroItemSlot ().stream ().filter (s -> s.getHeroItem () != null).noneMatch
-				(s -> s.getHeroItem ().getHeroItemChosenBonus ().contains (db.getInvisibilityHeroItemBonusID ()));
-		
-		return visible;
-	}
-	
-	/**
 	 * @param xu Unit to test
 	 * @param unitSpellEffects List of unit skills to test
 	 * @param db Lookup lists built over the XML database
@@ -801,38 +717,6 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		return result;
 	}
-	
-	/**
-	 * @return Coordinate system utils
-	 */
-	public final CoordinateSystemUtils getCoordinateSystemUtils ()
-	{
-		return coordinateSystemUtils;
-	}
-
-	/**
-	 * @param utils Coordinate system utils
-	 */
-	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
-	{
-		coordinateSystemUtils = utils;
-	}
-
-	/**
-	 * @return MemoryMaintainedSpell utils
-	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
-	{
-		return memoryMaintainedSpellUtils;
-	}
-
-	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
-	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
-	{
-		memoryMaintainedSpellUtils = spellUtils;
-	}
 
 	/**
 	 * @return expandUnitDetails method
@@ -848,5 +732,21 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods dealing with checking whether we can see units or not
+	 */
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
+	{
+		return unitVisibilityUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with checking whether we can see units or not
+	 */
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
+	{
+		unitVisibilityUtils = u;
 	}
 }

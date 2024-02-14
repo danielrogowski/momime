@@ -18,9 +18,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -73,10 +73,10 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	/** The wizard who was banished */
 	private KnownWizardDetails banishedWizardDetails;
 	
-	/** The wizard (or raiders) who is banishing them */
+	/** The wizard (or raiders) who is banishing them; can be null */
 	private PlayerPublicDetails banishingWizard;
 	
-	/** The wizard (or raiders) who is banishing them */
+	/** The wizard (or raiders) who is banishing them; can be null */
 	private KnownWizardDetails banishingWizardDetails;
 	
 	/** If false, the wizard still has at least 1 more city so they can try to cast Spell of Return.  If true, the wizard has no cities left and they are out of the game. */
@@ -124,8 +124,9 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		// Having a pic for the banishing wizard is optional, as there's some mobs shown too so can just show them like raiders if nothing else.
 		banishedWizardDef = getClient ().getClientDB ().findWizard (getBanishedWizardDetails ().getStandardPhotoID (), "WizardBanishedUI (A)");
 		
-		banishingWizardDef = (getBanishingWizardDetails ().getStandardPhotoID () == null) ? null :
-			getClient ().getClientDB ().findWizard (getBanishingWizardDetails ().getStandardPhotoID (), "WizardBanishedUI (B)");
+		banishingWizardDef = null;
+		if ((getBanishingWizardDetails () != null) && (getBanishingWizardDetails ().getStandardPhotoID () != null))
+			banishingWizardDef = getClient ().getClientDB ().findWizard (getBanishingWizardDetails ().getStandardPhotoID (), "WizardBanishedUI (B)");
 		
 		// Raiders do have a standardPhotoID, but no images
 		if ((banishingWizardDef != null) && (banishingWizardDef.getBanishingImageFile () == null))
@@ -322,14 +323,19 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	public final void languageChanged ()
 	{
 		final List<LanguageText> languageText;
-		if (getPlayerKnowledgeUtils ().isWizard (getBanishingWizardDetails ().getWizardID ()))
+		if (getBanishingWizardDetails () == null)
+			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByNobody () : getLanguages ().getWizardBanishedScreen ().getBanishedByNobody ();
+		else if (getPlayerKnowledgeUtils ().isWizard (getBanishingWizardDetails ().getWizardID ()))
 			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
 		else
 			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
 		
-		final String title = getLanguageHolder ().findDescription (languageText).replaceAll
-			("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (getBanishedWizard ())).replaceAll
-			("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (getBanishingWizard ()));
+		String title = getLanguageHolder ().findDescription (languageText).replaceAll
+			("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (getBanishedWizard ()));
+		
+		if (getBanishingWizard () != null)
+			title = title.replaceAll
+				("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (getBanishingWizard ()));
 		
 		getDialog ().setTitle (title);
 		titleLabel.setText (title);
@@ -464,7 +470,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	}
 	
 	/**
-	 * @return The wizard (or raiders) who is banishing them
+	 * @return The wizard (or raiders) who is banishing them; can be null
 	 */
 	public final PlayerPublicDetails getBanishingWizard ()
 	{
@@ -472,7 +478,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	}
 	
 	/**
-	 * @param w The wizard (or raiders) who is banishing them
+	 * @param w The wizard (or raiders) who is banishing them; can be null
 	 */
 	public final void setBanishingWizard (final PlayerPublicDetails w)
 	{
@@ -480,7 +486,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return The wizard (or raiders) who is banishing them
+	 * @return The wizard (or raiders) who is banishing them; can be null
 	 */
 	public final KnownWizardDetails getBanishingWizardDetails ()
 	{
@@ -488,7 +494,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @param w The wizard (or raiders) who is banishing them
+	 * @param w The wizard (or raiders) who is banishing them; can be null
 	 */
 	public final void setBanishingWizardDetails (final KnownWizardDetails w)
 	{

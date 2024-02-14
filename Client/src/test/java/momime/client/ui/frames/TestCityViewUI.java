@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +18,14 @@ import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -39,7 +42,6 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityProductionCalculations;
-import momime.common.database.Building;
 import momime.common.database.CitySize;
 import momime.common.database.CityViewElement;
 import momime.common.database.CommonDatabase;
@@ -80,7 +82,7 @@ public final class TestCityViewUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
-
+		
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
@@ -120,6 +122,15 @@ public final class TestCityViewUI extends ClientTestData
 		granaryGfx.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
 		when (db.findCityViewElementBuilding (eq ("BL01"), anyString ())).thenReturn (granaryGfx);
 		
+		// Image sizing
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		for (final RacePopulationTask racePopulationTask : race.getRacePopulationTask ())
+		{
+			final BufferedImage originalSize = utils.loadImage (racePopulationTask.getCivilianImageFile ());
+			final Image doubleSize = originalSize.getScaledInstance (originalSize.getWidth () * 2, originalSize.getHeight () * 2, Image.SCALE_FAST);
+			when (cache.doubleSize (racePopulationTask.getCivilianImageFile ())).thenReturn (doubleSize);
+		}
+		
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
 		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
@@ -131,6 +142,7 @@ public final class TestCityViewUI extends ClientTestData
 		cityScreenLang.getBuildings ().add (createLanguageText (Language.ENGLISH, "Buildings"));
 		cityScreenLang.getUnits ().add (createLanguageText (Language.ENGLISH, "Units"));
 		cityScreenLang.getProduction ().add (createLanguageText (Language.ENGLISH, "Producing"));
+		cityScreenLang.getProductionTurns ().add (createLanguageText (Language.ENGLISH, "NUMBER_OF_TURNS Turns"));
 		
 		cityScreenLang.getRushBuy ().add (createLanguageText (Language.ENGLISH, "Buy"));
 		cityScreenLang.getChangeConstruction ().add (createLanguageText (Language.ENGLISH, "Change"));
@@ -147,16 +159,6 @@ public final class TestCityViewUI extends ClientTestData
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
-		
-		// Client DB
-		if (ourCity)
-		{
-			final Building granary = new Building ();
-			granary.setProductionCost (200);
-			when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (granary);
-		}
-		
-		when (db.getMostExpensiveConstructionCost ()).thenReturn (1000);
 		
 		// City data
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
@@ -206,6 +208,13 @@ public final class TestCityViewUI extends ClientTestData
 			when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Jafar");
 		}
 				
+		// Production cost
+		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
+		if (ourCity)
+			when (prod.calculateProductionCost (players, fow, new MapCoordinates3DEx (20, 10, 0), "TR01", sd, null, db, null)).thenReturn (200);
+		
+		when (db.getMostExpensiveConstructionCost ()).thenReturn (1000);
+		
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setSeeEnemyCityConstruction (seeEnemyCityConstruction);
@@ -223,8 +232,6 @@ public final class TestCityViewUI extends ClientTestData
 		when (client.getPlayers ()).thenReturn (players);
 		
 		// City production
-		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		
 		final int maxCitySize = 20;
 		
 		final CityProductionBreakdown maxCitySizeProd = new CityProductionBreakdown ();
@@ -253,6 +260,10 @@ public final class TestCityViewUI extends ClientTestData
 		final CityGrowthRateBreakdown cityGrowthBreakdown = new CityGrowthRateBreakdown ();
 		cityGrowthBreakdown.setCappedTotal (70);
 		when (calc.calculateCityGrowthRate (players, fow, new MapCoordinates3DEx (20, 10, 0), maxCitySize, difficultyLevel, db)).thenReturn (cityGrowthBreakdown);
+		
+		final ClientCityCalculations clientCityCalculations = mock (ClientCityCalculations.class);
+		if (ourCity)
+			when (clientCityCalculations.calculateProductionTurnsRemaining (new MapCoordinates3DEx (20, 10, 0))).thenReturn (17);
 		
 		// Display at least some landscape
 		final CityViewElement landscape = new CityViewElement ();
@@ -301,12 +312,14 @@ public final class TestCityViewUI extends ClientTestData
 		// Set up form
 		final CityViewUI cityView = new CityViewUI ();
 		cityView.setUtils (utils);
+		cityView.setModifiedImageCache (cache);
 		cityView.setLanguageHolder (langHolder);
 		cityView.setLanguageChangeMaster (langMaster);
 		cityView.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		cityView.setCityViewPanel (panel);
 		cityView.setClient (client);
 		cityView.setCityCalculations (calc);
+		cityView.setClientCityCalculations (clientCityCalculations);
 		cityView.setCityProductionCalculations (prod);
 		cityView.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		cityView.setWizardClientUtils (wizardClientUtils);
@@ -314,7 +327,7 @@ public final class TestCityViewUI extends ClientTestData
 		cityView.setOverlandMapBitmapGenerator (gen);
 		cityView.setTextUtils (new TextUtilsImpl ());
 		cityView.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		cityView.setOverlandMapUI (new OverlandMapUI ());		// Just to read the zero anim counter
+		cityView.setOverlandMapUI (mock (OverlandMapUI.class));
 		cityView.setResourceValueClientUtils (resourceValueClientUtils);
 		cityView.setMemoryMaintainedSpellListCellRenderer (spellsRenderer);
 		cityView.setSmallFont (CreateFontsForTests.getSmallFont ());

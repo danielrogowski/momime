@@ -78,8 +78,14 @@ Other wizards' records we are only sent when we learn who they are.</xsd:documen
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="knownWizardDetails" type="momimemsgs:knownWizardDetails" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="knownWizardDetails" type="momimemsgs:diplomacyWizardDetails" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="showAnimation" type="xsd:boolean" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="visibleRelationScoreID" type="momimecommon:relationScoreID">
+						    <xsd:annotation>
+		  						<xsd:documentation>The relation values inside knownWizardDetails are our opinion of the wizard being met.
+visibleRelation is their opinion of us, so the UI knows how red or green to draw the gargoyle eyes.  Unnecessary if showAnimation is not true.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -1447,7 +1453,7 @@ So this is what drives the Spell of Return animation on the client, not the AddB
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="banishingPlayerID" type="mps:playerID">
 						    <xsd:annotation>
-	  							<xsd:documentation>The wizard who is doing the banishing.  May be raiders.  Omitted for spell of return.</xsd:documentation>
+	  							<xsd:documentation>The wizard who is doing the banishing.  May be raiders.  Omitted for spell of return or if the wizard banished themselves by being in a shrinking outpost.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
@@ -1600,6 +1606,104 @@ Exception to this is if conjunction is true, it tells the client to update (or c
 						<xsd:element minOccurs="1" maxOccurs="1" name="ending" type="xsd:boolean" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackCitySpellResult" type="momimestoc:attackCitySpellResult" />
 					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+<!-- Diplomacy, new for 1.4 -->
+
+	<xsd:element name="diplomacyMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Notifying a player of a proposal, offer or demand to another wizard, the exact nature of which is set by the action value.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="talkFromPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="action" type="momimemsgs:diplomacyAction" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="visibleRelationScoreID" type="momimecommon:relationScoreID">
+						    <xsd:annotation>
+		  						<xsd:documentation>For human players, only set on initiating talking.  AI players can send this with every response, if you propose something that makes them happy/mad.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
+						<xsd:element minOccurs="0" maxOccurs="1" name="otherPlayerID" type="mps:playerID">
+						    <xsd:annotation>
+		  						<xsd:documentation>Required for PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD and PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
+						<xsd:element minOccurs="0" maxOccurs="1" name="offerGoldAmount" type="momimecommon:undoubledProductionValue">
+						    <xsd:annotation>
+		  						<xsd:documentation>Required for OFFER_GOLD.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>
+		  				<xsd:element minOccurs="0" maxOccurs="1" name="offerSpellID" type="momimecommon:spellID">
+						    <xsd:annotation>
+		  						<xsd:documentation>Required for OFFER_SPELL and PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
+		  				<xsd:element minOccurs="0" maxOccurs="1" name="requestSpellID" type="momimecommon:spellID">
+						    <xsd:annotation>
+		  						<xsd:documentation>Required for PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
+						<xsd:element minOccurs="0" maxOccurs="1" name="cityName" type="momimecommon:description">
+						    <xsd:annotation>
+		  						<xsd:documentation>The city they're mad about might already have been destroyed so need to include its name.</xsd:documentation>
+		  					</xsd:annotation>
+						</xsd:element>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="pactMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Updates the pact between two wizards.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="updatePlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="pactPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="pactType" type="momimemsgs:pactType" />
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="tradeableSpellsMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>During diplomacy, we can try to give a spell to another player, or try to trade spells with another player.
+This message tells the client which spells they know and which the other wizard can learn.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="talkFromPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="action" type="momimemsgs:diplomacyAction">
+						    <xsd:annotation>
+		  						<xsd:documentation>The action that we need the tradeable spell list for - either GIVE_SPELL, GIVE_SPELL_BECAUSE_THREATENED or PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
+		  					</xsd:annotation>
+						</xsd:element>
+		  				<xsd:element minOccurs="0" maxOccurs="1" name="requestSpellID" type="momimecommon:spellID">
+						    <xsd:annotation>
+		  						<xsd:documentation>If PROPOSE_EXCHANGE_SPELL and requestSpellID isn't filled in, then its the proposer picking the spell they want from the other wizard.
+If requestSpellID is filled in, message is being sent to the other wizard to see what spell they'll offer in return.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="tradeableSpellID" type="momimecommon:spellID">
+						    <xsd:annotation>
+		  						<xsd:documentation>If action is GIVE_SPELL or GIVE_SPELL_BECAUSE_THREATENED then this is a list of spells we can give to the other wizard.
+If action is PROPOSE_EXCHANGE_SPELL then this is a list of spells we can request that the other wizard gives to us.</xsd:documentation>
+		  					</xsd:annotation>
+						</xsd:element>
+		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
 		</xsd:complexType>

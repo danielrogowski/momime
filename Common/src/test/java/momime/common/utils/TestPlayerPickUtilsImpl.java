@@ -95,6 +95,34 @@ public final class TestPlayerPickUtilsImpl
 	}
 
 	/**
+	 * Tests the getOriginalQuantityOfPick method
+	 */
+	@Test
+	public final void testGetOriginalQuantityOfPick ()
+	{
+		// Set up pick list
+		final PlayerPick pickOne = new PlayerPick ();
+		pickOne.setPickID ("A");
+		pickOne.setOriginalQuantity (1);
+
+		final PlayerPick pickTwo = new PlayerPick ();
+		pickTwo.setPickID ("B");
+		pickTwo.setOriginalQuantity (8);
+		
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		picks.add (pickOne);
+		picks.add (pickTwo);
+
+		// Set up object to test
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl ();
+		
+		// Run method
+		assertEquals (1, utils.getOriginalQuantityOfPick (picks, "A"));
+		assertEquals (8, utils.getOriginalQuantityOfPick (picks, "B"));
+		assertEquals (0, utils.getOriginalQuantityOfPick (picks, "C"));
+	}
+
+	/**
 	 * Tests the updatePickQuantity method
 	 */
 	@Test

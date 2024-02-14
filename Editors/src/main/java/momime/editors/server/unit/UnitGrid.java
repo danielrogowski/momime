@@ -14,11 +14,11 @@ import javax.swing.filechooser.FileFilter;
 
 import org.jdom2.Element;
 
-import com.ndg.swing.GridBagConstraintsHorizontalFill;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
+import com.ndg.utils.swing.GridBagConstraintsHorizontalFill;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
 

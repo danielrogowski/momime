@@ -8,15 +8,15 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MapAreaOfCombatTiles;
-import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellTargetingUtils;
 
 /**
  * Methods for working with spells that are only needed on the client
  */
 public final class MemoryMaintainedSpellClientUtilsImpl implements MemoryMaintainedSpellClientUtils
 {
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -43,7 +43,7 @@ public final class MemoryMaintainedSpellClientUtilsImpl implements MemoryMaintai
 			int x = 0;
 			while ((!found) && (x < combatMapCoordinateSystem.getWidth ()))
 			{
-				if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (x, y), map, getClient ().getClientDB ()))
+				if (getSpellTargetingUtils ().isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (x, y), map, getClient ().getClientDB ()))
 					found = true;
 				else
 					x++;
@@ -55,19 +55,19 @@ public final class MemoryMaintainedSpellClientUtilsImpl implements MemoryMaintai
 	}
 
 	/**
-	 * @return MemoryMaintainedSpell utils
+	 * @return Methods that determine whether something is a valid target for a spell
 	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final SpellTargetingUtils getSpellTargetingUtils ()
 	{
-		return memoryMaintainedSpellUtils;
+		return spellTargetingUtils;
 	}
 
 	/**
-	 * @param su MemoryMaintainedSpell utils
+	 * @param s Methods that determine whether something is a valid target for a spell
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils su)
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
 	{
-		memoryMaintainedSpellUtils = su;
+		spellTargetingUtils = s;
 	}
 
 	/**

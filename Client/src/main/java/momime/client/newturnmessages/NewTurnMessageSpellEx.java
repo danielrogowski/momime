@@ -11,6 +11,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -20,15 +22,17 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.SpellBookNewUI;
 import momime.client.ui.frames.WizardsUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.client.utils.WizardClientUtils;
 import momime.common.database.LanguageText;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -38,7 +42,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
@@ -64,7 +68,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	private MomClient client;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
@@ -99,11 +103,17 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -206,6 +216,9 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 						}
 						else if (getTargetedPlayerID () != null)
 						{
+							final PlayerPublicDetails targetedPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTargetedPlayerID ());
+							if (targetedPlayer != null)
+								target = getWizardClientUtils ().getPlayerName (targetedPlayer);
 						}
 
 						// Do we know name for the target?
@@ -305,6 +318,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 			// Finished researching a spell, so open up spell book to pick another one
 			case RESEARCHED_SPELL:
 				getSpellBookUI ().setVisible (true);
+				getSpellBookUI ().showSection (SpellBookSectionID.RESEARCHABLE_NOW);
 				break;
 		
 			// Cast a city/unit enchantment/curse, so need to pick a target for it
@@ -322,6 +336,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 					{
 						// Disjunction type spell that targets an overland enchantment rather than something on the map
 						case DISPEL_OVERLAND_ENCHANTMENTS:
+						case SPELL_BINDING:
 						{
 							getMagicSlidersUI ().setTargetingSpell (spell);
 							getMagicSlidersUI ().setVisible (true);
@@ -354,7 +369,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 								final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 									getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 								
-								if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+								if (getSpellTargetingUtils ().isUnitValidTargetForSpell
 									(spell, null, null, null, getClient ().getOurPlayerID (), null, null, xu, true,
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (),
@@ -475,7 +490,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -483,7 +498,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}
@@ -673,19 +688,19 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	}
 
 	/**
-	 * @return MemoryMaintainedSpell utils
+	 * @return Methods that determine whether something is a valid target for a spell
 	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final SpellTargetingUtils getSpellTargetingUtils ()
 	{
-		return memoryMaintainedSpellUtils;
+		return spellTargetingUtils;
 	}
 
 	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
+	 * @param s Methods that determine whether something is a valid target for a spell
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
 	{
-		memoryMaintainedSpellUtils = spellUtils;
+		spellTargetingUtils = s;
 	}
 
 	/**
@@ -702,5 +717,37 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

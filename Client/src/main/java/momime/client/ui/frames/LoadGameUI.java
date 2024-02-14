@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +22,10 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.multiplayer.sessionbase.SavedGamePoint;
 import com.ndg.multiplayer.sessionbase.SavedGameSession;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.utils.DateFormats;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
@@ -507,12 +508,14 @@ public final class LoadGameUI extends MomClientFrameUI
 					value = players.toString ();
 					break;
 
+				// XML dates/times only hold a UTC offset, not a real time zone, any in any case we want to display the date/time in the user's current timezone
+				// and not whatever happened to be saved in the XML.  So "Instant" is the correct conversion from an XMLGregorianCalendar for this reason.
 				case 2:
-					value = DateFormats.FULL_DATE_TIME_FORMAT.format (sd.getStartedAt ().toGregorianCalendar ().getTime ());
+					value = DateFormats.FULL_DATE_TIME_FORMAT.format (sd.getStartedAt ().toGregorianCalendar ().toInstant ().atZone (ZoneId.systemDefault ()));
 					break;
 					
 				case 3:
-					value = DateFormats.FULL_DATE_TIME_FORMAT.format (savedGame.getLatestSavedAt ().toGregorianCalendar ().getTime ()) +
+					value = DateFormats.FULL_DATE_TIME_FORMAT.format (savedGame.getLatestSavedAt ().toGregorianCalendar ().toInstant ().atZone (ZoneId.systemDefault ())) +
 						", Turn " + savedGame.getLatestSavedGameIdentifier ();
 					break;
 					
@@ -582,7 +585,7 @@ public final class LoadGameUI extends MomClientFrameUI
 			switch (columnIndex)
 			{
 				case 0:
-					value = DateFormats.FULL_DATE_TIME_FORMAT.format (savePoint.getSavedAt ().toGregorianCalendar ().getTime ());
+					value = DateFormats.FULL_DATE_TIME_FORMAT.format (savePoint.getSavedAt ().toGregorianCalendar ().toInstant ().atZone (ZoneId.systemDefault ()));
 					break;
 
 				case 1:

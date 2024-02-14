@@ -92,7 +92,10 @@ public final class TestSwitchOffSpellUpdate
 				
 				// Need to make the spell lists unique for verify to work correctly
 				final FogOfWarMemory fow = new FogOfWarMemory ();
-				fow.getMaintainedSpell ().add (new MemoryMaintainedSpell ());
+				final MemoryMaintainedSpell playerCopyOfSpell = new MemoryMaintainedSpell ();
+				fow.getMaintainedSpell ().add (playerCopyOfSpell);
+				
+				when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), fow.getMaintainedSpell ())).thenReturn (playerCopyOfSpell);
 				
 				final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 				priv.setFogOfWarMemory (fow);

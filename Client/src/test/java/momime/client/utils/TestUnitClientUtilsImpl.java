@@ -29,9 +29,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
+import com.ndg.utils.swing.ModifiedImageCacheImpl;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
@@ -553,11 +554,15 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		anim.setUtils (utils);
 		
 		// Image generator
+		final ModifiedImageCacheImpl cache = new ModifiedImageCacheImpl ();
+		cache.setUtils (utils);
+		
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
 		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		gen.setKnownWizardUtils (knownWizardUtils);
+		gen.setModifiedImageCache (cache);
 		
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
@@ -582,11 +587,11 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 					zOrderGraphics.setGraphics (g);
 					
 					final int y = 40;
-					unitUtils.drawUnitFigures ("UN106", 1, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN075", 1, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN035", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN197", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN037", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null, null);
+					unitUtils.drawUnitFigures ("UN106", 1, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0);
+					unitUtils.drawUnitFigures ("UN075", 1, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0);
+					unitUtils.drawUnitFigures ("UN035", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0);
+					unitUtils.drawUnitFigures ("UN197", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0);
+					unitUtils.drawUnitFigures ("UN037", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null, null, false, 0);
 				}
 				catch (final IOException e)
 				{

@@ -15,7 +15,7 @@ import javax.swing.ListCellRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
+import com.ndg.utils.swing.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -84,7 +84,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnit
 					{
 						zOrderGraphics.setGraphics (g);
 						final String movingActionID = getUnitCalculations ().determineCombatActionID (unit, true, getClient ().getClientDB ());
-						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 0, PANEL_SIZE.height - 32, true, true, 0, null, null);
+						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 0, PANEL_SIZE.height - 32, true, true, 0, null, null, false);
 					}
 					catch (final Exception e)
 					{

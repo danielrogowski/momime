@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -28,10 +29,11 @@ import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionAmountBucketID;
-import momime.common.database.Race;
+import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
@@ -114,6 +116,9 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
+	
 	/**
 	 * @param breakdown Results of unrest calculation
 	 * @return Readable calculation details
@@ -372,7 +377,12 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		
 		// Production from population irrespective of what task they're performing (taxes)
 		if (calc.getDoubleProductionAmountAllPopulation () > 0)
+		{
 			productionBeforeBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldFromTaxes ())));
+			
+			if (calc.getRaceTaxIncomeMultiplier () > 1)
+				productionBeforeBreakdowns.add (INDENT + getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldFromTaxesAfterMultiplier ())));
+		}
 		
 		// Consumption from population irrespective of what task they're performing (eating rations)
 		if (calc.getConsumptionAmountAllPopulation () > 0)
@@ -691,10 +701,11 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		
 		try
 		{
-			final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "describeWhatBuildingAllows");
+			final RaceEx race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "describeWhatBuildingAllows");
+			final List<String> cannotBuild = race.getRaceCannotBuildFullList (getClient ().getClientDB ());
 		
 			// Buildings
-			for (final momime.common.database.Building building : getClient ().getClientDB ().getBuilding ())
+			for (final Building building : getClient ().getClientDB ().getBuilding ())
 			
 				// Don't list buildings we already have
 				if (getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), cityLocation, building.getBuildingID ()) == null)
@@ -706,23 +717,13 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 						if (iter.next ().equals (buildingID))
 							prereq = true;
 				
-					if (prereq)
+					if ((prereq) && (!cannotBuild.contains (building.getBuildingID ())))
 					{
-						// Check the city's race can build it
-						boolean canBuild = true;
-						final Iterator<String> cannot = race.getRaceCannotBuild ().iterator ();
-						while ((canBuild) && (cannot.hasNext ()))
-							if (cannot.next ().equals (building.getBuildingID ()))
-								canBuild = false;
+						// Got one!
+						if (allows.length () > 0)
+							allows.append (", ");
 					
-						if (canBuild)
-						{
-							// Got one!
-							if (allows.length () > 0)
-								allows.append (", ");
-						
-							allows.append (getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (building.getBuildingID (), "describeWhatBuildingAllows").getBuildingName ()));
-						}
+						allows.append (getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (building.getBuildingID (), "describeWhatBuildingAllows").getBuildingName ()));
 					}
 				}
 
@@ -743,8 +744,9 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 						if (iter.next ().equals (buildingID))
 							prereq = true;
 				
-					if (prereq)
-					{
+					// Make sure none of the OTHER pre-requisite buildings are ones this race cannot build
+					if ((prereq) && (unit.getUnitPrerequisite ().stream ().noneMatch (r -> cannotBuild.contains (r))))
+					{						
 						// Got one!
 						if (allows.length () > 0)
 							allows.append (", ");
@@ -776,7 +778,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		
-		final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "listBuildingsCityCanConstruct");
+		final RaceEx race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "listBuildingsCityCanConstruct");
 		
 		final List<Building> buildList = new ArrayList<Building> ();
 		for (final Building thisBuilding : getClient ().getClientDB ().getBuilding ())
@@ -823,41 +825,34 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
-		final Building buildingDef = (cityData.getCurrentlyConstructingBuildingID () == null) ? null :
-			getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "showRushBuyPrompt");
-		
-		Integer productionCost = null;
-		if (buildingDef != null)
-			productionCost = buildingDef.getProductionCost ();
-		else if (cityData.getCurrentlyConstructingUnitID () != null)
-			productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "showRushBuyPrompt").getProductionCost ();
-
-		if (productionCost != null)
-		{
-			final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
-			text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
-		}
-		
-		// Work out remainder of description
-		if (buildingDef != null)
-			text = text.replaceAll ("A_UNIT_NAME", getLanguageHolder ().findDescription (buildingDef.getBuildingName ()));
-
-		else if (cityData.getCurrentlyConstructingUnitID () != null)
-		{
-			final AvailableUnit unit = new AvailableUnit ();
-			unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
-			
-			final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null,
-				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-			getUnitStatsReplacer ().setUnit (xu);
-
-			text = getUnitStatsReplacer ().replaceVariables (text);
-		}
+		final Integer productionCost = getCityProductionCalculations ().calculateProductionCost (getClient ().getPlayers (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), cityLocation,
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+			getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), getClient ().getClientDB (), null);
 		
 		if (productionCost != null)
 		{
 			final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
 			text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
+		
+			// Work out remainder of description
+			if (cityData.getCurrentlyConstructingBuildingID () != null)
+			{
+				final Building buildingDef = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "showRushBuyPrompt");
+				text = text.replaceAll ("A_UNIT_NAME", getLanguageHolder ().findDescription (buildingDef.getBuildingName ()));
+			}
+	
+			else if (cityData.getCurrentlyConstructingUnitID () != null)
+			{
+				final AvailableUnit unit = new AvailableUnit ();
+				unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
+				
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null,
+					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				getUnitStatsReplacer ().setUnit (xu);
+	
+				text = getUnitStatsReplacer ().replaceVariables (text);
+			}
 		
 			// Now show the message
 			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
@@ -867,7 +862,55 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			msg.setVisible (true);
 		}
 	}
+	
+	/**
+	 * @param cityLocation Location of city to check
+	 * @return Number of turns it will take to finish current construction project; null if set to Housing, Trade Goods, generating no production or a value cannot be calculated for some other reason
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
+	 */
+	@Override
+	public final Integer calculateProductionTurnsRemaining (final MapCoordinates3DEx cityLocation)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		Integer productionTurnsRemaining = null;
 		
+		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		if (cityData != null)
+		{
+			Integer productionCost = getCityProductionCalculations ().calculateProductionCost (getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), cityLocation,
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+				getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), getClient ().getClientDB (), null);
+				
+			if (productionCost != null)
+			{
+				if (cityData.getProductionSoFar () != null)
+					productionCost = productionCost - cityData.getProductionSoFar ();
+				
+				// How much production do we generate each turn?
+				final int productionEachTurn = getCityCalculations ().calculateSingleCityProduction (getClient ().getPlayers (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), cityLocation,
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+					getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, getClient ().getClientDB (),
+					CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+					
+				if (productionEachTurn > 0)
+				{
+					// Even if we've rush bought it, show 1 not 0
+					if (productionCost <= 0)
+						productionTurnsRemaining = 1;
+					else
+						productionTurnsRemaining = (productionCost + productionEachTurn - 1) / productionEachTurn;
+				}
+			}
+		}
+		
+		return productionTurnsRemaining;
+	}
+	
 	/**
 	 * @return Multiplayer client
 	 */
@@ -1099,5 +1142,21 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
 	}
 }

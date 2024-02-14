@@ -74,7 +74,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		tu.setUnitID ("UN001");
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit (), "KillUnitUpdate (tu)")).thenReturn (tu);
+		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit ())).thenReturn (tu);
 		
 		// Player who owns the unit
 		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);
@@ -266,7 +266,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		tu.setUnitID ("UN001");
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit (), "KillUnitUpdate (tu)")).thenReturn (tu);
+		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit ())).thenReturn (tu);
 		
 		// Player who owns the unit
 		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);
@@ -465,7 +465,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		tu.setUnitID ("UN001");
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit (), "KillUnitUpdate (tu)")).thenReturn (tu);
+		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit ())).thenReturn (tu);
 		
 		// Player who owns the unit
 		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);
@@ -657,7 +657,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		tu.setUnitID ("UN001");
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit (), "KillUnitUpdate (tu)")).thenReturn (tu);
+		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit ())).thenReturn (tu);
 		
 		// Player who owns the unit
 		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);
@@ -848,7 +848,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		tu.setUnitID ("UN001");
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit (), "KillUnitUpdate (tu)")).thenReturn (tu);
+		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit ())).thenReturn (tu);
 		
 		// Player who owns the unit
 		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);
@@ -1040,7 +1040,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		tu.setUnitID ("UN001");
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit (), "KillUnitUpdate (tu)")).thenReturn (tu);
+		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit ())).thenReturn (tu);
 		
 		// Player who owns the unit
 		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);
@@ -1237,7 +1237,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		tu.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit (), "KillUnitUpdate (tu)")).thenReturn (tu);
+		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit ())).thenReturn (tu);
 		
 		// Player who owns the unit
 		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);
@@ -1485,7 +1485,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		tu.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit (), "KillUnitUpdate (tu)")).thenReturn (tu);
+		when (unitUtils.findUnitURN (tu.getUnitURN (), trueMap.getUnit ())).thenReturn (tu);
 		
 		// Player who owns the unit
 		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);

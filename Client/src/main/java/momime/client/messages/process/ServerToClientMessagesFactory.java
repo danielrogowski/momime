@@ -350,4 +350,19 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public RandomEventMessageImpl createRandomEventMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
+	public DiplomacyMessageImpl createDiplomacyMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
+	public PactMessageImpl createPactMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public TradeableSpellsMessageImpl createTradeableSpellsMessage ();
 }

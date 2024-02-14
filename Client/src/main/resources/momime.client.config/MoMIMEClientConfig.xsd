@@ -45,17 +45,47 @@
 						<xsd:documentation>True to use the full terrain tileset so e.g. ridges and dark areas run together; false to use only "blocky" combat tiles.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
+				<xsd:element minOccurs="1" maxOccurs="1" name="newShadows" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>True use new separate shadow images; false to use original unit images that have shadows as part of the image.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
 				
 				<!-- Unit info display options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="showHeroPortraits" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="displayUnitSkillsAsAttributes" type="momimecommon:unitSkillTypeID" />
+
+				<!-- Spell book display options -->
+				<xsd:element minOccurs="1" maxOccurs="1" name="spellBookViewMode" type="momimecltconfig:spellBookViewMode" />
 				
 				<!-- Debug options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="debugShowURNs" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="debugShowEdgesOfMap" type="xsd:boolean" />
+
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="windowPosition" type="momimecltconfig:windowPosition" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+
+	<xsd:complexType name="windowPosition">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="left" type="xsd:int" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="top" type="xsd:int" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="width" type="xsd:int">
+				<xsd:annotation>
+					<xsd:documentation>Only for windows that are resizeable, which is basically OverlandMapUI and that's it.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="height" type="xsd:int" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="visible" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>Ommitted for windows where the game flow controls whether the window is opened or not rather than the player
+(OverlandMapUI, CombatUI, CreateArtifactUI, DiplomacyUI).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="windowID" type="momimecltconfig:windowID" use="required" />
+	</xsd:complexType>
 
 	<xsd:simpleType name="path">
 		<xsd:restriction base="xsd:normalizedString" />
@@ -65,4 +95,32 @@
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 
+	<xsd:simpleType name="windowID">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="OVERLAND_MAP" />
+			<xsd:enumeration value="TAX_RATE" />
+			<xsd:enumeration value="MAGIC_SLIDERS" />
+			<xsd:enumeration value="ALCHEMY" />
+			<xsd:enumeration value="SPELL_BOOK" />
+			<xsd:enumeration value="QUEUED_SPELLS" />
+			<xsd:enumeration value="CITIES" />
+			<xsd:enumeration value="NEW_TURN_MESSAGES" />
+			<xsd:enumeration value="ADVISORS" />
+			<xsd:enumeration value="COMBAT" />
+			<xsd:enumeration value="DAMAGE_CALCULATIONS" />
+			<xsd:enumeration value="WIZARDS" />
+			<xsd:enumeration value="CREATE_ARTIFACT" />
+			<xsd:enumeration value="HERO_ITEMS" />
+			<xsd:enumeration value="HISTORY" />
+			<xsd:enumeration value="DIPLOMACY" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="spellBookViewMode">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="STANDARD" />
+			<xsd:enumeration value="COMPACT" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
 </xsd:schema>

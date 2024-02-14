@@ -5,15 +5,18 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.image.BufferedImage;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
@@ -62,6 +65,8 @@ public final class TestHeroItemsUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
@@ -87,7 +92,14 @@ public final class TestHeroItemsUI extends ClientTestData
 
 		final HeroItemType itemType = new HeroItemType ();
 		for (int n = 1; n <= 4; n++)
-			itemType.getHeroItemTypeImageFile ().add ("/momime.client.graphics/heroItems/items/sword-0" + n + ".png");
+		{
+			final String itemTypeImageFilename = "/momime.client.graphics/heroItems/items/sword-0" + n + ".png";
+			itemType.getHeroItemTypeImageFile ().add (itemTypeImageFilename);
+			
+			final BufferedImage originalSize = utils.loadImage (itemTypeImageFilename);
+			final Image doubleSize = originalSize.getScaledInstance (originalSize.getWidth () * 2, originalSize.getHeight () * 2, Image.SCALE_FAST);
+			when (cache.doubleSize (itemTypeImageFilename)).thenReturn (doubleSize);
+		}
 		
 		when (db.findHeroItemType (eq ("IT01"), anyString ())).thenReturn (itemType);
 		
@@ -98,9 +110,15 @@ public final class TestHeroItemsUI extends ClientTestData
 			
 			final HeroItemSlotType slot = new HeroItemSlotType ();
 			slot.setHeroItemSlotTypeImageFile ("/momime.client.graphics/heroItems/slots/" + slotImageFilename + ".png");
-			
+
 			if (slotTypeNumber != 1)
+			{
 				when (db.findHeroItemSlotType ("IST0" + slotTypeNumber, "HeroTableCellRenderer")).thenReturn (slot);
+
+				final BufferedImage originalSize = utils.loadImage (slot.getHeroItemSlotTypeImageFile ());
+				final Image doubleSize = originalSize.getScaledInstance (originalSize.getWidth () * 2, originalSize.getHeight () * 2, Image.SCALE_FAST);
+				when (cache.doubleSize (slot.getHeroItemSlotTypeImageFile ())).thenReturn (doubleSize);
+			}
 		}
 		
 		// Mock entries from the language XML
@@ -195,6 +213,7 @@ public final class TestHeroItemsUI extends ClientTestData
 		final UnassignedHeroItemCellRenderer cellRenderer = new UnassignedHeroItemCellRenderer ();
 		cellRenderer.setUnassignedHeroItemLayout (cellLayout);
 		cellRenderer.setUtils (utils);
+		cellRenderer.setModifiedImageCache (cache);
 		cellRenderer.setClient (client);
 		cellRenderer.setMediumFont (CreateFontsForTests.getMediumFont ());
 		
@@ -202,6 +221,7 @@ public final class TestHeroItemsUI extends ClientTestData
 		final HeroTableCellRenderer tableRenderer = new HeroTableCellRenderer ();
 		tableRenderer.setHeroLayout (tableLayout);
 		tableRenderer.setUtils (utils);
+		tableRenderer.setModifiedImageCache (cache);
 		tableRenderer.setMediumFont (CreateFontsForTests.getMediumFont ());
 		tableRenderer.setUnitClientUtils (unitClientUtils);
 		tableRenderer.setClient (client);

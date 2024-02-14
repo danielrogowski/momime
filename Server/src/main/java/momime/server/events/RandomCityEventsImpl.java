@@ -16,7 +16,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -106,7 +106,7 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 
 		final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-		if ((cityData != null) && (cityData.getCityOwnerID () == cityOwnerID) && (cityData.getCityPopulation () >= 1000))
+		if ((cityData != null) && (cityData.getCityOwnerID () == cityOwnerID))
 		{
 			// Do we need to make sure there's a mineral in the area?  Depletion
 			if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_DEPLETION))

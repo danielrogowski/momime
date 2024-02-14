@@ -1,5 +1,6 @@
 package momime.client.ui.frames;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -26,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
@@ -63,13 +65,13 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.NewSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.filefilters.ExtensionFileFilter;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.filefilters.ExtensionFileFilter;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
@@ -291,6 +293,12 @@ public final class NewGameUI extends MomClientFrameUI
 	/** White flag */
 	private BufferedImage flag;
 	
+	/** Checkbox unticked */
+	private BufferedImage checkboxUnticked;
+	
+	/** Checkbox ticked */
+	private BufferedImage checkboxTicked;
+	
 	/** Shelf where we add and take away books from the 5 magic realms */
 	private BufferedImage bookshelfWithGargoyles;
 	
@@ -325,6 +333,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Action for changing selected database */
 	private CycleAction<AvailableDatabase> changeDatabaseAction;
+	
+	/** Checkbox for activating mods */
+	private JCheckBox chooseMods;
 	
 	/** Label for human opponents button */
 	private JLabel humanOpponentsLabel;
@@ -430,6 +441,23 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Customize? heading over the tickboxes */
 	private JLabel customizeLabel;
+
+	// MODS PANEL
+	
+	/** Panel key */
+	private final static String MODS_PANEL = "Mods";
+
+	/** Panel */
+	private JPanel modsPanel;
+
+	/** Panel pushed to top of screen */
+	private JPanel modsInnerPanel;
+	
+	/** Dynamically created mod labels */
+	private final Map<String, JLabel> modLabels = new HashMap<String, JLabel> ();
+
+	/** Dynamically created mod checkboxes etc */
+	private final Map<String, JCheckBox> modCheckboxes = new HashMap<String, JCheckBox> ();
 	
 	// CUSTOM MAP SIZE PANEL
 
@@ -1351,13 +1379,13 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		final BufferedImage midButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button135x17Normal.png");
 		final BufferedImage midButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button135x17Pressed.png");
-		final BufferedImage wideButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button290x17Normal.png");
-		final BufferedImage wideButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button290x17Pressed.png");
-		final BufferedImage checkboxUnticked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Unticked.png");
-		final BufferedImage checkboxTicked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Ticked.png");
+		final BufferedImage wideButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button270x17Normal.png");
+		final BufferedImage wideButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button270x17Pressed.png");
 		final BufferedImage editboxSmall = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox65x23.png");
 		final BufferedImage editboxWide = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox125x23.png");
 		flag = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/flag.png");
+		checkboxUnticked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Unticked.png");
+		checkboxTicked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Ticked.png");
 
 		buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
 		buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Pressed.png");
@@ -1369,7 +1397,7 @@ public final class NewGameUI extends MomClientFrameUI
 		okAction = new LoggingAction ((ev) ->
 		{
 			// What this does depends on which 'card' is currently displayed
-			if ((newGamePanel.isVisible ()) || (mapSizePanel.isVisible ()) || (landProportionPanel.isVisible ()) || (nodesPanel.isVisible ()) ||
+			if ((newGamePanel.isVisible ()) || (modsPanel.isVisible ()) || (mapSizePanel.isVisible ()) || (landProportionPanel.isVisible ()) || (nodesPanel.isVisible ()) ||
 				(difficulty1Panel.isVisible ()) || (difficulty2Panel.isVisible ()) || (difficulty3Panel.isVisible ()) || (nodeDifficultyPanel.isVisible ()) || (fogOfWarPanel.isVisible ()) ||
 				(unitsPanel.isVisible ()) || (spellsPanel.isVisible ()) || (heroItemsPanel.isVisible ()) || (debugPanel.isVisible ()))
 				
@@ -1608,6 +1636,9 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeDatabaseAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			wideButtonNormal, wideButtonPressed, wideButtonNormal), "frmNewGameDatabaseButton");
 
+		chooseMods = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		newGamePanel.add (chooseMods, "frmNewGameChooseMods");
+		
 		humanOpponentsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (humanOpponentsLabel, "frmNewGameHumanOpponents");
 
@@ -1717,6 +1748,18 @@ public final class NewGameUI extends MomClientFrameUI
 			newGamePanel.add (getUtils ().createImage (divider), "frmNewGameBar" + n);
 		
 		cards.add (newGamePanel, NEW_GAME_PANEL);
+		
+		// MODS PANEL
+		modsPanel = new JPanel (new BorderLayout ()); 
+		modsPanel.setOpaque (false);
+		
+		modsInnerPanel = new JPanel (new GridBagLayout ());
+		modsInnerPanel.setOpaque (false);
+		modsPanel.add (modsInnerPanel, BorderLayout.NORTH);
+
+		modsInnerPanel.add (Box.createRigidArea (new Dimension (260, 0)), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		
+		cards.add (modsPanel, MODS_PANEL);
 		
 		// CUSTOM MAP SIZE PANEL
 		mapSizePanel = new JPanel (new XmlLayoutManager (getNewGameLayoutMapSize ()));
@@ -2636,6 +2679,9 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final AvailableDatabase db : getClient ().getNewGameDatabase ().getMomimeXmlDatabase ())
 			changeDatabaseAction.addItem (db, db.getDbName ());
 		
+		chooseMods.setVisible (!getClient ().getNewGameDatabase ().getModName ().isEmpty ());
+		regenerateMods ();
+		
 		// Ok button should only be enabled once we have enough info
 		final DocumentListener documentListener = new DocumentListener ()
 		{
@@ -2692,6 +2738,40 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * Regenerates controls depending on the list of available mods
+	 */
+	private final void regenerateMods ()
+	{
+		// Free old controls
+		for (final JLabel modLabel : modLabels.values ())
+			modsInnerPanel.remove (modLabel);
+
+		for (final JCheckBox modCheckbox : modCheckboxes.values ())
+			modsInnerPanel.remove (modCheckbox);
+		
+		modLabels.clear ();
+		modCheckboxes.clear ();
+		
+		// Go through each mod
+		int y = 1;
+		for (final String modName : getClient ().getNewGameDatabase ().getModName ())
+		{
+			final JLabel modLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont (), modName);
+			modLabels.put (modName, modLabel);
+			modsInnerPanel.add (modLabel, getUtils ().createConstraintsNoFill (0, y, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+
+			final JCheckBox modCheckbox = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+			modCheckboxes.put (modName, modCheckbox);
+			modsInnerPanel.add (modCheckbox, getUtils ().createConstraintsNoFill (1, y, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+			
+			y++;
+		}
+		
+		modsInnerPanel.validate ();
+		modsInnerPanel.repaint ();
+	}
+	
+	/**
 	 * After clicking OK on the new game panel, or one of the subsequent "custom details" screens, finds the next
 	 * custom details screen we need to show, or if all done then we go ahead and send the session description
 	 * to the server to start the game
@@ -2709,79 +2789,84 @@ public final class NewGameUI extends MomClientFrameUI
 			currentPanel = 0;
 			populateNewGameFieldsFromSelectedOptions ();
 		}
-		else if (mapSizePanel.isVisible ())
+		else if (modsPanel.isVisible ())
 			currentPanel = 1;
-		else if (landProportionPanel.isVisible ())
+		else if (mapSizePanel.isVisible ())
 			currentPanel = 2;
-		else if (nodesPanel.isVisible ())
+		else if (landProportionPanel.isVisible ())
 			currentPanel = 3;
-		else if (difficulty1Panel.isVisible ())
+		else if (nodesPanel.isVisible ())
 			currentPanel = 4;
-		else if (difficulty2Panel.isVisible ())
+		else if (difficulty1Panel.isVisible ())
 			currentPanel = 5;
-		else if (difficulty3Panel.isVisible ())
+		else if (difficulty2Panel.isVisible ())
 			currentPanel = 6;
-		else if (nodeDifficultyPanel.isVisible ())
+		else if (difficulty3Panel.isVisible ())
 			currentPanel = 7;
-		else if (fogOfWarPanel.isVisible ())
+		else if (nodeDifficultyPanel.isVisible ())
 			currentPanel = 8;
-		else if (unitsPanel.isVisible ())
+		else if (fogOfWarPanel.isVisible ())
 			currentPanel = 9;
-		else if (spellsPanel.isVisible ())
+		else if (unitsPanel.isVisible ())
 			currentPanel = 10;
-		else if (heroItemsPanel.isVisible ())
+		else if (spellsPanel.isVisible ())
 			currentPanel = 11;
-		else if (debugPanel.isVisible ())
+		else if (heroItemsPanel.isVisible ())
 			currentPanel = 12;
+		else if (debugPanel.isVisible ())
+			currentPanel = 13;
 		else
 			throw new MomException ("showNextNewGamePanel could not determine currently visible panel");
 		
 		// Customize map size
-		if ((customizeMapSize.isSelected ()) && (currentPanel < 1))
+		if ((chooseMods.isSelected ()) && (currentPanel < 1))
+			cardLayout.show (cards, MODS_PANEL);
+
+		else if ((customizeMapSize.isSelected ()) && (currentPanel < 2))
 			cardLayout.show (cards, MAP_SIZE_PANEL);
 		
 		// Customize land proportion
-		else if ((customizeLandProportion.isSelected ()) && (currentPanel < 2))
+		else if ((customizeLandProportion.isSelected ()) && (currentPanel < 3))
 			cardLayout.show (cards, LAND_PROPORTION_PANEL);
 		
 		// Customize nodes
-		else if ((customizeNodes.isSelected ()) && (currentPanel < 3))
+		else if ((customizeNodes.isSelected ()) && (currentPanel < 4))
 			cardLayout.show (cards, NODES_PANEL);
 		
 		// Customize difficulty (1 of 3)
-		else if ((customizeDifficulty.isSelected ()) && (currentPanel < 4))
+		else if ((customizeDifficulty.isSelected ()) && (currentPanel < 5))
 			cardLayout.show (cards, DIFFICULTY_1_PANEL);
 
 		// Customize difficulty (2 of 3)
-		else if ((customizeDifficulty.isSelected ()) && (currentPanel < 5))
+		else if ((customizeDifficulty.isSelected ()) && (currentPanel < 6))
 			cardLayout.show (cards, DIFFICULTY_2_PANEL);
 
 		// Customize difficulty (3 of 3)
-		else if ((customizeDifficulty.isSelected ()) && (currentPanel < 6))
+		else if ((customizeDifficulty.isSelected ()) && (currentPanel < 7))
 			cardLayout.show (cards, DIFFICULTY_3_PANEL);
 		
 		// Customize node difficulty
-		else if (((customizeDifficulty.isSelected ()) || (customizeNodes.isSelected ())) && (currentPanel < 7))
+		else if (((customizeDifficulty.isSelected ()) || (customizeNodes.isSelected ())) && (currentPanel < 8))
 			cardLayout.show (cards, NODE_DIFFICULTY_PANEL);
 
 		// Customize fog of war
-		else if ((customizeFogOfWar.isSelected ()) && (currentPanel < 8))
+		else if ((customizeFogOfWar.isSelected ()) && (currentPanel < 9))
 			cardLayout.show (cards, FOG_OF_WAR_PANEL);
 
 		// Customize units
-		else if ((customizeUnits.isSelected ()) && (currentPanel < 9))
+		else if ((customizeUnits.isSelected ()) && (currentPanel < 10))
 			cardLayout.show (cards, UNITS_PANEL);
 		
 		// Customize spells
-		else if ((customizeSpells.isSelected ()) && (currentPanel < 10))
+		else if ((customizeSpells.isSelected ()) && (currentPanel < 11))
 			cardLayout.show (cards, SPELLS_PANEL);
 		
 		// Customize hero items
-		else if ((customizeHeroItems.isSelected ()) && (currentPanel < 11))
+		else if ((customizeHeroItems.isSelected ()) && (currentPanel < 12))
 			cardLayout.show (cards, HERO_ITEMS_PANEL);
 		
 		// Debug options
-		else if ((changeDebugOptionsAction.getSelectedItem ()) && (currentPanel < 12))
+		else if ((changeDebugOptionsAction.getSelectedItem ()) && (currentPanel < 13))
 			cardLayout.show (cards, DEBUG_PANEL);
 		
 		// Start up game
@@ -3766,6 +3851,8 @@ public final class NewGameUI extends MomClientFrameUI
 		title.setForeground (MomUIConstants.GOLD);
 		if ((newGamePanel.isVisible ()) && (getLanguages ().getNewGameScreen () != null))
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getTitle ()));
+		else if (modsPanel.isVisible ())
+			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getChooseMods ()));
 		else if (mapSizePanel.isVisible ())
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getTitle ()));
 		else if (landProportionPanel.isVisible ())
@@ -4398,6 +4485,7 @@ public final class NewGameUI extends MomClientFrameUI
 		// Easy fields
 		sd.setSessionName (gameName.getText ());
 		sd.setXmlDatabaseName (changeDatabaseAction.getSelectedItem ().getDbName ());
+		sd.getModName ().addAll (modCheckboxes.entrySet ().stream ().filter (e -> e.getValue ().isSelected ()).map (e -> e.getKey ()).collect (Collectors.toList ()));
 		sd.setTurnSystem (changeTurnSystemAction.getSelectedItem ());
 		
 		// +3 for this player (since we only select nbr of opponents) + raiders + monsters
@@ -4553,7 +4641,7 @@ public final class NewGameUI extends MomClientFrameUI
 	    difficultyLevel.setTowerTreasureMaximum							(Integer.parseInt (towersTreasureMax.getText ()));
 	    difficultyLevel.setRaiderCityStartSizeMin								(Integer.parseInt (raiderCityStartSizeMin.getText ()));
 	    difficultyLevel.setRaiderCityStartSizeMax								(Integer.parseInt (raiderCityStartSizeMax.getText ()));
-	    difficultyLevel.setRaiderCityGrowthCap									(Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
+	    difficultyLevel.setRaiderCityGrowthCap									(Integer.parseInt (raiderCitySizeCap.getText ()));
 	    difficultyLevel.setWizardCityStartSize									(Integer.parseInt (wizardCityStartSize.getText ()));
 	    difficultyLevel.setCityMaxSize												(Integer.parseInt (maxCitySize.getText ()));
 	    difficultyLevel.setEventMinimumTurnNumber							(Integer.parseInt (eventMinimumTurnNumber.getText ()));

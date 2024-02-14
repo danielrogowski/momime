@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.WeightedChoices;
+import com.ndg.utils.random.WeightedChoices;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -24,10 +24,10 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SampleUnitUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 import momime.server.MomSessionVariables;
 import momime.server.knowledge.CombatDetails;
 import momime.server.process.SpellQueueing;
@@ -48,11 +48,11 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 	
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -103,7 +103,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 				
 			// Only allow Wall of Fire/Darkness/Stone if we don't already have it
 			case CITY_ENCHANTMENTS:
-				valid = (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				valid = (getSpellTargetingUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 					spell, player.getPlayerDescription ().getPlayerID (), combatDetails.getCombatLocation (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 					priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
 					mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET);
@@ -173,11 +173,11 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-					if ((getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatDetails.getCombatLocation (), combatDetails.getCombatMap (), player.getPlayerDescription ().getPlayerID (),
+					if ((getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, combatDetails.getCombatLocation (), combatDetails.getCombatMap (), player.getPlayerDescription ().getPlayerID (),
 						combatCastingUnit, null, xu, true, mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (),
 						mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 							
-							(getUnitUtils ().canSeeUnitInCombat (xu, player.getPlayerDescription ().getPlayerID (), mom.getPlayers (),
+							(getUnitVisibilityUtils ().canSeeUnitInCombat (xu, player.getPlayerDescription ().getPlayerID (), mom.getPlayers (),
 								mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ())))
 					{
 						if (targetCount == null)
@@ -294,35 +294,35 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Methods dealing with checking whether we can see units or not
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
 	{
-		return unitUtils;
+		return unitVisibilityUtils;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param u Methods dealing with checking whether we can see units or not
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
-		unitUtils = utils;
+		unitVisibilityUtils = u;
 	}
 
 	/**
-	 * @return MemoryMaintainedSpell utils
+	 * @return Methods that determine whether something is a valid target for a spell
 	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final SpellTargetingUtils getSpellTargetingUtils ()
 	{
-		return memoryMaintainedSpellUtils;
+		return spellTargetingUtils;
 	}
 
 	/**
-	 * @param spellUtil MemoryMaintainedSpell utils
+	 * @param s Methods that determine whether something is a valid target for a spell
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtil)
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
 	{
-		memoryMaintainedSpellUtils = spellUtil;
+		spellTargetingUtils = s;
 	}
 
 	/**

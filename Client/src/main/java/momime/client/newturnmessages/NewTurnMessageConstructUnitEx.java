@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -19,8 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.AnimationContainer;
@@ -174,8 +175,8 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			nextConstructionLabel.setText (text);
 
 			// Look up the image for the old unit
-			final BufferedImage image = getPlayerColourImageGenerator ().getOverlandUnitImage (oldUnit, getClient ().getOurPlayerID ());
-			constructionCompletedImage.setIcon (new ImageIcon (getUtils ().doubleSize (image)));
+			final Image image = getPlayerColourImageGenerator ().getOverlandUnitImage (oldUnit, getClient ().getOurPlayerID (), true);
+			constructionCompletedImage.setIcon (new ImageIcon (image));
 		}
 		catch (final Exception e)
 		{
@@ -201,9 +202,9 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			if (cityData.getCurrentlyConstructingUnitID () != null)
 			{
 				final UnitEx unitDef = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "getComponent-New");
-				final BufferedImage image = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID ());
+				final Image image = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID (), true);
 
-				nextConstructionImage.setIcon (new ImageIcon (getUtils ().doubleSize (image)));
+				nextConstructionImage.setIcon (new ImageIcon (image));
 			}
 		}
 		catch (final Exception e)

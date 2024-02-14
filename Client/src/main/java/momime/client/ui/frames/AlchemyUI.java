@@ -22,10 +22,11 @@ import javax.swing.SwingConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.actions.LoggingAction;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
+import momime.client.config.WindowID;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.common.database.CommonDatabaseConstants;
@@ -274,6 +275,7 @@ public final class AlchemyUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
+		setWindowID (WindowID.ALCHEMY);
 		
 		getFrame ().setShape (new Polygon
 			(new int [] {0, TL_CORNER, background.getWidth () - BR_CORNER, background.getWidth () , background.getWidth () , background.getWidth () - BR_CORNER, TL_CORNER, 0},

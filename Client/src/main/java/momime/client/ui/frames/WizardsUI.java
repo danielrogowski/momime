@@ -24,25 +24,31 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.multiplayer.sessionbase.PlayerType;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.config.WindowID;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.PlayerPickClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
@@ -53,18 +59,21 @@ import momime.common.database.LanguageText;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.RelationScore;
 import momime.common.database.Spell;
 import momime.common.database.WizardObjective;
 import momime.common.database.WizardPersonality;
+import momime.common.messages.DiplomacyAction;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.Pact;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
+import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 
 /**
@@ -122,6 +131,9 @@ public final class WizardsUI extends MomClientFrameUI
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
+	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
 	
@@ -134,14 +146,32 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Diplomacy UI */
+	private DiplomacyUI diplomacyUI;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
 	/** List of gem buttons for each wizard */
 	final List<JButton> wizardButtons = new ArrayList<JButton> ();
+	
+	/** List of pact icons for each wizard */
+	final List<JLabel> pactIcons = new ArrayList<JLabel> ();
 	
 	/** Content pane */
 	private JPanel contentPane;
 	
 	/** Close action */
 	private Action closeAction;
+
+	/** Diplomacy action */
+	private Action diplomacyAction;
+	
+	/** Diplomacy button */
+	private JButton diplomacyButton;
 	
 	/** Shelf displaying chosen books */
 	private JPanel bookshelf;
@@ -158,9 +188,6 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Wizard's fame */
 	private JLabel fameLabel;
 
-	/** Our relations with this wizard (text description of the state of the green/red eyes) */
-	private JLabel relationsLabel;
-	
 	/** Wizard's personality */
 	private JLabel personalityLabel;
 	
@@ -222,6 +249,111 @@ public final class WizardsUI extends MomClientFrameUI
 		// Actions
 		closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
+		diplomacyAction = new LoggingAction ((ev) ->
+		{
+			if (selectedWizard != null)
+			{
+				if (!getClient ().isPlayerTurn ())
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getDiplomacyScreen ().getTitle ());
+					msg.setLanguageText (getLanguages ().getDiplomacyScreen ().getNotYourTurn ());
+					msg.setVisible (true);
+				}
+		
+				else if (getDiplomacyUI ().isVisible ())
+				{
+					final PlayerPublicDetails talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getDiplomacyUI ().getTalkingWizardID (), "WizardsUI");
+
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getDiplomacyScreen ().getTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getAlreadyInDiplomacy ()).replaceAll
+						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+					
+					msg.setVisible (true);					
+				}
+				
+				else if ((getKnownWizardUtils ().findKnownWizardDetails (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
+						getClient ().getOurPlayerID (), "WizardsUI").getWizardState () != WizardState.ACTIVE) ||
+					(getKnownWizardUtils ().findKnownWizardDetails (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
+						selectedWizard.getPlayerDescription ().getPlayerID (), "WizardsUI").getWizardState () != WizardState.ACTIVE))
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getDiplomacyScreen ().getTitle ());
+					msg.setLanguageText (getLanguages ().getDiplomacyScreen ().getBanished ());					
+					msg.setVisible (true);					
+				}
+				
+				else if (selectedWizard.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				{
+					// Show popup menu to select mood to talk to the wizard with
+					final JPopupMenu popup = new JPopupMenu ();
+					
+					getClient ().getClientDB ().getRelationScore ().forEach (rs ->
+					{
+						final String relationScoreName = getLanguageHolder ().findDescription (rs.getRelationScoreName ());
+						final JMenuItem item = new JMenuItem (new LoggingAction (relationScoreName, (ev2) ->
+						{
+							final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+							msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
+							msg.setAction (DiplomacyAction.INITIATE_TALKING);
+							msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+
+							// Show the mirror while we wait for them to respond
+							getDiplomacyUI ().setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
+							getDiplomacyUI ().setOtherWizardID (null);
+							getDiplomacyUI ().initializeTalkingWizard ();
+							getDiplomacyUI ().setProposingWizardID (getClient ().getOurPlayerID ());
+							getDiplomacyUI ().setVisibleRelationScoreID (null);
+							getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.MIRROR);
+							getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+							getDiplomacyUI ().setMeetWizardMessage (null);
+							getDiplomacyUI ().setOfferGoldAmount (null);
+							getDiplomacyUI ().setRequestSpellID (null);
+							getDiplomacyUI ().setOfferSpellID (null);
+							getDiplomacyUI ().updateRelationScore ();
+							getDiplomacyUI ().initializeText ();
+							getDiplomacyUI ().initializePortrait ();
+							getDiplomacyUI ().setVisible (true);
+							getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
+						}));
+						
+						item.setFont (getSmallFont ());
+						popup.add (item);								
+					});
+					
+					popup.show (contentPane, diplomacyButton.getX (), diplomacyButton.getY ());
+				}
+				else
+				{
+					// Don't need to ask for mood to talk to an AI wizard
+					final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+					msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
+					msg.setAction (DiplomacyAction.INITIATE_TALKING);
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+					
+					// Show the mirror while we wait for them to respond
+					getDiplomacyUI ().setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
+					getDiplomacyUI ().setOtherWizardID (null);
+					getDiplomacyUI ().initializeTalkingWizard ();
+					getDiplomacyUI ().setProposingWizardID (getClient ().getOurPlayerID ());
+					getDiplomacyUI ().setVisibleRelationScoreID (null);
+					getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.MIRROR);
+					getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+					getDiplomacyUI ().setMeetWizardMessage (null);
+					getDiplomacyUI ().setOfferGoldAmount (null);
+					getDiplomacyUI ().setRequestSpellID (null);
+					getDiplomacyUI ().setOfferSpellID (null);
+					getDiplomacyUI ().updateRelationScore ();
+					getDiplomacyUI ().initializeText ();
+					getDiplomacyUI ().initializePortrait ();
+					getDiplomacyUI ().setVisible (true);
+					getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
+				}
+			}
+		});
+		
 		// Initialize the content pane
 		contentPane = new JPanel ()
 		{
@@ -278,14 +410,14 @@ public final class WizardsUI extends MomClientFrameUI
 		fameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
 		contentPane.add (fameLabel, "frmWizardsFame");
 		
-		relationsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		contentPane.add (relationsLabel, "frmWizardsRelations");
-		
 		personalityLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (personalityLabel, "frmWizardsPersonality");
 		
 		objectiveLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (objectiveLabel, "frmWizardsObjective");
+
+		diplomacyButton = getUtils ().createImageButton (diplomacyAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonNormal);
+		contentPane.add (diplomacyButton, "frmWizardsDiplomacy");
 		
 		bookshelf = new JPanel (new GridBagLayout ());
 		bookshelf.setOpaque (false);
@@ -350,6 +482,7 @@ public final class WizardsUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
+		setWindowID (WindowID.WIZARDS);
 	}
 	
 	/**
@@ -362,11 +495,15 @@ public final class WizardsUI extends MomClientFrameUI
 	{
 		if (contentPane != null)
 		{
-			// Remove the old buttons
+			// Remove the old buttons and icons
 			for (final JButton button : wizardButtons)
 				contentPane.remove (button);
+
+			for (final JLabel icon: pactIcons)
+				contentPane.remove (icon);
 			
 			wizardButtons.clear ();
+			pactIcons.clear ();
 			
 			// Do we have detect magic cast or are we targeting spell blast?
 			final boolean spellBlast = (getTargetingSpell () != null) && (getTargetingSpell ().getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST));
@@ -375,7 +512,7 @@ public final class WizardsUI extends MomClientFrameUI
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 					getClient ().getOurPlayerID (), CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, null, null, null, null) != null);
 			
-			// Create new buttons
+			// Create new buttons and icons
 			int n = 0;
 			for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			{
@@ -396,7 +533,7 @@ public final class WizardsUI extends MomClientFrameUI
 							// Is this wizard a valid target?
 							final OverlandCastingInfo targetOverlandCastingInfo = overlandCastingInfo.get (player.getPlayerDescription ().getPlayerID ());
 							
-							final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (getTargetingSpell (),
+							final TargetSpellResult validTarget = getSpellTargetingUtils ().isWizardValidTargetForSpell (getTargetingSpell (),
 								getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge (),
 								player.getPlayerDescription ().getPlayerID (), targetOverlandCastingInfo);
 							
@@ -428,8 +565,8 @@ public final class WizardsUI extends MomClientFrameUI
 						"/momime.client.graphics/ui/backgrounds/gem.png" : "/momime.client.graphics/ui/backgrounds/gemCracked.png";
 					final String gemPressedImageName = "/momime.client.graphics/ui/backgrounds/gemPressed.png";
 
-					BufferedImage wizardNormalImage;
-					BufferedImage wizardPressedImage;
+					Image wizardNormalImage;
+					Image wizardPressedImage;
 					if (wizardDetails == null)
 					{
 						// Don't know what colour to make the gem if we've never met them
@@ -439,9 +576,9 @@ public final class WizardsUI extends MomClientFrameUI
 					else
 					{
 						wizardNormalImage = getPlayerColourImageGenerator ().getModifiedImage
-							(gemNormalImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
+							(gemNormalImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null);
 						wizardPressedImage = getPlayerColourImageGenerator ().getModifiedImage
-							(gemPressedImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
+							(gemPressedImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null);
 					}
 					
 					// Find the wizard's photo
@@ -460,13 +597,13 @@ public final class WizardsUI extends MomClientFrameUI
 						
 						// Add the wizard portrait onto the gems
 						final BufferedImage mergedNormalImage = new BufferedImage
-							(wizardNormalImage.getWidth (), wizardNormalImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+							(wizardNormalImage.getWidth (null), wizardNormalImage.getHeight (null), BufferedImage.TYPE_INT_ARGB);
 						final Graphics2D g = mergedNormalImage.createGraphics ();
 						try
 						{
 							g.drawImage (wizardNormalImage, 0, 0, null);
-							g.drawImage (scaledPortrait, (wizardNormalImage.getWidth () - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2,
-								(wizardNormalImage.getHeight () - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2, null);
+							g.drawImage (scaledPortrait, (wizardNormalImage.getWidth (null) - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2,
+								(wizardNormalImage.getHeight (null) - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2, null);
 						}
 						finally
 						{
@@ -474,13 +611,13 @@ public final class WizardsUI extends MomClientFrameUI
 						}
 						
 						final BufferedImage mergedPressedImage = new BufferedImage
-							(wizardNormalImage.getWidth (), wizardNormalImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+							(wizardNormalImage.getWidth (null), wizardNormalImage.getHeight (null), BufferedImage.TYPE_INT_ARGB);
 						final Graphics2D g2 = mergedPressedImage.createGraphics ();
 						try
 						{
 							g2.drawImage (wizardPressedImage, 0, 0, null);
-							g2.drawImage (scaledPortrait, ((wizardPressedImage.getWidth () - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2) + 1,
-								((wizardPressedImage.getHeight () - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2) + 1, null);
+							g2.drawImage (scaledPortrait, ((wizardPressedImage.getWidth (null) - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2) + 1,
+								((wizardPressedImage.getHeight (null) - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2) + 1, null);
 						}
 						finally
 						{
@@ -525,6 +662,40 @@ public final class WizardsUI extends MomClientFrameUI
 					
 					contentPane.add (wizardButton, "frmWizardsGem" + n);
 					wizardButtons.add (wizardButton);
+					
+					// Create icons for any pacts this wizard has
+					if (wizardDetails != null)
+					{
+						int p = 0;
+						for (final Pact pact : wizardDetails.getPact ())
+						{
+							p++;
+							
+							final String pactTypeImage;
+							switch (pact.getPactType ())
+							{
+								case WIZARD_PACT:
+									pactTypeImage = "/momime.client.graphics/ui/diplomacy/wizardPact.png";
+									break;
+									
+								case ALLIANCE:
+									pactTypeImage = "/momime.client.graphics/ui/diplomacy/alliance.png";
+									break;
+									
+								case WAR:
+									pactTypeImage = "/momime.client.graphics/ui/diplomacy/war.png";
+									break;
+								default:
+									throw new IOException ("Don't know image to draw for pact type " + pact.getPactType ());
+							}
+							
+							final Image image = getPlayerColourImageGenerator ().getModifiedImage (pactTypeImage, true, null, null, null, pact.getPactWithPlayerID (), null, null);
+							final JLabel label = new JLabel (new ImageIcon (image));
+							pactIcons.add (label);
+							
+							contentPane.add (label, "frmWizardsPact" + n + "-" + p);
+						}
+					}
 				}
 			}
 			
@@ -571,7 +742,23 @@ public final class WizardsUI extends MomClientFrameUI
 				// Pick must exist in the graphics XML file, but may not have any image(s)
 				final Pick pickDef = getClient ().getClientDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks");
 				if (pickDef.getBookImageFile ().size () > 0)
-					for (int n = 0; n < pick.getQuantity (); n++)
+				{
+					int booksLeft = pick.getQuantity ();
+					while ((booksLeft > 10) && (!pickDef.getFatBookImageFile ().isEmpty ()))
+					{
+						// Choose random image for the pick
+						final BufferedImage bookImage = getUtils ().loadImage (getPlayerPickClientUtils ().chooseRandomFatBookImageFilename (pickDef));
+						
+						// Add on merged bookshelf
+						mergedBookshelfGridx++;
+						final JLabel mergedBookshelfImg = getUtils ().createImage (bookImage);
+						bookshelf.add (mergedBookshelfImg, getUtils ().createConstraintsNoFill (mergedBookshelfGridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
+						bookImages.add (mergedBookshelfImg);
+
+						booksLeft = booksLeft - 10;
+					}
+					
+					while (booksLeft > 0)
 					{
 						// Choose random image for the pick
 						final BufferedImage bookImage = getUtils ().loadImage (getPlayerPickClientUtils ().chooseRandomBookImageFilename (pickDef));
@@ -581,7 +768,10 @@ public final class WizardsUI extends MomClientFrameUI
 						final JLabel mergedBookshelfImg = getUtils ().createImage (bookImage);
 						bookshelf.add (mergedBookshelfImg, getUtils ().createConstraintsNoFill (mergedBookshelfGridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
 						bookImages.add (mergedBookshelfImg);
+						
+						booksLeft--;
 					}
+				}
 			}
 		
 		// Redrawing only the bookshelf isn't enough, because the new books might be smaller than before so only the smaller so
@@ -696,20 +886,6 @@ public final class WizardsUI extends MomClientFrameUI
 			}
 		
 		// Personality and Objective will only be populated for AI wizards
-		relationsLabel.setVisible ((selectedWizard != null) && (selectedWizardDetails != null) && (selectedWizardDetails.getWizardPersonalityID () != null));
-		if (relationsLabel.isVisible ())
-			try
-			{
-				final RelationScore relationScore = getClient ().getClientDB ().findRelationScore (selectedWizardDetails.getBaseRelation (), "updateWizard");
-				relationsLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getRelations ()) + ": " +
-					getLanguageHolder ().findDescription (relationScore.getRelationScoreName ()));
-			}
-			catch (final Exception e)
-			{
-				log.error (e, e);
-				relationsLabel.setVisible (false);
-			}
-
 		personalityLabel.setVisible ((selectedWizard != null) && (selectedWizardDetails != null) && (selectedWizardDetails.getWizardPersonalityID () != null));
 		if (personalityLabel.isVisible ())
 			try
@@ -737,6 +913,9 @@ public final class WizardsUI extends MomClientFrameUI
 				log.error (e, e);
 				objectiveLabel.setVisible (false);
 			}
+		
+		// Diplomacy only enabled if its another wizard
+		diplomacyButton.setVisible ((selectedWizard != null) && (selectedWizardDetails != null) && (!selectedWizard.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())));
 	}
 	
 	/**
@@ -774,6 +953,7 @@ public final class WizardsUI extends MomClientFrameUI
 			wizardsTitle.setText (title);
 			
 			closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
+			diplomacyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getDiplomacy ()));
 			
 			updateWizard ();
 			
@@ -847,12 +1027,15 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setWizardCastAnimationPlayerID (final int playerID)
 	{
 		int n = 0;
-		for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ())
+		for (final PlayerPublicDetails player : getClient ().getPlayers ())
+		{
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 			
-			if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
+			if ((wizardDetails == null) || (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())))
 			{
 				n++;
-				if (wizardDetails.getPlayerID () == playerID)
+				if ((wizardDetails != null) && (wizardDetails.getPlayerID () == playerID))
 				{
 					// Look up the location of this wizard's gem in the XML layout
 					final XmlLayoutComponent gemLocation = getWizardsLayout ().findComponent ("frmWizardsGem" + n);
@@ -863,6 +1046,7 @@ public final class WizardsUI extends MomClientFrameUI
 					}
 				}
 			}
+		}
 	}
 	
 	/**
@@ -1066,6 +1250,22 @@ public final class WizardsUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
+	}
+	
+	/**
 	 * @return Overland map UI
 	 */
 	public final OverlandMapUI getOverlandMapUI ()
@@ -1127,6 +1327,54 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+	
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
+	
+	/**
+	 * @return Diplomacy UI
+	 */
+	public final DiplomacyUI getDiplomacyUI ()
+	{
+		return diplomacyUI;
+	}
+
+	/**
+	 * @param ui Diplomacy UI
+	 */
+	public final void setDiplomacyUI (final DiplomacyUI ui)
+	{
+		diplomacyUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 	
 	/**

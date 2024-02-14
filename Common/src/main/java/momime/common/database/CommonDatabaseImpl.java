@@ -15,7 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.common.MomException;
 import momime.common.messages.MemoryBuilding;
@@ -137,6 +137,9 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	/** Map of objective IDs to objective objects */
 	private Map<String, WizardObjective> wizardObjectivesMap;
 	
+	/**Map of relation score IDs to relation score objects */
+	private Map<String, RelationScore> relationScoresMap;
+	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationEx> animationsMap;
 	
@@ -215,6 +218,7 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		eventsMap = getEvent ().stream ().collect (Collectors.toMap (e -> e.getEventID (), e -> e));
 		wizardPersonalitiesMap = getWizardPersonality ().stream ().collect (Collectors.toMap (w -> w.getWizardPersonalityID (), w -> w));
 		wizardObjectivesMap = getWizardObjective ().stream ().collect (Collectors.toMap (w -> w.getWizardObjectiveID (), w -> w));
+		relationScoresMap = getRelationScore ().stream ().collect (Collectors.toMap (s -> s.getRelationScoreID (), s -> s));
 		animationsMap = getAnimations ().stream ().collect (Collectors.toMap (a -> a.getAnimationID (), a -> a));
 		playListsMap = getPlayList ().stream ().collect (Collectors.toMap (p -> p.getPlayListID (), p -> p));
 		
@@ -1198,6 +1202,23 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 
 		return found;
 	}
+	
+	/**
+	 * @param relationScoreID Relation score ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Relation score object
+	 * @throws RecordNotFoundException If the relationScoreID doesn't exist
+	 */
+	@Override
+	public final RelationScore findRelationScore (final String relationScoreID, final String caller) throws RecordNotFoundException
+	{
+		final RelationScore found = relationScoresMap.get (relationScoreID);
+		if (found == null)
+			throw new RecordNotFoundException (RelationScore.class, relationScoreID, caller);
+
+		return found;
+	}
+	
 	/**
 	 * @param score Relation score to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -1205,13 +1226,13 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	 * @throws RecordNotFoundException If no object is defined with the specified score in its range
 	 */
 	@Override
-	public final RelationScore findRelationScore (final int score, final String caller) throws RecordNotFoundException
+	public final RelationScore findRelationScoreForValue (final int score, final String caller) throws RecordNotFoundException
 	{
 		int useScore = score;
-		if (useScore < -100)
-			useScore = -100;
-		if (useScore > 100)
-			useScore = 100;
+		if (useScore < CommonDatabaseConstants.MIN_RELATION_SCORE)
+			useScore = CommonDatabaseConstants.MIN_RELATION_SCORE;
+		if (useScore > CommonDatabaseConstants.MAX_RELATION_SCORE)
+			useScore = CommonDatabaseConstants.MAX_RELATION_SCORE;
 		
 		RelationScore found = null;
 		for (final RelationScore thisScore : getRelationScore ())

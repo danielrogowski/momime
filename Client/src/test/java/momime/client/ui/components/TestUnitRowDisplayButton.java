@@ -18,9 +18,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.ModifiedImageCacheImpl;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
 
 import momime.client.MomClient;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
@@ -96,11 +97,15 @@ public final class TestUnitRowDisplayButton
 		unit.setUnitID ("UN176");
 
 		// Set up button
+		final ModifiedImageCacheImpl cache = new ModifiedImageCacheImpl ();
+		cache.setUtils (utils);
+		
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
 		gen.setUtils (utils);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		gen.setClient (client);
 		gen.setKnownWizardUtils (knownWizardUtils);
+		gen.setModifiedImageCache (cache);
 		
 		final UnitRowDisplayButton button = new UnitRowDisplayButton ();
 		button.setUtils (utils);

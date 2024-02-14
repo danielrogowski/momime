@@ -2,10 +2,6 @@ package momime.server;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.ndg.utils.ProcessUtilsImpl;
-
-import momime.common.MomCommonConstants;
-
 /**
  * The MomServer class declares a log, so as soon as the classloader touches it, it fires up log4j.
  * Therefore we have to put the 'main' method in a separate class that doesn't declare a log, so that
@@ -24,9 +20,6 @@ public final class MomServerKickOff
 			// Allow reading config from the 'server' folder after the app is assembled, but the root folder when in Eclipse
 			final String configDir = (args.length == 0) ? "" : (args [0] + "/");
 			System.setProperty ("configDir", configDir);
-			
-			// Ensure minimum required JVM version
-			new ProcessUtilsImpl ().ensureMinimumJavaVersion ("MoM IME Server", MomCommonConstants.JAVA_REQUIRED_VERSION);
 			
 			// Initialize logging first, in case debug logging for spring itself is enabled
 			System.setProperty ("log4j.configurationFile", "" + configDir + "MoMIMEServerLogging.xml");

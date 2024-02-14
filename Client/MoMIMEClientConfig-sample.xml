@@ -13,8 +13,10 @@
 	<overlandShowEnemyBorders>false</overlandShowEnemyBorders>
 	<overlandAnimateUnitsMoving>true</overlandAnimateUnitsMoving>
 	<combatSmoothTerrain>true</combatSmoothTerrain>
+	<newShadows>true</newShadows>
 	<showHeroPortraits>true</showHeroPortraits>
 	<displayUnitSkillsAsAttributes>A</displayUnitSkillsAsAttributes>
+    <spellBookViewMode>STANDARD</spellBookViewMode>
 	<debugShowURNs>false</debugShowURNs>
 	<debugShowEdgesOfMap>false</debugShowEdgesOfMap>
 </config:momImeClientConfig>

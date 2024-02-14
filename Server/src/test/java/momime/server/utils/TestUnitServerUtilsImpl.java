@@ -28,8 +28,8 @@ import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 import com.ndg.utils.Holder;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
@@ -54,6 +54,7 @@ import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
@@ -1193,6 +1194,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		utils.setUnitCalculations (calc);
 		utils.setSampleUnitUtils (sampleUnitUtils);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		utils.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -1262,6 +1264,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		utils.setUnitCalculations (calc);
 		utils.setSampleUnitUtils (sampleUnitUtils);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		utils.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);

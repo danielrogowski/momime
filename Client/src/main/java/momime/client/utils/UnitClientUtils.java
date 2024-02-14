@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JComponent;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.zorder.ZOrderGraphics;
+import com.ndg.utils.swing.zorder.ZOrderGraphics;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
@@ -32,9 +32,6 @@ public interface UnitClientUtils
 	
 	/** Array column index in output from calcUnitFigurePositions for the y coord excluding the offsetY value */
 	public final static int CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET = 3;
-	
-	/** Array column index in output from calcUnitFigurePositions for the size to multiply the unit images up by */
-	public final static int CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER = 4;
 	
 	/**
 	 * Note the generated unit names are obviously very dependant on the selected language, but the names themselves don't get notified
@@ -148,11 +145,13 @@ public interface UnitClientUtils
 	 * @param baseZOrder Z order for the top of the tile
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
+	 * @param newShadows Whether new shadows option is switched on in client config
+	 * @param newShadowsUnitAdjustY Adjusts Y position a unit is drawn at if it is flying (its shadow stays in the same place)
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final String unitID, final int playerID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
-		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio) throws IOException;
+		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio, final boolean newShadows, final int newShadowsUnitAdjustY) throws IOException;
 
 	/**
 	 * Version which derives most of the values from an existing unit object.
@@ -168,11 +167,12 @@ public interface UnitClientUtils
 	 * @param baseZOrder Z order for the top of the tile
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
+	 * @param newShadows Whether new shadows option is switched on in client config
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final ExpandedUnitDetails unit, final String combatActionID, final int direction, final ZOrderGraphics g,
 		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder,
-		final List<String> shadingColours, final Double mergingRatio) throws IOException;
+		final List<String> shadingColours, final Double mergingRatio, final boolean newShadows) throws IOException;
 
 	/**
 	 * Plays the sound effect for a particular unit taking a particular action.  This covers all combat actions, so the clank clank of units walking,

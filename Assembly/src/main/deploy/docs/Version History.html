@@ -10,7 +10,7 @@
 	<p>This is an open source Java-based Multiplayer Client/Server rewrite of Microprose/Simtex's classic
 		game 'Master of Magic'.  The project is now hosted <a href="http://sourceforge.net/projects/momime">on SourceForge</a>.</p>
 
-	<p>It needs Java 11 to run, so two versions are provided to download.  The "with JRE" version is larger but can be just unzipped and ran.
+	<p>It needs Java 17 to run, so two versions are provided to download.  The "with JRE" version is larger but can be just unzipped and ran.
 		The "without JRE" version requires that you download the JRE or JDK yourself separately and set your PATH statement to include the location of java.exe.
 		For either version, on Windows, I suggest you <b>do not</b> unzip it into "C:\Program Files" or similar, or
 		MoM IME will have problems with lacking permission to update its config files and save games.</p>
@@ -18,8 +18,6 @@
 	<p>As a pure Java application, it should work on operating systems other than Windows.  It has been tested on some Linux distributions so
 		pretty sure things are generally fine there too, but its impossible to test all of them or very often.  If anybody has issues with running on other operating
 		systems then please let me know so I can try to make improvements.</p>
-
-	<p>It will currently <b>not</b> run on Java 17.</p>
 
 	<p>To get a game going, run the server.  There is nothing else to set up here, just get the server running, assuming it starts up successfully
 		it'll say "Listening for client connection requests on port 18250".  Then run the client, choose Connect to Server, and click 'localhost'
@@ -38,8 +36,346 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.3</b></td>
-			<td align=left><b>28 Feb 2022</b></td>
+			<td align=left><b>Current version: 1.6.5</b></td>
+			<td align=left><b>27 Aug 2023</b></td>
+			<td align=left>
+				<b>Bug fixes relating to Word of Recall and Recall Hero:</b>
+				<ul>
+					<li>Word of Recall and Recall Hero will bump the unit outside the town where your summoning circle is located if the town already has 9 units in it
+					<li>Word of Recall and Recall Hero now consider the type of terrain the unit is being moved onto and spells cast on the unit, for example you can't use Word of Recall to get a Warship to defend your city, but you can if it has Flight cast on it
+					<li>Word of Recall and Recall Hero when cast overland now rechecks the tile the unit was moved from, so for example if you recall a boat that was carrying units, the units will drown
+					<li>Word of Recall and Recall Hero when cast in combat will now cancel any enchantments or curses cast on the unit in combat
+					<li>Can no longer Word of Recall combat summons, for example Phantom Warriors
+					<li>If the defenders remove a unit via Word of Recall or Recall Hero from a combat taking place at the location of their summoning circle and subsequently lose the combat, the recalled unit(s) are lost
+				</ul>
+				
+				<b>Bug fixes relating to Outposts:</b>
+				<ul>
+					<li>Removed restriction that stopped you targeting spells that create "buildings" on outposts (Summoning Circle, Wall of Stone, Move Fortress &amp; Spell of Return)
+					<li>When a wizard loses their Fortress and only has outposts remaining, they are now only considered banished not defeated, and can cast Spell of Return to return to one of their outposts
+					<li>AI players will target spells at outposts
+					<li>Random events (mineral discovery/depletion, rebellion, population boom and plague) may now happen to outposts (but population boom and plague have no effect until the outpost grows into a city)
+					<li>Now correctly handles if your summoning circle and/or Wizard's Fortress is in an outpost that dies out due to shrinkage
+					<li>Percentage modifiers for spells would cause an error if the value the modifier applies to didn't exist (for example casting Famine on an Outpost)
+					<li>Outpost growth rate would be boosted by nearby minerals even if the tiles were corrupted
+				</ul>
+				
+				<b>Other bug fixes:</b>
+				<ul>
+					<li>Hasted units now get 2x movement
+					<li>Caster skill would appear twice on heroes using items with +spell skill on them
+					<li>Units constructed or summoned in a city that already has 9 units in get bumped to an adjacent tile; if the city was on Myrror and the adjacent tile is a Tower of Wizardry, the units would be added incorrectly, even stacking with enemy units guarding the tower
+					<li>Flying units could still cross city walls even after being webbed
+					<li>When selecting a building to construct and the game shows you what the building will allow you to make after, buildings explicitly not allowed for the race would not be listed (e.g. Klackons building a Ship Wrights' Guild do not say "Allows Ship Yard")
+						but would still list buildings that are only implicitly excluded (e.g. Klackons building an Armoury would still say "Allows Maritime Guild" even though they can't get one because they cannot build a Ship Yard), so fixed
+					<li>When selecting a building to construct, units which require two different buildings to construct them would show one of the buildings "allows" that unit even if the race couldn't construct the other pre-requisite building
+						(e.g. Gnolls building a Barracks would still say "Allows Warship" even though they can't get one because they cannot build a Maritime Guild), so fixed
+				</ul>
+				
+				<b>Other changes:</b>
+				<ul>
+					<li>Turned on new shadows by default
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6.4</td>
+			<td align=left>16 Jul 2023</td>
+			<td align=left>
+				<b>Bug fixes (thanks to Dratinimaster for finding or suggesting most of these):</b>
+				<ul>
+					<li>Overland summons can now be moved on the turn they're summoned (previously didn't work for floating islands, or summons that you have enough casting skill to summon them instantly)
+					<li>Rush buy formula updated as per the wiki instead of as per the strategy guide which was incorrect (cheapest rush buy cost starts at total cost / 3 instead of total cost / 2)
+					<li>"G" shortcut key on the overland map screen was incorrectly wired to the Plane button; fixed so its wired to the Game button
+					<li>When a wizard begins casting the Spell of Mastery, all other wizards automatically declare war on them.  This was happening even for wizards who had already been defeated, so fixed this.
+					<li>Dwarves now earn 2x gold from taxes
+					<li>Changing tax rate would not always update all open city screens
+				</ul>
+				
+				<b>Small improvements:</b>
+				<ul>
+					<li>Added "T" shortcut key to open the Cities List
+					<li>On the multiple cities list, clicking the 3rd column (the units) selects the units to move like before, but now also centres the map on them and the city
+					<li>On the single city screen, clicking in the minimap will centre the map on the city
+					<li>On the armies list screen, clicking a row selects the units to move and centres the map on them
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6.3</td>
+			<td align=left>14 Jun 2023</td>
+			<td align=left>
+				<b>Bug fixes:</b>
+				<ul>
+					<li>You can't pick multiple settlers and then build city as it won't know which one to use.  Unfortunately the AI wizards make this mistake a lot, sending piles of settlers to a space they want a
+						new city.  The validation catches it and stops them building a town, leaving a pile of settlers who just sit there.  Fixed this so in this situation, the AI will pick a random settler to make the new town.
+					<li>Fixed AI players telling you they are breaking a wizard pact or alliance with you.  Previously the pact or alliance wouldn't actually be removed.
+					<li>Fixed crash sometimes when you have completed casting Astral Game or Earth Gate but haven't yet chosen which city target it on
+					<li>If you right click on the unit that's already selected in combat, will show its unit info screen (worked before but was broken since 0.9.9.3)
+					<li>Fixed one Myrror overland tile that had a magenta line on the side (its like that in the original MoM too, and thanks Simbey for pointing this out)
+					<li>Fixed positions of some of the pact icons (wizard pact, alliance or war) on the diplomacy screen; some of them overlapped and displayed against the wrong wizard
+				</ul>
+				
+				<b>New features:</b>
+				<ul>
+					<li>On the bookshelf on the wizards screen, if a wizard has more than 10 of a particular spell book, now shows an extra large book to represent 10 spell books, so the shelf does not overflow if you collect a very large number of books
+				</ul>
+				
+				<b>Performance:</b>
+				<ul>
+					<li>Cities get updated a lot, especially during AI player turns.  Made this so the client only regenerates the overland map bitmap and other elements when it actually needs to, rather than on every city update.
+						This helps a lot with the client not locking up during AI player turns.
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6.2</td>
+			<td align=left>31 Dec 2022</td>
+			<td align=left>
+				<b>Spell book rework:</b>
+				<ul>
+					<li>Spell book pages are now drawn separately, so the book looks visuallly correct for how far "through" the book you are, rather than always looking like you're in the middle of the book no matter how many pages you turn
+					<li>Can turn multiple pages at once, without having to wait for one page to turn fully before clicking the folded corner on the next page
+					<li>Page turn animation has more frames so looks a lot more flowing
+					<li>Tabs added to the bottom of the spell book at the start of each section, so you can jump to for example the Attack Spells section with one click
+					<li>Clicking the message on the new turn messages scroll saying that you finished researching a spell and must pick another jumps straight to the Research section
+					<li>Standard and Compact mode - in compact mode the spell descriptions are hidden, so then 11 spells fit on each page instead of 4
+					<li>Will auto switch to compact mode if you acquire so many spells that they will overflow the book in standard mode (only really if you have books of multiple magic realms and collect a LOT of spells)
+					<li>Sound effect added on page turns
+					<li>The downside to all this is the spell book window used to be cropped to the exact shape of the book - this is no longer possible because the dynamic pages and tabs mean the shape of the book is changing all the time
+				</ul>
+				
+				<b>Rule changes:</b>
+				<ul>
+					<li>Gold awarded from capturing raider cities has been changed to work like the original MoM, to stop players (and AI wizards) raking in 1000s of gold early in game just by capturing easy towns
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6.1</td>
+			<td align=left>20 Dec 2022</td>
+			<td align=left>
+				<b>Performance:</b>
+				<ul>
+					<li>During multi-tile moves, the server would re-evaluate the best route to the destination every time the unit moved 1 map cell, to take into account anything new learned by what the unit can see from its new location.
+						Now this only happens if by moving to the new map cell, the unit can now see something that you didn't already know (e.g. an enemy unit in the way, a road it can use, a mountain that is slow to cross).
+						This makes an especially big difference when moving great distances on enchanted roads,
+						and helps speed up the Raiders turns as they start on Myrror with many cities interconnected with enchanted roads and waste a lot of time shuffling units around between their cities.
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>AI players categorize units as combat units, transports, purifiers, settlers, and a few other types.  They would only consider the strength of "combat units" when deciding whether to attack somewhere,
+						treating other units as if they didn't exist, resulting it thinking it could win some combats like Sprites attacking a fleet of Warships.  Now will include transports and purifiers in strength estimates.
+					<li>Units with regeneration that die in combat but come back to life when their side wins the combat would lose any spells cast on them, this is now fixed.
+					<li>Another effect of this was that units with natural regeneration (trolls, shadow demons) would regenerate if they died in combat and their side won, but units with the regeneration Nature spell cast on them would not, because
+						the spell would be removed the instant the unit died, thereby preventing the unit from regenerating at the end of combat.
+					<li>Heroes with regeneration that die in combat but come back to life when their side wins the combat would lose any items they were holding, this is now fixed.
+					<li>Similar to above, heroes with regeneration granted by an item would not come back to life at the end of combat when their side won, because
+						their items would be taken from them the instant the unit died, thereby the hero would no longer be holding the regeneration item at the time the combat ended.
+				</ul>
+				
+				<b>Mods:</b>
+				<ul>
+					<li>Note to activate mods, tick the checkbox next to the database name when creating a new game.
+					<li>"More expensive Spell of Mastery" mod has been toned down.  Before it was SO expensive it was almost impossible to ever research and cast it.
+					<li>Created a "Life Stealing damage" mod that changes Life Stealing to work more like Ghouls' Create Undead, in that ALL damage dealt (both melee and ranged) is convereted into Life Steal damage,
+						turning the slain units into undead and healing the attacker as well.  Life Steal in the original rules becomes of decreasingly useful further on in the game, as it is a resistance-based attack and all
+						strong opponents will have plenty resistance to block it, plus the unit with life steal is dealing regular damage as well, probably doing more regular damage than life steal damage, stopping its own ability from working.
+						This makes all units with Create Undead or Life Steal much more effective.
+					<li>Created a "Half ranged figures" mod that halves the number of figures in every ranged unit that had more than 2 figures.  I created this because it is not difficult to buff Longbowmen or Slingers to the point that they
+						can easily take down Great Drakes and Sky Drakes, yet similarly buffed elite melee units (e.g. Hammerhands) cannot.  Ranged units are so good that using any other unit in the game becomes somewhat pointless, yet
+						the huge variety of units is one of the great things about MoM.  Using this mod significantly nerfs ranged units so it becomes very difficult to play with ranged units alone.
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6</td>
+			<td align=left>2 Dec 2022</td>
+			<td align=left>
+				<b>Diplomacy part 3:</b>
+				<ul>
+					<li>AI wizards will make and break pacts, trade spells and threaten each other, all following the same rules that govern diplomacy involving human players
+					<li>AI wizards initiate conversations with human wizards to make and break pacts, trade spells and threaten you
+				</ul>
+
+				<b>Diplomacy additional relation modifiers and bug fixes:</b>
+				<ul>
+					<li>AI wizards will like you for agreeing to their proposal to declare war on another wizard or break alliance with another wizard
+					<li>If one wizard asks another to declare war on an AI wizard and they agree, the AI wizard will dislike both of them for it
+					<li>Stopped a wizard liking you more for giving them a spell when the reason you gave it to them was because they threatened you
+					<li>AI wizards can no longer brush you off and ignore threats if they've lost patience to talk to you; they have to respond to the threat (they might choose to ignore the threat anyway, but that's via proper threat handling)
+					<li>Fixed AI wizards opinion modifiers being re-applied after every combat they initiate as part of their turn; now opinion modifiers are only applied at the start of the AI player turn as intended
+				</ul>
+
+				<b>Fixed bugs unrelated to diplomacy:</b>
+				<ul>
+					<li>Spell Binding couldn't be targeted
+					<li>Fixed bug where "ghosts" of enemy heroes could be left behind visible on the map and in cities that did nothing - you could stack your units on top of them without attacking them - but they would not disappear.  Happened particularly after their wizard was defeated.
+					<li>Fixed being able to summon a Floating Island on a map cell that already had 9 units in it
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.5.2</td>
+			<td align=left>20 Oct 2022</td>
+			<td align=left>
+				<b>New features:</b>
+				<ul>
+					<li>Separated shadows of units in combat into separate images, so that units that can naturally fly but get webbed actually look like they're now forced to walk around on the ground, and
+						units that can't naturally fly (e.g. spearmen) and have flight cast on them actually look like they're flying.  Note you have to explicitly switch on this new setting in the options screen, it defaults to using the shadows from the original MoM.
+					<li>Client remembers which windows you had open and their location (and size for the overland map) and will restore them the same way next time you are in a game
+					<li>Blocked quitting the client by closing the overland map window, so you have to leave the game first by clicking the Game button, then exit from the main menu
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>The special cap on the size raider cities can grow was being set incorrectly at the start of the game, severly cripping raiders' ability to grow, especially on "Recommended" difficulty level where this cap was supposed to be disabled
+					<li>Units not normally allowed on land (Air ships and regular ships with Flight or Wraith Form cast on them) in a land combat will now crash and die if they are webbed or the spell granting their Flight / Wraith Form gets switched off or dispelled,
+						in the same way that land units with Flight / Wraith Form will drown and die if webbed or dispelled in a water combat
+					<li>Fixed error if a combat is started and none of the defenders can participate (attacking a Floating Island)
+					<li>After picking a target for spells aimed directly at enemy wizards (for example Drain Power, Spell Blast), the scroll will say the name of who you cast it on rather than just that you "chose a target"
+					<li>If you Spell Blast an enemy wizard's spell while you have Detect Magic active, the label showing the spell they are currently casting will update to None to show that it worked
+					<li>Reworked code that decides the likely race for each continent of land, which blew up with a stack overflow error if you tried to create really massive continents
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.5.1</td>
+			<td align=left>3 Oct 2022</td>
+			<td align=left>
+				<b>New features:</b>
+				<ul>
+					<li>Ability to create data mod XML files, and select which mod(s) are applied when creating a new game
+					<li>Created very simple mod to make Spell of Mastery more expensive as an example
+					<li>Single city screen and cities screen both now show the number of turns until current construction is completed
+					<li>Unit cost reduction from Iron Ore and Coal now works
+					<li>Game button now works, leaving the game and returning to the main menu
+					<li>If another player leaves the game nicely (via Game button rather than just closing the client, disconnect or getting an exception) then informs you and returns you to the main menu too
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed client hanging if two AI wizards meet you between you hitting next turn and the start of your next turn
+					<li>Fixed non-fatal error in log if you had city screen open when a city was reduced to ruins by rampaging monsters
+					<li>Outposts can be renamed before they grow into Hamlets
+					<li>If a hero had Chain Mail or Plate Mail, then the defence bonus from the basic item type might wipe out the defence bonus of a different item they were using in a different slot instead of them all being added together
+					<li>Dispelling a Wall of Fire or Wall of Darkness in combat by Disenchant Area/True would stop it having any effect, but would fail to remove the graphics for it
+					<li>Suppress Magic would not attempt to dispel overland Arcane spells
+					<li>Being in one game, leave and then joining/creating a new game without closing the client would cache various images using the flag colours from the previous game
+				</ul>
+					
+				<b>Technical changes:</b>
+				<ul>
+					<li>Updated to JDK 17
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.5</td>
+			<td align=left>23 Sep 2022</td>
+			<td align=left>
+				<b>Diplomacy part 2 (positive relations):</b>
+				<ul>
+					<li>AI wizards will like you more when you donate them gold and spells, or trade spells with them
+					<li>AI wizards will like you more each turn you maintain a wizard pact or alliance with them
+					<li>Aura of Majesty works correctly and makes other wizards like you a little bit more each turn
+				</ul>
+
+				<b>Diplomacy part 2 (negative relations):</b>
+				<ul>
+					<li>Reworked national borders to distance of 4 from each city so they are cleaner, they will now include water tiles, and better calculate disputed tiles which are within 4 tiles of cities owned by more than one wizard
+					<li>AI wizards will dislike you for leaving troops within their border
+					<li>AI wizards will dislike you for breaking a wizard pact or alliance nicely via the diplomacy screen, but the penalty is much smaller than how much they dislike you for attacking them without cancelling the wizard pact or alliance first
+					<li>AI wizards will dislike you for attacking them to varying degrees, depending on whether you attacked units outside a city, inside a city, their capital, and whether you had a wizard pact or alliance in place
+					<li>AI wizards will dislike you for keeping nasty overland enchantments cast, or curses cast on their cities
+					<li>AI wizards will dislike you for casting nasty spells directly at them (spells that are targeted on the wizards screen)
+					<li>AI wizards will dislike you for casting overland attack spells or global attack spells at their units
+					<li>AI wizards will dislike you for casting attack spells at their cities (e.g. earthquake), or casting detrimental effects near their cities (e.g. corruption)
+					<li>AI wizards will dislike you for trying to take over nodes their spirits were melded with (whether successful or not)
+					<li>AI wizards will dislike you for trying to dispel their spells overland (e.g. disjunction or disenchant area), including using Spell Binding to try to take over their overland enchantments
+					<li>Subversion works correctly and makes all wizards dislike the wizard it is cast on
+					<li>After you start casting Spell of Mastery, even if you subsequently cancel it, because you've made everyone aware that you have completed researching it and are willing to use it, all other wizards will hate you for the rest of the game; even gold and spell tributes won't help
+				</ul>
+
+				<b>Diplomacy part 2 (AI wizard decisions):</b>
+				<ul>
+					<li>AI wizards will decide whether to agree to wizard pacts, alliances and peace treaties depending how much they like or dislike you and their personality; they will like you more for successfully forming a pact, alliance or treaty with them
+					<li>AI wizards will consider your suggestions to declare war on or break alliance with other wizards, though they dislike you a little for asking this of them and putting them in an awkward position
+					<li>AI wizards will have limited patience in you spamming them with proposals, and soon will refuse to talk to you anymore (and further dislike you for keeping trying)
+					<li>AI wizards will respond properly to the threaten option (they will consider and propose options other than just instantly declaring war; they will also dislike you a lot for threatening them)
+				</ul>
+
+				<b>What will NOT work until diplomacy part 3 is done in version 1.6:</b>
+				<ul>
+					<li>AI wizards will respond to proposals (e.g. pacts, spell trades) you initiate, but they won't initiate proposals themselves or even initiate talking to you at all (or each other)
+					<li>Wizards pacts and alliances won't affect the behaviour of AI wizards on the overland map - so even if you have an Alliance, they will attack you anyway
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Donating a spell to an AI wizard would throw an exception
+					<li>Casting spells targeted at enemy wizards (e.g. drain power) would show the animation on the wrong wizard portrait
+					<li>Cannot initiate diplomacy when either you or the other wizard is banished
+				</ul>
+					
+				<b>Technical changes:</b>
+				<ul>
+					<li>Fixed issue that prevented running with JDK 17
+					<li>Removed check on JDK version that would fail if JDK reported its version as a non-integer
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.4</td>
+			<td align=left>28 Jul 2022</td>
+			<td align=left>
+				<b>Diplomacy part 1:</b>
+				<ul>
+					<li>The wizards screen how has a diplomacy button enabling you to talk to other wizards, both human and AI players
+					<li>Offering gold and spell tributes
+					<li>Exchanging spells (note this works differently than original MoM in that the other wizard chooses which spell they want in return)
+					<li>Making and breaking Wizard Pacts and Alliances
+					<li>Making Peace Treaties
+					<li>Asking one wizard to declare war on another
+					<li>Asking one wizard to break their alliance with another
+					<li>Threatening to attack a wizard
+					<li>Attacking a city owned by a wizard you have a Wizard Pact with automatically breaks the Wizard Pact
+					<li>Attacking a city or any units owned by a wizard you have an Alliance with automatically breaks the Alliance
+					<li>Attacking a city owned by a wizard you do not have an Alliance or Wizard Pact with results in them automatically declaring war on you
+					<li>Starting to cast Spell of Mastery makes you meet any wizards you didn't already know, any wizards who didn't already know you meet you, and everybody declares war on you
+					<li>After you start casting Spell of Mastery, even if you subsequently cancel it, because you've made everyone aware that you have completed researching it, you can no longer request or accept any Peace Treaty, Wizard Pact or Alliance with
+						anyone and will be permanently at war with everyone until the end of the game
+				</ul>
+
+				<b>What will NOT work until diplomacy part 2 is done in version 1.5:</b>
+				<ul>
+					<li>AI players will always agree to talk to you, and never run out of patience talking to you
+					<li>AI players currently refuse all requests for Wizard Pacts, Alliances and Peace Treaties and will just stay permanently at war with you and each other
+					<li>AI players will automatically declare war on you if you threaten them, rather than making a decision from the 4 available options
+					<li>AI players will respond to requests to exchange spells with you, as long as its a fair or beneficial trade, even if they hate you, but they won't initiate a request to exchange spells
+					<li>AI players' opinion of you and each other currently isn't affected by actions taking during their turns, for example they don't get happier if you offer them tributes, and don't get mad if you cast nasty spells at them, are in their territory, or attack them
+					<li>AI players' actions on the overland map currently aren't affected by any pacts they do or don't have in place, so they will always act as if they are at war with you
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Raiders and Monsters players now automatically "meet" all wizards at the start of the game, to fix an issue with diplomatic marriage event giving a city to a wizard that raiders had never met
+					<li>Stop being able to use Dispel Magic or Disenchant Area on Chaos Channels
+					<li>Stop being able to use Dispel Magic or Disenchant Area on Web, if the unit had another enchantment/curse which was a valid dispel target to get past the targeting validation
+					<li>If a wizard is already banished and you capture their last city thereby defeating them entirely, you don't get to steal spells or MP from it as their Wizard's Fortress was not there
+				</ul>
+				
+				<b>Library upgrades:</b>
+				<ul>
+					<li>Upgraded packaged JRE to 11.0.16
+					<li>Upgraded many 3rd party libraries including some with security vulnerabilities
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.3</td>
+			<td align=left>28 Feb 2022</td>
 			<td align=left>
 				<b>New features:</b>
 				<ul>

@@ -15,10 +15,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
-import com.ndg.random.WeightedChoicesImpl;
+import com.ndg.multiplayer.sessionbase.PlayerType;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.random.WeightedChoicesImpl;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -31,6 +33,7 @@ import momime.common.database.SelectedByPick;
 import momime.common.database.SpellSetting;
 import momime.common.database.WizardObjective;
 import momime.common.database.WizardPersonality;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageOffer;
@@ -47,8 +50,10 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.process.DiplomacyProcessing;
 import momime.server.process.OfferGenerator;
 import momime.server.utils.CityServerUtils;
+import momime.server.utils.KnownWizardServerUtils;
 
 /**
  * Overall AI strategy + control
@@ -100,16 +105,38 @@ public final class MomAIImpl implements MomAI
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
+	
+	/** Methods for AI making decisions about diplomacy with other wizards */
+	private DiplomacyAI diplomacyAI;
+	
+	/** During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards */
+	private DiplomacyProposalsAI diplomacyProposalsAI;
+	
+	/** Methods for processing agreed diplomatic actions */
+	private DiplomacyProcessing diplomacyProcessing; 
+	
+	/** Methods for processing diplomacy requests from AI player to another AI player */
+	private AIToAIDiplomacy aiToAIDiplomacy;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
+	
 	/**
 	 * @param player AI player whose turn to take
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param firstPass True if this is the first pass at this AI player's turn (previous player hit next turn); false if the AI player's turn was paused for a combat or diplomacy and now doing 2nd/3rd/etc pass 
 	 * @return Whether AI turn was fully completed or not; false if we the AI initated a combat in a one-player-at-a-time game and must resume their turn after the combat ends 
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final boolean aiPlayerTurn (final PlayerServerDetails player, final MomSessionVariables mom)
+	public final boolean aiPlayerTurn (final PlayerServerDetails player, final MomSessionVariables mom, final boolean firstPass)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -118,9 +145,61 @@ public final class MomAIImpl implements MomAI
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "aiPlayerTurn");
 
 		if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
+		{
 			getUnitAI ().reallocateHeroItems (player, mom);
+			
+			// All modifications to visible relation are done in one go, then capped at the end, so we allow them to temporarily go above 100 or below -100
+			if (firstPass)
+			{
+				getRelationAI ().updateVisibleRelationDueToUnitsInOurBorder (player, mom);
+				getRelationAI ().updateVisibleRelationDueToPactsAndAlliances (player);
+				getRelationAI ().updateVisibleRelationDueToAuraOfMajesty (player);
+				getRelationAI ().updateVisibleRelationDueToNastyMaintainedSpells (player, mom);
+				getRelationAI ().slideTowardsBaseRelation (player);
+				getRelationAI ().capVisibleRelations (player);
+				getRelationAI ().regainPatience (player);
+			}
+			
+			// Do we want to make any diplomacy proposals to anyone?
+			if (wizardDetails.getWizardState () == WizardState.ACTIVE)
+			{
+				final Iterator<KnownWizardDetails> iter = priv.getFogOfWarMemory ().getWizardDetails ().iterator ();
+				while (iter.hasNext ())
+				{
+					final DiplomacyWizardDetails talkToWizard = (DiplomacyWizardDetails) iter.next ();
+					if ((getPlayerKnowledgeUtils ().isWizard (talkToWizard.getWizardID ())) && (talkToWizard.getWizardState () == WizardState.ACTIVE) &&
+						(talkToWizard.getPlayerID () != player.getPlayerDescription ().getPlayerID ()) &&
+						(mom.getGeneralPublicKnowledge ().getTurnNumber () >= talkToWizard.getLastTurnTalkedTo () + DiplomacyAIConstants.MINIMUM_TURNS_BETWEEN_TALKING))
+					{
+						final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), talkToWizard.getPlayerID (), "aiPlayerTurn");
+						final List<DiplomacyProposal> proposals = getDiplomacyProposalsAI ().generateProposals (player, talkToPlayer, mom);
+						if (!proposals.isEmpty ())
+						{
+							if (log.isDebugEnabled ())
+								for (final DiplomacyProposal proposal : proposals)
+									log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " wants to make proposal " + proposal + " to player ID " + talkToWizard.getPlayerID ());
+							
+							getKnownWizardServerUtils ().meetWizard (player.getPlayerDescription ().getPlayerID (), talkToWizard.getPlayerID (), false, mom);
+							talkToWizard.setLastTurnTalkedTo (mom.getGeneralPublicKnowledge ().getTurnNumber ());
+							
+							if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+							{
+								// Store proposals away untl the human player replies
+								mom.getPendingDiplomacyProposals ().clear ();
+								mom.getPendingDiplomacyProposals ().addAll (proposals);
+								
+								getDiplomacyProcessing ().requestTalking (talkToPlayer, player, mom);
+								return false;		// Pause remainder of AI player turn until human player responds
+							}
+							else if (getDiplomacyAI ().decideWhetherWillTalkTo (player, talkToPlayer, mom))
+								getAiToAIDiplomacy ().submitProposals (player, talkToPlayer, proposals, mom);
+						}
+					}
+				}
+			}
+		}
 		
-		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID ());
+		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID (), false);
 		
 		// First find out what the best units we can construct or summon are - this gives us
 		// something to gauge existing units by, to know if they're now obsolete or not
@@ -332,7 +411,7 @@ public final class MomAIImpl implements MomAI
 							for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 							{
 								final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-								if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000) &&
+								if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION) &&
 									((CommonDatabaseConstants.BUILDING_HOUSING.equals (cityData.getCurrentlyConstructingBuildingID ())) ||
 									(CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
 								{
@@ -842,5 +921,117 @@ public final class MomAIImpl implements MomAI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
+	}
+
+	/**
+	 * @return Methods for AI making decisions about diplomacy with other wizards
+	 */
+	public final DiplomacyAI getDiplomacyAI ()
+	{
+		return diplomacyAI;
+	}
+
+	/**
+	 * @param ai Methods for AI making decisions about diplomacy with other wizards
+	 */
+	public final void setDiplomacyAI (final DiplomacyAI ai)
+	{
+		diplomacyAI = ai;
+	}
+	
+	/**
+	 * @return During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards
+	 */
+	public final DiplomacyProposalsAI getDiplomacyProposalsAI ()
+	{
+		return diplomacyProposalsAI;
+	}
+
+	/**
+	 * @param p During an AI player's turn, works out what diplomacy proposals they may want to initiate to other wizards
+	 */
+	public final void setDiplomacyProposalsAI (final DiplomacyProposalsAI p)
+	{
+		diplomacyProposalsAI = p;
+	}
+
+	/**
+	 * @return Methods for processing agreed diplomatic actions
+	 */
+	public final DiplomacyProcessing getDiplomacyProcessing ()
+	{
+		return diplomacyProcessing;
+	}
+	
+	/**
+	 * @param p Methods for processing agreed diplomatic actions
+	 */
+	public final void setDiplomacyProcessing (final DiplomacyProcessing p)
+	{
+		diplomacyProcessing = p;
+	}
+
+	/**
+	 * @return Methods for processing diplomacy requests from AI player to another AI player
+	 */
+	public final AIToAIDiplomacy getAiToAIDiplomacy ()
+	{
+		return aiToAIDiplomacy;
+	}
+
+	/**
+	 * @param d Methods for processing diplomacy requests from AI player to another AI player
+	 */
+	public final void setAIToAIDiplomacy (final AIToAIDiplomacy d)
+	{
+		aiToAIDiplomacy = d;
+	}
+	
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

@@ -14,6 +14,7 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.OverlandMapCityData;
@@ -73,7 +74,7 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	public final String getText ()
 	{
 		final List<LanguageText> languageText;
-		if (getOldPopulation () < 1000)
+		if (getOldPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 			languageText = (getNewPopulation () > getOldPopulation ()) ?
 				getLanguages ().getNewTurnMessages ().getOutpostGrowth () : getLanguages ().getNewTurnMessages ().getOutpostDeath ();
 		else

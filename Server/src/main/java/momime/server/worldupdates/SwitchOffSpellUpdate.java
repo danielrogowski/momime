@@ -75,6 +75,9 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
 	
+	/** If true, the spell will be removed in player's memory both on the server and clients, but won't be removed from the server's true memory */
+	private boolean retainSpellInServerTrueMemory;
+	
 	/**
 	 * @return Enum indicating which kind of update this is
 	 */
@@ -106,7 +109,12 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	@Override
 	public final String toString ()
 	{
-		return "Switch off spell URN " + getSpellURN ();
+		String s = "Switch off spell URN " + getSpellURN ();
+		
+		if (isRetainSpellInServerTrueMemory ())
+			s = s + ", but keep it in server's true memory";
+		
+		return s;
 	}
 	
 	/**
@@ -159,11 +167,40 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 					if (mom.getWorldUpdates ().removeCombatAreaEffect (trueCAE.getCombatAreaEffectURN ()))
 						result = WorldUpdateResult.REDO_BECAUSE_EARLIER_UPDATES_ADDED;
 			}
+		}
+		
+		
+		if (result == WorldUpdateResult.DONE)
+		{
+			// Switch off on server
+			if (!isRetainSpellInServerTrueMemory ())
+				getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+	
+			// Build the message ready to send it to whoever could see the spell
+			final SwitchOffMaintainedSpellMessage msg = new SwitchOffMaintainedSpellMessage ();
+			msg.setSpellURN (getSpellURN ());
+	
+			// Check which players could see the spell
+			for (final PlayerServerDetails player : mom.getPlayers ())
+			{
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				if ((getMemoryMaintainedSpellUtils ().findSpellURN (getSpellURN (), priv.getFogOfWarMemory ().getMaintainedSpell ()) != null) &&
+					(getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, player, mom)))
+				{
+					// Update player's memory on server
+					getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), priv.getFogOfWarMemory ().getMaintainedSpell ());
+	
+					// Update on client
+					if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+						player.getConnection ().sendMessageToClient (msg);
+				}
+			}
 			
 			// The only spells with a citySpellEffectID that can be cast in combat are Wall of Fire / Wall of Darkness.
-			// If these get cancelled, we need to regnerate the combat map.
-			else	if (((spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)) &&
-				spellDef.getCombatCastingCost () != null)
+			// If these get cancelled, we need to regenerate the combat map.
+			// Can only do this after the spell is removed, or regenerating the combat map will still see the spell existing.
+			if (((spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)) &&
+				(spellDef.getCombatCastingCost () != null) && (trueSpell.getCitySpellEffectID () != null))
 			{
 				final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 					((MapCoordinates3DEx) trueSpell.getCityLocation (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
@@ -188,32 +225,6 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 
 					if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						defendingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
-				}
-			}
-		}
-		
-		
-		if (result == WorldUpdateResult.DONE)
-		{
-			// Switch off on server
-			getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
-	
-			// Build the message ready to send it to whoever could see the spell
-			final SwitchOffMaintainedSpellMessage msg = new SwitchOffMaintainedSpellMessage ();
-			msg.setSpellURN (getSpellURN ());
-	
-			// Check which players could see the spell
-			for (final PlayerServerDetails player : mom.getPlayers ())
-			{
-				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-				if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, player, mom))
-				{
-					// Update player's memory on server
-					getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), priv.getFogOfWarMemory ().getMaintainedSpell ());
-	
-					// Update on client
-					if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-						player.getConnection ().sendMessageToClient (msg);
 				}
 			}
 			
@@ -475,5 +486,21 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
 	{
 		combatMapServerUtils = u;
+	}
+
+	/**
+	 * @return If true, the spell will be removed in player's memory both on the server and clients, but won't be removed from the server's true memory
+	 */
+	public final boolean isRetainSpellInServerTrueMemory ()
+	{
+		return retainSpellInServerTrueMemory;
+	}
+
+	/**
+	 * @param r If true, the spell will be removed in player's memory both on the server and clients, but won't be removed from the server's true memory
+	 */
+	public final void setRetainSpellInServerTrueMemory (final boolean r)
+	{
+		retainSpellInServerTrueMemory = r;
 	}
 }

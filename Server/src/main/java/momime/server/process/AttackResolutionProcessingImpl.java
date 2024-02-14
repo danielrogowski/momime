@@ -33,6 +33,7 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.knowledge.CombatDetails;
 import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -413,7 +414,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 											getUnitServerUtils ().addDamage ((unitBeingAttacked == defender) ? damageToDefender : damageToAttacker,
 												potentialDamage.getDamageType ().getStoredDamageTypeID (), thisDamage);
 											
-											if (CommonDatabaseConstants.UNIT_SKILL_ID_LIFE_STEALING.equals (potentialDamage.getAttackFromSkillID ()))
+											if ((CommonDatabaseConstants.UNIT_SKILL_ID_LIFE_STEALING.equals (potentialDamage.getAttackFromSkillID ())) ||
+												(ServerDatabaseValues.DAMAGE_TYPE_ID_ADVANCED_LIFE_STEALING.equals (potentialDamage.getDamageType ().getDamageTypeID ())))
 											{
 												if (unitBeingAttacked == defender)
 													lifeStealingDamageToDefender = lifeStealingDamageToDefender + thisDamage;

@@ -34,17 +34,19 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.utils.Holder;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
 import momime.client.languages.database.Shortcut;
+import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.HeroItemsUI;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.renderer.ArmyListCellRenderer;
@@ -112,6 +114,12 @@ public final class ArmyListUI extends MomClientDialogUI
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
+	
+	/** Turn sequence and movement helper methods */
+	private OverlandMapProcessing overlandMapProcessing;
 	
 	/** Title */
 	private JLabel title;
@@ -250,8 +258,12 @@ public final class ArmyListUI extends MomClientDialogUI
 			try
 			{
 				regenerateMiniMapBitmaps ();
+				
+				final MapCoordinates3DEx coords = unitStacksItems.get (unitStacksList.getSelectedIndex ()).getKey ();
+				getOverlandMapProcessing ().showSelectUnitBoxes (coords);
+				getOverlandMapUI ().scrollTo (coords.getX (), coords.getY (), coords.getZ (), true);
 			}
-			catch (final IOException e)
+			catch (final Exception e)
 			{
 				log.error (e, e);
 			}
@@ -720,5 +732,37 @@ public final class ArmyListUI extends MomClientDialogUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Turn sequence and movement helper methods
+	 */
+	public final OverlandMapProcessing getOverlandMapProcessing ()
+	{
+		return overlandMapProcessing;
+	}
+
+	/**
+	 * @param proc Turn sequence and movement helper methods
+	 */
+	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
+	{
+		overlandMapProcessing = proc;
 	}
 }

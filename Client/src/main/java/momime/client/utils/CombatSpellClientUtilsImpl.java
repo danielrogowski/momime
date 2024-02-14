@@ -24,8 +24,8 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SampleUnitUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
@@ -46,8 +46,8 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Client-side spell utils */
 	private SpellClientUtils spellClientUtils;
@@ -153,7 +153,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 					// Cracks call can also be aimed at walls
 					if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
 						(spell.getSpellValidBorderTarget ().size () > 0) &&
-						(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain, getClient ().getClientDB ())))
+						(getSpellTargetingUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain, getClient ().getClientDB ())))
 					{
 						msg.setCombatTargetLocation (combatCoords);
 						isValidTarget = true;
@@ -173,7 +173,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 					else
 						variableDamage = null;
 					
-					TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+					TargetSpellResult validTarget = getSpellTargetingUtils ().isUnitValidTargetForSpell
 						(spell, null, combatLocation, combatTerrain, getClient ().getOurPlayerID (), castingSource.getCastingUnit (), variableDamage,
 						 xus, true, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 						 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
@@ -187,7 +187,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 					// Cracks call can also be aimed at walls even if the unit is flying
 					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
 						(spell.getSpellValidBorderTarget ().size () > 0) &&
-						(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain, getClient ().getClientDB ())))
+						(getSpellTargetingUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain, getClient ().getClientDB ())))
 					{
 						msg.setCombatTargetLocation (combatCoords);
 						isValidTarget = true;
@@ -217,7 +217,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 				
 			// Combat spells targeted at a location have their own method too
 			case SPECIAL_COMBAT_SPELLS:
-				if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain, getClient ().getClientDB ()))
+				if (getSpellTargetingUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain, getClient ().getClientDB ()))
 				{
 					msg.setCombatTargetLocation (combatCoords);
 					isValidTarget = true;
@@ -306,19 +306,19 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	}
 
 	/**
-	 * @return MemoryMaintainedSpell utils
+	 * @return Methods that determine whether something is a valid target for a spell
 	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final SpellTargetingUtils getSpellTargetingUtils ()
 	{
-		return memoryMaintainedSpellUtils;
+		return spellTargetingUtils;
 	}
 
 	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
+	 * @param s Methods that determine whether something is a valid target for a spell
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
 	{
-		memoryMaintainedSpellUtils = spellUtils;
+		spellTargetingUtils = s;
 	}
 
 	/**

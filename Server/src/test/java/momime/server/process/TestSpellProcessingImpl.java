@@ -21,7 +21,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -840,7 +840,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		summonedUnit.setUnitID ("UN004");
 		
 		when (midTurn.addUnitOnServerAndClients ("UN004", attackingFrom, null, null,
-			combatLocation, attackingPlayer, UnitStatusID.ALIVE, true, mom)).thenReturn (summonedUnit);
+			combatLocation, attackingPlayer, UnitStatusID.ALIVE, true, false, mom)).thenReturn (summonedUnit);
 		
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);

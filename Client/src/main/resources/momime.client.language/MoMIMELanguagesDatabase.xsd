@@ -83,6 +83,14 @@
 						<xsd:selector xpath="kickedText" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="multiplayerPlayerLeftSessionEndingTitlePK">
+						<xsd:selector xpath="playerLeftSessionEndingTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="multiplayerPlayerLeftSessionEndingTextPK">
+						<xsd:selector xpath="playerLeftSessionEndingText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			
     			<xsd:element minOccurs="0" maxOccurs="1" name="unitName" type="momimelangs:unitName">
@@ -332,10 +340,6 @@
 						<xsd:selector xpath="alreadyHasAllPossibleCitySpellEffects" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargetingCantCreateBuildingsInOutpostsPK">
-						<xsd:selector xpath="cantCreateBuildingsInOutposts" />
-						<xsd:field xpath="@language" />
-					</xsd:key>
 					<xsd:key name="spellTargetingAlreadyHasBuildingPK">
 						<xsd:selector xpath="alreadyHasBuilding" />
 						<xsd:field xpath="@language" />
@@ -474,6 +478,10 @@
 					</xsd:key>
 					<xsd:key name="spellTargetingPlanarSealPK">
 						<xsd:selector xpath="planarSeal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargetingCombatSummonPK">
+						<xsd:selector xpath="combatSummon" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="spellTargetingCancelTitlePK">
@@ -838,6 +846,10 @@
 					</xsd:key>
 					<xsd:key name="cityProductionGoldFromTaxesPK">
 						<xsd:selector xpath="goldFromTaxes" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionGoldFromTaxesAfterMultiplierPK">
+						<xsd:selector xpath="goldFromTaxesAfterMultiplier" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="cityProductionProductionFromSingleTilePK">
@@ -1423,6 +1435,10 @@
 						<xsd:selector xpath="title" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="newGameScreenChooseModsPK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="newGameScreenDifficultyPK">
 						<xsd:selector xpath="difficulty" />
 						<xsd:field xpath="@language" />
@@ -1707,6 +1723,22 @@
 						<xsd:selector xpath="planeShiftFailedText" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="overlandMapScreenLeaveSessionTitlePK">
+						<xsd:selector xpath="leaveSessionTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="overlandMapScreenLeaveSessionNoHumanPlayersPK">
+						<xsd:selector xpath="leaveSessionNoHumanPlayers" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="overlandMapScreenLeaveSessionOneHumanPlayerPK">
+						<xsd:selector xpath="leaveSessionOneHumanPlayer" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="overlandMapScreenLeaveSessionManyHumanPlayersPK">
+						<xsd:selector xpath="leaveSessionManyHumanPlayers" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="nameCityScreen" type="momimelangs:nameCityScreen">
 					<xsd:key name="nameCityScreenTitlePK">
@@ -1741,6 +1773,14 @@
 					</xsd:key>
 					<xsd:key name="cityScreenProductionPK">
 						<xsd:selector xpath="production" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenProductionTurnPK">
+						<xsd:selector xpath="productionTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenProductionTurnsPK">
+						<xsd:selector xpath="productionTurns" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="cityScreenRushBuyPK">
@@ -1883,6 +1923,10 @@
 					</xsd:key>
 					<xsd:key name="optionsScreenCombatMapPK">
 						<xsd:selector xpath="combatMap" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenNewShadowsPK">
+						<xsd:selector xpath="newShadows" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="optionsScreenDebugPK">
@@ -2299,8 +2343,8 @@
 						<xsd:selector xpath="targetWizard" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="wizardsScreenRelationsPK">
-						<xsd:selector xpath="relations" />
+					<xsd:key name="wizardsScreenDiplomacyPK">
+						<xsd:selector xpath="diplomacy" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="wizardsScreenPersonalityPK">
@@ -2353,6 +2397,10 @@
 					</xsd:key>
 					<xsd:key name="citiesListScreenCityConstructingPK">
 						<xsd:selector xpath="cityConstructing" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCityConstructingTurnsPK">
+						<xsd:selector xpath="cityConstructingTurns" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
@@ -2431,12 +2479,20 @@
 						<xsd:selector xpath="banishedByRaiders" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="wizardBanishedScreenBanishedByNobodyPK">
+						<xsd:selector xpath="banishedByNobody" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="wizardBanishedScreenDefeatedByWizardPK">
 						<xsd:selector xpath="defeatedByWizard" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="wizardBanishedScreenDefeatedByRaidersPK">
 						<xsd:selector xpath="defeatedByRaiders" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardBanishedScreenDefeatedByNobodyPK">
+						<xsd:selector xpath="defeatedByNobody" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
@@ -2492,6 +2548,290 @@
 					<xsd:key name="diplomacyScreenTitlePK">
 						<xsd:selector xpath="title" />
 						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenNotYourTurnPK">
+						<xsd:selector xpath="notYourTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBanishedPK">
+						<xsd:selector xpath="banished" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAlreadyInDiplomacyPK">
+						<xsd:selector xpath="alreadyInDiplomacy" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptTalkToPK">
+						<xsd:selector xpath="acceptTalkTo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenReluctantlyTalkToPK">
+						<xsd:selector xpath="reluctantlyTalkTo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRefuseTalkToPK">
+						<xsd:selector xpath="refuseTalkTo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenWaitingForAcceptTalkToPK">
+						<xsd:selector xpath="waitingForAcceptTalkTo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenWaitingForProposalPK">
+						<xsd:selector xpath="waitingForProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenTiredOfWaitingForProposalPK">
+						<xsd:selector xpath="tiredOfWaitingForProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenWaitingForAcceptanceOfProposalPK">
+						<xsd:selector xpath="waitingForAcceptanceOfProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptProposalPK">
+						<xsd:selector xpath="acceptProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRefuseProposalPK">
+						<xsd:selector xpath="refuseProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeTreatyPK">
+						<xsd:selector xpath="proposeTreaty" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBreakTreatyPK">
+						<xsd:selector xpath="breakTreaty" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenOfferTributePK">
+						<xsd:selector xpath="offerTribute" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenExchangeSpellsPK">
+						<xsd:selector xpath="exchangeSpells" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenEndConversationPK">
+						<xsd:selector xpath="endConversation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenWizardPactPK">
+						<xsd:selector xpath="wizardPact" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeWizardPactPK">
+						<xsd:selector xpath="proposeWizardPact" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBreakWizardPactPK">
+						<xsd:selector xpath="breakWizardPact" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAlliancePK">
+						<xsd:selector xpath="alliance" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeAlliancePK">
+						<xsd:selector xpath="proposeAlliance" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBreakAlliancePK">
+						<xsd:selector xpath="breakAlliance" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposePeaceTreatyPK">
+						<xsd:selector xpath="proposePeaceTreaty" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeDeclareWarOnAnotherWizardPK">
+						<xsd:selector xpath="proposeDeclareWarOnAnotherWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeBreakAllianceWithAnotherWizardPK">
+						<xsd:selector xpath="proposeBreakAllianceWithAnotherWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenThreatenToAttackPK">
+						<xsd:selector xpath="threatenToAttack" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenThreatenedPK">
+						<xsd:selector xpath="threatened" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatIgnorePK">
+						<xsd:selector xpath="respondToThreatIgnore" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatTributePK">
+						<xsd:selector xpath="respondToThreatTribute" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatWarPK">
+						<xsd:selector xpath="respondToThreatWar" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBackToMainChoicesPK">
+						<xsd:selector xpath="backToMainChoices" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBackToThreatenChoicesPK">
+						<xsd:selector xpath="backToThreatenChoices" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenOfferSpellPK">
+						<xsd:selector xpath="offerSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenReceivedGoldPK">
+						<xsd:selector xpath="receivedGold" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenReceivedSpellPK">
+						<xsd:selector xpath="receivedSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenExchangeSpellTheirsPK">
+						<xsd:selector xpath="exchangeSpellTheirs" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeExchangeSpellPK">
+						<xsd:selector xpath="proposeExchangeSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRejectExchangeSpellPK">
+						<xsd:selector xpath="rejectExchangeSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenThanksForExchangingSpellPK">
+						<xsd:selector xpath="thanksForExchangingSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenCannotDeclareWarOnUnknownWizardPK">
+						<xsd:selector xpath="cannotDeclareWarOnUnknownWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenDeclareWarOnYouBecauseOfOtherWizardPK">
+						<xsd:selector xpath="declareWarOnYouBecauseOfOtherWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBreakAllianceWithYouBecauseOfOtherWizardPK">
+						<xsd:selector xpath="breakAllianceWithYouBecauseOfOtherWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenNormalGreetingPhrasePK">
+						<xsd:selector xpath="normalGreetingPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenImpatientGreetingPhrasePK">
+						<xsd:selector xpath="impatientGreetingPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRefuseGreetingPhrasePK">
+						<xsd:selector xpath="refuseGreetingPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenGenericRefusePhrasePK">
+						<xsd:selector xpath="genericRefusePhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeWizardPactPhrasePK">
+						<xsd:selector xpath="proposeWizardPactPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptWizardPactPhrasePK">
+						<xsd:selector xpath="acceptWizardPactPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeAlliancePhrasePK">
+						<xsd:selector xpath="proposeAlliancePhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptAlliancePhrasePK">
+						<xsd:selector xpath="acceptAlliancePhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposePeaceTreatyPhrasePK">
+						<xsd:selector xpath="proposePeaceTreatyPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptPeaceTreatyPhrasePK">
+						<xsd:selector xpath="acceptPeaceTreatyPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBreakPactPhrasePK">
+						<xsd:selector xpath="breakPactPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBrokenPactPhrasePK">
+						<xsd:selector xpath="brokenPactPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenPactBrokenUnitsPhrasePK">
+						<xsd:selector xpath="pactBrokenUnitsPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenPactBrokenCityPhrasePK">
+						<xsd:selector xpath="pactBrokenCityPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenDeclareWarCityPhrasePK">
+						<xsd:selector xpath="declareWarCityPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenGrownImpatientPhrasePK">
+						<xsd:selector xpath="grownImpatientPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenThanksForGoldPhrasePK">
+						<xsd:selector xpath="thanksForGoldPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenThanksForSpellPhrasePK">
+						<xsd:selector xpath="thanksForSpellPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenExchangeSpellOursPhrasePK">
+						<xsd:selector xpath="exchangeSpellOursPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRefuseExchangeSpellPhrasePK">
+						<xsd:selector xpath="refuseExchangeSpellPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeDeclareWarOnAnotherWizardPhrasePK">
+						<xsd:selector xpath="proposeDeclareWarOnAnotherWizardPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptDeclareWarOnAnotherWizardPhrasePK">
+						<xsd:selector xpath="acceptDeclareWarOnAnotherWizardPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeBreakAllianceWithAnotherWizardPhrasePK">
+						<xsd:selector xpath="proposeBreakAllianceWithAnotherWizardPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptBreakAllianceWithAnotherWizardPhrasePK">
+						<xsd:selector xpath="acceptBreakAllianceWithAnotherWizardPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatIgnorePhrasePK">
+						<xsd:selector xpath="respondToThreatIgnorePhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatGoldPhrasePK">
+						<xsd:selector xpath="respondToThreatGoldPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatSpellPhrasePK">
+						<xsd:selector xpath="respondToThreatSpellPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRespondToThreatWarPhrasePK">
+						<xsd:selector xpath="respondToThreatWarPhrase" />
+						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="helpScreen" type="momimelangs:helpScreen">
@@ -2675,6 +3015,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deleteSavedGameText" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="kickedTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="kickedText" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="playerLeftSessionEndingTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="playerLeftSessionEndingText" />
    			<xsd:element minOccurs="0" maxOccurs="1" name="createAccountFailed" type="momimelangs:createAccountFailed">
 				<xsd:key name="createAccountFailedTitlePK">
 					<xsd:selector xpath="title" />
@@ -3078,7 +3420,6 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enchantingEnemyCity" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cursingOwnCity" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyHasAllPossibleCitySpellEffects" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cantCreateBuildingsInOutposts" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyHasBuilding" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="tooHighResistance" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="immune" />
@@ -3114,6 +3455,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="insufficientMana" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planeShiftTower" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planarSeal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="combatSummon" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelText" />
 		</xsd:sequence>
@@ -3223,6 +3565,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSinglePopulation" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMultiplePopulation" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldFromTaxes" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldFromTaxesAfterMultiplier" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSingleTile" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMultipleTiles" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSingleMapFeature" />
@@ -3400,6 +3743,7 @@
 	<xsd:complexType name="newGameScreen" nxe:submenu="New game UI" nxe:singular="New game" nxe:plural="New game">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="chooseMods" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="difficulty" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="humanOpponents" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiOpponents" />
@@ -4260,6 +4604,10 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planeShiftFailedTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planeShiftFailedText" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveSessionTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveSessionNoHumanPlayers" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveSessionOneHumanPlayer" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveSessionManyHumanPlayers" />
    			<xsd:element minOccurs="0" maxOccurs="1" name="mapButtonBar" type="momimelangs:mapButtonBar">
 				<xsd:key name="mapButtonBarGamePK">
 					<xsd:selector xpath="game" />
@@ -4375,6 +4723,10 @@
 					<xsd:selector xpath="cannotEndTurnUnassignedHeroItems" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
+				<xsd:key name="mapRightHandBarCannotEndTurnDiplomacyPK">
+					<xsd:selector xpath="cannotEndTurnDiplomacy" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
    			</xsd:element>
     		<xsd:element minOccurs="0" maxOccurs="1" name="surveyorTab" type="momimelangs:surveyorTab">
 				<xsd:key name="surveyorTabTitlePK">
@@ -4452,6 +4804,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnNewTurnMessagesSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnNewTurnMessagesOffer" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnUnassignedHeroItems" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnDiplomacy" />
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -4470,6 +4823,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buildings" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="units" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="production" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionTurns" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rushBuy" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="changeConstruction" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rename" />
@@ -4519,6 +4874,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showEnemyBorders" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="animateUnitsMoving" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="combatMap" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="newShadows" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="debug" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showFrameRate" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showUnitURNs" />
@@ -4686,7 +5042,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingNothing" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetWizard" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="relations" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="diplomacy" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="personality" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="objective" />
 		</xsd:sequence>
@@ -4709,6 +5065,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityEnchantments" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="citySell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityConstructing" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityConstructingTurns" />
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -4746,8 +5103,10 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="banishedByWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="banishedByRaiders" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="banishedByNobody" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defeatedByWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defeatedByRaiders" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defeatedByNobody" />
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -4784,6 +5143,217 @@
 	<xsd:complexType name="diplomacyScreen" nxe:submenu="UI" nxe:singular="Diplomacy" nxe:plural="Diplomacy">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notYourTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="banished" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyInDiplomacy" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="acceptTalkTo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="reluctantlyTalkTo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refuseTalkTo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForAcceptTalkTo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="tiredOfWaitingForProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForAcceptanceOfProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="acceptProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refuseProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeTreaty" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakTreaty" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerTribute" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="exchangeSpells" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="endConversation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wizardPact" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeWizardPact" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakWizardPact" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alliance" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeAlliance" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakAlliance" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposePeaceTreaty" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeDeclareWarOnAnotherWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeBreakAllianceWithAnotherWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="threatenToAttack" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="threatened" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="respondToThreatIgnore" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="respondToThreatTribute" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="respondToThreatWar" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="backToMainChoices" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="backToThreatenChoices" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="receivedGold" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="receivedSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="exchangeSpellTheirs" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeExchangeSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rejectExchangeSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="thanksForExchangingSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotDeclareWarOnUnknownWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="declareWarOnYouBecauseOfOtherWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakAllianceWithYouBecauseOfOtherWizard" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="normalGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Normal greeting">
+				<xsd:key name="diplomacyScreenNormalGreetingPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="impatientGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Impatient greeting">
+				<xsd:key name="diplomacyScreenImpatientGreetingPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="refuseGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Refuse greeting">
+				<xsd:key name="diplomacyScreenRefuseGreetingPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="genericRefusePhrase" type="momimecommon:languageTextVariant" nxe:label="Generic refusal">
+				<xsd:key name="diplomacyScreenGenericRefusePhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="proposeWizardPactPhrase" type="momimecommon:languageTextVariant" nxe:label="Propose wizard pact">
+				<xsd:key name="diplomacyScreenProposeWizardPactPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptWizardPactPhrase" type="momimecommon:languageTextVariant" nxe:label="Accept wizard pact">
+				<xsd:key name="diplomacyScreenAcceptWizardPactPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="proposeAlliancePhrase" type="momimecommon:languageTextVariant" nxe:label="Propose alliance">
+				<xsd:key name="diplomacyScreenProposeAlliancePhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptAlliancePhrase" type="momimecommon:languageTextVariant" nxe:label="Accept alliance">
+				<xsd:key name="diplomacyScreenAcceptAlliancePhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="proposePeaceTreatyPhrase" type="momimecommon:languageTextVariant" nxe:label="Propose Peace Treaty">
+				<xsd:key name="diplomacyScreenProposePeaceTreatyPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptPeaceTreatyPhrase" type="momimecommon:languageTextVariant" nxe:label="Accept Peace Treaty">
+				<xsd:key name="diplomacyScreenAcceptPeaceTreatyPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="breakPactPhrase" type="momimecommon:languageTextVariant" nxe:label="Break pact">
+				<xsd:key name="diplomacyScreenBreakPactPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="brokenPactPhrase" type="momimecommon:languageTextVariant" nxe:label="Broken pact">
+				<xsd:key name="diplomacyScreenBrokenPactPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pactBrokenUnitsPhrase" type="momimecommon:languageTextVariant" nxe:label="Pact broken (units)">
+				<xsd:key name="diplomacyScreenPactBrokenUnitsPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pactBrokenCityPhrase" type="momimecommon:languageTextVariant" nxe:label="Pact broken (city)">
+				<xsd:key name="diplomacyScreenPactBrokenCityPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="declareWarCityPhrase" type="momimecommon:languageTextVariant" nxe:label="Declare war (city)">
+				<xsd:key name="diplomacyScreenDeclareWarCityPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="grownImpatientPhrase" type="momimecommon:languageTextVariant" nxe:label="Grown impatient">
+				<xsd:key name="diplomacyScreenGrownImpatientPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="thanksForGoldPhrase" type="momimecommon:languageTextVariant" nxe:label="Thanks for gold">
+				<xsd:key name="diplomacyScreenThanksForGoldPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="thanksForSpellPhrase" type="momimecommon:languageTextVariant" nxe:label="Thanks for spell">
+				<xsd:key name="diplomacyScreenThanksForSpellPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="exchangeSpellOursPhrase" type="momimecommon:languageTextVariant" nxe:label="Exchange spell (ours)">
+				<xsd:key name="diplomacyScreenExchangeSpellOursPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="refuseExchangeSpellPhrase" type="momimecommon:languageTextVariant" nxe:label="Refuse exchange spell">
+				<xsd:key name="diplomacyScreenRefuseExchangeSpellPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="proposeDeclareWarOnAnotherWizardPhrase" type="momimecommon:languageTextVariant" nxe:label="Propose declare war on another wizard">
+				<xsd:key name="diplomacyScreenProposeDeclareWarOnAnotherWizardPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptDeclareWarOnAnotherWizardPhrase" type="momimecommon:languageTextVariant" nxe:label="Accept declare war on another wizard">
+				<xsd:key name="diplomacyScreenAcceptDeclareWarOnAnotherWizardPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="proposeBreakAllianceWithAnotherWizardPhrase" type="momimecommon:languageTextVariant" nxe:label="Propose break alliance with another wizard">
+				<xsd:key name="diplomacyScreenProposeBreakAllianceWithAnotherWizardPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="acceptBreakAllianceWithAnotherWizardPhrase" type="momimecommon:languageTextVariant" nxe:label="Accept break alliance with another wizard">
+				<xsd:key name="diplomacyScreenAcceptBreakAllianceWithAnotherWizardPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="respondToThreatIgnorePhrase" type="momimecommon:languageTextVariant" nxe:label="Respond to threat - ignore">
+				<xsd:key name="diplomacyScreenRespondToThreatIgnorePhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="respondToThreatGoldPhrase" type="momimecommon:languageTextVariant" nxe:label="Respond to threat - gold">
+				<xsd:key name="diplomacyScreenRespondToThreatGoldPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="respondToThreatSpellPhrase" type="momimecommon:languageTextVariant" nxe:label="Respond to threat - spell">
+				<xsd:key name="diplomacyScreenRespondToThreatSpellPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="respondToThreatWarPhrase" type="momimecommon:languageTextVariant" nxe:label="Respond to threat - war">
+				<xsd:key name="diplomacyScreenRespondToThreatWarPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -4835,6 +5405,7 @@
 			<xsd:enumeration value="CENTRE_OVERLAND_ON_SELECTED_UNIT" />
 			<xsd:enumeration value="GAME_SCREEN" />
 			<xsd:enumeration value="MAGIC_SCREEN" />
+			<xsd:enumeration value="CITIES_SCREEN" />
 			<xsd:enumeration value="NEXT_TURN" />
 			<xsd:enumeration value="SWITCH_PLANE" />
 			<xsd:enumeration value="SPELLBOOK" />

@@ -31,8 +31,8 @@ import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.random.RandomUtils;
-import com.ndg.random.RandomUtilsImpl;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.random.RandomUtilsImpl;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -1275,8 +1275,8 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		mapGen.fillSingleLairOrTowerWithMonsters (coords, "MB01", 3000, 6000, 0.8, monsterPlayer, mom);		// 0.8 thru 3000-6000 is 5400
 		
 		// Check results
-		verify (midTurn, times (5)).addUnitOnServerAndClients ("UN009", coords, null, null, null, monsterPlayer, UnitStatusID.ALIVE, false, mom);
-		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN004", coords, null, null, null, monsterPlayer, UnitStatusID.ALIVE, false, mom);
+		verify (midTurn, times (5)).addUnitOnServerAndClients ("UN009", coords, null, null, null, monsterPlayer, UnitStatusID.ALIVE, false, false, mom);
+		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN004", coords, null, null, null, monsterPlayer, UnitStatusID.ALIVE, false, false, mom);
 		
 		verifyNoMoreInteractions (midTurn);
 	}

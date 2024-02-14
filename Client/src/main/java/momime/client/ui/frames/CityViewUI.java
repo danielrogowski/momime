@@ -37,13 +37,15 @@ import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
-import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
@@ -92,7 +94,7 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SampleUnitUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 
 /**
  * City screen, so you can view current buildings, production and civilians, examine
@@ -145,8 +147,8 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Variable replacer for outputting skill descriptions */
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
 
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
@@ -199,6 +201,9 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Sample unit method */
 	private SampleUnitUtils sampleUnitUtils;
 	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
 	
@@ -238,6 +243,9 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Production label */
 	private JLabel production;
 
+	/** Production number of turns label*/
+	private JLabel productionTurns;
+	
 	/** Rush buy action */
 	private Action rushBuyAction;
 	
@@ -386,7 +394,7 @@ public final class CityViewUI extends MomClientFrameUI
 		
 			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
-			if (cityData.getCityPopulation () >= 1000)
+			if (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION)
 			{
 				// Normal city growth/death rate calculation
 				final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate (getClient ().getPlayers (),
@@ -498,6 +506,9 @@ public final class CityViewUI extends MomClientFrameUI
 		production = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (production, "frmCityProductionLabel");
 
+		productionTurns = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (productionTurns, "frmCityProductionTurns");
+
 		units = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (units, "frmCityUnits");
 		
@@ -536,6 +547,16 @@ public final class CityViewUI extends MomClientFrameUI
 		miniMapPanel.setBackground (Color.BLACK);
 		contentPane.add (miniMapPanel, "frmCityMiniMap");
 
+		miniMapPanel.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (SwingUtilities.isLeftMouseButton (ev))
+					getOverlandMapUI ().scrollTo (getCityLocation ().getX (), getCityLocation ().getY (), getCityLocation ().getZ (), true);
+			}
+		});
+		
 		// Set up the mini panel to hold all the civilians - this also has a 2 pixel gap to correct the labels above it
 		civilianPanel = new JPanel ();
 		civilianPanel.setOpaque (false);
@@ -654,12 +675,10 @@ public final class CityViewUI extends MomClientFrameUI
 					if (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ()))
 					{
 						// How many coins does it take to draw this (round up)
-						Integer productionCost = null;
-						if (cityData.getCurrentlyConstructingBuildingID () != null)
-							productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionProgressPanel").getProductionCost ();
-	
-						if (cityData.getCurrentlyConstructingUnitID () != null)
-							productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "constructionProgressPanel").getProductionCost ();
+						final Integer productionCost = getCityProductionCalculations ().calculateProductionCost (getClient ().getPlayers (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCityLocation (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+							getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), getClient ().getClientDB (), null);
 						
 						if (productionCost != null)
 						{
@@ -728,7 +747,7 @@ public final class CityViewUI extends MomClientFrameUI
 					{
 						zOrderGraphics.setGraphics (g);
 						final String movingActionID = getUnitCalculations ().determineCombatActionID (sampleUnit, true, getClient ().getClientDB ());
-						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, zOrderGraphics, (constructionPanel.getWidth () - 60) / 2, 28, true, true, 0, null, null);
+						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, zOrderGraphics, (constructionPanel.getWidth () - 60) / 2, 28, true, true, 0, null, null, false);
 					}
 				}
 				catch (final Exception e)
@@ -866,7 +885,7 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		int x = 0;
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) && (getUnitUtils ().canSeeUnitOverland
+			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) && (getUnitVisibilityUtils ().canSeeUnitOverland
 				(mu, getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
 			{
 				if (x < CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
@@ -993,18 +1012,18 @@ public final class CityViewUI extends MomClientFrameUI
 		final RaceEx race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "cityDataChanged");
 		
 		// Start with farmers
-		Image civilianImage = getUtils ().doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "cityDataChanged")));
+		Image civilianImage = getModifiedImageCache ().doubleSize (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "cityDataChanged"));
 		final int civvyCount = cityData.getCityPopulation () / 1000;
 		int x = 0;
 		for (int civvyNo = 1; civvyNo <= civvyCount; civvyNo++)
 		{
 			// Is this the first rebel?
 			if (civvyNo == civvyCount - cityData.getNumberOfRebels () + 1)
-				civilianImage = getUtils ().doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, "cityDataChanged")));
+				civilianImage = getModifiedImageCache ().doubleSize (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, "cityDataChanged"));
 			
 			// Is this the first worker?
 			else if (civvyNo == cityData.getMinimumFarmers () + cityData.getOptionalFarmers () + 1)
-				civilianImage = getUtils ().doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, "cityDataChanged")));
+				civilianImage = getModifiedImageCache ().doubleSize (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, "cityDataChanged"));
 			
 			// Is this civilian changeable (between farmer and worker) - if so, create a button for them instead of a plain image
 			final Action action;
@@ -1137,7 +1156,7 @@ public final class CityViewUI extends MomClientFrameUI
 		notOursPanel.setVisible ((!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) || (cityData.getCityPopulation () < 1000));
 		production.setVisible (!notOursPanel.isVisible ());
 		changeConstructionAction.setEnabled (!notOursPanel.isVisible ());
-		renameButton.setVisible (!notOursPanel.isVisible ());
+		renameButton.setVisible (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ()));
 		
 		// Can we see what this city is constructing?
 		cannotSeeConstructionPanel.setVisible ((!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) &&
@@ -1191,7 +1210,7 @@ public final class CityViewUI extends MomClientFrameUI
 			
 				// Growth rate
 				final String cityPopulation = getTextUtils ().intToStrCommas (cityData.getCityPopulation ());
-				if (cityData.getCityPopulation () < 1000)
+				if (cityData.getCityPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 					currentPopulationAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCityScreen ().getPopulationOutpost ()).replaceAll
 						("POPULATION", cityPopulation));
 				else if (cityData.getCityPopulation () == maxCitySize * 1000)
@@ -1208,6 +1227,18 @@ public final class CityViewUI extends MomClientFrameUI
 					currentPopulationAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCityScreen ().getPopulationAndGrowth ()).replaceAll
 						("POPULATION", cityPopulation).replaceAll ("GROWTH_RATE", getTextUtils ().intToStrPlusMinus (cityGrowth)));
 				}
+				
+				// Turns until construction completed
+				Integer turns = null;
+				if ((getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) && (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION))
+					turns = getClientCityCalculations ().calculateProductionTurnsRemaining (getCityLocation ());
+				
+				if (turns != null)
+					productionTurns.setText (getLanguageHolder ().findDescription
+						((turns == 1) ? getLanguages ().getCityScreen ().getProductionTurn () : getLanguages ().getCityScreen ().getProductionTurns ()).replaceAll
+							("NUMBER_OF_TURNS", turns.toString ()));
+				
+				productionTurns.setVisible (turns != null);
 			}
 			catch (final IOException e)
 			{
@@ -1226,10 +1257,11 @@ public final class CityViewUI extends MomClientFrameUI
 	}
 	
 	/**
-	 *  
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we can't find the building or unit being constructed
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public final void recheckRushBuyEnabled () throws RecordNotFoundException
+	public final void recheckRushBuyEnabled () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		boolean rushBuyEnabled = false;
 		if (!notOursPanel.isVisible ())
@@ -1238,12 +1270,10 @@ public final class CityViewUI extends MomClientFrameUI
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 			final OverlandMapCityData cityData = mc.getCityData ();
 	
-			Integer productionCost = null;
-			if (cityData.getCurrentlyConstructingBuildingID () != null)
-				productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "recheckRushBuyEnabled").getProductionCost ();
-	
-			if (cityData.getCurrentlyConstructingUnitID () != null)
-				productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "recheckRushBuyEnabled").getProductionCost ();
+			final Integer productionCost = getCityProductionCalculations ().calculateProductionCost (getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCityLocation (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+				getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), getClient ().getClientDB (), null);
 			
 			if (productionCost != null)
 			{
@@ -1525,19 +1555,19 @@ public final class CityViewUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Methods dealing with checking whether we can see units or not
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
 	{
-		return unitUtils;
+		return unitVisibilityUtils;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param u Methods dealing with checking whether we can see units or not
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
 	{
-		unitUtils = utils;
+		unitVisibilityUtils = u;
 	}
 	
 	/**
@@ -1818,5 +1848,21 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
 		sampleUnitUtils = s;
+	}
+
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
 	}
 }

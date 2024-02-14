@@ -9,13 +9,13 @@ import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import momime.editors.server.ServerEditorDatabaseConstants;
-
 import org.jdom2.Element;
 
-import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.editor.XmlEditorException;
 import com.ndg.xmleditor.grid.XmlEditorGrid;
+import com.ndg.xmleditor.jdom.JdomUtils;
+
+import momime.editors.server.ServerEditorDatabaseConstants;
 
 /**
  * Adds a second grid that shows buildings we implicitly cannot build as well as those explicitly listed in the XML file

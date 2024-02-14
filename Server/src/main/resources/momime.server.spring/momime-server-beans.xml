@@ -51,6 +51,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg value="${configDir}MoMIMEServerConfig.xml" />
 	</bean>
 	
+	<!-- Mod XMLs -->
+
+	<bean id="modSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg type="java.net.URL" value="/momime.common.mod/MoMIMEMod.xsd" />
+	</bean>
+	
+	<bean id="validatorFactory" class="com.ndg.utils.ValidatorFactory" />
+	
+	<bean id="modValidator" class="javax.xml.validation.Validator" factory-bean="validatorFactory" factory-method="newValidator">
+		<constructor-arg ref="modSchema" />
+	</bean>
+	
+	<bean id="saxBuilder" class="org.jdom2.input.SAXBuilder" />
+	
 	<!-- Create extended versions of client to server messages which include message implementations -->
 
 	<bean id="momServerClientToServerFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
@@ -117,6 +131,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 	</bean>
 	
 	<bean id="changeTaxRateMessage" class="momime.server.messages.process.ChangeTaxRateMessageImpl" scope="prototype">
@@ -192,6 +207,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="targetSpellMessage" class="momime.server.messages.process.TargetSpellMessageImpl" scope="prototype">
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="randomUtils" ref="randomUtils" />
@@ -257,6 +273,19 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="offerGenerator" ref="offerGenerator" />
 	</bean>
 	
+	<bean id="requestDiplomacyMessage" class="momime.server.messages.process.RequestDiplomacyMessageImpl" scope="prototype">
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+		<property name="diplomacyAI" ref="diplomacyAI" />
+		<property name="relationAI" ref="relationAI" />
+		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
+		<property name="momAI" ref="momAI" />
+		<property name="diplomacyProposalsAI" ref="diplomacyProposalsAI" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+	</bean>
+
 	<!-- User registry -->
 
 		<bean id="userRegistrySchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
@@ -305,7 +334,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
 		<constructor-arg value="#{serverConfig.pathToServerXmlDatabases}" />
+		<constructor-arg value="#{serverConfig.pathToModXmls}" />
 		<constructor-arg ref="commonDatabaseUnmarshaller" />
+		<constructor-arg ref="modValidator" />
 	</bean>
 	
 	<bean id="momServer" class="momime.server.MomServer" init-method="start">
@@ -396,6 +427,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 
 	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtilsImpl">
@@ -435,7 +468,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">
 		<property name="spellUtils" ref="spellUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
@@ -613,6 +646,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="relationAI" ref="relationAI" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
+		<property name="cityUpdates" ref="cityUpdates" />
+	</bean>
+
+	<bean id="cityUpdates" class="momime.server.process.CityUpdatesImpl">
+		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
 	</bean>
 
 	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->
@@ -628,24 +670,27 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 
 	<bean id="spellMultiCasting" class="momime.server.process.SpellMultiCastingImpl">
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -687,11 +732,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 		<property name="spellServerUtils" ref="spellServerUtils" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -709,6 +756,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 		<property name="movementUtils" ref="movementUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">
@@ -720,12 +769,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 
 	<bean id="spellTriggers" class="momime.server.process.SpellTriggersImpl">
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="spellDispelling" ref="spellDispelling" />
@@ -770,7 +821,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
 		<property name="momAI" ref="momAI" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
-		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="randomUtils" ref="randomUtils" />
@@ -778,6 +828,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="relationAI" ref="relationAI" />
+		<property name="cityUpdates" ref="cityUpdates" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
@@ -807,7 +860,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="combatHandling" class="momime.server.process.CombatHandlingImpl">
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
@@ -825,7 +878,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="damageProcessor" ref="damageProcessor" />
@@ -903,12 +956,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="randomCityEvents" ref="randomCityEvents" />
 	</bean>
+
+	<bean id="diplomacyProcessing" class="momime.server.process.DiplomacyProcessingImpl">
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="relationAI" ref="relationAI" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+	</bean>
 	
 	<!-- AI -->
 	
 	<bean id="spellAI" class="momime.server.ai.SpellAIImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="aiSpellCalculations" ref="aiSpellCalculations" />
 		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="randomUtils" ref="randomUtils" />
@@ -970,10 +1034,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="relationAI" ref="relationAI" />
+		<property name="diplomacyAI" ref="diplomacyAI" />
+		<property name="diplomacyProposalsAI" ref="diplomacyProposalsAI" />
+		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
+		<property name="AIToAIDiplomacy" ref="aiToAIDiplomacy" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
@@ -1043,8 +1114,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="combatSpellAI" class="momime.server.ai.CombatSpellAIImpl">
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
-		<property name="unitUtils" ref="unitUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="unitVisibilityUtils" ref="unitVisibilityUtils" />
+		<property name="spellTargetingUtils" ref="spellTargetingUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
@@ -1053,6 +1124,34 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="relationAI" class="momime.server.ai.RelationAIImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="zoneAI" ref="zoneAI" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+	</bean>
+
+	<bean id="diplomacyAI" class="momime.server.ai.DiplomacyAIImpl">
+		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="relationAI" ref="relationAI" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
+	<bean id="diplomacyProposalsAI" class="momime.server.ai.DiplomacyProposalsAIImpl">
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+		<property name="diplomacyAI" ref="diplomacyAI" />
+		<property name="momAI" ref="momAI" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
+	</bean>
+
+	<bean id="aiToAIDiplomacy" class="momime.server.ai.AIToAIDiplomacyImpl">
+		<property name="diplomacyAI" ref="diplomacyAI" />
+		<property name="diplomacyProcessing" ref="diplomacyProcessing" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 	</bean>
 	
 	<!-- Fog of War -->
@@ -1185,7 +1284,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
 		<property name="commonDatabaseUnmarshaller" ref="commonDatabaseUnmarshaller" />
+		<property name="saxBuilder" ref="saxBuilder" />
 		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
+		<property name="pathToModXmls" value="#{serverConfig.pathToModXmls}" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 	</bean>

@@ -36,4 +36,21 @@ public interface ServerSpellCalculations
 	 */
 	public void randomizeSpellsResearchableNow (final List<SpellResearchStatus> spells, final CommonDatabase db)
 		throws RecordNotFoundException;
+	
+	/**
+	 * @param tradeableSpells Spells known by the player who is giving away a spell
+	 * @param knownSpells Spells known by the player who is being given a spell
+	 * @return List of tradeable spells
+	 */
+	public List<String> listTradeableSpells (final List<SpellResearchStatus> tradeableSpells, final List<SpellResearchStatus> knownSpells);
+	
+	/**
+	 * @param spellIDs List of candidate spells
+	 * @param count Maximum number of spells to return
+	 * @param db Lookup lists built over the XML database
+	 * @return List of (count) cheapest spells from the list
+	 * @throws RecordNotFoundException If there's a spell in the list that can't be found in the database
+	 */
+	public List<String> findCheapestSpells (final List<String> spellIDs, final int count, final CommonDatabase db)
+		throws RecordNotFoundException;
 }

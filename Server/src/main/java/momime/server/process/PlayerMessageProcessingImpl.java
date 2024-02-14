@@ -2,7 +2,6 @@ package momime.server.process;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +17,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -34,6 +33,7 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPickCount;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -302,7 +302,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			
 			// On the server, remember that this wizard has met themselves; make a separate copy of the object
 			// Remaining field values (photo choice, flag colour, picks) are not yet known yet
-			final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
+			final DiplomacyWizardDetails knownWizardDetails = new DiplomacyWizardDetails ();
 			knownWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
 			knownWizardDetails.setWizardID (wizardID);
 			knownWizardDetails.setStandardPhotoID (wizardID);
@@ -412,7 +412,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					if (thisPlayer.getPlayerDescription ().getPlayerID () != monstersWizard.getPlayerID ())
 						
 						getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (thisUnit.getUnitID (), null, null, null, null,
-							thisPlayer, UnitStatusID.NOT_GENERATED, false, mom);
+							thisPlayer, UnitStatusID.NOT_GENERATED, false, false, mom);
 	}
 
 
@@ -481,18 +481,17 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			
 			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom);
 			
-			// Everyone automatically "meets" the raiders and monsters "wizards"
-			final List<KnownWizardDetails> automaticallyMeetWizards = Arrays.asList
-				(getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), raidersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (R)"),
-				 getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), monstersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (M)"));
-			
+			// Everyone automatically "meets" the raiders and monsters "wizards", and raiders and monsters automatically "meet" all the wizards
 			for (final PlayerServerDetails sendToPlayer : mom.getPlayers ())
-				for (final KnownWizardDetails automaticallyMeetWizard : automaticallyMeetWizards)
-					if (automaticallyMeetWizard.getPlayerID () != sendToPlayer.getPlayerDescription ().getPlayerID ())
+				for (final KnownWizardDetails automaticallyMeetWizard : mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ())
+					if ((automaticallyMeetWizard.getPlayerID () != sendToPlayer.getPlayerDescription ().getPlayerID ()) &&
+						((sendToPlayer == raidersPlayer) || (sendToPlayer == monstersPlayer) ||
+							(automaticallyMeetWizard.getPlayerID () == raidersPlayer.getPlayerDescription ().getPlayerID ()) ||
+							(automaticallyMeetWizard.getPlayerID () == monstersPlayer.getPlayerDescription ().getPlayerID ())))
 					{
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sendToPlayer.getPersistentPlayerPrivateKnowledge ();
 						
-						final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
+						final DiplomacyWizardDetails knownWizardDetails = new DiplomacyWizardDetails ();
 						knownWizardDetails.setPlayerID (automaticallyMeetWizard.getPlayerID ());
 						knownWizardDetails.setWizardID (automaticallyMeetWizard.getWizardID ());
 						knownWizardDetails.setStandardPhotoID (automaticallyMeetWizard.getStandardPhotoID ());
@@ -724,7 +723,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		}
 		
 		// Generate more rampaging monsters
-		if (timeStop == null)
+		if ((mom.getPlayers ().size () > 0) && (timeStop == null))
 			for (final KnownWizardDetails thisWizard : mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ())
 				if ((useOnlyOnePlayerID == 0) || (useOnlyOnePlayerID == thisWizard.getPlayerID ()))
 				{
@@ -923,7 +922,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			else
 			{
 				log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-				if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
+				if (getMomAI ().aiPlayerTurn (currentPlayer, mom, true))
 				
 					// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 					nextTurnButton (mom, currentPlayer);
@@ -982,7 +981,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				else if (player.getPlayerDescription ().getPlayerType () == PlayerType.AI)
 				{
 					log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + player.getPlayerDescription ().getPlayerName () + "...");
-					getMomAI ().aiPlayerTurn (player, mom);
+					getMomAI ().aiPlayerTurn (player, mom, true);
 				
 					// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 					nextTurnButton (mom, player);

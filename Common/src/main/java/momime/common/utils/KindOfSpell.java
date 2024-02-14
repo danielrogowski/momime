@@ -29,26 +29,29 @@ public enum KindOfSpell
 	/** Combat enchantments, no subdivision of spell book section */
 	COMBAT_ENCHANTMENTS,
 	
-	/** City cursesno subdivision of spell book section */
+	/** City curses, no subdivision of spell book section */
 	CITY_CURSES,
 	
 	/** Unit curses, no subdivision of spell book section */
 	UNIT_CURSES,
 	
+	/** Attack spells that are directed at single units, and also hit the walls the unit is standing next to; or can be targeted at walls only */
+	ATTACK_UNITS_AND_WALLS,
+	
+	/** Spell hits both units and buildings (earthquake) so must be targeted at a city, it can't hit units just walking around the map */
+	ATTACK_UNITS_AND_BUILDINGS,
+	
 	/** Attack spells that are directed at single or multiple units */
 	ATTACK_UNITS,
 	
-	/** Attack spells that are directed at single units, and also hit the walls the unit is standing next to; or can be targeted at walls only */
-	ATTACK_UNITS_AND_WALLS,
+	/** Shift entire stack to the other plane */
+	PLANE_SHIFT,
 	
 	/** Spells that heal our units */
 	HEALING,
 	
 	/** Spells that teleport our units back to our fortress */
 	RECALL,
-	
-	/** Shift entire stack to the other plane */
-	PLANE_SHIFT,
 	
 	/** Enchant road */
 	ENCHANT_ROAD,
@@ -62,20 +65,17 @@ public enum KindOfSpell
 	/** Transmute */
 	CHANGE_MAP_FEATURE,
 	
-	/** Corruption */
-	CORRUPTION,
-	
 	/** Warp node */
 	WARP_NODE,
 	
-	/** Earth to mud */
-	EARTH_TO_MUD,
+	/** Corruption */
+	CORRUPTION,
 	
 	/** Spell is targeted only at walls */
 	ATTACK_WALLS,
 	
-	/** Spell hits both units and buildings (earthquake) so must be targeted at a city, it can't hit units just walking around the map */
-	ATTACK_UNITS_AND_BUILDINGS,
+	/** Earth to mud */
+	EARTH_TO_MUD,
 	
 	/** Dispel spells that take over the spell */
 	SPELL_BINDING,

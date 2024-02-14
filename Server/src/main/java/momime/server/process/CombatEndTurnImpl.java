@@ -14,7 +14,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -38,9 +38,9 @@ import momime.common.movement.UnitMovement;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
@@ -82,8 +82,8 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
@@ -341,7 +341,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 									final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, damagingCAE.getSpellRealm (),
 										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 									
-									if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+									if ((xu.getControllingPlayerID () == playerID) && (getSpellTargetingUtils ().isUnitValidTargetForSpell
 										(damagingCAE, SpellBookSectionID.ATTACK_SPELLS, combatDetails.getCombatLocation (), combatDetails.getCombatMap (),
 											castingPlayer.getPlayerDescription ().getPlayerID (),
 											null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
@@ -377,7 +377,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorSpell.getSpellRealm (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+						if ((xu.getControllingPlayerID () == playerID) && (getSpellTargetingUtils ().isUnitValidTargetForSpell
 							(terrorSpell, SpellBookSectionID.ATTACK_SPELLS, combatDetails.getCombatLocation (), combatDetails.getCombatMap (),
 								castingPlayer.getPlayerDescription ().getPlayerID (),
 								null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
@@ -632,19 +632,19 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	}
 
 	/**
-	 * @return MemoryMaintainedSpell utils
+	 * @return Methods that determine whether something is a valid target for a spell
 	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final SpellTargetingUtils getSpellTargetingUtils ()
 	{
-		return memoryMaintainedSpellUtils;
+		return spellTargetingUtils;
 	}
 
 	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
+	 * @param s Methods that determine whether something is a valid target for a spell
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
 	{
-		memoryMaintainedSpellUtils = spellUtils;
+		spellTargetingUtils = s;
 	}
 
 	/**

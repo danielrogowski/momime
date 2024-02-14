@@ -3,6 +3,7 @@ package momime.client.ui.frames;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -34,11 +35,13 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.config.WindowID;
 import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
@@ -119,6 +122,9 @@ public final class HeroItemsUI extends MomClientFrameUI
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
 
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
+	
 	/** Help text scroll */
 	private HelpUI helpUI;
 	
@@ -267,9 +273,10 @@ public final class HeroItemsUI extends MomClientFrameUI
 					
 					// Create a mouse cursor that looks like the chosen item
 					final HeroItemType itemGfx = getClient ().getClientDB ().findHeroItemType (item.getHeroItemTypeID (), "HeroItemsUI");
-					final BufferedImage itemImage = getUtils ().loadImage (itemGfx.getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ()));
+					final String itemImage = itemGfx.getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ());
+					final Image doubleSizeItemImage = getModifiedImageCache ().doubleSize (itemImage);
 					final Cursor cursor = Toolkit.getDefaultToolkit ().createCustomCursor
-						(getUtils ().doubleSize (itemImage), new Point (itemImage.getWidth (), itemImage.getHeight ()), item.getHeroItemName ());
+						(doubleSizeItemImage, new Point (doubleSizeItemImage.getWidth (null) / 2, doubleSizeItemImage.getHeight (null) / 2), item.getHeroItemName ());
 					
 					// Keep a note of where we dragged it from, and which item it is
 					requestMoveHeroItemMessage = new RequestMoveHeroItemMessage ();
@@ -403,9 +410,10 @@ public final class HeroItemsUI extends MomClientFrameUI
 						{
 							// Create a mouse cursor that looks like the chosen item
 							final HeroItemType itemGfx = getClient ().getClientDB ().findHeroItemType (item.getHeroItemTypeID (), "HeroItemsUI");
-							final BufferedImage itemImage = getUtils ().loadImage (itemGfx.getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ()));
+							final String itemImage = itemGfx.getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ());
+							final Image doubleSizeItemImage = getModifiedImageCache ().doubleSize (itemImage);
 							final Cursor cursor = Toolkit.getDefaultToolkit ().createCustomCursor
-								(getUtils ().doubleSize (itemImage), new Point (itemImage.getWidth (), itemImage.getHeight ()), item.getHeroItemName ());
+								(doubleSizeItemImage, new Point (doubleSizeItemImage.getWidth (null) / 2, doubleSizeItemImage.getHeight (null) / 2), item.getHeroItemName ());
 							
 							// Keep a note of where we dragged it from, and which item it is
 							requestMoveHeroItemMessage = new RequestMoveHeroItemMessage ();
@@ -606,7 +614,8 @@ public final class HeroItemsUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
-		
+		setWindowID (WindowID.HERO_ITEMS);
+
 		getFrame ().setShape (new Polygon
 			(new int [] {0, 798, 798, 570, 570, 182, 182, 0},
 			new int [] {0, 0, 304, 304, 394, 394, 304, 304},
@@ -942,6 +951,22 @@ public final class HeroItemsUI extends MomClientFrameUI
 	public final void setResourceValueUtils (final ResourceValueUtils util)
 	{
 		resourceValueUtils = util;
+	}
+	
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
 	}
 	
 	/**

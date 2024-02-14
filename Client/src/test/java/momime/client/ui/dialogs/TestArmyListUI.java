@@ -16,9 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
@@ -28,8 +28,10 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.ArmyListScreen;
 import momime.client.languages.database.Simple;
+import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.renderer.ArmyListCellRenderer;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabase;
@@ -141,7 +143,7 @@ public final class TestArmyListUI extends ClientTestData
 
 		// Image generator
 		final PlayerColourImageGenerator generator = mock (PlayerColourImageGenerator.class);
-		when (generator.getOverlandUnitImage (unitDef, 1)).thenReturn (utils.loadImage (unitDef.getUnitOverlandImageFile ()));
+		when (generator.getOverlandUnitImage (unitDef, 1, false)).thenReturn (utils.loadImage (unitDef.getUnitOverlandImageFile ()));
 		
 		// Renderer
 		final ArmyListCellRenderer renderer = new ArmyListCellRenderer ();
@@ -171,6 +173,8 @@ public final class TestArmyListUI extends ClientTestData
 		army.setWizardClientUtils (wizardClientUtils);
 		army.setMiniMapBitmapGenerator (gen);
 		army.setArmyListCellRenderer (renderer);
+		army.setOverlandMapProcessing (mock (OverlandMapProcessing.class));
+		army.setOverlandMapUI (mock (OverlandMapUI.class));
 		
 		// Display form		
 		army.setModal (false);

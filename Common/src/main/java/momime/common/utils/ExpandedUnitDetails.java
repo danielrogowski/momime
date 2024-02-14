@@ -3,9 +3,11 @@ package momime.common.utils;
 import java.util.Set;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.DamageType;
 import momime.common.database.Pick;
 import momime.common.database.RangedAttackTypeEx;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.WeaponGrade;
@@ -144,4 +146,11 @@ public interface ExpandedUnitDetails extends MinimalUnitDetails
 	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasModifiedSkill (); also if it has any null components
 	 */
 	public int getMovementSpeed () throws MomException;
+	
+	/**
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
+	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
+	 */
+	public boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException;
 }

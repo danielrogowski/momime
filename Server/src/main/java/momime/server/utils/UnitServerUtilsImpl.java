@@ -17,8 +17,8 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
 import com.ndg.utils.Holder;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -394,19 +394,33 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		
 		// Is it an order that requires us to only have a single unit with the skill?
 		if ((error == null) && (!allowMultipleUnits) && (unitsWithNecessarySkillID.size () > 1))
-			switch (specialOrder)
-			{
-				case BUILD_CITY:
-					error = "You must select only a single settler to build a city with";
-					break;
-					
-				case MELD_WITH_NODE:
-					error = "You must select only a single spirit to meld with a node";
-					break;
-					
-				default:
-					error = "You must select only a single unit with the relevant skill";
+		{
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+			{ 
+				switch (specialOrder)
+				{
+					case BUILD_CITY:
+						error = "You must select only a single settler to build a city with";
+						break;
+						
+					case MELD_WITH_NODE:
+						error = "You must select only a single spirit to meld with a node";
+						break;
+						
+					default:
+						error = "You must select only a single unit with the relevant skill";
+				}
 			}
+			
+			// AI players often make this mistake, so for them just pick a random one of the allowed units
+			else
+			{
+				log.debug ("AI player had multiple units in a stack all trying to do " + specialOrder + ", so picked one at random");
+				final ExpandedUnitDetails keep = unitsWithNecessarySkillID.get (getRandomUtils ().nextInt (unitsWithNecessarySkillID.size ()));
+				unitsWithNecessarySkillID.clear ();
+				unitsWithNecessarySkillID.add (keep);
+			}
+		}
 		
 		// Skill-specific validation
 		if (error == null)
@@ -584,7 +598,26 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		// Create test unit
 		final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnit (unitID, playerID, 0,
 			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-
+		
+		return findNearestLocationWhereUnitCanBeMoved (desiredLocation, xu, mom);
+	}
+	
+	/**
+	 * When a unit already exists but is being moved, works out where it can actually be moved.
+	 * If the city is already full, will resort to bumping the moved unit into one of the outlying 8 squares instead.
+	 *
+	 * @param desiredLocation Location that we're trying to add a unit
+	 * @param xu Unit being moved
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Location + bump type; note class and bump type will always be filled in, but location may be null if the unit cannot fit anywhere
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	@Override
+	public UnitAddLocation findNearestLocationWhereUnitCanBeMoved (final MapCoordinates3DEx desiredLocation, final ExpandedUnitDetails xu, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{	
 		// First try the centre
 		MapCoordinates3DEx addLocation = null;
 		UnitAddBumpTypeID bumpType = UnitAddBumpTypeID.NO_ROOM;
@@ -601,11 +634,19 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			{
 				final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (desiredLocation);
 				if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), adjacentLocation, direction))
+				{
+					// If the city is on Myrror and the adjacent location happens to be a Tower of Wizardry, the unit gets bumped to plane 0
+					if ((adjacentLocation.getZ () == 1) && (getMemoryGridCellUtils ().isTerrainTowerOfWizardry
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (adjacentLocation.getZ ()).getRow ().get (adjacentLocation.getY ()).getCell ().get (adjacentLocation.getX ()).getTerrainData ())))
+						
+						adjacentLocation.setZ (0);
+					
 					if (canUnitBeAddedHere (adjacentLocation, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()))
 					{
 						addLocation = adjacentLocation;
 						bumpType = UnitAddBumpTypeID.BUMPED;
 					}
+				}
 
 				direction++;
 			}
@@ -928,7 +969,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 						if ((addsToSkill.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
 							(exp >= addsToSkill.getAddsToSkillValue ()))
 							
-							mom.getWorldUpdates ().switchOffSpell (thisSpell.getSpellURN ());
+							mom.getWorldUpdates ().switchOffSpell (thisSpell.getSpellURN (), false);
 				}
 			
 			mom.getWorldUpdates ().process (mom);

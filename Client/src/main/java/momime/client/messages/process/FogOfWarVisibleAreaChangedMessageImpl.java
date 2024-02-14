@@ -2,9 +2,10 @@ package momime.client.messages.process;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.areas.storage.MapArea3D;
@@ -13,6 +14,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.utils.Holder;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.OverlandMapUI;
@@ -54,6 +56,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
+		// Keep track of the UI elements that need to be updated at the end
+		final Set<UpdateUIElement> uiElements = new HashSet<UpdateUIElement> ();
+		
 		// Changes in Terrain
 		if (getTerrainUpdate ().size () > 0)
 		{
@@ -67,6 +72,10 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 				proc.processOneUpdate (areaToSmooth);
 			}
 			proc.endUpdates (areaToSmooth);
+			
+			// processOneUpdate on terrain doesn't output what to update because its always the same
+			uiElements.add (UpdateUIElement.REGENERATE_OVERLAND_MAP_BITMAPS);
+			uiElements.add (UpdateUIElement.REGENERATE_MINI_MAP_BITMAPS);
 		}
 		
 		// Changes in Cities
@@ -76,7 +85,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			for (final UpdateCityMessageData data : getCityUpdate ())
 			{
 				proc.setData (data);
-				proc.processOneUpdate ();
+				uiElements.addAll (proc.processOneUpdate ());
 			}
 		}
 		
@@ -86,6 +95,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			final AddBuildingMessageImpl proc = getFactory ().createAddBuildingMessage ();
 			proc.getBuilding ().addAll (getAddBuilding ());
 			proc.processOneUpdate ();
+
+			// Just in case city walls were added
+			uiElements.add (UpdateUIElement.REGENERATE_OVERLAND_MAP_BITMAPS);
 		}
 		
 		// Buildings destroyed or gone out of view
@@ -94,6 +106,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			final DestroyBuildingMessageImpl proc = getFactory ().createDestroyBuildingMessage ();
 			proc.getBuildingURN ().addAll (getDestroyBuilding ());
 			proc.processOneUpdate ();
+
+			// Just in case city walls were destroyed
+			uiElements.add (UpdateUIElement.REGENERATE_OVERLAND_MAP_BITMAPS);
 		}
 		
 		// Units added, changed or come into view
@@ -177,19 +192,19 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 
 			getOverlandMapUI ().regenerateFogOfWarBitmap ();
 		}
-			
+
 		// Many items need regenerating, depending on the updates we got
-		if ((getTerrainUpdate ().size () > 0) || (getCityUpdate ().size () > 0) || (getAddBuilding ().size () > 0) || (getDestroyBuilding ().size () > 0)) 
+		if (uiElements.contains (UpdateUIElement.REGENERATE_OVERLAND_MAP_BITMAPS)) 
 			getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		
-		if ((getTerrainUpdate ().size () > 0) || (getCityUpdate ().size () > 0))
+		if (uiElements.contains (UpdateUIElement.REGENERATE_MINI_MAP_BITMAPS))
 			getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
 		
-		if (getCityUpdate ().size () > 0)
-		{
+		if (uiElements.contains (UpdateUIElement.REFRESH_CITIES_LIST))
 			getCitiesListUI ().refreshCitiesList ();
+		
+		if (uiElements.contains (UpdateUIElement.REGENERATE_MINI_MAP_BITMAPS))
 			getCitiesListUI ().regenerateMiniMapBitmaps ();
-		}
 	}
 
 	/**

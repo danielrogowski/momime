@@ -18,10 +18,11 @@ import javax.swing.table.TableCellRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
@@ -52,6 +53,9 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
+	
 	/** Medium font */
 	private Font mediumFont;
 	
@@ -175,7 +179,7 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 							itemImageFilename = getClient ().getClientDB ().findHeroItemType
 								(item.getHeroItemTypeID (), "HeroTableCellRenderer").getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ());
 						
-						itemLabels.get (slotNumber).setIcon (new ImageIcon (getUtils ().doubleSize (getUtils ().loadImage (itemImageFilename))));
+						itemLabels.get (slotNumber).setIcon (new ImageIcon (getModifiedImageCache ().doubleSize (itemImageFilename)));
 					}
 					
 					slotNumber++;
@@ -262,6 +266,22 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 		unitClientUtils = util;
 	}
 
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
+	}
+	
 	/**
 	 * @return Medium font
 	 */

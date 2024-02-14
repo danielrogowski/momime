@@ -38,7 +38,6 @@ import momime.common.database.Plane;
 import momime.common.database.ProductionAmountBucketID;
 import momime.common.database.ProductionType;
 import momime.common.database.ProductionTypeAndDoubledValue;
-import momime.common.database.Race;
 import momime.common.database.RaceEx;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RaceUnrest;
@@ -276,7 +275,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Nomad's bonus
 		final OverlandMapCityData cityData = centreTile.getCityData ();
 		final String raceID = (cityData != null) ? cityData.getCityRaceID () : null;
-		final Race race = (raceID != null) ? db.findRace (raceID, "calculateGoldTradeBonus") : null;
+		final RaceEx race = (raceID != null) ? db.findRace (raceID, "calculateGoldTradeBonus") : null;
 		final Integer raceBonus = (race != null) ? race.getGoldTradeBonus () : null;
 		gold.setTradePercentageBonusFromRace ((raceBonus != null) ? raceBonus : 0);
 		
@@ -471,7 +470,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Start off calculation
 		final int currentPopulation = cityData.getCityPopulation ();
 		final int maximumPopulation = Math.max (maxCitySize, 1)  * 1000;
-		final int minimumPopulation = 1000;
 
 		// Work out the direction the population is changing in
 		final int spaceLeft = maximumPopulation - currentPopulation;
@@ -604,8 +602,8 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Don't allow population to shrink under minimum
 		else if (breakdown.getInitialTotal () < 0)
 		{
-			if (currentPopulation + breakdown.getInitialTotal () < minimumPopulation)
-				breakdown.setCappedTotal (minimumPopulation - currentPopulation);
+			if (currentPopulation + breakdown.getInitialTotal () < CommonDatabaseConstants.MIN_CITY_POPULATION)
+				breakdown.setCappedTotal (CommonDatabaseConstants.MIN_CITY_POPULATION - currentPopulation);
 			else
 				breakdown.setCappedTotal (breakdown.getInitialTotal ());
 		}
@@ -652,7 +650,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				if (terrainData.getMapFeatureID () != null)
+				if ((terrainData != null) && (terrainData.getCorrupted () == null) && (terrainData.getMapFeatureID () != null))
 				{
 					final MapFeatureEx mapFeature = db.findMapFeature (terrainData.getMapFeatureID (), "calculateOutpostGrowthChance");
 					if (mapFeature.getOutpostMapFeatureGrowthModifier () != null)
@@ -939,12 +937,16 @@ public final class CityCalculationsImpl implements CityCalculations
 		final CityProductionBreakdown gold;
 		if ((taxRate.getDoubleTaxGold () > 0) && (taxPayers > 0))
 		{
+			final RaceEx cityRace = db.findRace (cityData.getCityRaceID (), "addGoldFromTaxes");
+			
 			gold = new CityProductionBreakdown ();
 			gold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 			gold.setApplicablePopulation (taxPayers);
 			gold.setDoubleProductionAmountEachPopulation (taxRate.getDoubleTaxGold ());
 			gold.setDoubleProductionAmountAllPopulation (taxPayers * taxRate.getDoubleTaxGold ());
-			getCityProductionUtils ().addProductionAmountToBreakdown (gold, gold.getDoubleProductionAmountAllPopulation (), null, db);
+			gold.setDoubleProductionAmountAllPopulationAfterMultiplier (taxPayers * taxRate.getDoubleTaxGold () * cityRace.getTaxIncomeMultiplier ());
+			gold.setRaceTaxIncomeMultiplier (cityRace.getTaxIncomeMultiplier ());
+			getCityProductionUtils ().addProductionAmountToBreakdown (gold, gold.getDoubleProductionAmountAllPopulationAfterMultiplier (), null, db);
 		}
 		else
 			gold = null;
@@ -996,7 +998,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @throws MomException If there is a problem totalling up the production values
 	 */
 	@Override
-	public final void addProductionFromPopulation (final CityProductionBreakdownsEx productionValues, final Race race, final String populationTaskID,
+	public final void addProductionFromPopulation (final CityProductionBreakdownsEx productionValues, final RaceEx race, final String populationTaskID,
 		final int numberDoingTask, final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
@@ -1236,17 +1238,21 @@ public final class CityCalculationsImpl implements CityCalculations
 			{
 				if ((thisProduction.getPercentageBonus () != null) && (thisProduction.getPercentageBonus () != 0))
 				{
-					final CityProductionBreakdownSpell spellBreakdown = new CityProductionBreakdownSpell ();
-					spellBreakdown.setSpellID (spell.getSpellID ());
-					spellBreakdown.setPercentageBonus (thisProduction.getPercentageBonus ());
-					
+					// There is no point adding a +ve or -ve percentage modifier to a value that doesn't even exist
 					final CityProductionBreakdown breakdown = productionValues.findProductionType (thisProduction.getProductionTypeID ());
-					breakdown.getSpellBreakdown ().add (spellBreakdown);
-					
-					if (spellBreakdown.getPercentageBonus () > 0)
-						breakdown.setPercentageBonus (breakdown.getPercentageBonus () + spellBreakdown.getPercentageBonus ());
-					else
-						breakdown.setPercentagePenalty (breakdown.getPercentagePenalty () - spellBreakdown.getPercentageBonus ());
+					if (breakdown != null)
+					{
+						final CityProductionBreakdownSpell spellBreakdown = new CityProductionBreakdownSpell ();
+						spellBreakdown.setSpellID (spell.getSpellID ());
+						spellBreakdown.setPercentageBonus (thisProduction.getPercentageBonus ());
+						
+						breakdown.getSpellBreakdown ().add (spellBreakdown);
+						
+						if (spellBreakdown.getPercentageBonus () > 0)
+							breakdown.setPercentageBonus (breakdown.getPercentageBonus () + spellBreakdown.getPercentageBonus ());
+						else
+							breakdown.setPercentagePenalty (breakdown.getPercentagePenalty () - spellBreakdown.getPercentageBonus ());
+					}
 				}
 			}
 		}
@@ -1383,7 +1389,13 @@ public final class CityCalculationsImpl implements CityCalculations
 				copyMapFeature.setMapFeatureID (thisMapFeature.getMapFeatureID ());
 				copyMapFeature.setCount (thisMapFeature.getCount ());
 				copyMapFeature.setRaceMineralBonusMultiplier (thisMapFeature.getRaceMineralBonusMultiplier ());
-				copyMapFeature.setBuildingMineralPercentageBonus (thisMapFeature.getBuildingMineralPercentageBonus ());
+				
+				// Bit of a hack, but Miners' Guilds give +50% mineral bonus to just about everything... except Iron Ore and Coal where its doubled
+				// To model this properly would require being able to specify different percentage bonuses for different production types
+				if (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_COST_REDUCTION))
+					copyMapFeature.setBuildingMineralPercentageBonus (thisMapFeature.getBuildingMineralPercentageBonus () * 2);
+				else
+					copyMapFeature.setBuildingMineralPercentageBonus (thisMapFeature.getBuildingMineralPercentageBonus ());
 				
 				// Deal with multipliers
 				copyMapFeature.setDoubleUnmodifiedProductionAmountEachFeature (thisProduction.getDoubledProductionValue ());
@@ -1494,11 +1506,11 @@ public final class CityCalculationsImpl implements CityCalculations
 				case MUST_BE_EXACT_MULTIPLE:
 					// We've already dealt with the situation where the value is an exact multiple above, so to have reached here it
 					// must have been supposed to be an exact multiple but wasn't
-					throw new MomException ("calculateAllCityProductions: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
+					throw new MomException ("halveAddPercentageBonusAndCapProduction: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
 						"\" which is not a multiple of 2 = " + thisProduction.getDoubleProductionAmountBeforePercentages ());
 
 				default:
-					throw new MomException ("calculateAllCityProductions: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
+					throw new MomException ("halveAddPercentageBonusAndCapProduction: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
 						"\" which has an unknown rounding direction");
 			}
 
@@ -1646,12 +1658,12 @@ public final class CityCalculationsImpl implements CityCalculations
 	@Override
 	public final int goldToRushBuy (final int totalCost, final int builtSoFar)
 	{
-		// See p200 in the strategy guide
 		final int result;
 		if (builtSoFar <= 0)
 			result = totalCost * 4;
 		
-		else if (builtSoFar < totalCost/2)
+		// p200 in the strategy guide is out of date, this says the cutoff here is at totalCost/2, but the wiki says its totalCost/3
+		else if (builtSoFar < totalCost/3)
 			result = (totalCost - builtSoFar) * 3;
 		
 		else

@@ -10,19 +10,20 @@
 		<constructor-arg ref="domImplementationRegistry" />
 	</bean>
 
-	<bean id="resourceResolver" class="com.ndg.xml.XmlResourceResolver">
+	<bean id="resourceResolver" class="com.ndg.xmleditor.XmlResourceResolver">
 		<property name="domImplementationRegistry" ref="domImplementationRegistry" />
 		<property name="secondaryResourceResolver" ref="momResourceResolver" />
 	</bean>
 
-	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
-		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
-		<property name="resourceResolver" ref="resourceResolver" />
-	</bean>	
+	<bean id="schemaFactoryFactory" class="com.ndg.utils.SchemaFactoryFactory" />
+	
+	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-bean="schemaFactoryFactory" factory-method="createSchemaFactory">
+		<constructor-arg ref="resourceResolver" />
+	</bean>
 
 	<!-- MoM IME Graphics specific -->
 
-	<bean id="unitSkillComponentImageGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+	<bean id="unitSkillComponentImageGrid" class="com.ndg.xmleditor.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
@@ -33,7 +34,7 @@
 		</property>
 	</bean>
 
-	<bean id="unitSpecialOrderGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+	<bean id="unitSpecialOrderGrid" class="com.ndg.xmleditor.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
@@ -44,7 +45,7 @@
 		</property>
 	</bean>
 
-	<bean id="frameGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+	<bean id="frameGrid" class="com.ndg.xmleditor.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="100" />
@@ -89,7 +90,6 @@
 	
 	<bean id="ask" class="com.ndg.xmleditor.editor.AskForXsdAndXmlFileLocations" init-method="init">
 		<property name="utils" ref="utils" />
-		<property name="processUtils" ref="processUtils" />
 		<property name="dispatcher" ref="dispatcher" />
 		<property name="parser" ref="parser" />
 		<property name="schemaFactory" ref="schemaFactory" />

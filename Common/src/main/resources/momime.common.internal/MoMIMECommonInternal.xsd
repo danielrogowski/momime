@@ -541,6 +541,16 @@ and should appear as part of the list of productions.</xsd:documentation>
 					<xsd:documentation>doubleProductionAmountEachPopulation * applicablePopulation.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="raceTaxIncomeMultiplier" type="momimecommon:taxIncomeMultiplier">
+				<xsd:annotation>
+					<xsd:documentation>Dwarves for some bizarre reason earn 2x gold from taxes</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountAllPopulationAfterMultiplier" type="momimecommon:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleProductionAmountEachPopulation * applicablePopulation * taxIncomeMultiplier</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="consumptionAmountAllPopulation" type="momimecommon:undoubledProductionValue">
 				<xsd:annotation>
 					<xsd:documentation>consumptionAmountEachPopulation * applicablePopulation.</xsd:documentation>

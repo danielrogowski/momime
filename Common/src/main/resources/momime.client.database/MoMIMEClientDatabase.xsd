@@ -35,6 +35,7 @@ the common project and so accessible to the server so that the server is able to
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="momimeXmlDatabase" type="momimeclient:availableDatabase" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="modName" type="xsd:normalizedString" />
 		</xsd:sequence>
 	</xsd:complexType>
 	

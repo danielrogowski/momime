@@ -27,12 +27,14 @@ import javax.swing.SwingConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.config.WindowID;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.HeroItemClientUtils;
 import momime.client.utils.TextUtils;
@@ -87,10 +89,13 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	private SpellUtils spellUtils;
 
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** OK action */
 	private Action okAction;
@@ -288,6 +293,8 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		selectItemType (getClient ().getClientDB ().getHeroItemType ().get (0));		// Pick Sword by default
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
+		setWindowID (WindowID.CREATE_ARTIFACT);
+		setPersistVisibility (false);
 	}
 	
 	/**
@@ -476,7 +483,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			imageNumber = imageNumber - heroItemType.getHeroItemTypeImageFile ().size ();
 		
 		// Update icon
-		itemImage.setIcon (new ImageIcon (getUtils ().doubleSize (getUtils ().loadImage (heroItemType.getHeroItemTypeImageFile ().get (imageNumber)))));
+		itemImage.setIcon (new ImageIcon (getModifiedImageCache ().doubleSize (heroItemType.getHeroItemTypeImageFile ().get (imageNumber))));
 	}
 	
 	/**
@@ -780,7 +787,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -788,7 +795,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}
@@ -807,5 +814,21 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
 	}
 }

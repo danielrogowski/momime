@@ -1,19 +1,51 @@
 package momime.server.ai;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
+import momime.common.ai.ZoneAI;
+import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Pick;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.messages.DiplomacyWizardDetails;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.Pact;
+import momime.common.messages.PactType;
 import momime.common.messages.PlayerPick;
+import momime.common.messages.UnitStatusID;
+import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
+import momime.server.MomSessionVariables;
 
 /**
  * For calculating relation scores between two wizards
  */
 public final class RelationAIImpl implements RelationAI
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (RelationAIImpl.class);
+	
 	/** Positive base relation for each book we share in common */
 	private final static int SHARED_BOOK = 3;
 	
@@ -25,6 +57,18 @@ public final class RelationAIImpl implements RelationAI
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
+	
+	/** Zone AI */
+	private ZoneAI zoneAI;
+	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @param picks Wizard's spell book picks
@@ -74,12 +118,297 @@ public final class RelationAIImpl implements RelationAI
 		if (baseRelation < -90)
 			baseRelation = -90;
 		
-		if (baseRelation > 90)
+		else if (baseRelation > 90)
 			baseRelation = 90;
 		
 		return baseRelation;
 	}
+	
+	/**
+	 * @param player AI player whose turn to take
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If a wizard who owns a city can't be found
+	 */
+	@Override
+	public final void updateVisibleRelationDueToUnitsInOurBorder (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		final MapArea3D<Integer> zones = getZoneAI ().calculateZones (priv.getFogOfWarMemory (), mom.getSessionDescription ().getOverlandMapSize ());
+		
+		// Penalty is doubled in areas around our cities
+		final MapArea3D<Boolean> cityResourceArea = new MapArea3DArrayListImpl<Boolean> ();
+		cityResourceArea.setCoordinateSystem (mom.getSessionDescription ().getOverlandMapSize ());
+		
+		for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+				{
+					final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
+					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
+						for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+							if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+								cityResourceArea.set (coords, true);
+					}
+				}
+		
+		// Count how many units belonging to each player are in our zone
+		final Map<Integer, Integer> unitCounts = new HashMap<Integer, Integer> ();
+		for (final MemoryUnit mu : priv.getFogOfWarMemory ().getUnit ())
+			if ((mu.getStatus () == UnitStatusID.ALIVE) && (mu.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ()))
+			{
+				// Only interested in units who are located in land we consider ours
+				final Integer zonePlayerID = zones.get ((MapCoordinates3DEx) mu.getUnitLocation ());
+				if (player.getPlayerDescription ().getPlayerID ().equals (zonePlayerID))
+				{
+					final Boolean doubled = cityResourceArea.get ((MapCoordinates3DEx) mu.getUnitLocation ());
+					final int penalty = ((doubled != null) && (doubled)) ? 2 : 1;
+					
+					final Integer count = unitCounts.get (mu.getOwningPlayerID ());
+					unitCounts.put (mu.getOwningPlayerID (), (count == null) ? penalty : (count + penalty));
+				}
+			}
+		
+		// Update each wizard's visibleRelation
+		for (final KnownWizardDetails w : priv.getFogOfWarMemory ().getWizardDetails ())
+			if ((unitCounts.containsKey (w.getPlayerID ())) && (getPlayerKnowledgeUtils ().isWizard (w.getWizardID ())))
+			{
+				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
+				wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () - unitCounts.get (wizardDetails.getPlayerID ()));
+			}
+	}
+	
+	/**
+	 * Grants a small bonus each turn we maintain a wizard pact or alliance with another wizard
+	 * 
+	 * @param player AI player whose turn to take
+	 * @throws RecordNotFoundException If we can't find our wizard record or one of the wizards we have a pact with
+	 */
+	@Override
+	public final void updateVisibleRelationDueToPactsAndAlliances (final PlayerServerDetails player)
+		throws RecordNotFoundException
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final KnownWizardDetails ourWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(priv.getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "updateVisibleRelationDueToPactsAndAlliances");
+		
+		for (final Pact pact : ourWizardDetails.getPact ())
+			if (pact.getPactType () != PactType.WAR)
+			{
+				final DiplomacyWizardDetails theirWizardDetails = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+					(priv.getFogOfWarMemory ().getWizardDetails (), pact.getPactWithPlayerID (), "updateVisibleRelationDueToPactsAndAlliances");
 
+				final int bonus = (pact.getPactType () == PactType.ALLIANCE) ? 6 : 3;
+				theirWizardDetails.setVisibleRelation (theirWizardDetails.getVisibleRelation () + bonus);
+			}
+	}
+
+	/**
+	 * @param player AI player whose turn to take
+	 */
+	@Override
+	public final void updateVisibleRelationDueToAuraOfMajesty (final PlayerServerDetails player)
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		final Set<Integer> playerIDs = priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
+			(s -> s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_AURA_OF_MAJESTY)).map (s -> s.getCastingPlayerID ()).collect (Collectors.toSet ());
+		
+		for (final KnownWizardDetails w : priv.getFogOfWarMemory ().getWizardDetails ())
+			if (playerIDs.contains (w.getPlayerID ()))
+			{
+				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
+				wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () + 1);
+			}
+	}
+	
+	/**
+	 * Makes the AI player hate anyhone using endgame spells like Armageddon or Meteor Storm
+	 * 
+	 * @param player AI player whose turn to take
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we can't find the defintion for a maintained spell
+	 */
+	@Override
+	public final void updateVisibleRelationDueToNastyMaintainedSpells (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException
+	{
+		final KnownWizardDetails ourWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "updateVisibleRelationDueToNastyMaintainedSpells");
+		
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
+		for (final MemoryMaintainedSpell spell : priv.getFogOfWarMemory ().getMaintainedSpell ())
+			if (spell.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ())
+			{
+				final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "updateVisibleRelationDueToNastyMaintainedSpells");
+				
+				// Check conditions for spell to be considered nasty
+				final boolean nasty;
+				if (spellDef.getNastyCondition () == null)
+					nasty = false;
+				else
+					switch (spellDef.getNastyCondition ())
+					{
+						case ALWAYS:
+							nasty = true;
+							break;
+							
+						case ONLY_IF_HAVE_TRIGGER_REALM:
+							nasty = ourWizardDetails.getPick ().stream ().anyMatch (p -> spellDef.getTriggeredBySpellRealm ().contains (p.getPickID ()));
+							break;
+							
+						case ONLY_IF_DONT_HAVE_SPELL_REALM:
+							nasty = ourWizardDetails.getPick ().stream ().noneMatch (p -> spellDef.getSpellRealm ().equals (p.getPickID ()));
+							break;
+							
+						default:
+							nasty = false;
+							break;
+					}
+				
+				// Size of penalty depends on type of spell it is
+				if (nasty)
+				{
+					final int penalty;
+					switch (spellDef.getSpellBookSectionID ())
+					{
+						case OVERLAND_ENCHANTMENTS:
+							penalty = 30;
+							break;
+
+						// It has to be aimed at one of our cities
+						case CITY_CURSES:
+							final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+								(spell.getCityLocation ().getZ ()).getRow ().get (spell.getCityLocation ().getY ()).getCell ().get (spell.getCityLocation ().getX ()).getCityData ();
+							penalty = ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())) ? 20 : 0;
+							break;
+							
+						default:
+							penalty = 0;
+							break;
+					}
+					
+					// Apply penalty
+					if (penalty > 0)
+					{
+						log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " is hating on player ID " +
+							spell.getCastingPlayerID () + " for their " + spell.getSpellID () + " spell in section " + spellDef.getSpellBookSectionID ());
+						
+						final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+							(priv.getFogOfWarMemory ().getWizardDetails (), spell.getCastingPlayerID (), "updateVisibleRelationDueToNastyMaintainedSpells");
+						wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () - penalty);
+					}
+				}
+			}
+	}
+	
+	/**
+	 * @param player AI player to move their visible relations a little bit back towards base relation (unless they've ever started casting SoM, in which case we just permanently hate them)
+	 */
+	@Override
+	public final void slideTowardsBaseRelation (final PlayerServerDetails player)
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		for (final KnownWizardDetails w : priv.getFogOfWarMemory ().getWizardDetails ())
+			if ((getPlayerKnowledgeUtils ().isWizard (w.getWizardID ())) && (!w.isEverStartedCastingSpellOfMastery ()))
+			{
+				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
+				int shift = Math.abs (wizardDetails.getVisibleRelation () - wizardDetails.getBaseRelation ()) / 10;	// 10%
+				
+				if (shift > 0)
+				{
+					if (wizardDetails.getBaseRelation () < wizardDetails.getVisibleRelation ())
+						shift = -shift;
+					
+					wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () + shift);
+				}
+			}
+	}
+
+	/**
+	 * @param player AI player to verify all their visibleRelation values are within the capped range
+	 */
+	@Override
+	public final void capVisibleRelations (final PlayerServerDetails player)
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		for (final KnownWizardDetails w : priv.getFogOfWarMemory ().getWizardDetails ())
+			if (getPlayerKnowledgeUtils ().isWizard (w.getWizardID ()))
+			{
+				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
+				
+				// If they ever started casting SoM, all the bonuses etc we worked out for them are irrelevant, just set right back to -100
+				if ((wizardDetails.getVisibleRelation () < CommonDatabaseConstants.MIN_RELATION_SCORE) || (wizardDetails.isEverStartedCastingSpellOfMastery ()))
+					wizardDetails.setVisibleRelation (CommonDatabaseConstants.MIN_RELATION_SCORE);
+
+				else if (wizardDetails.getVisibleRelation () > CommonDatabaseConstants.MAX_RELATION_SCORE)
+					wizardDetails.setVisibleRelation (CommonDatabaseConstants.MAX_RELATION_SCORE);
+			}
+	}
+	
+	/**
+	 * @param wizardDetails Wizard to receive bonus
+	 * @param bonus Amount of bonus
+	 */
+	@Override
+	public final void bonusToVisibleRelation (final DiplomacyWizardDetails wizardDetails, final int bonus)
+	{
+		// This is our opinion of the wizard who did something good, so its also our record of whether they ever started casting SoM
+		if (!wizardDetails.isEverStartedCastingSpellOfMastery ())
+		{
+			wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () + bonus);
+			
+			if (wizardDetails.getVisibleRelation () > CommonDatabaseConstants.MAX_RELATION_SCORE)
+				wizardDetails.setVisibleRelation (CommonDatabaseConstants.MAX_RELATION_SCORE);
+		}
+	}
+	
+	/**
+	 * @param wizardDetails Wizard to receive penalty
+	 * @param penalty Amount of penalty
+	 */
+	@Override
+	public final void penaltyToVisibleRelation (final DiplomacyWizardDetails wizardDetails, final int penalty)
+	{
+		wizardDetails.setVisibleRelation (wizardDetails.getVisibleRelation () - penalty);
+		
+		if (wizardDetails.getVisibleRelation () < CommonDatabaseConstants.MIN_RELATION_SCORE)
+			wizardDetails.setVisibleRelation (CommonDatabaseConstants.MIN_RELATION_SCORE);
+	}
+	
+	/**
+	 * @param player AI player who will gain a little patience with all other wizards back again
+	 */
+	@Override
+	public final void regainPatience (final PlayerServerDetails player)
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		for (final KnownWizardDetails w : priv.getFogOfWarMemory ().getWizardDetails ())
+			if (getPlayerKnowledgeUtils ().isWizard (w.getWizardID ()))
+			{
+				final DiplomacyWizardDetails wizardDetails = (DiplomacyWizardDetails) w;
+				if (wizardDetails.getImpatienceLevel () > 0)
+					wizardDetails.setImpatienceLevel (wizardDetails.getImpatienceLevel () - 1);
+			}
+	}
+	
+	/**
+	 * @param visibleRelation Our opinion of a particular wizard 
+	 * @return Maximum number of requests they can make before we'll refuse to talk to them
+	 */
+	@Override
+	public final int decideMaximumRequests (final int visibleRelation) {
+		int requests = (visibleRelation + 140) / 40;
+		if (requests > 5)
+			requests = 5;
+		
+		return requests;
+	}
+	
 	/**
 	 * @return Player pick utils
 	 */
@@ -94,5 +423,69 @@ public final class RelationAIImpl implements RelationAI
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Zone AI
+	 */
+	public final ZoneAI getZoneAI ()
+	{
+		return zoneAI;
+	}
+
+	/**
+	 * @param ai Zone AI
+	 */
+	public final void setZoneAI (final ZoneAI ai)
+	{
+		zoneAI = ai;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

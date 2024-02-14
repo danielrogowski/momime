@@ -20,6 +20,9 @@ public final class CommonDatabaseConstants
 	/** Namespace of the client XSD */
 	public final static String CLIENT_XSD_NAMESPACE_URI = "http://momime/client/database";
 
+	/** Path and name to locate the mod XSD file on the classpath */
+	public final static String MOD_XSD_LOCATION = "/momime.common.mod/MoMIMEMod.xsd";
+	
 	/** Path and name to locate the messages XSD file on the classpath */
 	public final static String MESSAGES_XSD_LOCATION = "/momime.common.messages/MoMIMEMessages.xsd";
 
@@ -52,6 +55,15 @@ public final class CommonDatabaseConstants
 	
 	/** Maximum units in a map cell */
 	public final static int MAX_UNITS_PER_MAP_CELL = 9;
+	
+	/** Relation score for a wizard we love */
+	public final static int MAX_RELATION_SCORE = 100;
+	
+	/** Relation score for a wizard we hate */
+	public final static int MIN_RELATION_SCORE = -100;
+	
+	/** Minimum population for a city; less than this and its only an outpost */
+	public final static int MIN_CITY_POPULATION = 1000;
 	
 	/*------------------------------------------------------
 	 * Special values the various XML fields can take
@@ -124,6 +136,9 @@ public final class CommonDatabaseConstants
 	/** Food for max city size */
 	public final static String PRODUCTION_TYPE_ID_FOOD = "RE06";
 
+	/** Coal and Iron Ore making unit construction cheaper */
+	public final static String PRODUCTION_TYPE_ID_UNIT_COST_REDUCTION = "RE07";
+	
 	/** Bonus added to map features, i.e. Miners" guild */
 	public final static String PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER = "RE08";
 
@@ -306,7 +321,7 @@ public final class CommonDatabaseConstants
 	public final static String UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL = "SS062";
 	
 	/** All invisibility skills */
-	public final static List<String> UNIT_SKILL_IDS_INVISIBILITY = Arrays.asList ("IS08", UNIT_SKILL_ID_INVISIBILITY, UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL);
+	public final static List<String> UNIT_SKILL_IDS_INVISIBILITY = Arrays.asList (UNIT_SKILL_ID_INVISIBILITY, UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL, "IS08");
 
 	/** Converts melee damage dealt into life stealing stored damage type (ghouls) */
 	public final static String UNIT_SKILL_ID_CREATE_UNDEAD = "US019";
@@ -326,6 +341,9 @@ public final class CommonDatabaseConstants
 	/** Skill for damage dealt being returned to the attackers' HP (this is subtely different than the ability to create undead - ghouls create undead but do not recover HP from it) */
 	public final static String UNIT_SKILL_ID_LIFE_STEALING = "US031";
 
+	/** From Life Stealing mod.  Combines the effect of Create Undead and Life Stealing, and converts all damage dealt into Life Steal damage. */
+	public final static String UNIT_SKILL_ID_ADVANCED_LIFE_STEALING = "US031X";
+	
 	/** Converts melee and ranged damage dealt into illusionary damage resolution type (phantom warriors/beasts) */
 	public final static String UNIT_SKILL_ID_ILLUSIONARY_ATTACK = "US035";
 	
@@ -446,6 +464,9 @@ public final class CommonDatabaseConstants
 	/** Spell Blast spell */
 	public final static String SPELL_ID_SPELL_BLAST = "SP058";
 	
+	/** Aura of Majesty spell */
+	public final static String SPELL_ID_AURA_OF_MAJESTY = "SP059";
+	
 	/** Flying Fortress spell */
 	public final static String SPELL_ID_FLYING_FORTRESS = "SP077";
 	
@@ -533,6 +554,9 @@ public final class CommonDatabaseConstants
 
 	/** Drain Power spell */
 	public final static String SPELL_ID_DRAIN_POWER = "SP171";	
+
+	/** Subversion spell */
+	public final static String SPELL_ID_SUBVERSION = "SP177";
 	
 	/** Wall of Darkness spell */
 	public final static String SPELL_ID_WALL_OF_DARKNESS = "SP178";

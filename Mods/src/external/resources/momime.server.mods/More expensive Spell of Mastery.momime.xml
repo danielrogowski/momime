@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:momMod xmlns:ns2="http://momime/common/mod">
+	<spell spellID="SP213">
+		<researchCost>100000</researchCost>
+		<overlandCastingCost>20000</overlandCastingCost>
+	</spell>
+</ns2:momMod>

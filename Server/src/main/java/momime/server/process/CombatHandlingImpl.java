@@ -12,7 +12,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -24,7 +24,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -42,8 +42,8 @@ public final class CombatHandlingImpl implements CombatHandling
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
 	
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** Damage processor */
 	private DamageProcessor damageProcessor;
@@ -99,7 +99,7 @@ public final class CombatHandlingImpl implements CombatHandling
 			final Spell spellDef = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_WALL_OF_FIRE, "crossCombatBorder");
 						
 			// Specify 0 for castingPlayerID, since we can hurt ourselves
-			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spellDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, combatMap, 0, null, null, xu,
+			if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spellDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, combatMap, 0, null, null, xu,
 				false, mom.getGeneralServerKnowledge ().getTrueMap (), null, mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 			{
 				final List<ResolveAttackTarget> targetUnits = new ArrayList<ResolveAttackTarget> ();
@@ -158,7 +158,7 @@ public final class CombatHandlingImpl implements CombatHandling
 			final ExpandedUnitDetails xuDoomUnit = getExpandUnitDetails ().expandUnitDetails (doomUnit, null, null, doomBoltSpell.getSpellRealm (),
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (doomBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), combatDetails.getCombatMap (),
+			if (getSpellTargetingUtils ().isUnitValidTargetForSpell (doomBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), combatDetails.getCombatMap (),
 				0, null, VORTEX_VARIABLE_DAMAGE, xuDoomUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
 				mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 			{
@@ -186,7 +186,7 @@ public final class CombatHandlingImpl implements CombatHandling
 					final ExpandedUnitDetails xuLightningUnit = getExpandUnitDetails ().expandUnitDetails (lightningUnit, null, null, lightningBoltSpell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (lightningBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), combatDetails.getCombatMap (),
+					if (getSpellTargetingUtils ().isUnitValidTargetForSpell (lightningBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), combatDetails.getCombatMap (),
 						0, null, VORTEX_VARIABLE_DAMAGE, xuLightningUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
 						mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 					{
@@ -235,19 +235,19 @@ public final class CombatHandlingImpl implements CombatHandling
 	}
 
 	/**
-	 * @return MemoryMaintainedSpell utils
+	 * @return Methods that determine whether something is a valid target for a spell
 	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final SpellTargetingUtils getSpellTargetingUtils ()
 	{
-		return memoryMaintainedSpellUtils;
+		return spellTargetingUtils;
 	}
 
 	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
+	 * @param s Methods that determine whether something is a valid target for a spell
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
 	{
-		memoryMaintainedSpellUtils = spellUtils;
+		spellTargetingUtils = s;
 	}
 
 	/**

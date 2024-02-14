@@ -145,7 +145,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		if ((cityData == null) || (cityData.getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 			msg = "You tried to change the construction of a city which isn't yours - change ignored.";
 		
-		else if (cityData.getCityPopulation () < 1000)
+		else if (cityData.getCityPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 			msg = "You must wait for an Outpost to reach 1,000 population and grow into a Hamlet before you can set its construction"; 
 		
 		else
@@ -227,7 +227,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		if ((cityData == null) || (cityData.getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 			msg = "You tried to change the number of farmers & workers in a city which isn't yours - change ignored.";
 
-		else if (cityData.getCityPopulation () < 1000)
+		else if (cityData.getCityPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 			msg = "You must wait for an Outpost to reach 1,000 population and grow into a Hamlet before you can change the number of farmers"; 
 		
 		else if ((optionalFarmers < 0) || (optionalFarmers + cityData.getMinimumFarmers () + cityData.getNumberOfRebels () > cityData.getCityPopulation () / 1000))
@@ -332,10 +332,11 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	/**
 	 * @param terrain Terrain to search
 	 * @param playerID Player whose cities to look for
+	 * @param includeOutposts Whether to also count outposts
 	 * @return Number of cities the player has.  Will not count outposts.
 	 */
 	@Override
-	public final int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID)
+	public final int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID, final boolean includeOutposts)
 	{
 		int numberOfCities = 0;
 		for (final MapAreaOfMemoryGridCells plane : terrain.getPlane ())
@@ -343,7 +344,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 				for (final MemoryGridCell cell : row.getCell ())
 				{
 					final OverlandMapCityData cityData = cell.getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == playerID) && (cityData.getCityPopulation () >= 1000))
+					if ((cityData != null) && (cityData.getCityOwnerID () == playerID) && ((includeOutposts) || (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION)))
 						numberOfCities++;
 				}
 		

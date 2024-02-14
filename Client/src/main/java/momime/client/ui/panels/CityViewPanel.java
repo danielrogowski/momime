@@ -17,7 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.AnimationContainer;
@@ -90,6 +90,8 @@ public final class CityViewPanel extends JPanel
 				if (element.getCityViewElementSetID () != null)
 					elementSetsDone = elementSetsDone + element.getCityViewElementSetID ();
 			}
+		
+		repaint ();
 		
 		// Sell buildings when they're clicked on
 		// init can get called multiple times to refresh the image from the cityViewUI, so make sure we don't add the mouse listener multiple times

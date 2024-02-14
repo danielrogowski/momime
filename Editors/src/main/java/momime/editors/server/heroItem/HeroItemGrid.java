@@ -16,12 +16,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom2.Element;
 
 import com.ndg.archive.LbxArchiveReader;
-import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
-import com.ndg.xml.JdomUtils;
+import com.ndg.utils.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
+import com.ndg.xmleditor.jdom.JdomUtils;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.editors.grid.MoMEditorGridWithImport;

@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,20 +23,21 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -47,9 +49,12 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
+import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
@@ -119,11 +124,17 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
+	
 	/** Text utils */
 	private TextUtils textUtils;
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
+	
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
 	
 	/** Background image */
 	private BufferedImage background;
@@ -154,6 +165,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	
 	/** Label showing what's currently being constructed in the city */
 	private JLabel cityCurrentlyConstructing;
+	
+	/** Label showing how many turns what's currently being constructed in the city is going to take */
+	private JLabel cityCurrentlyConstructingTurns;
 	
 	/**
 	 * Loads the background image for the panel
@@ -199,6 +213,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		
 		rushBuyIcon = getUtils ().createImage (rushBuyImage);
 		add (rushBuyIcon, "frmCitiesListRowRushBuy");
+		
+		cityCurrentlyConstructingTurns = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		add (cityCurrentlyConstructingTurns, "frmCitiesListRowCurrentlyConstructingTurns");
 	}
 
 	/**
@@ -270,7 +287,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					(mu.getStatus () == UnitStatusID.ALIVE))
 				{
 					final UnitEx unitDef = getClient ().getClientDB ().findUnit (mu.getUnitID (), "CitiesListCellRenderer");
-					final BufferedImage image = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID ());
+					final Image image = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID (), false);
 					
 					// Left justify all the units
 					final GridBagConstraints imageConstraints = getUtils ().createConstraintsNoFill (x, 0, 1, 1, INSET, GridBagConstraintsNoFill.SOUTHWEST);
@@ -291,6 +308,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 			
 			// Check if we can rush buy it
 			rushBuyIcon.setVisible (isRushBuyAllowed (city));
+			
+			// Turns to complete construction
+			cityCurrentlyConstructingTurns.setText ((city.getConstructionTurns () == null) ? "" : city.getConstructionTurns ().toString ());
 		}
 		catch (final Exception e)
 		{
@@ -303,16 +323,18 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/**
 	 * @param city City to test
 	 * @return Whether rush buy should be enabled for this city or not
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	private final boolean isRushBuyAllowed (final CitiesListEntry city) throws RecordNotFoundException
+	private final boolean isRushBuyAllowed (final CitiesListEntry city)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		// Name of what's currently being constructed
-		Integer productionCost = null;
-		if (city.getCurrentlyConstructingBuildingID () != null)
-			productionCost = getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "isRushBuyAllowed").getProductionCost ();
-		else
-			productionCost = getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "isRushBuyAllowed").getProductionCost ();
+		final Integer productionCost = getCityProductionCalculations ().calculateProductionCost (getClient ().getPlayers (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), city.getCityLocation (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+			getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), getClient ().getClientDB (), null);
 		
 		// Check if we can rush buy it
 		boolean rushBuyEnabled = false;
@@ -387,6 +409,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 				// Clicking the units column selects those units to move
 				case "frmCitiesListRowUnits":
 					getOverlandMapProcessing ().showSelectUnitBoxes (city.getCityLocation ());
+					getOverlandMapUI ().scrollTo (city.getCityLocation ().getX (), city.getCityLocation ().getY (), city.getCityLocation ().getZ (), true);
 					break;
 					
 				// Clicking the enchantments column brings up a popup list of enchantments we can switch off
@@ -508,7 +531,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					final MapCoordinates3DEx cityLocation = city.getCityLocation ();
 					final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-					if (cityData.getCityPopulation () >= 1000)
+					if (cityData.getCityPopulation () >= CommonDatabaseConstants.MIN_CITY_POPULATION)
 					{
 						// Build popup menu listing everything this city can construct
 						final JPopupMenu popup = new JPopupMenu ();
@@ -808,6 +831,22 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	{
 		overlandMapProcessing = proc;
 	}
+	
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param u Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI u)
+	{
+		overlandMapUI = u;
+	}
 
 	/**
 	 * @return Resource value utils
@@ -823,5 +862,21 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void setResourceValueUtils (final ResourceValueUtils r)
 	{
 		resourceValueUtils = r;
+	}
+
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
 	}
 }

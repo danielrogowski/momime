@@ -7,7 +7,7 @@ Here's some quick notes on how to get a game up and running in case some parts a
     C:\Program Files, or anywhere else Windows doesn't like files being modified.
     Straight under C:\, in your user home folder, or on another drive letter are fine.
 
- 2) You must have a Java 11 or higher.  There are now 2 builds of MoM IME, one which has
+ 2) You must have a Java 17 or higher.  There are now 2 builds of MoM IME, one which has
     a 64 bit Windows Java runtime environment already included and can just be unzipped and ran,
 	so use this if you do not want to do your own configuration.  The smaller download does not
 	include a jre so can be used if you already have Java installed and configured, or are trying to

@@ -10,22 +10,29 @@
 		<constructor-arg ref="domImplementationRegistry" />
 	</bean>
 
-	<bean id="resourceResolver" class="com.ndg.xml.XmlResourceResolver">
+	<bean id="resourceResolver" class="com.ndg.xmleditor.XmlResourceResolver">
 		<property name="domImplementationRegistry" ref="domImplementationRegistry" />
 		<property name="secondaryResourceResolver" ref="momResourceResolver" />
 	</bean>
 
-	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
-		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
-		<property name="resourceResolver" ref="resourceResolver" />
-	</bean>	
+	<bean id="schemaFactoryFactory" class="com.ndg.utils.SchemaFactoryFactory" />
+	
+	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-bean="schemaFactoryFactory" factory-method="createSchemaFactory">
+		<constructor-arg ref="resourceResolver" />
+	</bean>
 
 	<!-- MoM IME Language specific -->
+
+	<bean id="diplomacyScreenGrid" class="momime.editors.client.language.diplomacyScreen.DiplomacyScreenGrid" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+	</bean>
 
 	<bean id="dispatcher" class="com.ndg.xmleditor.editor.XmlEditorDispatcher">
 		<property name="creator" ref="creator" />
 		<property name="gridBeansMap">
 			<map>
+				<entry key="diplomacyScreen" value="diplomacyScreenGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>
@@ -56,7 +63,6 @@
 	
 	<bean id="ask" class="com.ndg.xmleditor.editor.AskForXsdAndXmlFileLocations" init-method="init">
 		<property name="utils" ref="utils" />
-		<property name="processUtils" ref="processUtils" />
 		<property name="dispatcher" ref="dispatcher" />
 		<property name="parser" ref="parser" />
 		<property name="schemaFactory" ref="schemaFactory" />

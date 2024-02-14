@@ -193,6 +193,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		unit.setCombatLocation (getCombatLocation ());
 		unit.setCombatHeading (getCombatHeading ());
 		unit.setCombatSide (getCombatSide ());
+		unit.setWasSummonedInCombat (getSummonedBySpellID () != null);
 
 		// Prompt for it to move
 		if (getCombatPosition () != null)

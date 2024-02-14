@@ -367,6 +367,11 @@ public interface CommonDatabase
 	 * @throws RecordNotFoundException If the spellRankID doesn't exist
 	 */
 	public SpellRank findSpellRank (final String spellRankID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return Complete list of all spell book sections in game
+	 */
+	public List<SpellBookSection> getSpellBookSection ();
 	
 	/**
 	 * @param sectionID Spell book section ID to search for
@@ -575,6 +580,19 @@ public interface CommonDatabase
 	 * @throws RecordNotFoundException If the objectiveID doesn't exist
 	 */
 	public WizardObjective findWizardObjective (final String objectiveID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return Complete list of relation score brackets
+	 */
+	public List<RelationScore> getRelationScore ();
+	
+	/**
+	 * @param relationScoreID Relation score ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Relation score object
+	 * @throws RecordNotFoundException If the relationScoreID doesn't exist
+	 */
+	public RelationScore findRelationScore (final String relationScoreID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param score Relation score to search for
@@ -582,7 +600,7 @@ public interface CommonDatabase
 	 * @return Relation score object
 	 * @throws RecordNotFoundException If no object is defined with the specified score in its range
 	 */
-	public RelationScore findRelationScore (final int score, final String caller) throws RecordNotFoundException;
+	public RelationScore findRelationScoreForValue (final int score, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Cost to construct the most expensive unit or building in the database

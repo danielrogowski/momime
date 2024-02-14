@@ -1,7 +1,6 @@
 package momime.common.utils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -477,28 +476,6 @@ public final class SpellUtilsImpl implements SpellUtils
 	}
 
 	/**
-	 * Note this is a bit weird that we pass in a list of research statuses instead of just a list of spells, but
-	 * just left it like this to stay consistent with all the other methods
-	 *
-	 * @param spells Research status of every spell for this player
-	 * @param magicRealmID Filters list to items in this magic realm; arcane spells have null magic realm so null searches for Arcane spells
-	 * @param spellRankID Filters list to items in this spell rank
-	 * @param db Lookup lists built over the XML database
-	 * @return List containing string IDs of all the spells (whether available or not) for a particular magic realm and spell rank
-	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
-	 */
-	@Override
-	public final List<Spell> getSpellsForRealmAndRank (final List<SpellResearchStatus> spells, final String magicRealmID,
-		final String spellRankID, final CommonDatabase db) throws RecordNotFoundException
-	{
-		// Convert null to empty string if searching for arcane spells
-		final String useMagicRealmID = (magicRealmID == null) ? "" : magicRealmID;
-
-		final List<Spell> result = getSpellsForRealmRankStatusInternal (spells, useMagicRealmID, spellRankID, null, db);
-		return result;
-	}
-
-	/**
 	 * @param spells Research status of every spell for this player
 	 * @param spellRankID Filters list to items in this spell rank
 	 * @param status Filters list to items with this MomPlayerSpellStatus
@@ -565,106 +542,6 @@ public final class SpellUtilsImpl implements SpellUtils
 		}
 
 		return spellRanksFound;
-	}
-
-	/**
-	 * @param spells List of all the spells defined in the XML file
-	 * @param magicRealmID Filters list to items in this magic realm; arcane spells have null magic realm so null searches for Arcane spells
-	 * @return List of Spell Rank IDs for which there are spells in this list in the specified magic realm
-	 */
-	@Override
-	public final List<String> getSpellRanksForMagicRealm (final List<Spell> spells, final String magicRealmID)
-	{
-		final List<String> spellRanksFound = new ArrayList<String> ();
-
-		for (final Spell thisSpell : spells)
-
-			if (((magicRealmID == null) && (thisSpell.getSpellRealm () == null)) ||
-				((magicRealmID != null) && (magicRealmID.equals (thisSpell.getSpellRealm ()))))
-
-				if (!spellRanksFound.contains (thisSpell.getSpellRank ()))
-					spellRanksFound.add (thisSpell.getSpellRank ());
-
-		return spellRanksFound;
-	}
-
-	/**
-	 * Depending on the sectionID requested, lists spells either sorted by Remaining Research Cost, or Casting Cost
-	 *
-	 * This is a little less complicated than listing out the sections in the first place (which is done by TfrmMomClient.ShowSpellBook)
-	 * since we know we're going to have been given a valid SectionID
-	 *
-	 * e.g. we're not going to pass in section = RESEARCH with CastType = msctCombat
-	 *
-	 * @param spells Research status of every spell for this player
-	 * @param desiredSectionID Filters list to items with this section ID
-	 * @param castType Filters list to items that allow this SpellCastType (this filter does not apply if sectionID requested is SPELL_BOOK_SECTION_RESEARCH_SPELLS or SPELL_BOOK_SECTION_UNKNOWN_SPELLS)
-	 * @param db Lookup lists built over the XML database
-	 * @return List of string IDs for all the spells in the specified spell book section, sorted by casting cost (or remaining research cost if spell is not yet researched)
-	 * @throws MomException If we encounter an unkown research status or castType
-	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
-	 */
-	@Override
-	public final List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final SpellBookSectionID desiredSectionID,
-		final SpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException
-	{
-		// Different selection and sorting logic if we are after spells that we've not yet researched, so just check this once up front
-		final boolean desiredSectionIsResearch =
-			(desiredSectionID == SpellBookSectionID.RESEARCHABLE_NOW) ||
-			(desiredSectionID == SpellBookSectionID.RESEARCHABLE);
-
-		// Check each spell
-		final List<SpellWithSortValue> spellsFound = new ArrayList<SpellWithSortValue> ();
-
-		for (final SpellResearchStatus thisSpellResearchStatus : spells)
-		{
-			final Spell thisSpell = db.findSpell (thisSpellResearchStatus.getSpellID (), "getSortedSpellsInSection");
-
-			// Check section matches
-			final SpellBookSectionID modifiedSectionID = getModifiedSectionID (thisSpell, thisSpellResearchStatus.getStatus (), true);
-
-			if (((desiredSectionID == null) && (modifiedSectionID == null)) ||
-				((desiredSectionID != null) && (desiredSectionID.equals (modifiedSectionID))))
-
-				// Combat only spells appear in our overland spell book only if they've not yet been researched
-				if ((desiredSectionIsResearch) ||
-					(!desiredSectionIsResearch) && (spellCanBeCastIn (thisSpell, castType)))
-				{
-					final int castingCost;
-
-					/*
-					 * Which cost should we use for sorting?
-					 * Use Base costs, so spells still stay sorted the same even if we reduce their actual casting cost to zero
-					 */
-					if (desiredSectionIsResearch)
-						castingCost = thisSpellResearchStatus.getRemainingResearchCost ();
-					else
-						switch (castType)
-						{
-							case OVERLAND:
-								castingCost = thisSpell.getOverlandCastingCost ();
-								break;
-							case COMBAT:
-								castingCost = thisSpell.getCombatCastingCost ();
-								break;
-							default:
-								throw new MomException ("getSortedSpellsInSection: Invalid CastType");
-						}
-
-					// Add it
-					spellsFound.add (new SpellWithSortValue (thisSpell, castingCost));
-				}
-		}
-
-		// Sort the list
-		Collections.sort (spellsFound);
-
-		// Convert the list, stripping off the sort values
-		final List<Spell> result = new ArrayList<Spell> ();
-		for (final SpellWithSortValue thisSpell : spellsFound)
-			result.add (thisSpell.spell);
-
-		return result;
 	}
 
 	/**

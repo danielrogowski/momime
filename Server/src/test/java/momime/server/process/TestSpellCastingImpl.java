@@ -18,7 +18,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -33,7 +33,6 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandUnitDetails;
-import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KnownWizardUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerUnitCalculations;
@@ -88,7 +87,6 @@ public final class TestSpellCastingImpl
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Spell to cast
@@ -108,11 +106,9 @@ public final class TestSpellCastingImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final MemoryUnit unit = new MemoryUnit ();
 		when (midTurn.addUnitOnServerAndClients ("UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
-			player3, UnitStatusID.ALIVE, true, mom)).thenReturn (unit);
+			player3, UnitStatusID.ALIVE, true, true,mom)).thenReturn (unit);
 		
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
-		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (unit, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Set up test object
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -130,7 +126,7 @@ public final class TestSpellCastingImpl
 
 		// Prove that unit got added
 		verify (midTurn).addUnitOnServerAndClients ("UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
-			player3, UnitStatusID.ALIVE, true, mom);
+			player3, UnitStatusID.ALIVE, true, true, mom);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
@@ -190,7 +186,6 @@ public final class TestSpellCastingImpl
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Spell to cast
@@ -226,8 +221,6 @@ public final class TestSpellCastingImpl
 		}
 		
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
-		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (theHero, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Fix random results
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -248,7 +241,7 @@ public final class TestSpellCastingImpl
 		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);
 
 		// Prove that unit got updated, not added
-		verify (midTurn).updateUnitStatusToAliveOnServerAndClients (theHero, new MapCoordinates3DEx (15, 25, 0), player3, true, mom);
+		verify (midTurn).updateUnitStatusToAliveOnServerAndClients (theHero, new MapCoordinates3DEx (15, 25, 0), player3, true, true, mom);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());

@@ -1,8 +1,11 @@
 package momime.client.ui.frames;
 
 import java.awt.Point;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -10,6 +13,10 @@ import javax.swing.JFrame;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import jakarta.xml.bind.Marshaller;
+import momime.client.config.MomImeClientConfig;
+import momime.client.config.WindowID;
+import momime.client.config.WindowPosition;
 import momime.client.language.LanguageVariableUIImpl;
 
 /**
@@ -32,8 +39,26 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 	private JFrame frame;
 
 	/** Whether clicks close the form (can't use this on prototype forms, since they'll only close with setVisible (false) and won't be tidied up properly) */
-	private boolean closeOnClick = false;
+	private boolean closeOnClick;
 	
+	/** Enum value representing this window; null if its position isn't recorded in config file (for example scope=prototype windows) */
+	private WindowID windowID;
+	
+	/** Whether the window being shown and hidden is recorded in the config file; only relevant if getWindowID does not return null */
+	private boolean persistVisibility = true;
+
+	/** Used when game is closing down and all windows are being hidden, so we don't record that hide into the config file */
+	private boolean ignoreNextHide;
+	
+	/** Client config, containing various overland map settings */
+	private MomImeClientConfig clientConfig;
+	
+	/** Marshaller for saving client config */
+	private Marshaller clientConfigMarshaller;
+	
+	/** Location to save updated client config */
+	private String clientConfigLocation;
+
 	/**
 	 * This is package-private so it can be accessed for setLocationRelativeTo () methods
 	 * @return The actual frame
@@ -129,10 +154,128 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 			getFrame ().setIconImage (getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/frameIcon.png"));
 			getFrame ().pack ();
 			getFrame ().setLocationRelativeTo (null);
+			
+			if ((getWindowID () != null) && (getClientConfig () != null))
+			{
+				// Restore window back to its saved position
+				final WindowPosition windowPos = findWindowPosition ();
+				if (windowPos != null)
+				{
+					getFrame ().setLocation (windowPos.getLeft (), windowPos.getTop ());
+					
+					if ((getFrame ().isResizable ()) && (windowPos.getWidth () != null) && (windowPos.getHeight () != null))
+						getFrame ().setSize (windowPos.getWidth (), windowPos.getHeight ());
+				}
+				
+				// Record changes to the frame in the config file
+				getFrame ().addComponentListener (new ComponentListener ()
+				{
+					@Override
+					public final void componentResized (@SuppressWarnings ("unused") final ComponentEvent e)
+					{
+						if (getFrame ().isResizable ())
+						{
+							final WindowPosition pos = findOrAddWindowPosition ();
+							pos.setWidth (getFrame ().getWidth ());
+							pos.setHeight (getFrame ().getHeight ());
+							saveConfigFile ();
+						}
+					}
+
+					@Override
+					public final void componentMoved (@SuppressWarnings ("unused") final ComponentEvent e)
+					{
+						final WindowPosition pos = findOrAddWindowPosition ();
+						pos.setLeft (getFrame ().getLocation ().x);
+						pos.setTop (getFrame ().getLocation ().y);
+						saveConfigFile ();
+					}
+
+					@Override
+					public final void componentShown (@SuppressWarnings ("unused") final ComponentEvent e)
+					{
+						if (isPersistVisibility ())
+						{
+							final WindowPosition pos = findOrAddWindowPosition ();
+							pos.setVisible (true);
+							saveConfigFile ();
+						}
+					}
+
+					@Override
+					public final void componentHidden (@SuppressWarnings ("unused") final ComponentEvent e)
+					{
+						if (isPersistVisibility ())
+						{
+							if (ignoreNextHide)
+								ignoreNextHide = false;
+							else
+							{
+								final WindowPosition pos = findOrAddWindowPosition ();
+								pos.setVisible (false);
+								saveConfigFile ();
+							}
+						}
+					}
+				});
+			}
 		}
 		frame.setVisible (v);
 	}
+	
+	/**
+	 * @return Window position entry from config file for this frame, or null if not found
+	 */
+	private final WindowPosition findWindowPosition ()
+	{
+		return getClientConfig ().getWindowPosition ().stream ().filter (p -> p.getWindowID () == getWindowID ()).findAny ().orElse (null);
+	}
+	
+	/**
+	 * @return Window position entry from config file for this frame
+	 */
+	private final WindowPosition findOrAddWindowPosition ()
+	{
+		WindowPosition pos = getClientConfig ().getWindowPosition ().stream ().filter (p -> p.getWindowID () == getWindowID ()).findAny ().orElse (null);
+		if (pos == null)
+		{
+			pos = new WindowPosition ();
+			pos.setWindowID (getWindowID ());
+			getClientConfig ().getWindowPosition ().add (pos);
+		}
+		return pos;
+	}
 
+	/**
+	 * After any change to the config options, we resave out the config XML immediately
+	 */
+	final void saveConfigFile ()
+	{
+		if (getClientConfigLocation () != null)
+			try
+			{
+				getClientConfigMarshaller ().marshal (getClientConfig (), new File (getClientConfigLocation ()));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+	}
+	
+	/**
+	 * Called when game is closing down; hides the window, but doesn't record the fact that its hidden in the config file
+	 */
+	public final void closedown ()
+	{
+		if ((frame != null) && (frame.isVisible ()))
+		{
+			if (isPersistVisibility ())
+				ignoreNextHide = true;
+			
+			frame.setVisible (false);
+		}
+	}
+	
 	/**
 	 * @return Whether clicks close the form
 	 */
@@ -147,5 +290,85 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 	final void setCloseOnClick (final boolean close)
 	{
 		closeOnClick = close;
+	}
+	
+	/**
+	 * @return Enum value representing this window; null if its position isn't recorded in config file (for example scope=prototype windows)
+	 */
+	final WindowID getWindowID ()
+	{
+		return windowID;
+	}
+
+	/**
+	 * @param w Enum value representing this window
+	 */
+	final void setWindowID (final WindowID w)
+	{
+		windowID = w;
+	}
+	
+	/**
+	 * @return Whether the window being shown and hidden is recorded in the config file; only relevant if getWindowID does not return null
+	 */
+	final boolean isPersistVisibility ()
+	{
+		return persistVisibility;
+	}
+
+	/**
+	 * @param v Whether the window being shown and hidden is recorded in the config file; only relevant if getWindowID does not return null
+	 */
+	final void setPersistVisibility (final boolean v)
+	{
+		persistVisibility = v;
+	}
+
+	/**
+	 * @return Client config, containing various overland map settings
+	 */	
+	public final MomImeClientConfig getClientConfig ()
+	{
+		return clientConfig;
+	}
+
+	/**
+	 * @param config Client config, containing various overland map settings
+	 */
+	public final void setClientConfig (final MomImeClientConfig config)
+	{
+		clientConfig = config;
+	}
+
+	/**
+	 * @return Marshaller for saving client config
+	 */
+	public final Marshaller getClientConfigMarshaller ()
+	{
+		return clientConfigMarshaller;
+	}
+
+	/**
+	 * @param marsh Marshaller for saving client config
+	 */
+	public final void setClientConfigMarshaller (final Marshaller marsh)
+	{
+		clientConfigMarshaller = marsh;
+	}
+
+	/**
+	 * @return Location to save updated client config
+	 */
+	public final String getClientConfigLocation ()
+	{
+		return clientConfigLocation;
+	}
+
+	/**
+	 * @param loc Location to save updated client config
+	 */
+	public final void setClientConfigLocation (final String loc)
+	{
+		clientConfigLocation = loc;
 	}
 }

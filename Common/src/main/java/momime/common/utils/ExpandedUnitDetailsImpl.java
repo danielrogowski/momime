@@ -1,5 +1,6 @@
 package momime.common.utils;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -7,12 +8,15 @@ import java.util.Set;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageType;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
 import momime.common.database.RangedAttackTypeEx;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitTypeEx;
@@ -361,6 +365,27 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	public final int getMovementSpeed () throws MomException
 	{
 		return getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED);
+	}
+	
+	/**
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
+	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
+	 */
+	@Override
+	public final boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException
+	{
+		boolean found = false;
+
+		final Iterator<String> iter = modifiedSkillValues.keySet ().iterator ();
+		while ((!found) && (iter.hasNext ()))
+		{
+			final UnitSkill skillDef = db.findUnitSkill (iter.next (), "unitIgnoresCombatTerrain");
+			if ((skillDef.isIgnoreCombatTerrain () != null) && (skillDef.isIgnoreCombatTerrain ()))
+				found = true;
+		}
+
+		return found;
 	}
 	
 	/**

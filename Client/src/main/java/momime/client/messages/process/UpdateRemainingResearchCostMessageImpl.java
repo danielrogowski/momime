@@ -9,7 +9,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.MagicSlidersUI;
-import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.SpellBookNewUI;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.utils.SpellUtils;
 
@@ -24,7 +24,7 @@ public final class UpdateRemainingResearchCostMessageImpl extends UpdateRemainin
 	private MomClient client;
 	
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 	
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
@@ -70,7 +70,7 @@ public final class UpdateRemainingResearchCostMessageImpl extends UpdateRemainin
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -78,7 +78,7 @@ public final class UpdateRemainingResearchCostMessageImpl extends UpdateRemainin
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}

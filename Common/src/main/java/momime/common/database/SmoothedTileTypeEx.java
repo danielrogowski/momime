@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 /**
  * Provides a map so we can go directly from an unsmoothed bitmask to a random tile image,

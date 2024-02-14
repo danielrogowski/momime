@@ -175,14 +175,15 @@ public interface CityProcessing
 	/**
 	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
 	 * 
-	 * @param attackingPlayer Player who won the combat, who is doing the banishing
+	 * @param attackingPlayer Player who won the combat, who is doing the banishing; if an outpost shrinks and disappears then its possible this can be null
 	 * @param defendingPlayer Player who lost the combat, who is the one being banished
+	 * @param canStealSpells Whether the attacking wizard gets to steal any spells from the defending wizard as a result of banishing them
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws IOException If there is another kind of problem
 	 */
-	public void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
+	public void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final boolean canStealSpells, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
 
 	/**
@@ -214,4 +215,17 @@ public interface CityProcessing
 	 */
 	public void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	
+	/**
+	 * Casting player has cast something nasty (e.g. corruption) at a map location.  Looks to see if it affects any other wizard's cities.
+	 * If so, the owner of the city is going to get mad at the casting player for it.
+	 * 
+	 * @param targetLocation Location where spell was cast
+	 * @param castingPlayerID Who cast the spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we can't find the wizard who owns the city
+	 */
+	public void penaltyToVisibleRelationFromNearbyCityOwner (final MapCoordinates3DEx targetLocation, final int castingPlayerID, final MomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException;
 }

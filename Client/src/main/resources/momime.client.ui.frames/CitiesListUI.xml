@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
-	<formWidth>972</formWidth>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/utils/swing/layoutmanagers/xmllayout">
+	<formWidth>1010</formWidth>
 	<formHeight>416</formHeight>
 	<component name="frmCitiesListTitle">
-		<left>486</left>
+		<left>505</left>
 		<top>2</top>
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitiesListOK">
-		<left>810</left>
+		<left>848</left>
 		<top>380</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
@@ -17,7 +17,7 @@
 	<component name="frmCitiesListCities">
 		<left>56</left>
 		<top>48</top>
-		<width>873</width>		<!-- 858, but once we get enough cities to show a scroll bar, the scroll bar ends up covering up the rush buy coins, so add +15 pixels for it -->
+		<width>911</width>		<!-- 896, but once we get enough cities to show a scroll bar, the scroll bar ends up covering up the rush buy coins, so add +15 pixels for it -->
 		<height>248</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
@@ -31,13 +31,13 @@
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitiesListGold">
-		<left>817</left>
+		<left>909</left>
 		<top>344</top>
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitiesListMana">
-		<left>883</left>
+		<left>921</left>
 		<top>344</top>
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
@@ -92,6 +92,14 @@
 	</component>
 	<component name="frmCitiesListHeadingCurrentlyConstructing">
 		<left>760</left>
+		<top>28</top>
+		<width>152</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListHeadingCurrentlyConstructingTurns">
+		<left>916</left>
 		<top>28</top>
 		<width>152</width>
 		<height>18</height>

@@ -68,7 +68,15 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 			case "PRODUCTION_ALL_PEOPLE":
 				text = getTextUtils ().halfIntToStr (getBreakdown ().getDoubleProductionAmountAllPopulation ());
 				break;
+				
+			case "PRODUCTION_ALL_PEOPLE_AFTER_MULTIPLIER":
+				text = getTextUtils ().halfIntToStr (getBreakdown ().getDoubleProductionAmountAllPopulationAfterMultiplier ());
+				break;
 
+			case "TAX_INCOME_MULTIPLIER_FROM_RACE":
+				text = Integer.valueOf (getBreakdown ().getRaceTaxIncomeMultiplier ()).toString ();
+				break;
+				
 			case "CONSUMPTION_PER_PERSON":
 				text = Integer.valueOf (getBreakdown ().getConsumptionAmountEachPopulation ()).toString ();
 				break;

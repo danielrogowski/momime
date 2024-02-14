@@ -60,6 +60,14 @@
 			<normalKey>M</normalKey>
 		</keyLang>
 	</shortcutKey>
+	<shortcutKey shortcut="CITIES_SCREEN">
+		<keyLang language="en">
+			<shift>false</shift>
+			<alt>false</alt>
+			<ctrl>false</ctrl>
+			<normalKey>T</normalKey>
+		</keyLang>
+	</shortcutKey>
 	<shortcutKey shortcut="NEXT_TURN">
 		<keyLang language="en">
 			<shift>false</shift>
@@ -605,6 +613,12 @@
 		<kickedText language="en">
 			<text>Another player logged onto the server with your player name and password, so you have been kicked.</text>
 		</kickedText>
+		<playerLeftSessionEndingTitle language="en">
+			<text>Player Left</text>
+		</playerLeftSessionEndingTitle>
+		<playerLeftSessionEndingText language="en">
+			<text>PLAYER_NAME has left the game, so closing down.  It has been saved at the start of the first player's turn and can be reloaded later</text>
+		</playerLeftSessionEndingText>
 		<createAccountFailed>
 			<title language="en">
 				<text>Create Account Failed</text>
@@ -1038,9 +1052,6 @@
 		<alreadyHasAllPossibleCitySpellEffects language="en">
 			<text>This city already has SPELL_NAME cast on it.</text>
 		</alreadyHasAllPossibleCitySpellEffects>
-		<cantCreateBuildingsInOutposts language="en">
-			<text>You cannot create a BUILDING_NAME in an Outpost until it grows into a Hamlet.</text>
-		</cantCreateBuildingsInOutposts>
 		<alreadyHasBuilding language="en">
 			<text>This city already has a BUILDING_NAME.</text>
 		</alreadyHasBuilding>
@@ -1148,6 +1159,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<planarSeal language="en">
 			<text>No travel between planes is possible while Planar Seal is in effect.</text>
 		</planarSeal>
+		<combatSummon language="en">
+			<text>SPELL_NAME cannot be cast on units that were summoned in combat.</text>
+		</combatSummon>
 		<cancelTitle language="en">
 			<text>Cancel Spell</text>
 		</cancelTitle>
@@ -1487,20 +1501,23 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL each producing PRODUCTION_PER_TASK PRODUCTION_TYPE = PRODUCTION_ALL_PEOPLE_DOING_TASK PRODUCTION_TYPE</text>
 		</productionFromMultiplePopulation>
 		<productionFromMultiplePopulation language="fr">
-			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL produisent chacun PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL produisent chacun PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_ALL_PEOPLE_DOING_TASK PRODUCTION_TYPE</text>
 		</productionFromMultiplePopulation>
 		<productionFromMultiplePopulation language="pl">
-			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL każdy produkuje PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+			<text>NUMBER_DOING_TASK TASK_NAME_PLURAL każdy produkuje PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_ALL_PEOPLE_DOING_TASK PRODUCTION_TYPE</text>
 		</productionFromMultiplePopulation>
 		<goldFromTaxes language="en">
 			<text>APPLICABLE_POPULATION population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_ALL_PEOPLE PRODUCTION_TYPE</text>
 		</goldFromTaxes>
 		<goldFromTaxes language="fr">
-			<text>NUMBER_DOING_TASK personnes payant chacun PRODUCTION_PER_PERSON PRODUCTION_TYPE de taxes = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+			<text>NUMBER_DOING_TASK personnes payant chacun PRODUCTION_PER_PERSON PRODUCTION_TYPE de taxes = PRODUCTION_ALL_PEOPLE PRODUCTION_TYPE</text>
 		</goldFromTaxes>
 		<goldFromTaxes language="pl">
-			<text>NUMBER_DOING_TASK population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+			<text>NUMBER_DOING_TASK population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_ALL_PEOPLE PRODUCTION_TYPE</text>
 		</goldFromTaxes>
+		<goldFromTaxesAfterMultiplier language="en">
+			<text>xTAX_INCOME_MULTIPLIER_FROM_RACE due to Race = PRODUCTION_ALL_PEOPLE_AFTER_MULTIPLIER PRODUCTION_TYPE</text>
+		</goldFromTaxesAfterMultiplier>
 		<productionFromSingleTile language="en">
 			<text>TILE_TYPE tile producing PRODUCTION_ALL_TILES PRODUCTION_TYPE</text>
 		</productionFromSingleTile>
@@ -2160,9 +2177,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<enterServer language="pl">
 			<text>lub wpisz poniżej adres IP serwera</text>
 		</enterServer>
-        <portNumber language="en">
-            <text>port</text>
-        </portNumber>
+		<portNumber language="en">
+			<text>port</text>
+		</portNumber>
 		<playerName language="en">
 			<text>Player name:</text>
 		</playerName>
@@ -2186,6 +2203,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<title language="pl">
 			<text>Nowa Gra</text>
 		</title>
+		<chooseMods language="en">
+			<text>Choose Mods</text>
+		</chooseMods>
 		<difficulty language="en">
 			<text>Difficulty</text>
 		</difficulty>
@@ -3658,6 +3678,18 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<planeShiftFailedText language="en">
 			<text>The selected unit(s) cannot Planar Travel at this location.</text>
 		</planeShiftFailedText>
+		<leaveSessionTitle language="en">
+			<text>Leave Game.</text>
+		</leaveSessionTitle>
+		<leaveSessionNoHumanPlayers language="en">
+			<text>Are you sure you want to leave this game?  It has already been saved at the start of the first player's turn and can be reloaded later.</text>
+		</leaveSessionNoHumanPlayers>
+		<leaveSessionOneHumanPlayer language="en">
+			<text>Are you sure you want to leave this game?  The other player will be kicked out of the game too.  It has already been saved at the start of the first player's turn and can be reloaded later.</text>
+		</leaveSessionOneHumanPlayer>
+		<leaveSessionManyHumanPlayers language="en">
+			<text>Are you sure you want to leave this game?  The other PLAYER_COUNT players will be kicked out of the game too.  It has already been saved at the start of the first player's turn and can be reloaded later.</text>
+		</leaveSessionManyHumanPlayers>
 		<mapButtonBar>
 			<game language="en">
 				<text>Game</text>
@@ -3787,6 +3819,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 			<cannotEndTurnUnassignedHeroItems language="en">
 				<text>Your item vault is overfull.  You must assign some items to heros, or destroy them on the anvil to make more space.</text>
 			</cannotEndTurnUnassignedHeroItems>
+			<cannotEndTurnDiplomacy language="en">
+				<text>You must finish talking to TALKING_PLAYER_NAME first.</text>
+			</cannotEndTurnDiplomacy>
 		</mapRightHandBar>
 		<surveyorTab>
 			<title language="en">
@@ -3889,6 +3924,12 @@ Bonus Or +GOLD_BONUS%</text>
 		<production language="en">
 			<text>Producing</text>
 		</production>
+		<productionTurn language="en">
+			<text>NUMBER_OF_TURNS Turn</text>
+		</productionTurn>
+		<productionTurns language="en">
+			<text>NUMBER_OF_TURNS Turns</text>
+		</productionTurns>
 		<rushBuy language="en">
 			<text>Buy</text>
 		</rushBuy>
@@ -4033,6 +4074,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<combatMap language="pl">
 			<text>Mapa Walki</text>
 		</combatMap>
+		<newShadows language="en">
+			<text>Show updated unit shadows</text>
+		</newShadows>
 		<debug language="en">
 			<text>Debug Options</text>
 		</debug>
@@ -4225,12 +4269,12 @@ Bonus Or +GOLD_BONUS%</text>
 		<enemyRazed language="pl">
 			<text>CITY_NAME zostało zniszczone</text>
 		</enemyRazed>
-        <enemyRampaged language="en">
-            <text>The monsters rampage through CITY_NAME then disappear</text>
-        </enemyRampaged>
-        <enemyRuined language="en">
-            <text>CITY_NAME was reduced to ruins</text>
-        </enemyRuined>
+		<enemyRampaged language="en">
+			<text>The monsters rampage through CITY_NAME then disappear</text>
+		</enemyRampaged>
+		<enemyRuined language="en">
+			<text>CITY_NAME was reduced to ruins</text>
+		</enemyRuined>
 		<enemyGotGoldFromYourCity language="en">
 			<text>GOLD_FROM_CITY gold pieces were lost.</text>
 		</enemyGotGoldFromYourCity>
@@ -4436,9 +4480,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<targetWizard language="en">
 			<text>Select a wizard to target</text>
 		</targetWizard>
-		<relations language="en">
-			<text>Relations</text>
-		</relations>
+		<diplomacy language="en">
+			<text>Diplomacy</text>
+		</diplomacy>
 		<personality language="en">
 			<text>Personality</text>
 		</personality>
@@ -4479,6 +4523,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<cityConstructing language="en">
 			<text>Constructing</text>
 		</cityConstructing>
+		<cityConstructingTurns language="en">
+			<text>Turns</text>
+		</cityConstructingTurns>
 	</citiesListScreen>
 	<heroItemsScreen>
 		<title language="en">
@@ -4538,12 +4585,18 @@ Bonus Or +GOLD_BONUS%</text>
 		<banishedByRaiders language="en">
 			<text>BANISHING_WIZARD banish BANISHED_WIZARD</text>
 		</banishedByRaiders>
+		<banishedByNobody language="en">
+			<text>BANISHED_WIZARD is banished</text>
+		</banishedByNobody>
 		<defeatedByWizard language="en">
 			<text>BANISHING_WIZARD defeats BANISHED_WIZARD</text>
 		</defeatedByWizard>
 		<defeatedByRaiders language="en">
 			<text>BANISHING_WIZARD defeat BANISHED_WIZARD</text>
 		</defeatedByRaiders>
+		<defeatedByNobody language="en">
+			<text>BANISHED_WIZARD is defeated</text>
+		</defeatedByNobody>
 	</wizardBanishedScreen>
 	<wizardWonScreen>
 		<title language="en">
@@ -4587,6 +4640,2026 @@ Bonus Or +GOLD_BONUS%</text>
 		<title language="en">
 			<text>Diplomacy</text>
 		</title>
+		<notYourTurn language="en">
+			<text>You can't initiate diplomacy when it isn't your turn</text>
+		</notYourTurn>
+		<banished language="en">
+			<text>You can't initiate diplomacy when either you or the other wizard is banished</text>
+		</banished>
+		<alreadyInDiplomacy language="en">
+			<text>You must finish talking to TALKING_PLAYER_NAME first</text>
+		</alreadyInDiplomacy>
+		<acceptTalkTo language="en">
+			<text>Agree to talk to TALKING_PLAYER_NAME</text>
+		</acceptTalkTo>
+		<reluctantlyTalkTo language="en">
+			<text>Reluctantly talk to TALKING_PLAYER_NAME</text>
+		</reluctantlyTalkTo>
+		<refuseTalkTo language="en">
+			<text>Refuse to talk to TALKING_PLAYER_NAME</text>
+		</refuseTalkTo>
+		<waitingForAcceptTalkTo language="en">
+			<text>Waiting to see whether TALKING_PLAYER_NAME will grant you an audience...</text>
+		</waitingForAcceptTalkTo>
+		<waitingForProposal language="en">
+			<text>Waiting for TALKING_PLAYER_NAME to make a proposal...</text>
+		</waitingForProposal>
+		<tiredOfWaitingForProposal language="en">
+			<text>I have no patience left for talking with TALKING_PLAYER_NAME</text>
+		</tiredOfWaitingForProposal>
+		<waitingForAcceptanceOfProposal language="en">
+			<text>Waiting for TALKING_PLAYER_NAME to consider your proposal...</text>
+		</waitingForAcceptanceOfProposal>
+		<acceptProposal language="en">
+			<text>Agree to TALKING_PLAYER_NAME's proposal</text>
+		</acceptProposal>
+		<refuseProposal language="en">
+			<text>Refuse TALKING_PLAYER_NAME's proposal</text>
+		</refuseProposal>
+		<proposeTreaty language="en">
+			<text>Propose Treaty</text>
+		</proposeTreaty>
+		<breakTreaty language="en">
+			<text>Threaten/Break Treaty</text>
+		</breakTreaty>
+		<offerTribute language="en">
+			<text>Offer Tribute</text>
+		</offerTribute>
+		<exchangeSpells language="en">
+			<text>Exchange Spells</text>
+		</exchangeSpells>
+		<endConversation language="en">
+			<text>Good Bye</text>
+		</endConversation>
+		<wizardPact language="en">
+			<text>Wizard Pact</text>
+		</wizardPact>
+		<proposeWizardPact language="en">
+			<text>Propose Wizard Pact</text>
+		</proposeWizardPact>
+		<breakWizardPact language="en">
+			<text>Break Wizard Pact</text>
+		</breakWizardPact>
+		<alliance language="en">
+			<text>Alliance</text>
+		</alliance>
+		<proposeAlliance language="en">
+			<text>Propose Alliance</text>
+		</proposeAlliance>
+		<breakAlliance language="en">
+			<text>Break Alliance</text>
+		</breakAlliance>
+		<proposePeaceTreaty language="en">
+			<text>Propose Peace Treaty</text>
+		</proposePeaceTreaty>
+		<proposeDeclareWarOnAnotherWizard language="en">
+			<text>Propose Declaration of War on another Wizard</text>
+		</proposeDeclareWarOnAnotherWizard>
+		<proposeBreakAllianceWithAnotherWizard language="en">
+			<text>Propose Break Alliance with another Wizard</text>
+		</proposeBreakAllianceWithAnotherWizard>
+		<threatenToAttack language="en">
+			<text>Threaten to Attack</text>
+		</threatenToAttack>
+		<threatened language="en">
+			<text>OUR_PLAYER_NAME!  Tell me why I should not destroy you now?</text>
+		</threatened>
+		<respondToThreatIgnore language="en">
+			<text>Ignore TALKING_PLAYER_NAME's idle threat</text>
+		</respondToThreatIgnore>
+		<respondToThreatTribute language="en">
+			<text>Try to appease TALKING_PLAYER_NAME with a tribute</text>
+		</respondToThreatTribute>
+		<respondToThreatWar language="en">
+			<text>Declare war on TALKING_PLAYER_NAME for daring to threaten you</text>
+		</respondToThreatWar>
+		<backToMainChoices language="en">
+			<text>Forget It</text>
+		</backToMainChoices>
+		<backToThreatenChoices language="en">
+			<text>Pick a different response</text>
+		</backToThreatenChoices>
+		<offerSpell language="en">
+			<text>Spells</text>
+		</offerSpell>
+		<receivedGold language="en">
+			<text>TALKING_PLAYER_NAME offers you a tribute of GOLD_AMOUNT gold.</text>
+		</receivedGold>
+		<receivedSpell language="en">
+			<text>TALKING_PLAYER_NAME offers to teach you the SPELL_NAME spell.</text>
+		</receivedSpell>
+		<exchangeSpellTheirs language="en">
+			<text>What type of spell interests you?</text>
+		</exchangeSpellTheirs>
+		<proposeExchangeSpell language="en">
+			<text>If you want to know the secret of REQUEST_SPELL_NAME then in return I ask that you teach me the OFFER_SPELL_NAME spell.</text>
+		</proposeExchangeSpell>
+		<rejectExchangeSpell language="en">
+			<text>I want to know the secret of REQUEST_SPELL_NAME, but I refuse to teach you OFFER_SPELL_NAME for it!</text>
+		</rejectExchangeSpell>
+		<thanksForExchangingSpell language="en">
+			<text>Very well, I accept your offer and will teach you the secret of OFFER_SPELL_NAME in exchange for you teaching me REQUEST_SPELL_NAME!</text>
+		</thanksForExchangingSpell>
+		<cannotDeclareWarOnUnknownWizard language="en">
+			<text>OUR_PLAYER_NAME, have you gone mad?  I will not declare war on a wizard I have never even met!</text>
+		</cannotDeclareWarOnUnknownWizard>
+		<declareWarOnYouBecauseOfOtherWizard language="en">
+			<text>OUR_PLAYER_NAME, I agree with THIRD_PLAYER_NAME that you are an eyesore that must be removed from this world!</text>
+		</declareWarOnYouBecauseOfOtherWizard>
+		<breakAllianceWithYouBecauseOfOtherWizard language="en">
+			<text>My apologies OUR_PLAYER_NAME, but I must end our Alliance, at THIRD_PLAYER_NAME's request.</text>
+		</breakAllianceWithYouBecauseOfOtherWizard>
+		<normalGreetingPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Hail, mighty OUR_PLAYER_NAME. I bear greetings and words of wisdom.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations, puissant OUR_PLAYER_NAME. Je suis porteur de messages de bienvenue et de sagesse.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich verneige mich vor solcher Macht. Seid gegruesst, OUR_PLAYER_NAME. Ich komme mit guten Wuenschen und Worten der Weisheit.</text>
+			</textVariant>
+		</normalGreetingPhrase>
+		<normalGreetingPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Hail, glorious OUR_PLAYER_NAME. I, TALKING_PLAYER_NAME bear greetings.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations, glorieux OUR_PLAYER_NAME. TALKING_PLAYER_NAME vous salue.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich verneige mich vor solchem Ruhm. Seid gegruesst OUR_PLAYER_NAME. Ich, TALKING_PLAYER_NAME freue mich, Euch zu sehen.</text>
+			</textVariant>
+		</normalGreetingPhrase>
+		<normalGreetingPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Greetings, most powerful OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations, tout puissant OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich verneige mich vor solcher Macht. Seid gegruesst OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</normalGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Despite your insolence and arrogant pride, TALKING_PLAYER_NAME grants you an audience.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>En depit de votre insolence et de votre orgueil, TALKING_PLAYER_NAME vous accorde une audience.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Trotzt Eurer Unverfrorenheit und Eures hochmuetigen Stolzes gewaehrt Euch TALKING_PLAYER_NAME eine Audienz.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>We expect you have come to offer amends to the mighty TALKING_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Nous esperons que vous venez presenter des excuses au puissant TALKING_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wir nehmen an, Ihr seid gekommen, um d. maechtigen TALKING_PLAYER_NAME eine Wiedergutmachung anzubieten.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I will grant a short audience with a dishonorable wizard, but do not try my patience.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accorde une courte audience a un magicien peu honorable, mais n'essayez pas d'abuser de ma patience.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich werde einem ehrlosen Zauberer eine kurze Audienz gewaehren, aber stellt meine Geduld auf keine allzu grosse Probe.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I reluctantly grant you an audience. Be brief, for my time is precious.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>C'est a contre-coeur que je vous accorde une audience. Soyez bref car mon temps est precieux.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich gewaehre Euch eine Audienz, wenn auch widerstrebend. Fasst Euch kurz, denn meine Zeit ist kostbar.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>I have little time to spare, so be brief.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je n'ai pas beaucoup de temps a vous consacrer, soyez bref.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich kann keine Zeit verschwenden, also fasst Euch kurz.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Go away. The time for conversation is past, and the time for action is now.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Partez. Il n'est plus temps de parler mais d'agir.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Schert Euch weg! Die Zeit der Verhandlungen ist vorueber. Nun ist es Zeit zu handeln.</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I have more pressing matters than to speak with a tyrant.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai mieux a faire que de discuter avec un tyran.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe Wichtigeres zu tun, als mit einem Tyrannen zu debattieren.</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>More important issues require my attention.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Des problemes plus importants m'appellent.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich muss mich nun wichtigeren Angelegenheiten zuwenden.</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Any discussions would be inappropriate at this time.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Le moment est mal choisi pour discuter.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Verhandlungen sind zu diesem Zeitpunkt nicht mehr angebracht.</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>I do not wish to speak with you!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne souhaite pas vous parler!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich verspuere keinerlei Beduerfnis, mit Euch zu sprechen!</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>You have tried my patience. Now go away!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ma patience est a bout. Partez maintenant!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr habt meine Geduld auf die Probe gestellt. Macht Euch nun davon!</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>I wish to be left alone at this time!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je veux qu'on me laisse seul!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich wuensche, alleingelassen zu werden!</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="8">
+			<textVariant language="en">
+				<text>You can't see the wizard today.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous ne pouvez pas voir le sorcier aujourd'hui.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr koennt den Zauberer heute nicht sehen!</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<genericRefusePhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I am not interested at this time.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne suis pas interesse pour le moment.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin im Augenblick nicht daran interessiert.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Your offer does not seem fair.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre offre ne me semble pas juste.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer Angebot erscheint mir nicht fair.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I respectfully decline your offer.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Malgre le respect que je vous porte, je decline votre offre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich lehne Euer Angebot mit dem gebuehrenden Respekt ab.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I do not consider your offer a fair one.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne crois pas que cette proposition soit juste.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich betrachte Euer Angebot als nicht fair.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Perhaps you mistook me for a gullible fool. I reject your offer.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Peut-etre me prenez-vous pour un imbecile qui se fait avoir facilement. Je rejette votre offre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Scheinbar haltet Ihr mich fuer einen leichtglaeubigen Narren. Ich lehne Euer Angebot ab.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="6">
+			<textVariant language="en">
+				<text>I am afraid I must decline.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je regrette mais c'est non.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich fuerchte, ich muss ablehnen.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="7">
+			<textVariant language="en">
+				<text>TALKING_PLAYER_NAME declines.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>TALKING_PLAYER_NAME refuse.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>TALKING_PLAYER_NAME lehnt das Angebot ab.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="8">
+			<textVariant language="en">
+				<text>It would not be wise for me to accept your offer at this time.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>En ce moment, il serait imprudent d'accepter votre offre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Es waere unklug, Euer Angebot zu diesem Zeitpunkt anzunehmen.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="9">
+			<textVariant language="en">
+				<text>Sorry, but your offer is not acceptable.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Desole, mais votre offre est inacceptable.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Es tut mir leid, aber Euer Angebot ist nicht akzeptabel.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="10">
+			<textVariant language="en">
+				<text>I am not in a position to accept any offers at this time.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne peux accepter aucune proposition en ce moment.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin nicht in der Lage, Euer Angebot zu diesem Zeitpunkt anzunehmen.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="11">
+			<textVariant language="en">
+				<text>I have no need of your offer at this time.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je n'ai pas besoin de votre offre en ce moment.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich sehe im Augenblick keine Veranlassung, Euer Angebot anzunehmen.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<genericRefusePhrase variantNumber="12">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I must decline your offer.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, je dois decliner votre offre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, ich muss Euer Angebot ablehnen.</text>
+			</textVariant>
+		</genericRefusePhrase>
+		<proposeWizardPactPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>In the interests of future peace, I offer a Wizard's Pact between us.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Dans l'interet de la paix, je propose la signature d'un pacte de sorciers.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Im Interesse eines zukuenftigen Friedens schlage ich einen Zauberpakt vor.</text>
+			</textVariant>
+		</proposeWizardPactPhrase>
+		<proposeWizardPactPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Reckless expansion can be very dangerous. Therefore, I propose a Wizard's Pact to prevent accidental conflict.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Une telle expansion peut etre tres dangereuse. C'est pourquoi je suggere que nous signions un pacte de sorciers pour prevenir tout conflit accidentel.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Skrupellose Expansion kann aeusserst gefaehrlich sein. Daher schlage ich einen Zauberpakt vor, um ungewollte Konflikte zu vermeiden.</text>
+			</textVariant>
+		</proposeWizardPactPhrase>
+		<proposeWizardPactPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I bear no ill will toward you, OUR_PLAYER_NAME. Let us agree to a Wizard's Pact to ensure future harmony.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne vous veux aucun mal, OUR_PLAYER_NAME. Signons donc un pacte de sorciers pour assurer la paix.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich fuehle keinen Grimm gegen Euch, OUR_PLAYER_NAME. Lasst uns einen Zauberpakt abschliessen, um eine harmonische Zukunft sicherzustellen.</text>
+			</textVariant>
+		</proposeWizardPactPhrase>
+		<proposeWizardPactPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>The need for peace is great. I propose that we sign a Wizard's Pact so we can concentrate our forces.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>La paix est absolument necessaire. Je propose que nous signions un pacte de sorciers afin de joindre nos forces.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Der Wunsch nach Frieden ist unuebersehbar. Ich schlage vor, dass wir einen Zauberpakt unterzeichnen, um unsere Kraefte zusammenschliessen zu koennen.</text>
+			</textVariant>
+		</proposeWizardPactPhrase>
+		<acceptWizardPactPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>In the year YEAR, TALKING_PLAYER_NAME and OUR_PLAYER_NAME pledge to adhere to a Wizard's Pact and to cease attacking each other's cities.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>En YEAR, TALKING_PLAYER_NAME et OUR_PLAYER_NAME jurons d'adherer a un pacte de sorciers et de cesser d'attaquer nos villes.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Im Jahr YEAR geloben TALKING_PLAYER_NAME und OUR_PLAYER_NAME, einen Zauberpakt einzuhalten und die Angriffe auf die Staedte des anderen einzustellen.</text>
+			</textVariant>
+		</acceptWizardPactPhrase>
+		<acceptWizardPactPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>TALKING_PLAYER_NAME agrees to a Wizard's Pact. Neither wizard shall attack the other's cities under any circumstances.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>TALKING_PLAYER_NAME accepte un pacte de sorciers. Aucun des sorciers ne doit attaquer les villes de l'autre sorcier quelles que soient les circonstances.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>TALKING_PLAYER_NAME erklaert sich mit einem Zauberpakt einverstanden. Die Zauberer versichern, die Staedte des anderen auf keinen Fall anzugreifen.</text>
+			</textVariant>
+		</acceptWizardPactPhrase>
+		<acceptWizardPactPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>If you agree not to attack my cities, my armies vow not to attack any of yours.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Si vous acceptez de ne pas attaquer mes villes, mes armees jurent de ne pas attaquer les votres.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Erklaert Ihr Euch bereit, meine Staedte nicht mehr anzugreifen, geloben meine Truppen, auch Eure Staedte zu verschonen.</text>
+			</textVariant>
+		</acceptWizardPactPhrase>
+		<acceptWizardPactPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I, TALKING_PLAYER_NAME, agree to your proposed Wizard Pact. As it is written, so shall it be done!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Moi, TALKING_PLAYER_NAME, jure de respecter le pacte de sorciers dans tous ses termes.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich, TALKING_PLAYER_NAME, erklaere mein Einverstaendnis mit dem Zauberpakt. Den darin enthaltenen Worten soll Rechnung getragen werden!</text>
+			</textVariant>
+		</acceptWizardPactPhrase>
+		<acceptWizardPactPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Agreed! As long as you do not attack my cities, I will abide by the Wizard's Pact.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>D'accord! Tant que vous n'attaquerez pas mes villes, je respecterai le pacte de sorciers.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Einverstanden! Solange Ihr meine Staedte nicht angreift, werde ich mich dem Zauberpakt beugen!</text>
+			</textVariant>
+		</acceptWizardPactPhrase>
+		<proposeAlliancePhrase variantNumber="1">
+			<textVariant language="en">
+				<text>The time has come for our two empires to forge an undying Alliance.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Le moment est venu pour nos deux empires de signer une alliance eternelle.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Die Zeit ist reif fuer ein immerwaehrendes Buendnis zwischen unseren Zauberreichen.</text>
+			</textVariant>
+		</proposeAlliancePhrase>
+		<proposeAlliancePhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Our empires are now at a point where we can both coexist in perfect harmony and sign an Alliance.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Nos empires sont maintenant prets a vivre en harmonie et a signer une alliance.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Unsere Zauberreiche sind nun an einem Punkt angekommen, der es uns erlaubt, in Harmonie zu existieren und ein Buendnis zu unterzeichnen.</text>
+			</textVariant>
+		</proposeAlliancePhrase>
+		<proposeAlliancePhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I shall offer undying loyalty and allegiance, if you will agree to an Alliance</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je vous offre une loyaute et une allegeance eternelles si vous signez une alliance.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich biete Euch immerwaehrende Loyalitaet und Ergebenheit, wenn Ihr Euch mit einem Buendnis einverstanden erklaert.</text>
+			</textVariant>
+		</proposeAlliancePhrase>
+		<proposeAlliancePhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I pledge my eternal friendship and loyalty in exchange for an Alliance</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je fais un serment d'amitie et de loyaute eternelles en echange d'une alliance</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich biete Euch immerwaehrende Freundschaft und Loyalitaet, wenn Ihr Euch mit einem Buendnis einverstanden erklaert.</text>
+			</textVariant>
+		</proposeAlliancePhrase>
+		<proposeAlliancePhrase variantNumber="5">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, let us cement our good relations with an Alliance.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, cimentons notre amitie avec une alliance.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, lasst uns unsere guten Beziehungen mit einem Buendnis untermauern.</text>
+			</textVariant>
+		</proposeAlliancePhrase>
+		<acceptAlliancePhrase variantNumber="1">
+			<textVariant language="en">
+				<text>In the year YEAR, TALKING_PLAYER_NAME and OUR_PLAYER_NAME agree to form an alliance in which neither will commit any form of aggression against the other.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>En YEAR, TALKING_PLAYER_NAME et OUR_PLAYER_NAME ont accepte de forme une alliance selon laquelle ils ne s'agresseront pas.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Im Jahr YEAR schliessen TALKING_PLAYER_NAME und OUR_PLAYER_NAME ein Buendnis, wonach keiner der beiden sich aggressiv gegenueber dem anderen verhalten darf.</text>
+			</textVariant>
+		</acceptAlliancePhrase>
+		<acceptAlliancePhrase variantNumber="2">
+			<textVariant language="en">
+				<text>So our Alliance is forged. Neither of us shall attack the other's cities, nor shall we cast hostile spells against one another.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ainsi notre alliance est forgee. Nous n'attaquerons pas nos villes et nous ne nous jetterons aucun sort hostile.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Damit ist unser Buendnis besiegelt. Keiner von uns wird die Staedte des anderen angreifen und feindselige Zaubersprueche ueber den anderen verhaengen.</text>
+			</textVariant>
+		</acceptAlliancePhrase>
+		<acceptAlliancePhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I TALKING_PLAYER_NAME welcome an Alliance with my trusted friend, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Le grand TALKING_PLAYER_NAME se rejouit de l'alliance avec OUR_PLAYER_NAME en qui il a toute confiance.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich, TALKING_PLAYER_NAME begruesse das Buendnis mit d. geschaetzten OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</acceptAlliancePhrase>
+		<acceptAlliancePhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Today marks the dawn of a new era. TALKING_PLAYER_NAME and OUR_PLAYER_NAME have forged an undying Alliance. Death to our enemies!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Aujourd'hui commence une ere nouvelle. TALKING_PLAYER_NAME et OUR_PLAYER_NAME se sont jures une alliance eternelle. Malheur a nos ennemis!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Der heutige Tag ist der Beginn einer neuen Aera.TALKING_PLAYER_NAME und OUR_PLAYER_NAME haben ein dauerhaftes Buendnis geschlossen. Tod unseren Feinden!</text>
+			</textVariant>
+		</acceptAlliancePhrase>
+		<acceptAlliancePhrase variantNumber="5">
+			<textVariant language="en">
+				<text>I can see the profound wisdom in an Alliance. So be it!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je peux voir toute la sagesse d'une alliance. Qu'il en soit ainsi!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich erkenne die tiefe Weisheit dieses Buendnisses. So sei es!</text>
+			</textVariant>
+		</acceptAlliancePhrase>
+		<proposePeaceTreatyPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Great OUR_PLAYER_NAME, this war has been a tremendous strain on us both. Sign a peace treaty so we can end this senseless destruction.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Grand OUR_PLAYER_NAME, cette guerre nous a coute tres cher a tous les deux. Signez un traite de paix qui mettra un terme a cette destruction stupide.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Oh OUR_PLAYER_NAME, dieser Krieg ist fuer uns beide eine riesige Belastung. Lasst uns durch einen Friedensvertrag die sinnlose Zerstoerung beenden.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>This war between us is senseless. Let us call an end to it with a peace treaty.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Cette guerre entre nous n'a aucun sens. Mettons-y fin avec un traite de paix.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Dieser Krieg ist sinnlos. Setzen wir ihm durch einen Friedensvertrag ein Ende.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Both our peoples have suffered greatly. Isn't it time we sought peace instead?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Nos deux peuples ont beaucoup souffert. Ne serait-il pas temps d'essayer de vivre en paix?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Unsere Voelker haben genug gelitten. Ist es nicht an der Zeit, Frieden zu stiften?</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Oh mighty OUR_PLAYER_NAME, I bring you an offer of peace. Accept and we can end this war.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Oh puissant OUR_PLAYER_NAME, je vous apporte une offre de paix. Acceptez-la et nous pouvons mettre fin a cette guerre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin gekommen, d. maechtigen OUR_PLAYER_NAME ein Friedensangebot zu unterbreiten. Nehmt es an, und lasst uns diesen Krieg beenden.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Do you wish to suffer still more? I see no need to continue hostilities. Let us agree to peace.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Voulez-vous continuer a souffrir? Il n'y a pas lieu de continuer les hostilites. Signons un traite de paix.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Habt Ihr denn noch nicht genug gelitten? Ich sehe keine Veranlassung, die Feindseligkeiten fortzusetzen. Lasst uns Friedensverhandlungen fuehren.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<proposePeaceTreatyPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>We can no longer sustain this horrible war. We offer a peace treaty to the powerful OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Nous ne pouvons plus continuer cette horrible guerre. Nous offrons un traite de paix au puissant OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wir koennen diesen furchtbaren Krieg nicht mehr verantworten. Wir bieten d. maechtigen OUR_PLAYER_NAME daher einen Friedensvertrag an.</text>
+			</textVariant>
+		</proposePeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>In the year YEAR, TALKING_PLAYER_NAME and OUR_PLAYER_NAME agree to terminate all hostilities.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>En YEAR, TALKING_PLAYER_NAME et OUR_PLAYER_NAME ont accepte de mettre fin aux hostilites.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Im Jahr YEAR erklaeren sich TALKING_PLAYER_NAME und OUR_PLAYER_NAME bereit, alle Feindseligkeiten zu beenden.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I, TALKING_PLAYER_NAME, hereby order all hostilities to end.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Moi, TALKING_PLAYER_NAME, jure d'arreter toutes les hostilites.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich, TALKING_PLAYER_NAME, befehle hiermit, alle Feindseligkeiten zu beenden.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I agree that the time has come to end our petty bickering.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte d'arreter nos chamailleries.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich erkenne an, dass die Zeit gekommen ist, unser kleinmuetiges Gezaenk zu beenden.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I accept your offer of peace. Cease your attacks and we shall stop ours.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte votre offre de paix. Cessez vos attaques et nous cesserons les notres.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich nehme Euer Friedensangebot an. Stellt Eure Angriffe ein, und wir werden dasselbe tun.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
+		<acceptPeaceTreatyPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>I grow weary of senseless destruction. I accept your offer of peace.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je suis las de cette destruction inutile. J'accepte votre offre de paix.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin dieser sinnlosen Zerstoerung ueberdruessig und nehme Euer Friedensangebot an.</text>
+			</textVariant>
+		</acceptPeaceTreatyPhrase>
+		<breakPactPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I find the TYPE_OF_PACT is no longer convenient.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, je pense que notre TYPE_OF_PACT n'est plus  a notre avantage.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, ich finde, dass unser TYPE_OF_PACT nicht andauern kann.</text>
+			</textVariant>
+		</breakPactPhrase>
+		<breakPactPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>The TYPE_OF_PACT was made in haste. My needs have changed. I must expand in order to survive.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Le TYPE_OF_PACT a ete signe hativement. Mes besoins ont change et je dois trouver plus de terres pour survivre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Unser TYPE_OF_PACT wurde ueberstuerzt unterzeichnet. Meine Lage hat sich geaendert. Ich muss meine Gebiete ausdehnen, um ueberleben zu koennen.</text>
+			</textVariant>
+		</breakPactPhrase>
+		<breakPactPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Times change and I am in dire need of new territory. I regret the necessity, but our TYPE_OF_PACT is broken.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Les temps changent et il me faut absolument de nouveaux territoires. Je suis vraiment desole mais je dois rompre notre TYPE_OF_PACT.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Die Zeiten aendern sich, und ich brauche dringend neue Gebiete. Ich bedaure diese Notwendigkeit, aber unser TYPE_OF_PACT ist hiermit hinfaellig.</text>
+			</textVariant>
+		</breakPactPhrase>
+		<breakPactPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I must expand. The TYPE_OF_PACT is too constraining and must be dissolved.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai besoin de plus de terres. Le TYPE_OF_PACT est trop contraignant et doit etre revoque.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich muss meine Gebiete ausdehnen. Unser TYPE_OF_PACT schraenkt mich zu sehr ein und muss daher annulliert werden.</text>
+			</textVariant>
+		</breakPactPhrase>
+		<breakPactPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>My people demand deliverance from the crowding in their cities. I have no other choice but to break our TYPE_OF_PACT.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Mon peuple en a assez des villes surpeuplees et exige de nouvelles terres. Je n'ai pas d'autre choix que de revoquer notre TYPE_OF_PACT.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Mein Volk verlangt nach Befreiung aus der qualvollen Enge der Staedte. Ich habe keine Wahl - unser TYPE_OF_PACT ist ab sofort ungueltig.</text>
+			</textVariant>
+		</breakPactPhrase>
+		<brokenPactPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I shall remember this day OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je n'oublierai pas ce jour, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich werde diesen Tag nicht vergessen, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>As I expected, OUR_PLAYER_NAME, you have proven yourself to be without honor.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Comme je m'y attendais, OUR_PLAYER_NAME, vous avez montre que vous n'avez pas d'honneur.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ganz wie ich erwartete, OUR_PLAYER_NAME, habt Ihr bewiesen, dass Ihr keinen Funken Ehre im Leib habt.</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I shall inscribe the words of your broken treaties upon your tombstone, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ecrirai sur vote pierre tombale les noms des traites que vous avez rompus, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich werde die Worte der von Euch gebrochenen Abkommen auf Euren Grabstein meisseln lassen, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Your empty promises will no longer be tolerated!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos vaines promesses ne sont plus tolerables!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure leeren Versprechungen werden nicht laenger geduldet!</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>You should reconsider your decision. Our bonds have kept the peace!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous devriez reconsiderer votre decision. Les liens que nous avons etablis ont maintenu la paix!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr solltet Eure Entscheidung noch einmal ueberdenken. Unsere Verbindung hat bisher den Frieden bewahrt!</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>So be it! You no longer have my support!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Soit! Vous n'avez plus mon soutien!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>So sei es denn! Ich entziehe Euch meine Unterstuetzung!</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>Your decision is not wise! You jeopardize your kingdom!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ceci n'est pas une sage decision! Vous mettez votre royaume en danger!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure Entscheidung ist unklug! Ihr bringt Euer Koenigreich in Gefahr!</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="8">
+			<textVariant language="en">
+				<text>My trust in you has faltered. Do not seek my help in the future!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne vous fais plus confiance. Ne me demandez pas de vous aider a l'avenir!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Mein Vertrauen in Euch ist enttaeuscht worden. Bittet mich in Zukunft nicht mehr um Hilfe!</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="9">
+			<textVariant language="en">
+				<text>I can no longer trust you OUR_PLAYER_NAME. Keep your distance!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne vous fais plus confiance OUR_PLAYER_NAME. Gardez vos distances!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich kann Euch nicht mehr vertrauen, OUR_PLAYER_NAME. Bleibt mir in Zukunft vom Leibe!</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="10">
+			<textVariant language="en">
+				<text>Why do you make such empty promises? You are a dishonorable fool!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Pourquoi faire de vaines promesses? Vous n'etes qu'un imbecile sans honneur!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Warum macht Ihr leere Versprechungen? Ihr seid ein ehrloser Narr!</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="11">
+			<textVariant language="en">
+				<text>This broken trust will be your demise!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Cette trahison marque le debut de votre fin!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Dieser Vertrauensbruch wird Euer Verhaengnis sein!</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<brokenPactPhrase variantNumber="12">
+			<textVariant language="en">
+				<text>Just as I suspected. You disguise your trickery with empty promises!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Exactement comme je m'y attendais. Vos vaines promesses masquent votre fourberie!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Genau, wie ich argwoehnte. Ihr kleidet Eure Gaunereien in leere Versprechungen!</text>
+			</textVariant>
+		</brokenPactPhrase>
+		<pactBrokenUnitsPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you attacked my troops after being warned. Our TYPE_OF_PACT is broken.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, vous avez attaque mes troupes en depit de mes avertissements. Notre TYPE_OF_PACT est rompu.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr habt trotz meiner Warnungen meine Truppen angegriffen. Unser TYPE_OF_PACT ist beendet.</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenUnitsPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>You back-stabbing infidel! You agreed to uphold our TYPE_OF_PACT, then you attacked!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous n'etes qu'un traite et un lache! Vous acceptez de vous en tenir aux termes de notre TYPE_OF_PACT, puis vous attaquez!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Hinterhaeltiger Hund! Ihr hattet geschworen, dass unser TYPE_OF_PACT nie gebrochen wuerde und habt dann doch angegriffen!</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenUnitsPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Your attack on my troops proves you place no trust in our TYPE_OF_PACT. Consider it broken.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre attaque de mes troupes prouve que je ne peux pas etre sur que vous honorerez notre TYPE_OF_PACT. Il est donc revoque.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer Angriff auf meine Truppen beweist, dass Euch unser TYPE_OF_PACT nicht viel bedeutet. Betrachtet unser Abkommen als hinfaellig.</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenUnitsPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>You have slain my minions. The TYPE_OF_PACT is no more.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous avez tue mes hommes. Le TYPE_OF_PACT n'a plus cours.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr habt meine Gefolgsleute dahingeschlachtet! Unser TYPE_OF_PACT gilt daher nicht mehr.</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenUnitsPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I will not stand for allies destroying my troops, even if inadvertently. Our agreement ends now.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, je ne supporterai pas de voir des allies detruire mon armee meme par megarde. Notre accord n'est plus que du passe.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, was sind das fuer Verbuendete, die meine Truppen vernichten? Auch wenn es unbeabsichtigt war - unser Abkommen ist hinfaellig!</text>
+			</textVariant>
+		</pactBrokenUnitsPhrase>
+		<pactBrokenCityPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, your tyrannical nature has forced me to break our TYPE_OF_PACT. Another attack like the one at CITY_NAME and we shall be at war.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, votre nature tyrannique me force a rompre notre TYPE_OF_PACT. Une autre attaque du genre de celle de CITY_NAME et ce sera la guerre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, durch Euer tyrannisches Verhalten ist unser TYPE_OF_PACT ungueltig. Noch eine Attacke wie bei CITY_NAME, und es gibt Krieg.</text>
+			</textVariant>
+		</pactBrokenCityPhrase>
+		<pactBrokenCityPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Your attack on CITY_NAME proves that you have no honor. Our treaty is over.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre attaque de CITY_NAME montre que vous n'avez pas d'honneur. Notre traite est revoque.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer Angriff auf CITY_NAME beweist, dass Ihr keinen Funken Ehre im Leib habt. Unser Abkommen ist hiermit beendet.</text>
+			</textVariant>
+		</pactBrokenCityPhrase>
+		<pactBrokenCityPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I can stomach no treaties with a lying dog who mercilessly attacks my cities.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne veux aucun traite avec un fourbe qui attaque mes villes sans faire de quartier.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich kann keine Buendnisse mit einem raeudigen Hund aufrechterhalten, der meine Staedte gnadenlos angreift.</text>
+			</textVariant>
+		</pactBrokenCityPhrase>
+		<pactBrokenCityPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Our TYPE_OF_PACT ends now. Another attack like the one at CITY_NAME and I will retaliate.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Notre TYPE_OF_PACT n'a plus cours. Une autre attaque comme celle de CITY_NAME et je me vengerai.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Unser TYPE_OF_PACT ist hiermit beendet. Noch ein Angriff wie der bei CITY_NAME, und ich werde zurueckschlagen.</text>
+			</textVariant>
+		</pactBrokenCityPhrase>
+		<declareWarCityPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you will crumble under the weight of your broken promises.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, vous serez ecrase sous le poids des promesses que vous avez rompues.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr werdet unter der Last Eurer leeren Versprechen zusammenbrechen.</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>So, OUR_PLAYER_NAME, you cannot keep your word. I shall not forget this.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Alors, OUR_PLAYER_NAME, vous ne savez pas tenir vos promesses. Je ne l'oublierai pas.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Nun, OUR_PLAYER_NAME, Ihr koennt Euer Wort also nicht halten. Ich werde das nicht so schnell vergessen.</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>You will soon know the meaning of pain! We will meet on the battlefield!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous allez bientot savoir ce que souffrir veut dire! Nous nous retrouverons sur le champ de bataille!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Bald werdet Ihr wissen, was Schmerz bedeutet. Wir sehen uns auf dem Schlachtfeld wieder!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>If it is war that you want, I shall deliver!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Si vous voulez la guerre, vous l'aurez!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wenn Ihr Krieg wollt - den koennt Ihr haben!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I shall crush your armies in the blink of an eye!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, je vais ecraser votre armee en un clin d'oeil!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, ich werde Eure Armeen im Handumdrehen zermalmen!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, there is no turning back now! Prepare to die!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, voici le point de non-retour! Preparez-vous a mourir!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, jetzt gibt es kein Zurueck mehr! Euer letztes Stuendlein hat geschlagen!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>You fool! My magic shall turn your armies to dust! Prepare yourself!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Imbecile! Ma magie va reduire votre armee en poussiere! Preparez-vous!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Narr! Mein Zauber wird Eure Armeen zu Staub verwandeln! Macht Euch bereit!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="8">
+			<textVariant language="en">
+				<text>Yet another foolish parlor magician who wishes to meet his match! So be it!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Encore un magicien de pacotille qui essaie de se mesurer a plus fort que lui! Soit!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Schon wieder so ein drittklassiger Salonmagier, der sich an mir messen will! Nun gut, so sei es!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="9">
+			<textVariant language="en">
+				<text>Hail OUR_PLAYER_NAME, let the battle begin!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations OUR_PLAYER_NAME, que la bataille commence!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Seid gegruesst, OUR_PLAYER_NAME. Auf in den Kampf!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="10">
+			<textVariant language="en">
+				<text>So be it! See you in hell, my friend!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Soit! Je vous verrai en enfer, mon ami!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>So sei es! Wir sehen uns in der Hoelle wieder, mein Freund!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="11">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I shall hold your head high before the day is done!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, j'aurai votre peau avant le coucher du soleil!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, bevor dieser Tag sich seinem Ende zuneigt, wird Euer Kopf rollen!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="12">
+			<textVariant language="en">
+				<text>The blood of your armies will spill this day, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Le sang de votre armee va couler aujourd'hui, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Das Blut Eurer Truppen wird heute noch das Land besudeln, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="13">
+			<textVariant language="en">
+				<text>I shall strike your existence from the pages of history! Die OUR_PLAYER_NAME!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je vais debarrasser le monde de toute trace de votre existence! Mourez OUR_PLAYER_NAME!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich werde Euren Namen aus den Geschichtsbuechern tilgen! Sterbt, OUR_PLAYER_NAME!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<declareWarCityPhrase variantNumber="14">
+			<textVariant language="en">
+				<text>Good! I was looking for a reason to kill you!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Tres bien! Je cherchais une bonne raison de vous tuer!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Gut! Ich habe ohnehin nach einem Grund gesucht, Euch umzubringen!</text>
+			</textVariant>
+		</declareWarCityPhrase>
+		<grownImpatientPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I tire of diplomatic negotiations. We can continue discussions at a later time.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ces negociations me fatiguent. Nous pouvons continuer les pourparlers plus tard.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin die diplomatischen Verhandlungen leid. Wir koennen unsere Debatte zu einem spaeteren Zeitpunkt fortsetzen.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>These talks get us nowhere. I must take my leave.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ces negociations n'aboutissent nulle part. Je dois me retirer.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Diese Gespraeche fuehren doch zu nichts. Ich werde mich jetzt zurueckziehen.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I have heard enough. We will talk again later.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'en ai assez. Nous reprendrons ces pourparlers plus tard.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe genug gehoert. Wir werden uns spaeter weiter unterhalten.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you try my patience. Perhaps we should speak again later.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, ma patience a des limites. Peut-etre que nous ferions mieux de reprendre les negociations plus tard.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr stellt meine Geduld auf eine schwere Probe. Vielleicht sollten wir uns spaeter weiter unterhalten.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>A thousand apologies, oh mighty OUR_PLAYER_NAME, but other duties call.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Toutes mes excuses, oh puissant OUR_PLAYER_NAME, mais le devoir m'appelle.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bitte tausendmal um Vergebung, oh OUR_PLAYER_NAME, aber ich muss mich jetzt anderen Pflichten zuwenden.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>Perhaps we can talk again later.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Peut-etre pourrons-nous continuer a negocier plus tard.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Vielleicht koennen wir uns spaeter weiter unterhalten.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>Pardon me, but our time is at an end.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Excusez-moi mais nous n'avons plus le temps.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bitte um Vergebung, aber wir haben lange genug verhandelt.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<thanksForGoldPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I thank you for your generous tribute OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je vous remercie de votre genereux tribut OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich danke Euch fuer Euren grosszuegigen Tribut, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Your tribute has been accepted. I look forward to your next installment.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre tribut a ete accepte. Il me tarde de recevoir votre prochain versement.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure Gabe wurde angenommen. Ich freue mich schon auf die naechste Zahlung.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I have been distrustful of your motives, but your tribute now offers a way to significantly reduce the tension between us.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne vous faisais pas confiance, mais votre tribut permet de reduire de facon significative les tensions qui existent entre nous.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe die Ehrenhaftigkeit Eurer Motive angezweifelt, aber Eure Gabe oeffnet einen Weg, die zwischen uns herrschende Spannung bedeutend zu mildern.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>You have made a wise choice in offering tribute to an obviously superior wizard.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous avez fait le bon choix en offrant un tribut a un sorcier qui, visiblement, vous est superieur.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr habt eine kluge Wahl getroffen, indem Ihr einem offensichtlich ueberlegenen Zauberer eine Friedensgabe angeboten habt.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>I greatly appreciate your support with such a magnanimous contribution.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'apprecie beaucoup votre soutien avec une si genereuse contribution.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich schaetze Eure Unterstuetzung, die in diesem edelmuetigen Beitrag zum Ausdruck kommt.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>Your generous tribute has laid many of my grievances to rest.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre genereux tribut m'a fait oublier nombre de mes griefs.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer grossmuetiger Tribut hat meine Besorgnis gemindert.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>Your magnificent contribution will go far toward establishing a lasting peace and a hopeful future for us both.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre superbe contribution va permettre d'etablir une paix durable entre nous.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer stattlicher Beitrag wird zum Aufbau eines andauernden Frieden und zu einer hoffnungstraechtigen Zukunft fuer alle Beteiligten fuehren.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="8">
+			<textVariant language="en">
+				<text>With tribute such as this, both our forces will be able to exist together in harmony.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Avec un tel tribut, nos forces pourront vivre en harmonie.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Durch solcherlei Gaben werden unser beider Voelker in Harmonie zusammenleben koennen.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="9">
+			<textVariant language="en">
+				<text>Your offer is a generous one. I hope this is the start of a new relationship between us.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre offre est genereuse. J'espere qu'elle marque le debut de relations nouvelles entre nous.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer Angebot ist grosszuegig. Ich hoffe, dies ist der Beginn neuer Beziehungen zwischen uns.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="10">
+			<textVariant language="en">
+				<text>Thank you OUR_PLAYER_NAME. You show respect where it is due.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Merci OUR_PLAYER_NAME. Vous savez vous montrer respectueux.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich danke Euch, OUR_PLAYER_NAME. Ihr habt den gebotenen Respekt gezollt.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="11">
+			<textVariant language="en">
+				<text>I graciously accept your tribute, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte votre tribut, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich nehme Euren Tribut dankend an,  OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="12">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you have shown yourself to be worthy of respect.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, vous montrez que vous etes digne de confiance.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr habt Euch als unseres Repektes wuerdig erwiesen.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="13">
+			<textVariant language="en">
+				<text>I accept your scraps, OUR_PLAYER_NAME. Now begone!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte ce maigre tribut, OUR_PLAYER_NAME. Maintenant, partez!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich nehme Eure armselige Gabe an, OUR_PLAYER_NAME. Entfernt Euch nun!</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="14">
+			<textVariant language="en">
+				<text>I have no need for your tribute, but I will accept it as a sign of your respect.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je n'ai pas besoin de votre tribut, mais je l'accepte comme etant la marque du respect que vous me portez.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich brauche Eure Almosen zwar nicht, aber ich werde Eure Gabe als Zeichen Eures Respekts annehmen.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="15">
+			<textVariant language="en">
+				<text>Hail OUR_PLAYER_NAME! Your contribution is greatly appreciated!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations OUR_PLAYER_NAME! Votre contribution est tres appreciee!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ehre gebuehrt Euch, OUR_PLAYER_NAME! Euer Beitrag wird dankbaren Herzens entgegengenommen!</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForSpellPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I applaud your generosity. The SPELL_NAME spell proves your loyalty and good intentions.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, j'applaudis votre generosite. Le sort SPELL_NAME est la preuve de votre loyaute et de vos bonnes intentions.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, ich begruesse Eure Grosszuegigkeit. Der Zauberspruch SPELL_NAME beweist Eure Loyalitaet und guten Absichten.</text>
+			</textVariant>
+		</thanksForSpellPhrase>
+		<exchangeSpellOursPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I am in great need of the spell of SPELL_NAME. Perhaps you would be willing to exchange it for another spell?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai grand besoin du sort SPELL_NAME. Peut-etre voudriez-vous l'echanger contre un autre sort?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich benoetige dringend den Zauberspruch SPELL_NAME. Wollt Ihr ihn vielleicht gegen einen anderen Zauber eintauschen?</text>
+			</textVariant>
+		</exchangeSpellOursPhrase>
+		<exchangeSpellOursPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I must know the secret of SPELL_NAME. Can I offer you another spell in exchange?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je dois absolument connaitre le secret de SPELL_NAME. Puis-je vous offrir un autre sort en echange?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich muss hinter das Geheimnis des Zauberspruchs SPELL_NAME kommen. Kann ich Euch einen anderen Zauber zum Tausch anbieten?</text>
+			</textVariant>
+		</exchangeSpellOursPhrase>
+		<exchangeSpellOursPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I wish to know the secret of SPELL_NAME. Will you exchange it for one of my spells?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je souhaiterais connaitre le secret de SPELL_NAME. Voudriez-vous l'echanger contre un de mes sorts?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich moechte hinter das Geheimnis des Zauberspruchs SPELL_NAME kommen. Waert Ihr bereit, ihn gegen einen meiner Zaubersprueche einzutauschen?</text>
+			</textVariant>
+		</exchangeSpellOursPhrase>
+		<exchangeSpellOursPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I am awed by the wonders of SPELL_NAME. What can we offer you for its secret?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je suis impressionne par les prodiges de SPELL_NAME. Que puis-je vous offrir pour en obtenir le secret?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Die Macht des Zauberspruchs SPELL_NAME erfuellt mich mit Ehrfurcht. Was kann ich Euch im Tausch fuer diesen Zauber anbieten?</text>
+			</textVariant>
+		</exchangeSpellOursPhrase>
+		<refuseExchangeSpellPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>You have no spell which interests me.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos sorts ne m'interessent pas.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr besitzt keinen Zauberspruch, der fuer mich von Interesse waere.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I have no need of OUR_PLAYER_NAME cantrips.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je n'ai aucunement besoin des sorts de OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich brauche keinen von OUR_PLAYER_NAMEs  Zauberspruechen.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Your primitive spells do not interest me.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos sorts primitifs ne m'interessent pas.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure primitiven Zaubersprueche sind fuer mich nicht von Belang.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I am far beyond your puny ability.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Mes sorts sont bien superieurs a vos sorts miteux.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin Euren jaemmerlichen Faehigkeiten weit ueberlegen.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Learn something good and we'll talk.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Apprenez quelque chose qui en vaille la peine et nous reparlerons.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Lernt etwas Brauchbares, dann koennen wir uns wieder unterhalten.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>You have a pathetic knowledge of the arts. I'm not interested.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre connaissance des arts fait peine a voir. Je ne suis pas interesse.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure Kenntnis der Zauberkunst ist jaemmerlich. Ich habe kein Interesse.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>When you gain a better understanding of magic, we will talk.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Lorsque vous comprendrez mieux la magie, nous pourrons discuter.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Habt Ihr Euch erst einmal bessere Kenntnisse der Magie angeeignet, dann koennen wir weiterreden.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="8">
+			<textVariant language="en">
+				<text>You have nothing to offer. Come back when you have learned the arts.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous n'avez rien a offrir. Revenez lorsque vous aurez appris les arts.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr habt mir nichts Brauchbares anzubieten. Kommt zurueck, wenn Ihr die Kunst der Zauberei erlernt habt.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="9">
+			<textVariant language="en">
+				<text>Don't waste my time. You have nothing to offer me!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ne me faites pas perdre mon temps. Vous n'avez rien a m'offrir!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Verschwendet nicht meine Zeit! Ihr habt nichts zu bieten, was mir zunutze kommen koennte!</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Together our two forces can challenge the threat of THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ensemble, nos forces peuvent faire face aux menaces de THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Gemeinsam koennen unsere Truppen der Bedrohung durch THIRD_PLAYER_NAME die Stirn bieten.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Your attacks against THIRD_PLAYER_NAME have proven that you fight for a just cause.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos attaques contre THIRD_PLAYER_NAME prouve que vous vous battez pour une juste cause.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure Angriffe gegen THIRD_PLAYER_NAME haben bewiesen, dass Ihr fuer eine gerechte Sache kaempft.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, now you to must realize the incredible threat THIRD_PLAYER_NAME poses to our kingdoms.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, maintenant vous devez realiser quelle menace THIRD_PLAYER_NAME fait peser sur nos royaumes.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, nun muss Euch doch klar sein, welch unglaubliche Bedrohung THIRD_PLAYER_NAME fuer unsere Koenigreiche darstellt.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>It would seem that we both share a common enemy, the loathsome forces of THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Il semblerait que nous ayons un ennemi commun, les forces repugnantes de THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Es scheint, als haetten wir einen gemeinsamen Gegner - die verhassten Truppen von THIRD_PLAYER_NAME.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<proposeDeclareWarOnAnotherWizardPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Obviously THIRD_PLAYER_NAME's menace has even reached into your empire. Together we will smite the infidel dog.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>De toute evidence, le danger represente par THIRD_PLAYER_NAME a aussi atteint votre royaume. Ensemble, nous punirons ce chien d'infidele.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Offenbar wird auch Euer Reich von THIRD_PLAYER_NAME bedroht. Gemeinsam werden wir den treulosen Hund verjagen.</text>
+			</textVariant>
+		</proposeDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Yes, OUR_PLAYER_NAME, the time has come for both our empires to strike out against THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Oui, OUR_PLAYER_NAME, l'heure de la guerre contre THIRD_PLAYER_NAME a sonne pour nos deux empires.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>In der Tat, OUR_PLAYER_NAME, die Zeit ist gekommen, unsere Kraefte gegen THIRD_PLAYER_NAME zu vereinen.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Our armies must unite to strike down the wicked THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Nous armees doivent s'unir pour frapper l'inique THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Unsere Armeen muessen sich vereinen, um den heimtueckischen THIRD_PLAYER_NAME zur Strecke zu bringen.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>THIRD_PLAYER_NAME's empire must fall before the combined might of our armies.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>L'empire de THIRD_PLAYER_NAME doit tomber grace a la puissance de nos deux armees reunies.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>THIRD_PLAYER_NAMEs Zauberreich muss vor der vereinten Kraft unserer Armeen klein beigeben.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>With our troops allied, THIRD_PLAYER_NAME can not last long.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Avec nos troupes se battant conjointement, les jours de THIRD_PLAYER_NAME sont comptes.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Mit unseren alliierten Truppen werden wir THIRD_PLAYER_NAME in die Knie zwingen.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>In the year YEAR, TALKING_PLAYER_NAME and OUR_PLAYER_NAME shall join forces to rid the world of the THIRD_PLAYER_NAME menace.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>En YEAR, TALKING_PLAYER_NAME et OUR_PLAYER_NAME joindront leurs forces pour se debarrasser de THIRD_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Im Jahr YEAR schliessen TALKING_PLAYER_NAME und OUR_PLAYER_NAME ihre Kraefte zusammen, um die Welt von der Bedrohung durch THIRD_PLAYER_NAME zu befreien.</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<acceptDeclareWarOnAnotherWizardPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>In view of the threat from THIRD_PLAYER_NAME, I have no choice but to unite!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Compte tenu de la menace representee par THIRD_PLAYER_NAME, je n'ai pas d'autre choix que de m'unir!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Angesichts der Bedrohung durch THIRD_PLAYER_NAME habe ich keine andere Wahl, als mich mit einem Buendnispartner zusammenzuschliessen!</text>
+			</textVariant>
+		</acceptDeclareWarOnAnotherWizardPhrase>
+		<proposeBreakAllianceWithAnotherWizardPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you must break your treaty with THIRD_PLAYER_NAME if you expect to deal with me.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, vous devez revoquer votre traite avec THIRD_PLAYER_NAME si vous voulez traiter avec moi.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr muesst zuerst Euren Vertrag mit THIRD_PLAYER_NAME brechen, wenn Ihr mit mir in Verhandlung treten wollt.</text>
+			</textVariant>
+		</proposeBreakAllianceWithAnotherWizardPhrase>
+		<proposeBreakAllianceWithAnotherWizardPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I will not deal with a friend of THIRD_PLAYER_NAME. Break your treaty or we cannot talk.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne vais pas traiter avec un ami de THIRD_PLAYER_NAME. Rompez votre traite ou il n'y aura aucun pourparler.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich werde mich nicht mit einem Freund von THIRD_PLAYER_NAME einlassen. Brecht Euer Buendnis mit ihm, dann koennen wir verhandeln.</text>
+			</textVariant>
+		</proposeBreakAllianceWithAnotherWizardPhrase>
+		<proposeBreakAllianceWithAnotherWizardPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Once you have ended your dealings with THIRD_PLAYER_NAME, we can discuss our mutual future.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Lorsque vous aurez mis un terme a vos relations avec THIRD_PLAYER_NAME, nous pourrons discuter de notre avenir.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Habt Ihr Eure Beziehungen zu THIRD_PLAYER_NAME erst einmal beendet, koennen wir unsere gemeinsame Zukunft bereden.</text>
+			</textVariant>
+		</proposeBreakAllianceWithAnotherWizardPhrase>
+		<proposeBreakAllianceWithAnotherWizardPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Any friend of THIRD_PLAYER_NAME is an enemy of mine. If you would deal with me, break your treaty with that scum first.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Les amis de THIRD_PLAYER_NAME sont mes ennemis. Si vous voulez traiter avec moi, vous devez d'abord revoquer le traite que vous avez signe avec cet etre abject</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Jeder Freund von THIRD_PLAYER_NAME ist mein Feind. Wollt Ihr mit mir verhandeln, muesst Ihr erst Euren Vertrag mit diesem raeudigen Hund brechen.</text>
+			</textVariant>
+		</proposeBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I agree, THIRD_PLAYER_NAME is no longer trustworthy and I have broken our alliance.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte, THIRD_PLAYER_NAME n'est plus digne de confiance et j'ai revoque notre traite.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich stimme zu, dass THIRD_PLAYER_NAME meines Vertrauens nicht wuerdig ist, und habe unser Buendnis beendet.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Though it pains me to turn my back on THIRD_PLAYER_NAME, I will do so.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Bien qu'il m'en coute de trahir THIRD_PLAYER_NAME, je vais le faire.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Obschon es mich schmerzt, mich von THIRD_PLAYER_NAME abzuwenden, werde ich es gleichwohl tun.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>THIRD_PLAYER_NAME is no longer an ally of mine.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>THIRD_PLAYER_NAME ne compte plus parmi mes allies.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>THIRD_PLAYER_NAME zaehlt nicht laenger zu meinen Verbuendeten.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>My alliance with THIRD_PLAYER_NAME now lies in shreds.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Mon alliance avec THIRD_PLAYER_NAME n'est plus que du passe.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Mein Buendnis mit THIRD_PLAYER_NAME liegt in Scherben.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<acceptBreakAllianceWithAnotherWizardPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>As you wish, OUR_PLAYER_NAME, I no longer shall call THIRD_PLAYER_NAMEan ally.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Comme vous le souhaitiez, OUR_PLAYER_NAME, THIRD_PLAYER_NAMEn'est plus un de mes allies.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wie Ihr wuenscht, OUR_PLAYER_NAME. THIRD_PLAYER_NAME gehoert nicht mehr zu meinen Verbuendeten.</text>
+			</textVariant>
+		</acceptBreakAllianceWithAnotherWizardPhrase>
+		<respondToThreatIgnorePhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I ignore the hollow threats of a raving lunatic.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je refuse de prendre au serieux les menaces d'un fou-fourieux.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich ignoriere die leeren Drohungen von wildgewordenen Verrueckten.</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="2">
+			<textVariant language="en">
+				<text>You bluff poorly, OUR_PLAYER_NAME. Your threats do not concern me.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous ne savez pas bluffer, OUR_PLAYER_NAME. Vos menaces ne me font pas peur.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Welch' schlechte Luegen, OUR_PLAYER_NAME. Eure Drohungen stossen auf taube Ohren.</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Make your childish threats, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos menaces sont risibles, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wohlan, sprecht Eure kindischen Drohungen ruhig aus, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="4">
+			<textVariant language="en">
+				<text>You presume to threaten the mighty TALKING_PLAYER_NAME! You do not know who you are dealing with!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous vous permettez de menacer TALKING_PLAYER_NAME! Vous ne savez pas a qui vous avez affaire!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr wagt es, d. maechtigen TALKING_PLAYER_NAME zu drohen! Ihr wisst offenbar nicht, mit wem Ihr es zu tun habt!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Your threats fall on deaf ears, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos menaces tombent dans l'oreille d'un sourd, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure Drohungen stossen auf taube Ohren, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="6">
+			<textVariant language="en">
+				<text>Do not make such threats idly, OUR_PLAYER_NAME. The wrath of TALKING_PLAYER_NAME is terrible to behold.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous ne devriez pas proferer de telles menaces, OUR_PLAYER_NAME. La colere de TALKING_PLAYER_NAME est terrible.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Macht keine leeren Drohungen, OUR_PLAYER_NAME. Der Zorn von TALKING_PLAYER_NAME ist ohne gleichen!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="7">
+			<textVariant language="en">
+				<text>Don't make me laugh! Your hollow threats do not scare me!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous me faites rire! Vos vaines menaces ne me font pas peur!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Bringt mich nicht zum Lachen! Eure leeren Drohungen aengstigen mich nicht!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="8">
+			<textVariant language="en">
+				<text>You should be careful who you threaten. I do not scare easily!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous devriez faire attention lorsque vous proferez des menaces. On ne me fait pas facilement peur!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr solltet aufpassen, wem Ihr droht. Ich bin nicht leicht zu aengstigen!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatIgnorePhrase variantNumber="9">
+			<textVariant language="en">
+				<text>You should worry about your pathetic cities and stop making idle threats!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Pensez a vos petites villes minables et ne proferez pas de vaines menaces!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr solltet Euch lieber um Eure jaemmerlichen Staedte kuemmern, anstatt leere Drohungen auszustossen!</text>
+			</textVariant>
+		</respondToThreatIgnorePhrase>
+		<respondToThreatGoldPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I offer GOLD_AMOUNT gold to appease the great and powerful OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</respondToThreatGoldPhrase>
+		<respondToThreatGoldPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I hope that a gift of GOLD_AMOUNT gold is sufficient reparation for my past misdeeds.</text>
+			</textVariant>
+		</respondToThreatGoldPhrase>
+		<respondToThreatSpellPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I offer the secret of SPELL_NAME to appease the great and powerful OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'offre le secret de SPELL_NAME pour apaiser le grand et puissant  OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich biete Euch das Geheimnis des Zauberspruchs SPELL_NAME, um Frieden mit d. grossen und maechtigen OUR_PLAYER_NAME zu erlangen.</text>
+			</textVariant>
+		</respondToThreatSpellPhrase>
+		<respondToThreatSpellPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I hope that a gift of the SPELL_NAME spell is sufficient reparation for my past misdeeds.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'espere que le don du sort SPELL_NAME est une reparation suffisante pour mes crimes.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich hoffe, das Geschenk des Zauberspruchs SPELL_NAME ist eine angemessene Wiedergutmachung fuer meine Vergehen in der Vergangenheit.</text>
+			</textVariant>
+		</respondToThreatSpellPhrase>
+		<respondToThreatWarPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I am tired of playing diplomatic games. Shudder, oh mighty OUR_PLAYER_NAME, for I come for you.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Toute cette diplomacie me fatigue. Tremblez, oh puissant OUR_PLAYER_NAME, car je viens vous mettre en pieces.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin diese diplomatischen Spiele leid. Erbebt in Furcht, oh OUR_PLAYER_NAME, denn ich komme, Euch zu vernichten.</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Maintaining relations with such an amateur is no longer convenient. I am mobilizing my troops and preparing for war.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne vois plus aucun avantage a rester en relation avec un amateur de votre genre, je mobilise mes troupes et je me prepare a la guerre.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe kein Interesse mehr daran, Beziehungen zu einem Dilettanten zu unterhalten. Ich werde meine Truppen mobilisieren und den Krieg vorbereiten.</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>While in the past I may have promised peace, OUR_PLAYER_NAME, you have tried my patience sorely, and now you must die.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai peut-etre promis la paix dans le passe, OUR_PLAYER_NAME, mais vous avez abuse de ma patience et vous devez mourir.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Zwar versprach ich in der Vergangenheit Frieden, OUR_PLAYER_NAME, aber Ihr habt meine Geduld auf eine schwere Probe gestellt. Dafuer sollt Ihr sterben.</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I have known all along that you could not be trusted. Now we strike first!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai toujours su que l'on ne pouvait pas vous faire confiance. Nous frappons donc les premiers!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich wusste schon immer, dass man Euch nicht trauen kann. Nun werde ich den ersten Schlag tun!</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>My most sincere apologies, oh mighty OUR_PLAYER_NAME, but I must destroy you now.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Toutes mes excuses, oh puissant OUR_PLAYER_NAME, mais il faut maintenant que je vous detruise.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bitte um Vergebung und verneige mich vor Eurer Macht, oh OUR_PLAYER_NAME, aber ich muss Euch nun vernichten.</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
+		<respondToThreatWarPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>I have decided to destroy you, OUR_PLAYER_NAME. Prepare to die!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai decide de vous detruire, OUR_PLAYER_NAME. Preparez-vous a mourir!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe beschlossen, Euch zu vernichten, OUR_PLAYER_NAME. Bereitet Euch aufs Sterben vor!</text>
+			</textVariant>
+		</respondToThreatWarPhrase>
 	</diplomacyScreen>
 	<helpScreen>
 		<title language="en">

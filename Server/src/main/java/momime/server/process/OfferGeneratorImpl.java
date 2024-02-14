@@ -15,7 +15,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -445,11 +445,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			// It is possible that we try to hire a hero but he has nowhere to fit
 			if (addLocation.getUnitLocation () != null)
 			{
-				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, true, mom);
-				
-				// Let it move this turn
-				hero.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (hero, null, null, null,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
+				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, true, true, mom);
 				
 				// Update amounts to show what the hero is consuming/generatnig
 				getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
@@ -479,12 +475,8 @@ public final class OfferGeneratorImpl implements OfferGenerator
 					keepGoing = false;
 				else
 				{
-					final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unitsOffer.getUnitID (), addLocation.getUnitLocation (), null,
-						expLevel.getExperienceRequired (), null, player, UnitStatusID.ALIVE, true, mom);
-
-					// Let it move this turn
-					newUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (newUnit, null, null, null,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
+					getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unitsOffer.getUnitID (), addLocation.getUnitLocation (), null,
+						expLevel.getExperienceRequired (), null, player, UnitStatusID.ALIVE, true, true, mom);
 					
 					unitsAdded++;
 					if (unitsAdded >= unitsOffer.getUnitCount ())

@@ -1,16 +1,17 @@
 package momime.server.process;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.HeroItem;
+import momime.common.database.RecordNotFoundException;
 import momime.server.MomSessionVariables;
 
 /**
@@ -51,16 +52,19 @@ public interface SpellQueueing
 	 * Adds a spell to a player's overland casting queue.  This assumes we've already been through all the validation to make sure they're allowed to cast it,
 	 * and to make sure they can't cast it instantly.
 	 * 
-	 * @param player Player casting the spell
-	 * @param players List of players in the session
+	 * @param castingPlayer Player casting the spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem If create item/artifact, the details of the item to create
 	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
+	 * @throws RecordNotFoundException If we can't find the wizard we are meeting
+	 * @throws PlayerNotFoundException If we can't find the player we are meeting
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public void queueSpell (final PlayerServerDetails player, final List<PlayerServerDetails> players, final String spellID, final HeroItem heroItem,
-		final Integer variableDamage) throws JAXBException, XMLStreamException;
+	public void queueSpell (final PlayerServerDetails castingPlayer, final MomSessionVariables mom, final String spellID, final HeroItem heroItem,
+		final Integer variableDamage)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
 	 * Spends any skill/mana the player has left towards casting queued spells

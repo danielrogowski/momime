@@ -1,10 +1,10 @@
 package momime.client.ui;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.common.messages.FogOfWarMemory;
@@ -49,7 +50,7 @@ public final class TestPlayerColourImageGeneratorImpl
 		gen.setUtils (utils);
 		
 		// Call method
-		final BufferedImage image = gen.getModifiedImage ("test.png", false, null, null, null, null, null);
+		final Image image = gen.getModifiedImage ("test.png", false, null, null, null, null, null, null);
 		
 		// Check results
 		assertSame (src, image);
@@ -90,25 +91,21 @@ public final class TestPlayerColourImageGeneratorImpl
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
-		// Base image
-		final BufferedImage src = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
-		
-		final NdgUIUtils utils = mock (NdgUIUtils.class);
-		when (utils.loadImage ("test.png")).thenReturn (src);
-		
-		// Image being coloured
+		// Mock returned image
 		final BufferedImage dest = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.multiplyImageByColour (src, 12)).thenReturn (dest);
+		
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		when (cache.getModifiedImage ("test.png", null, false, null, null, Arrays.asList ("C"), null, false)).thenReturn (dest);
 				
 		// Set up object to test
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
-		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		gen.setKnownWizardUtils (knownWizardUtils);
+		gen.setModifiedImageCache (cache);
 		
 		// Call method
-		final BufferedImage image = gen.getModifiedImage ("test.png", true, null, null, null, 1, null);
+		final Image image = gen.getModifiedImage ("test.png", true, null, null, null, 1, null, null);
 		
 		// Check results
 		assertSame (dest, image);
@@ -149,31 +146,21 @@ public final class TestPlayerColourImageGeneratorImpl
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 				
-		// Base image
-		final BufferedImage src = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
-		
-		final NdgUIUtils utils = mock (NdgUIUtils.class);
-		when (utils.loadImage ("test.png")).thenReturn (src);
-		
-		// Image being coloured
-		final BufferedImage intermediate1 = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.multiplyImageByColour (src, 12)).thenReturn (intermediate1);
-
-		final BufferedImage intermediate2 = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.multiplyImageByColour (intermediate1, 13)).thenReturn (intermediate2);
-
+		// Mock returned image
 		final BufferedImage dest = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.multiplyImageByColour (intermediate2, 14)).thenReturn (dest);
+		
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		when (cache.getModifiedImage ("test.png", null, false, null, null, Arrays.asList ("C", "D", "E"), null, false)).thenReturn (dest);
 		
 		// Set up object to test
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
-		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		gen.setKnownWizardUtils (knownWizardUtils);
+		gen.setModifiedImageCache (cache);
 		
 		// Call method
-		final BufferedImage image = gen.getModifiedImage ("test.png", true, null, null, null, 1, Arrays.asList ("D", "E"));
+		final Image image = gen.getModifiedImage ("test.png", true, null, null, null, 1, Arrays.asList ("D", "E"), null);
 		
 		// Check results
 		assertSame (dest, image);
@@ -219,30 +206,24 @@ public final class TestPlayerColourImageGeneratorImpl
 		src.setRGB (0, 0, 0xFF000080);
 		src.setRGB (1, 0, 0xFF000081);
 		
-		final NdgUIUtils utils = mock (NdgUIUtils.class);
-		when (utils.loadImage ("test.png")).thenReturn (src);
+		// Mock returned image
+		final BufferedImage dest = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
 		
-		// Flag being coloured
-		final BufferedImage baseFlag = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.loadImage ("flag.png")).thenReturn (baseFlag);
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		when (cache.getModifiedImage ("test.png", "flag.png", true, 1, 0, Arrays.asList ("C"), null, false)).thenReturn (dest);
 		
-		final BufferedImage colouredFlag = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		colouredFlag.setRGB (0, 0, 0xFF000082);
-		when (utils.multiplyImageByColour (baseFlag, 12)).thenReturn (colouredFlag);		
-				
 		// Set up object to test
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
-		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		gen.setKnownWizardUtils (knownWizardUtils);
+		gen.setModifiedImageCache (cache);
 		
 		// Call method
-		final BufferedImage image = gen.getModifiedImage ("test.png", false, "flag.png", 1, 0, 1, null);
+		final Image image = gen.getModifiedImage ("test.png", false, "flag.png", 1, 0, 1, null, null);
 		
 		// Check results
-		assertEquals (0xFF000080, image.getRGB (0, 0));
-		assertEquals (0xFF000082, image.getRGB (1, 0));
+		assertSame (dest, image);
 	}
 
 	/**
@@ -252,25 +233,18 @@ public final class TestPlayerColourImageGeneratorImpl
 	@Test
 	public final void testGetModifiedImage_shadingOnly () throws Exception
 	{
-		// Base image
-		final BufferedImage src = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
-		
-		final NdgUIUtils utils = mock (NdgUIUtils.class);
-		when (utils.loadImage ("test.png")).thenReturn (src);
-		
-		// Image being coloured
-		final BufferedImage intermediate2 = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.multiplyImageByColour (src, 13)).thenReturn (intermediate2);
-
+		// Mock returned image
 		final BufferedImage dest = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.multiplyImageByColour (intermediate2, 14)).thenReturn (dest);
+		
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		when (cache.getModifiedImage ("test.png", null, true, null, null, Arrays.asList ("D", "E"), null, false)).thenReturn (dest);
 		
 		// Set up object to test
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
-		gen.setUtils (utils);
+		gen.setModifiedImageCache (cache);
 		
 		// Call method
-		final BufferedImage image = gen.getModifiedImage ("test.png", true, null, null, null, null, Arrays.asList ("D", "E"));
+		final Image image = gen.getModifiedImage ("test.png", true, null, null, null, null, Arrays.asList ("D", "E"), null);
 		
 		// Check results
 		assertSame (dest, image);

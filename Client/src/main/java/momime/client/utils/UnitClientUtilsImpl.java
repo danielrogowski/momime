@@ -2,21 +2,22 @@ package momime.client.utils;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JComponent;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.ObjectUtils;
 
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.zorder.ZOrderGraphics;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.zorder.ZOrderGraphics;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.AnimationContainer;
@@ -37,6 +38,7 @@ import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AnimationFrame;
+import momime.common.database.CombatAction;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.LanguageText;
@@ -44,6 +46,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatActionEx;
 import momime.common.database.UnitCombatImage;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitShadowOffset;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -424,7 +427,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final int fudgeY = (totalFigureCount <= 2) ? 4 : 6;
 		
 		// Get the positions of the n times
-		final int [] [] result = new int [aliveFigureCount] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER+1];
+		final int [] [] result = new int [aliveFigureCount] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET+1];
 		final CombatTileFigurePositionsGfx positions = getGraphicsDB ().findFigureCount (totalFigureCount, "calcUnitFigurePositions");
 		for (int n = 0; n < aliveFigureCount; n++)
 		{
@@ -435,7 +438,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET] = (position.getTileRelativeY () * 2) + (fudgeY * 2);
 			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] = offsetX + result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET];
 			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] = offsetY + result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET];
-			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER] = 2;
 		}
 		
 		return result;
@@ -459,12 +461,14 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param baseZOrder Z order for the top of the tile
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
+	 * @param newShadows Whether new shadows option is switched on in client config
+	 * @param newShadowsUnitAdjustY Adjusts Y position a unit is drawn at if it is flying (its shadow stays in the same place)
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final String unitID, final int playerID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
-		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio) throws IOException
+		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio, final boolean newShadows, final int newShadowsUnitAdjustY) throws IOException
 	{
 		// Draw sample tile
 		if (sampleTileImageFile != null)
@@ -482,30 +486,61 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Work out the image to draw n times
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
 		final AnimationFrame frame = getAnim ().getUnitCombatImageFrame (unitImage, registeredAnimation, AnimationContainer.COMMON_XML);
-		final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (frame.getImageFile (), false, frame.getImageFlag (),
-			frame.getFlagOffsetX (), frame.getFlagOffsetY (), playerID, shadingColours);
+		final String imageName = ((newShadows) && (frame.getShadowlessImageFile () != null)) ? frame.getShadowlessImageFile () : frame.getImageFile (); 
+		final Image image = getPlayerColourImageGenerator ().getModifiedImage (imageName, false, frame.getImageFlag (),
+			frame.getFlagOffsetX (), frame.getFlagOffsetY (), playerID, shadingColours, null);
+		
+		final Image shadowImage;
+		if ((newShadows) && (frame.getShadowImageFile () != null))
+			shadowImage = getPlayerColourImageGenerator ().getModifiedImage (frame.getShadowImageFile (), false, null, null, null, null, shadingColours, null);
+		else
+			shadowImage = null;
+		
+		// This needs to be done properly with a map, rather than assuming the directions are listed in the correct order
+		final UnitShadowOffset shadowOffset = newShadows ? unit.getUnitShadowOffset ().get (direction - 1) : null;
 		
 		// Draw the figure in each position
 		for (final int [] position : figurePositions)
 		{
-			// Last array element tells us what to multiply the image size up by
-			final int mult = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
-			final int imageWidth = image.getWidth () * mult;
-			final int imageHeight = image.getHeight () * mult;
+			// Last array element tells us what to multiply the image size up by; shadows are multiplied in X direction but not y
+			final int doubleWidth = image.getWidth (null) * 2;
+			final int doubleHeight = image.getHeight (null) * 2;
+			final int figureX = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (doubleWidth / 2);
+			int figureY = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - doubleHeight;
+			
+			if ((newShadows) && (unit.getNewShadowsUnitOffsetY () != null))
+				figureY = figureY + unit.getNewShadowsUnitOffsetY ();
 			
 			// TileRelativeX, Y in the graphics XML indicates the position of the unit's feet, so need to adjust according to the unit size
 			if ((mergingRatio == null) || (mergingRatio == 0d))
-				g.drawStretchedImage (image,
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight,
-					imageWidth, imageHeight, baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
-			else
-				g.drawStretchedClippedImage (image,
-					0, 0, image.getWidth (), (int) (image.getHeight () * (1d - mergingRatio)),
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + ((int) (imageHeight * mergingRatio)),
-					imageWidth, (int) (imageHeight * (1d - mergingRatio)),
+			{
+				if (shadowImage != null)
+					g.drawStretchedImage (shadowImage, figureX + shadowOffset.getShadowOffsetX (), figureY + shadowOffset.getShadowOffsetY (),
+						doubleWidth, shadowImage.getHeight (null), 0);
+
+				if (newShadows)
+					figureY = figureY + newShadowsUnitAdjustY;
+				
+				g.drawStretchedImage (image, figureX, figureY, doubleWidth, doubleHeight,
 					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
+			}
+			else
+			{
+				if (shadowImage != null)
+					g.drawStretchedClippedImage (shadowImage,
+						0, 0, shadowImage.getWidth (null), (int) (shadowImage.getHeight (null) * (1d - mergingRatio)),
+						figureX + shadowOffset.getShadowOffsetX (), figureY  + shadowOffset.getShadowOffsetY () + ((int) (shadowImage.getHeight (null) * mergingRatio)),
+						doubleWidth, (int) (shadowImage.getHeight (null) * (1d - mergingRatio)), 0);
+
+				if (newShadows)
+					figureY = figureY + newShadowsUnitAdjustY;
+				
+				g.drawStretchedClippedImage (image,
+					0, 0, image.getWidth (null), (int) (image.getHeight (null) * (1d - mergingRatio)),
+					figureX, figureY + ((int) (doubleHeight * mergingRatio)),
+					doubleWidth, (int) (doubleHeight * (1d - mergingRatio)),
+					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
+			}
 		}
 	}
 
@@ -523,12 +558,13 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param baseZOrder Z order for the top of the tile
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
+	 * @param newShadows Whether new shadows option is switched on in client config
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final ExpandedUnitDetails unit, final String combatActionID, final int direction, final ZOrderGraphics g,
 		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder,
-		final List<String> shadingColours, final Double mergingRatio) throws IOException
+		final List<String> shadingColours, final Double mergingRatio, final boolean newShadows) throws IOException
 	{
 		// Get alive figures
 		int aliveFigureCount = unit.calculateAliveFigureCount ();
@@ -541,6 +577,11 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				sampleTileImageFile = getUnitCalculations ().findPreferredMovementSkillGraphics (unit, getClient ().getClientDB ()).getSampleTileImageFile ();
 			else
 				sampleTileImageFile = null; 
+
+			// Is it flying?  Can't rely on the combatActionID being passed in as that might say MELEE or RANGED when making an attack, but we still need to know if its flying
+			final String standingCombatActionID = getUnitCalculations ().determineCombatActionID (unit, false, getClient ().getClientDB ());
+			final CombatAction combatAction = getClient ().getClientDB ().findCombatAction (standingCombatActionID, "drawUnitFigures");
+			final int newShadowsUnitAdjustY = (combatAction.getNewShadowsUnitAdjustY () == null) ? 0 : combatAction.getNewShadowsUnitAdjustY ();
 			
 			// Call other version now that we have all the necessary values
 			int fullFigureCount = unit.getFullFigureCount ();
@@ -553,7 +594,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			}			
 			
 			drawUnitFigures (unit.getUnitID (), unit.getOwningPlayerID (), fullFigureCount, aliveFigureCount, combatActionID,
-				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours, mergingRatio);
+				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours, mergingRatio, newShadows, newShadowsUnitAdjustY);
 		}
 	}
 	
@@ -568,30 +609,33 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final void playCombatActionSound (final AvailableUnit unit, final String combatActionID) throws RecordNotFoundException
 	{
-		// See if there's a specific override sound specified for this unit.
-		// This so earth elementals make a stomp stomp noise, cavalry go clippity clop and regular swordsmen go clank clank, even though they're all just doing the WALK action.
-		final String soundEffectFilename;
-		final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "playCombatActionSound");
-		final UnitCombatActionEx unitCombatAction = unitDef.findCombatAction (combatActionID, "playCombatActionSound");
-		if (unitCombatAction.getOverrideActionSoundFile () != null)
-			soundEffectFilename = unitCombatAction.getOverrideActionSoundFile ();
-		else
+		if (unit != null)
 		{
-			// If we didn't find a specific sound for this unit, use the general one
-			soundEffectFilename = getClient ().getClientDB ().findCombatAction (combatActionID, "playCombatActionSound").getDefaultActionSoundFile ();
-			if (soundEffectFilename == null)
-				log.warn ("Found combatAction " + combatActionID + " in the graphics XML, but it doesn't specify a defaultActionSoundFile");
+			// See if there's a specific override sound specified for this unit.
+			// This so earth elementals make a stomp stomp noise, cavalry go clippity clop and regular swordsmen go clank clank, even though they're all just doing the WALK action.
+			final String soundEffectFilename;
+			final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "playCombatActionSound");
+			final UnitCombatActionEx unitCombatAction = unitDef.findCombatAction (combatActionID, "playCombatActionSound");
+			if (unitCombatAction.getOverrideActionSoundFile () != null)
+				soundEffectFilename = unitCombatAction.getOverrideActionSoundFile ();
+			else
+			{
+				// If we didn't find a specific sound for this unit, use the general one
+				soundEffectFilename = getClient ().getClientDB ().findCombatAction (combatActionID, "playCombatActionSound").getDefaultActionSoundFile ();
+				if (soundEffectFilename == null)
+					log.warn ("Found combatAction " + combatActionID + " in the graphics XML, but it doesn't specify a defaultActionSoundFile");
+			}
+			
+			if (soundEffectFilename != null)
+				try
+				{
+					getSoundPlayer ().playAudioFile (soundEffectFilename);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 		}
-		
-		if (soundEffectFilename != null)
-			try
-			{
-				getSoundPlayer ().playAudioFile (soundEffectFilename);
-			}
-			catch (final Exception e)
-			{
-				log.error (e, e);
-			}
 	}
 	
 	/**
@@ -936,4 +980,5 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	{
 		playerColourImageGenerator = gen;
 	}
+
 }

@@ -6,15 +6,20 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.ndg.swing.NdgUIUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.utils.swing.NdgUIUtils;
 
 import momime.client.MomClient;
+import momime.client.config.SpellBookViewMode;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.client.ui.frames.CombatUI;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
 import momime.common.database.CityViewElement;
@@ -22,16 +27,29 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
+import momime.common.database.Unit;
+import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.ValidUnitTarget;
 import momime.common.messages.PlayerPick;
+import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellUtils;
 
 /**
  * Client side only helper methods for dealing with spells
  */
 public final class SpellClientUtilsImpl implements SpellClientUtils
 {
+	/** How many spells we show on each page in standard view */
+	private final static int SPELLS_PER_PAGE_STANDARD = 4;
+
+	/** How many spells we show on each page in compact view */
+	private final static int SPELLS_PER_PAGE_COMPACT = 11;
+	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
@@ -49,6 +67,12 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
+	
+	/** Combat UI */
+	private CombatUI combatUI;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
 	
 	/**
 	 * NB. This can't work from a MaintainedSpell, since we must be able to right click spells not cast yet,
@@ -213,9 +237,9 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 						else
 						{
 							// Now that we got the spell image OK, get the coloured mirror for the caster
-							final BufferedImage mirrorImage = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
-								true, null, null, null, castingPlayerID, null);
-							image = new BufferedImage (mirrorImage.getWidth (), mirrorImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+							final Image mirrorImage = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
+								true, null, null, null, castingPlayerID, null, null);
+							image = new BufferedImage (mirrorImage.getWidth (null), mirrorImage.getHeight (null), BufferedImage.TYPE_INT_ARGB);
 							final Graphics2D g = image.createGraphics ();
 							try
 							{
@@ -395,6 +419,140 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		return mergedImage;
 	}
 	
+	/**
+	 * @param viewMode Current view mode of the spell book UI
+	 * @return How many spells can appear on each logical page 
+	 */
+	@Override
+	public final int getSpellsPerPage (final SpellBookViewMode viewMode)
+	{
+		return (viewMode == SpellBookViewMode.COMPACT) ? SPELLS_PER_PAGE_COMPACT : SPELLS_PER_PAGE_STANDARD;
+	}
+	
+	/**
+	 * When we learn a new spell, updates the spells in the spell book to include it.
+	 * That may involve shuffling pages around if a page is now full, or adding new pages if the spell is a kind we didn't previously have.
+	 * 
+	 * Unlike the original MoM and earlier MoM IME versions, because the spell book can be left up permanently now, it will always
+	 * draw all spells - so combat spells are shown when on the overland map, and overland spells are shown in combat, just greyed out.
+	 * So here we don't need to pay any attention to the cast type (except that in combat, heroes can make additional spells appear
+	 * in the spell book if they know any spells that their controlling wizard does not)
+	 * 
+	 * @param viewMode Current view mode of the spell book UI
+	 * @param castType Whether to generate the spell book for overland or combat casting
+	 * @return List of spell book, broken into pages for the UI
+	 * @throws MomException If we encounter an unknown research unexpected status
+	 * @throws RecordNotFoundException If we can't find a research status for a particular spell
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 */
+	@Override
+	public final List<SpellBookPage> generateSpellBookPages (final SpellBookViewMode viewMode, final SpellCastType castType)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException
+	{
+		// If it is a unit casting, rather than the wizard
+		final List<String> heroKnownSpellIDs = new ArrayList<String> ();
+		String overridePickID = null;
+		int overrideMaximumMP = -1;
+		if ((castType == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
+			(getCombatUI ().getCastingSource ().getCastingUnit () != null) && (getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) &&
+			(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))
+		{
+			// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
+			// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
+			// overrideMaximumMP isn't essential, but there's no point us listing spells in the spell book that the unit doesn't have enough MP to cast.
+			final ExpandedUnitDetails castingUnit = getCombatUI ().getCastingSource ().getCastingUnit ();
+			
+			// Heroes can get the caster unit skill from + Spell Skill items
+			// Check unit type rather than caster hero skill, just in case we put a + spell skill sword on a non-caster sword hero
+			if ((castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) && (!castingUnit.isHero ()))
+				overrideMaximumMP = castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
+			
+			if (overrideMaximumMP > 0)
+			{
+				overridePickID = castingUnit.getModifiedUnitMagicRealmLifeformType ().getCastSpellsFromPickID ();
+				if (overridePickID == null)
+					overridePickID = castingUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ();
+			}
+			
+			if (overridePickID == null)
+			{
+				// Get a list of any spells this hero knows, in addition to being able to cast spells from their controlling wizard
+				final Unit unitDef = getClient ().getClientDB ().findUnit (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitID (), "generateSpellBookPages");
+				for (final UnitCanCast knownSpell : unitDef.getUnitCanCast ())
+					if (knownSpell.getNumberOfTimes () == null)
+						heroKnownSpellIDs.add (knownSpell.getUnitSpellID ());
+			}
+		}
+			
+		// Get a list of all spells we know, and all spells we can research now; grouped by section
+		final Map<SpellBookSectionID, List<Spell>> sections = new HashMap<SpellBookSectionID, List<Spell>> ();
+		for (final Spell spell : getClient ().getClientDB ().getSpell ())
+		{
+			final SpellResearchStatusID researchStatus;
+			
+			// Units can cast spells from a specific magic realm, up to a their maximum MP
+			if (overridePickID != null)
+				researchStatus = ((overridePickID.equals (spell.getSpellRealm ())) && (spell.getCombatCastingCost () != null) && (spell.getCombatCastingCost () <= overrideMaximumMP)) 
+					? SpellResearchStatusID.AVAILABLE : SpellResearchStatusID.UNAVAILABLE;
+			
+			// Heroes knowing their own spells in addition to spells from their controlling wizard
+			else if (heroKnownSpellIDs.contains (spell.getSpellID ()))
+				researchStatus = SpellResearchStatusID.AVAILABLE;
+			
+			// Normal situation of wizard casting, or hero casting spells their controlling wizard knows
+			else
+				researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ()).getStatus ();
+			
+			final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
+			if (sectionID != null)
+			{
+				// Do we have this section already?
+				List<Spell> section = sections.get (sectionID);
+				if (section == null)
+				{
+					section = new ArrayList<Spell> ();
+					sections.put (sectionID, section);
+				}
+				
+				section.add (spell);
+			}
+		}
+		
+		// Sort them into sections
+		final List<SpellBookSectionID> sortedSections = new ArrayList<SpellBookSectionID> ();
+		sortedSections.addAll (sections.keySet ());
+		Collections.sort (sortedSections);
+		
+		// Go through each section
+		final List<SpellBookPage> pages = new ArrayList<SpellBookPage> ();
+		for (final SpellBookSectionID sectionID : sortedSections)
+		{
+			final List<Spell> spells = sections.get (sectionID);
+			
+			// Sort the spells within this section
+			Collections.sort (spells, new SpellSorter (sectionID));
+			
+			// Divide them into pages with up to SPELLS_PER_PAGE on each page
+			boolean first = true;
+			while (spells.size () > 0)
+			{
+				final SpellBookPage page = new SpellBookPage ();
+				page.setSectionID (sectionID);
+				page.setFirstPageOfSection (first);
+				pages.add (page);
+				
+				while ((spells.size () > 0) && (page.getSpells ().size () < getSpellsPerPage (viewMode)))
+				{
+					page.getSpells ().add (spells.get (0));
+					spells.remove (0);
+				}
+				
+				first = false;
+			}
+		}
+		
+		return pages;
+	}
 	
 	/**
 	 * @return Language database holder
@@ -499,5 +657,37 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
 	{
 		playerColourImageGenerator = gen;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param u Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils u)
+	{
+		spellUtils = u;
 	}
 }

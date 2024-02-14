@@ -1,9 +1,13 @@
 package momime.server.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -14,18 +18,24 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
+import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.server.ServerTestData;
 
 /**
  * Tests the CombatMapServerUtils class
  */
 @ExtendWith(MockitoExtension.class)
-public final class TestCombatMapServerUtils
+public final class TestCombatMapServerUtils extends ServerTestData
 {
 	/**
 	 * Tests the setCombatTileTypeForLayer method where the layer already exists
@@ -166,5 +176,109 @@ public final class TestCombatMapServerUtils
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 10, 1);
 		
 		assertEquals (2, utils.countPlayersAliveUnitsAtCombatLocation (3, combatLocation, units, db));
+	}
+
+	/**
+	 * Tests the isWithinWallOfFire method when the combat tile is within a wall of fire
+	 */
+	@Test
+	public final void testIsWithinWallOfFire ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatTileType combatTileType = new CombatTileType ();
+		combatTileType.setCombatTileTypeID ("CTT02");
+		combatTileType.setInsideCity (true);
+		when (db.getCombatTileType ()).thenReturn (Arrays.asList (combatTileType));
+		
+		// There is a wall of fire in this combat
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_WALL_OF_FIRE, null, null,
+			new MapCoordinates3DEx (20, 10, 1), null)).thenReturn (new MemoryMaintainedSpell ());
+		
+		// Combat map
+		final MapAreaOfCombatTiles combatMap = createCombatMap ();
+		final MomCombatTile tile = combatMap.getRow ().get (8).getCell ().get (5);
+		
+		int n = 0;
+		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+		{
+			n++;
+			final MomCombatTileLayer tileLayer = new MomCombatTileLayer ();
+			tileLayer.setLayer (layer);
+			tileLayer.setCombatTileTypeID ("CTT0" + n);
+			tile.getTileLayer ().add (tileLayer);
+		}
+		
+		// Set up object to test		
+		final CombatMapServerUtilsImpl utils = new CombatMapServerUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+
+		// Run method
+		assertTrue (utils.isWithinWallOfFire (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates2DEx (5, 8), combatMap, spells, db));
+	}
+	
+	/**
+	 * Tests the isWithinWallOfFire method when there isn't even a wall of fire at the location
+	 */
+	@Test
+	public final void testIsWithinWallOfFire_NoWallOfFireHere ()
+	{
+		// There isn't a wall of fire in this combat
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		// Set up object to test		
+		final CombatMapServerUtilsImpl utils = new CombatMapServerUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+
+		// Run method
+		assertFalse (utils.isWithinWallOfFire (new MapCoordinates3DEx (20, 10, 1), null, null, spells, null));
+	}
+
+	/**
+	 * Tests the isWithinWallOfFire method when the combat has a wall of fire, but the location is outside of it
+	 */
+	@Test
+	public final void testIsWithinWallOfFire_OutsideWallOfFire ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatTileType combatTileType = new CombatTileType ();
+		combatTileType.setCombatTileTypeID ("CTT04");
+		combatTileType.setInsideCity (true);
+		when (db.getCombatTileType ()).thenReturn (Arrays.asList (combatTileType));
+		
+		// There is a wall of fire in this combat
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_WALL_OF_FIRE, null, null,
+			new MapCoordinates3DEx (20, 10, 1), null)).thenReturn (new MemoryMaintainedSpell ());
+		
+		// Combat map
+		final MapAreaOfCombatTiles combatMap = createCombatMap ();
+		final MomCombatTile tile = combatMap.getRow ().get (8).getCell ().get (5);
+		
+		int n = 0;
+		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+		{
+			n++;
+			final MomCombatTileLayer tileLayer = new MomCombatTileLayer ();
+			tileLayer.setLayer (layer);
+			tileLayer.setCombatTileTypeID ("CTT0" + n);
+			tile.getTileLayer ().add (tileLayer);
+		}
+		
+		// Set up object to test		
+		final CombatMapServerUtilsImpl utils = new CombatMapServerUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+
+		// Run method
+		assertFalse (utils.isWithinWallOfFire (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates2DEx (5, 8), combatMap, spells, db));
 	}
 }

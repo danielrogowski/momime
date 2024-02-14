@@ -8,6 +8,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
@@ -65,6 +68,8 @@ public final class TestCreateArtifactUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
@@ -86,7 +91,18 @@ public final class TestCreateArtifactUI extends ClientTestData
 			
 			// There's at least 7 images for every item type.. some have more.. but that doesn't matter for a test
 			for (int i = 1; i <= 7; i++)
-				itemType.getHeroItemTypeImageFile ().add ("/momime.client.graphics/heroItems/items/" + itemTypeName.toLowerCase () + "-0" + i + ".png");
+			{
+				final String imageFilename = "/momime.client.graphics/heroItems/items/" + itemTypeName.toLowerCase () + "-0" + i + ".png";
+				itemType.getHeroItemTypeImageFile ().add (imageFilename);
+				
+				// If you don't click anything then only the first item ever gets displayed
+				if ((itemTypeName.equals ("Sword")) && (i == 1))
+				{
+					final BufferedImage originalImage = utils.loadImage (imageFilename);
+					final Image doubleSize = originalImage.getScaledInstance (originalImage.getWidth () * 2, originalImage.getHeight () * 2, Image.SCALE_FAST);
+					when (cache.doubleSize (imageFilename)).thenReturn (doubleSize);
+				}
+			}
 			
 			when (db.findHeroItemType (eq (itemType.getHeroItemTypeID ()), anyString ())).thenReturn (itemType);
 			
@@ -183,6 +199,7 @@ public final class TestCreateArtifactUI extends ClientTestData
 		final CreateArtifactUI createArtifact = new CreateArtifactUI ();
 		createArtifact.setCreateArtifactLayout (layout);
 		createArtifact.setUtils (utils);
+		createArtifact.setModifiedImageCache (cache);
 		createArtifact.setLanguageHolder (langHolder);
 		createArtifact.setLanguageChangeMaster (langMaster);
 		createArtifact.setClient (client);

@@ -17,9 +17,10 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.sessionbase.DeleteSavedGame;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.multiplayer.sessionbase.LeaveSession;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.languages.database.Shortcut;
@@ -125,6 +126,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 	
 	/** Queued overland spell we're thinking of cancelling; null if the message box isn't about cancelling a queued overland spell */
 	private Integer removeQueuedSpellIndex;
+	
+	/** True if message box is being showed to ask player if they want to leave session */
+	private boolean leaveSession;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -258,6 +262,10 @@ public final class MessageBoxUI extends MomClientDialogUI
 			    getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 			
+			// Leave session
+			else if (isLeaveSession ())
+				getClient ().getServerConnection ().sendMessageToServer (new LeaveSession ());
+			
 			else
 				log.warn ("MessageBoxUI had yes button clicked for text \"" + messageText.getText () + " but took no action");
 				
@@ -285,7 +293,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 		
 		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null) && (getResearchSpellID () == null) &&
 			(getCastSpellID () == null) && (getCancelTargetingSpell () == null) && (getSwitchOffSpell () == null) && (getDestroyHeroItemMessage () == null) &&
-			(getSavedGameID () == null) && (getRemoveQueuedSpellIndex () == null)) ? 1 : 2;
+			(getSavedGameID () == null) && (getRemoveQueuedSpellIndex () == null) && (!isLeaveSession ())) ? 1 : 2;
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (getUtils ().createTransparentScrollPane (messageText), "frmMessageBoxText");
@@ -680,5 +688,21 @@ public final class MessageBoxUI extends MomClientDialogUI
 	public final void setRemoveQueuedSpellIndex (final Integer index)
 	{
 		removeQueuedSpellIndex = index;
+	}
+
+	/**
+	 * @return True if message box is being showed to ask player if they want to leave session
+	 */
+	public final boolean isLeaveSession ()
+	{
+		return leaveSession;
+	}
+	
+	/**
+	 * @param l True if message box is being showed to ask player if they want to leave session
+	 */
+	public final void setLeaveSession (final boolean l)
+	{
+		leaveSession = l;
 	}
 }

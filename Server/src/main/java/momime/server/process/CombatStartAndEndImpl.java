@@ -14,7 +14,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -22,17 +22,22 @@ import momime.common.database.CitySize;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
+import momime.common.messages.DiplomacyAction;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NumberedHeroItem;
+import momime.common.messages.PactType;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
+import momime.common.messages.servertoclient.DiplomacyMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.utils.KnownWizardUtils;
@@ -43,6 +48,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.MomAI;
+import momime.server.ai.RelationAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
@@ -53,6 +59,7 @@ import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.CombatMapServerUtils;
+import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 
 /**
@@ -131,9 +138,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
 	
-	/** City processing methods */
-	private CityProcessing cityProcessing;
-	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
@@ -154,6 +158,15 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
+	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
+
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
+	
+	/** Server side city updates */
+	private CityUpdates cityUpdates;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -250,8 +263,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			endImmediately = defendingPlayer;
 		}
 		
-		// Are there any defenders (attacking an empty city) - if not then bypass the combat entirely
-		else if (defendingPlayer == null)
+		// Are there any defenders (attacking an empty city, or attacking a floating island) - if not then bypass the combat entirely
+		else if ((defendingPlayer == null) || ((defenderSummary != null) && (defenderSummary.getUnitCount () == 0)))
 		{
 			log.debug ("Combat ending before it starts (no defenders)");
 			
@@ -345,7 +358,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		if ((winningPlayer == attackingPlayer) && (useCaptureCityDecision == null) && (tc.getCityData () != null) &&
 			(attackingPlayer.getPlayerDescription ().getPlayerID () != tc.getCityData ().getCityOwnerID ()))
 		{
-			if (tc.getCityData ().getCityPopulation () < 1000)
+			if (tc.getCityData ().getCityPopulation () < CommonDatabaseConstants.MIN_CITY_POPULATION)
 			{
 				log.debug ("Captured an outpost, automatic raze");
 				useCaptureCityDecision = CaptureCityDecisionID.RAZE;
@@ -390,7 +403,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			msg.setCombatLocation (combatDetails.getCombatLocation ());
 			msg.setWinningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
 			msg.setCaptureCityDecisionID (useCaptureCityDecision);
-			msg.setHeroItemCount (combatDetails.getItemsFromHeroesWhoDiedInCombat ().size ());
 			
 			// Start to work out fame change for each player involved
 			int winningFameChange = 0;
@@ -402,15 +414,29 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 			final MomPersistentPlayerPrivateKnowledge defPriv = (defendingPlayer == null) ? null : (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
 			
+			final KnownWizardDetails defWizard = (defendingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
+			
 			if ((useCaptureCityDecision != null) && (defendingPlayer != null))
 			{
 				// Calc as a long since the the multiplication could give a really big number
 				final long cityPopulation = tc.getCityData ().getCityPopulation ();
-				final long totalGold = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-				final long totalPopulation = getOverlandMapServerUtils ().totalPlayerPopulation
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID (),
-					mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
-				goldSwiped = (totalGold * cityPopulation) / totalPopulation;
+				if (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ()))
+				{
+					// For capturing cities from other wizards, gold is distributed evenly among their cities, in proportion to the population of each
+					final long totalGold = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+					final long totalPopulation = getOverlandMapServerUtils ().totalPlayerPopulation
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID (),
+						mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+					goldSwiped = (totalGold * cityPopulation) / totalPopulation;
+				}
+				else
+				{
+					// For capturing cities from raiders, get population d10 rolls
+					final int rolls = (int) cityPopulation / 1000;
+					for (int n = 0; n < rolls; n++)
+						goldSwiped = goldSwiped + getRandomUtils ().nextInt (10) + 1;
+				}
 				msg.setGoldSwiped ((int) goldSwiped);
 				
 				// Any gold from razing buildings?
@@ -494,18 +520,20 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					}
 				}
 			}
-			
-			// Cancel any spells that were cast in combat, note doing so can actually kill some units
-			getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombat (combatDetails.getCombatLocation (), mom);
 
 			// Work out moveToPlane - If attackers are capturing a tower from Myrror, in which case they jump to Arcanus as part of the move
 			final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (combatDetails.getCombatLocation ());
 			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
 				moveTo.setZ (0);
 			
-			// Units with regeneration come back from being dead and/or regain full health
+			// Units with regeneration come back from being dead and/or regain full health.
+			// Have to do this BEFORE switching off spells cast in combat, in case a unit had Regeneration cast on it in combat.
+			// That brings the unit back to life if it died but its side won, but of course it then loses the spell after its brought back to life, as it was only a combat spell.
 			msg.setRegeneratedCount (getCombatProcessing ().regenerateUnits (combatDetails.getCombatLocation (), winningPlayer, mom));
 			
+			// Cancel any spells that were cast in combat, note doing so can actually kill some units
+			getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombatAtLocation (combatDetails.getCombatLocation (), mom);
+
 			// Undead created from ghouls / life stealing?
 			// Note these are always moved to the "moveTo" i.e. defending location - if the attacker won, their main force will advance
 			// there in the code below; if the defender won, the undead need to be moved to be stacked with the rest of the defenders.
@@ -561,9 +589,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				attackerFameChange = attackerFameChange - combatDetails.getAttackerSpecialFameLost ();
 			
 			// Update fame
-			final KnownWizardDetails defWizard = (defendingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
-				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
-
 			if ((attackerFameChange != 0) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())))
 			{
 				// Fame cannot go negative
@@ -585,6 +610,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (defenderFameChange != 0)
 					getResourceValueUtils ().addToAmountStored (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME, defenderFameChange);
 			}
+
+			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
+			// This also removes ('kills') on the client monsters in a lair/node/tower who won
+			// Have to do this before we advance the attacker, otherwise we end up trying to advance the combat summoned units
+			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, mom);
+
+			// Hero items are collected up as part of purgeDeadUnitsAndCombatSummonsFromCombat, so can't do this until here 
+			msg.setHeroItemCount (combatDetails.getItemsFromHeroesWhoDiedInCombat ().size ());
 			
 			// Send the CombatEnded message
 			// Remember defending player may still be nil if we attacked an empty lair
@@ -600,10 +633,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
 			}
 			
-			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
-			// This also removes ('kills') on the client monsters in a lair/node/tower who won
-			// Have to do this before we advance the attacker, otherwise we end up trying to advance the combat summoned units
-			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, mom);
+			// Remember the name of the city before we possibly destroy and remove the city
+			final String cityName = (tc.getCityData () == null) ? null : tc.getCityData ().getCityName ();
 			
 			// If its a border conflict, then we don't actually care who won - one side will already have been wiped out, and hence their
 			// PendingMovement will have been removed, leaving the winner's PendingMovement still to be processed, and the main
@@ -622,12 +653,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Put all the attackers in a list, and figure out moveFrom.
 				// NB. We intentionally don't check combatPosition and heading here because we DO want units to advance if they
 				// were land units sitting in transports during a naval combat.
-				// Also find any similar defenders, who didn't participate in the combat.
+				// Also find any similar defenders, who didn't participate in the combat (floating islands, or units Word of Recalled out of combat into the same cell as the attackers are about to advance into) 
 				MapCoordinates3DEx moveFrom = null;
 				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 				
 				for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatDetails.getCombatLocation ().equals (trueUnit.getCombatLocation ())) && (trueUnit.getCombatSide () != null))
+					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) &&
+						(((combatDetails.getCombatLocation ().equals (trueUnit.getCombatLocation ())) && (trueUnit.getCombatSide () != null)) ||
+							((trueUnit.getUnitLocation ().equals (moveTo)) && (trueUnit.getCombatSide () == null))))
 					{
 						if (trueUnit.getCombatSide () == UnitCombatSideID.ATTACKER)
 						{
@@ -653,35 +686,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (unitStack.size () > 0)
 					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer, moveFrom, moveTo, mom);
 				
-				// Before we remove buildings, check if this was the wizard's fortress and/or summoning circle
-				final boolean wasSummoningCircle = (useCaptureCityDecision != null) && (getMemoryBuildingUtils ().findBuilding
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatDetails.getCombatLocation (), CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE) != null);
-				
 				// Deal with cities
-				if (useCaptureCityDecision == CaptureCityDecisionID.CAPTURE)
-					getCityProcessing ().captureCity (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, mom);
+				if (useCaptureCityDecision != null)
+					getCityUpdates ().conquerCity (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, useCaptureCityDecision, (int) goldSwiped, mom);
 				
-				else if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
-					getCityProcessing ().razeCity (combatDetails.getCombatLocation (), mom);
-
-				else if (useCaptureCityDecision == CaptureCityDecisionID.RUIN)
-					getCityProcessing ().ruinCity (combatDetails.getCombatLocation (), (int) goldSwiped, mom);
-				
-				// If they're already banished and this was their last city being taken, then treat it just like their wizard's fortress being taken
-				if ((!wasWizardsFortress) && (useCaptureCityDecision != null) &&
-					(getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0))
-					
-					wasWizardsFortress = true;
-				
-				// Deal with wizard being banished
-				if ((wasWizardsFortress) && (useCaptureCityDecision != CaptureCityDecisionID.RAMPAGE))
-					getCityProcessing ().banishWizard (attackingPlayer, defendingPlayer, mom);
-				
-				// From here on have to be really careful, as banishWizard may have completely tore down the session, which we can tell because the players list will be empty
-				
-				// If their summoning circle was taken, but they still have their fortress elsewhere, then move summoning circle to there
-				if ((wasSummoningCircle) && (useCaptureCityDecision != CaptureCityDecisionID.RAMPAGE) && (mom.getPlayers ().size () > 0))
-					getCityProcessing ().moveSummoningCircleToWizardsFortress (defendingPlayer.getPlayerDescription ().getPlayerID (), mom);
+				// From here on have to be really careful, as conquerCity may have completely tore down the session, which we can tell because the players list will be empty
 			}
 			else
 			{
@@ -746,6 +755,84 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (defendingPlayer != null)
 					getServerResourceCalculations ().recalculateGlobalProductionValues (defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 
+				// If a wizard attacked another wizard then they will be upset about it, and possibly change pact
+				if ((defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ())) &&
+					(defWizard != null) && (defWizard.getWizardState () != WizardState.DEFEATED))
+				{
+					final PactType pactType = getKnownWizardUtils ().findPactWith (atkWizard.getPact (), defendingPlayer.getPlayerDescription ().getPlayerID ());
+					
+					// Diplomatic penalty for what was attacked, and who won
+					int penalty = 0;
+					if (cityName == null)
+						penalty = 20;
+					else if (!wasWizardsFortress)
+						penalty = (winningPlayer == attackingPlayer) ? 60 : 40;
+					else
+						penalty = (winningPlayer == attackingPlayer) ? 200 : 80;
+
+					// Diplomatic penalty for breaking pacts and alliances
+					DiplomacyAction brokenPactType = null;
+					PactType newPactType = null;		// Only used if brokenPactType gets set
+
+					if ((pactType == PactType.ALLIANCE) ||													// Any attack anywhere voids an alliance
+						((pactType == PactType.WIZARD_PACT) && (cityName != null)) ||		// Only an attack on a city voids a wizard pact; skimishes are allowed
+						((pactType == null) && (cityName != null)))										// Only an attack on a city is an instant declaration of war
+					{
+						// What type of pact was broken
+						if (pactType == PactType.WIZARD_PACT)
+						{
+							brokenPactType = DiplomacyAction.BROKEN_WIZARD_PACT_CITY;
+							penalty = penalty + 20;
+						}
+						else if ((pactType == PactType.WIZARD_PACT) && (cityName != null))
+						{
+							brokenPactType = DiplomacyAction.BROKEN_ALLIANCE_CITY;
+							penalty = penalty + 40;
+						}
+						else if ((pactType == null) && (cityName != null))
+						{
+							// No pact was broken, so no additonal penalty
+							brokenPactType = DiplomacyAction.DECLARE_WAR_CITY;
+							newPactType = PactType.WAR;
+						}
+						else
+						{
+							brokenPactType = DiplomacyAction.BROKEN_ALLIANCE_UNITS;
+							penalty = penalty + 20;
+						}
+					}
+					
+					// If an AI player was attacked then they will dislike the attacker for it
+					final DiplomacyWizardDetails opinion = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+						(defPriv.getFogOfWarMemory ().getWizardDetails (), attackingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
+					
+					if (defendingPlayer.getPlayerDescription ().getPlayerType () != PlayerType.HUMAN)
+					{
+						log.debug ("Player ID " + attackingPlayer.getPlayerDescription ().getPlayerID () + " attacking AI player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () + " resulted in diplomatic penalty of " + penalty);
+						getRelationAI ().penaltyToVisibleRelation (opinion, penalty);
+					}
+					
+					// Any message to send or pact to change?
+					if (brokenPactType != null)
+					{
+						// Show popup about them being mad
+						if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+						{
+							final DiplomacyMessage brokenPactMessage = new DiplomacyMessage ();
+							brokenPactMessage.setTalkFromPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
+							brokenPactMessage.setVisibleRelationScoreID (mom.getServerDB ().findRelationScoreForValue (opinion.getVisibleRelation (), "combatEnded").getRelationScoreID ());
+							brokenPactMessage.setCityName (cityName);
+							brokenPactMessage.setAction (brokenPactType);
+								
+							attackingPlayer.getConnection ().sendMessageToClient (brokenPactMessage);
+						}
+						
+						// Remove the pact
+						getKnownWizardServerUtils ().updatePact (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (), newPactType, mom);
+						getKnownWizardServerUtils ().updatePact (defendingPlayer.getPlayerDescription ().getPlayerID (), attackingPlayer.getPlayerDescription ().getPlayerID (), newPactType, mom);
+					}
+				}
+				
 				// Clear out combat related items
 				final boolean removed = mom.getCombatDetails ().remove (combatDetails);
 				log.debug ("combatEnded clearing up combat URN " + combatDetails.getCombatURN () + "; removed = " + removed);
@@ -783,7 +870,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					{
 						// AI players proceed with moving remaining unit stacks, possibly starting another combat or completing their turn
 						log.info ("Resuming AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-						if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
+						if (getMomAI ().aiPlayerTurn (currentPlayer, mom, false))
 							getPlayerMessageProcessing ().nextTurnButton (mom, currentPlayer);
 					}
 				}
@@ -1016,22 +1103,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	}
 
 	/**
-	 * @return City processing methods
-	 */
-	public final CityProcessing getCityProcessing ()
-	{
-		return cityProcessing;
-	}
-
-	/**
-	 * @param obj City processing methods
-	 */
-	public final void setCityProcessing (final CityProcessing obj)
-	{
-		cityProcessing = obj;
-	}
-
-	/**
 	 * @return MemoryBuilding utils
 	 */
 	public final MemoryBuildingUtils getMemoryBuildingUtils ()
@@ -1141,5 +1212,53 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
 	{
 		combatMapServerUtils = u;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
+	}
+
+	/**
+	 * @return Server side city updates
+	 */
+	public final CityUpdates getCityUpdates ()
+	{
+		return cityUpdates;
+	}
+
+	/**
+	 * @param u Server side city updates
+	 */
+	public final void setCityUpdates (final CityUpdates u)
+	{
+		cityUpdates = u;
 	}
 }

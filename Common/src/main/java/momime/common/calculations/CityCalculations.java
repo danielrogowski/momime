@@ -16,7 +16,7 @@ import momime.common.database.Event;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
-import momime.common.database.Race;
+import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
@@ -202,7 +202,7 @@ public interface CityCalculations
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 * @throws MomException If there is a problem totalling up the production values
 	 */
-	public void addProductionFromPopulation (final CityProductionBreakdownsEx productionValues, final Race race, final String populationTaskID,
+	public void addProductionFromPopulation (final CityProductionBreakdownsEx productionValues, final RaceEx race, final String populationTaskID,
 		final int numberDoingTask, final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final CommonDatabase db)
 		throws RecordNotFoundException, MomException;
 	

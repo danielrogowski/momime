@@ -1,8 +1,10 @@
 package momime.common.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -14,10 +16,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
+import momime.common.database.DamageTypeImmunity;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
@@ -316,6 +322,88 @@ public final class TestExpandedUnitDetailsImpl
 	}
 	
 	/**
+	 * Tests the isUnitImmuneToDamageType method
+	 */
+	@Test
+	public final void testIsUnitImmuneToDamageType ()
+	{
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageTypeImmunity immunity = new DamageTypeImmunity ();
+			immunity.setUnitSkillID ("US00" + n);
+			damageType.getDamageTypeImmunity ().add (immunity);
+		}
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US002", null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertTrue (xu.isUnitImmuneToDamageType (damageType));
+	}
+	
+	/**
+	 * Tests the isUnitImmuneToDamageType method when the unit doesn't have any of the necessary skills
+	 */
+	@Test
+	public final void testIsUnitImmuneToDamageType_NoSkill ()
+	{
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageTypeImmunity immunity = new DamageTypeImmunity ();
+			immunity.setUnitSkillID ("US00" + n);
+			damageType.getDamageTypeImmunity ().add (immunity);
+		}
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US004", null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertFalse (xu.isUnitImmuneToDamageType (damageType));
+	}
+	
+	/**
+	 * Tests the isUnitImmuneToDamageType method when the immunity only grants a boost to 50 defence, and not complete immunity
+	 */
+	@Test
+	public final void testIsUnitImmuneToDamageType_DefenceBoostOnly ()
+	{
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageTypeImmunity immunity = new DamageTypeImmunity ();
+			immunity.setUnitSkillID ("US00" + n);
+			
+			if (n == 2)
+				immunity.setBoostsDefenceTo (50);
+			
+			damageType.getDamageTypeImmunity ().add (immunity);
+		}
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US002", null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertFalse (xu.isUnitImmuneToDamageType (damageType));
+	}
+	
+	/**
 	 * Tests the calculateFullRangedAttackAmmo method
 	 * Its a bit of a dumb test, since its only returning the value straight out of getModifiedSkillValue, but including it to be complete and as a pretest for giveUnitFullRangedAmmoAndMana
 	 * @throws Exception If there is a problem
@@ -335,6 +423,85 @@ public final class TestExpandedUnitDetailsImpl
 		
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, ammo);
 		assertEquals (5, unit.calculateFullRangedAttackAmmo ());
+	}
+	
+	/**
+	 * Test the canCastSpells method on a hero who can cast spells
+	 */
+	@Test
+	public final void testCanCastSpells_HeroCaster ()
+	{
+		// Unit definition
+		final UnitEx unitDefinition = new UnitEx ();
+		unitDefinition.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, unitDefinition, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertTrue (xu.canCastSpells ());
+	}
+	
+	/**
+	 * Test the canCastSpells method on a hero who can't cast spells, but is using an item that grants +spell skill
+	 */
+	@Test
+	public final void testCanCastSpells_HeroNonCaster ()
+	{
+		// Unit definition
+		final UnitEx unitDefinition = new UnitEx ();
+		unitDefinition.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, unitDefinition, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertFalse (xu.canCastSpells ());
+	}
+	
+	/**
+	 * Test the canCastSpells method on a regular unit who can cast spells
+	 */
+	@Test
+	public final void testCanCastSpells_UnitCaster ()
+	{
+		// Unit definition
+		final UnitEx unitDefinition = new UnitEx ();
+		unitDefinition.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null);
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, unitDefinition, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertTrue (xu.canCastSpells ());
+	}
+	
+	/**
+	 * Test the canCastSpells method on a regular unit who can't cast spells
+	 */
+	@Test
+	public final void testCanCastSpells_UnitNonCaster ()
+	{
+		// Unit definition
+		final UnitEx unitDefinition = new UnitEx ();
+		unitDefinition.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		// Set up object to test
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, unitDefinition, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
+		
+		// Run method
+		assertFalse (xu.canCastSpells ());
 	}
 	
 	/**
@@ -380,4 +547,62 @@ public final class TestExpandedUnitDetailsImpl
 		
 		assertEquals (102, xu.calculateManaTotal ());
 	}
-}
+
+	/**
+	 * Tests the unitIgnoresCombatTerrain method on a unit which doesn't have any skills which make it ignore combat terrain
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testUnitIgnoresCombatTerrain_No () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitSkillEx skillA = new UnitSkillEx ();
+		when (db.findUnitSkill ("A", "unitIgnoresCombatTerrain")).thenReturn (skillA);
+
+		final UnitSkillEx skillB = new UnitSkillEx ();
+		skillB.setIgnoreCombatTerrain (false);
+		when (db.findUnitSkill ("B", "unitIgnoresCombatTerrain")).thenReturn (skillB);
+
+		// Has skills, but none that ignore combat terrain
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("A", null);
+		modifiedSkillValues.put ("B", null);
+
+		// Set up object to test
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 1, null, modifiedSkillValues, null, null, null);
+		
+		// Call method
+		assertFalse (xu.unitIgnoresCombatTerrain (db));
+	}
+
+	/**
+	 * Tests the unitIgnoresCombatTerrain method on a unit which has a skill which make it ignore combat terrain
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testUnitIgnoresCombatTerrain_Yes () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitSkillEx skillA = new UnitSkillEx ();
+		when (db.findUnitSkill ("A", "unitIgnoresCombatTerrain")).thenReturn (skillA);
+
+		final UnitSkillEx skillC = new UnitSkillEx ();
+		skillC.setIgnoreCombatTerrain (true);
+		when (db.findUnitSkill ("C", "unitIgnoresCombatTerrain")).thenReturn (skillC);
+		
+		// Has skill that ignores combat terrain
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("A", null);
+		modifiedSkillValues.put ("C", null);
+
+		// Set up object to test
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, 1, null, modifiedSkillValues, null, null, null);
+		
+		// Call method
+		assertTrue (xu.unitIgnoresCombatTerrain (db));
+	}
+	}

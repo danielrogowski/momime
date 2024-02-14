@@ -61,6 +61,20 @@
 			<tileRelativeY>9</tileRelativeY>
 		</figurePositionsForFigureCount>
 	</combatTileFigurePositions>
+	<combatTileFigurePositions figureCount="3">
+		<figurePositionsForFigureCount figureNumber="1">
+			<tileRelativeX>10</tileRelativeX>
+			<tileRelativeY>11</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="2">
+			<tileRelativeX>20</tileRelativeX>
+			<tileRelativeY>11</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="3">
+			<tileRelativeX>15</tileRelativeX>
+			<tileRelativeY>6</tileRelativeY>
+		</figurePositionsForFigureCount>
+	</combatTileFigurePositions>
 	<combatTileFigurePositions figureCount="4">
 		<figurePositionsForFigureCount figureNumber="1">
 			<tileRelativeX>15</tileRelativeX>
@@ -242,22 +256,6 @@
 		</frame>
 		<frame>
 			<imageFile>/momime.client.graphics/ui/mainMenu/title-frame20.png</imageFile>
-		</frame>
-	</animation>
-	<animation animationID="SPELL_BOOK_PAGE_TURN">
-		<animationDescription>Page flipping from right to left when we turn the page in the spell book</animationDescription>
-		<animationSpeed>5</animationSpeed>
-		<frame>
-			<imageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame1.png</imageFile>
-		</frame>
-		<frame>
-			<imageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame2.png</imageFile>
-		</frame>
-		<frame>
-			<imageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame3.png</imageFile>
-		</frame>
-		<frame>
-			<imageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame4.png</imageFile>
 		</frame>
 	</animation>
 	<animation animationID="OVERLAND_ENCHANTMENTS_MIRROR">

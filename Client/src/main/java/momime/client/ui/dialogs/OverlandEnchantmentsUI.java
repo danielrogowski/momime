@@ -21,8 +21,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -60,7 +60,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	 * some grey, some blue.  Also had to add a 15th frame on the end which is just the solid circle - although it isn't needed to draw the animation itself, it gets used
 	 * as a mask to chop the square corners off the wizard portrait so they don't stick out the side of the mirror.
 	 */
-	final static String MIRROR_ANIM = "OVERLAND_ENCHANTMENTS_MIRROR";
+	public final static String MIRROR_ANIM = "OVERLAND_ENCHANTMENTS_MIRROR";
 	
 	/** Number of animation frames that we pause in between fading shiny-photo and then photo-spell pic */
 	private final static int PAUSE_FRAMES = 12;
@@ -140,8 +140,8 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		final int castingPlayerID = (getAddSpellMessage () != null) ? getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () :
 			getShowSpellAnimationMessage ().getCastingPlayerID ();
 		
-		final BufferedImage mirror = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
-			true, null, null, null, castingPlayerID, null);
+		final Image mirror = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
+			true, null, null, null, castingPlayerID, null, null);
 		
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), castingPlayerID, "OverlandEnchantmentsUI");
 		
@@ -253,7 +253,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 				}
 				
 				// Always draw the mirror frame last, to cover up whatever has been drawn in the circle
-				g.drawImage (mirror, 0, 0, mirror.getWidth () * 2, mirror.getHeight () * 2, null);
+				g.drawImage (mirror, 0, 0, mirror.getWidth (null) * 2, mirror.getHeight (null) * 2, null);
 			}
 		};
 

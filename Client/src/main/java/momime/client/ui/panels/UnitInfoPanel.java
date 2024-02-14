@@ -31,9 +31,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
-import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
@@ -54,6 +54,7 @@ import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.MomException;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
@@ -134,6 +135,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** If true then buttons appear on the right; if false then buttons appear underneath; NB. this must be set prior to init () being called */
 	private boolean buttonsPositionRight;
+	
+	/** If true, will calculate unit cost reduction from Iron Ore or Coal */
+	private boolean showReducedUnitCost;
 	
 	/** Main background image */
 	private BufferedImage backgroundMain;
@@ -222,6 +226,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Combat UI */
 	private CombatUI combatUI;
 	
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
+	
 	/**
 	 * Sets up the panel once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -297,7 +304,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 							// Show combat anim of unit 
 							zOrderGraphics.setGraphics (g);
 							final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnit (), true, getClient ().getClientDB ());
-							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0, shadingColours, null);
+							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0, shadingColours, null, false);
 						}
 					}
 				}
@@ -645,7 +652,20 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 		// Update language independant labels
-		currentlyConstructingProductionCost.setText ((getUnit ().getUnitDefinition ().getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (getUnit ().getUnitDefinition ().getProductionCost ()));
+		if (getUnit ().getUnitDefinition ().getProductionCost () == null)
+			currentlyConstructingProductionCost.setText (null);
+		else
+		{
+			final Integer reducedCost = isShowReducedUnitCost () ? getCityProductionCalculations ().calculateProductionCost (getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unit.getUnitLocation (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+				getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), getClient ().getClientDB (), getUnit ().getUnitID ()) : null;
+			
+			if ((reducedCost != null) && (reducedCost < getUnit ().getUnitDefinition ().getProductionCost ()))
+				currentlyConstructingProductionCost.setText (getTextUtils ().intToStrCommas (reducedCost) + " (" + getTextUtils ().intToStrCommas (getUnit ().getUnitDefinition ().getProductionCost ()) + ")");
+			else
+				currentlyConstructingProductionCost.setText (getTextUtils ().intToStrCommas (getUnit ().getUnitDefinition ().getProductionCost ()));
+		}
 		costLabel.setVisible (getUnit ().getUnitDefinition ().getProductionCost () != null);
 		
 		// Search for upkeeps of the unit
@@ -691,6 +711,11 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		final Set<String> basicAndModifiedSkillIDs = new HashSet<String> ();
 		basicAndModifiedSkillIDs.addAll (getUnit ().listBasicSkillIDs ());
 		basicAndModifiedSkillIDs.addAll (getUnit ().listModifiedSkillIDs ());
+		
+		// Don't show unit caster skill for heroes - which comes from hero items with +spell skill on them.
+		// This can't be done in expandUnitDetails itself, as calculateManaTotal relies on the unit caster skill being there with its correctly calculated value.
+		if (getUnit ().isHero ())
+			basicAndModifiedSkillIDs.remove (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
 		
 		getUnitSkillListCellRenderer ().setUnit (getUnit ());
 		for (final String unitSkillID : basicAndModifiedSkillIDs.stream ().sorted ().collect (Collectors.toList ()))
@@ -1127,6 +1152,22 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	}
 
 	/**
+	 * @return If true, will calculate unit cost reduction from Iron Ore or Coal
+	 */
+	public final boolean isShowReducedUnitCost ()
+	{
+		return showReducedUnitCost;
+	}
+
+	/**
+	 * @param r If true, will calculate unit cost reduction from Iron Ore or Coal
+	 */
+	public final void setShowReducedUnitCost (final boolean r)
+	{
+		showReducedUnitCost = r;
+	}
+	
+	/**
 	 * @return Prototype frame creator
 	 */
 	public final PrototypeFrameCreator getPrototypeFrameCreator ()
@@ -1220,5 +1261,21 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
+	}
+
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
 	}
 }

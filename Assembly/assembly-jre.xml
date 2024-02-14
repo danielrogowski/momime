@@ -16,7 +16,7 @@
 			<filtered>true</filtered>
 		</fileSet>
 		<fileSet>
-			<directory>target/jre/jdk-${jre.version}+${jre.build}-jre</directory>
+			<directory>target/jre/jdk-${mom.jre.version}+${mom.jre.build}-jre</directory>
 			<outputDirectory>jre</outputDirectory>
 		</fileSet>
 		<fileSet>
@@ -49,6 +49,8 @@
 				<exclude>com.ndg.momime:momime-server:jar:config</exclude>
 				<exclude>com.ndg.momime:momime-client:jar:config</exclude>
 				<exclude>com.ndg.momime:momime-editors:jar:config</exclude>
+				
+				<exclude>com.ndg.momime:momime-mods</exclude>
 				
 				<exclude>org.adoptopenjdk</exclude>
 			</excludes>

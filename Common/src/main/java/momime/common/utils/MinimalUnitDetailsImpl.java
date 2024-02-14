@@ -1,7 +1,6 @@
 package momime.common.utils;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,13 +14,10 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitSkill;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
@@ -183,6 +179,16 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	}
 	
 	/**
+	 * @return Whether or not the unit was summoned in combat, e.g. phantom warriors
+	 * @throws MomException This won't happen since we check if the unit is a memory unit 
+	 */
+	@Override
+	public final boolean wasSummonedInCombat () throws MomException
+	{
+		return (isMemoryUnit ()) && (getMemoryUnit ().isWasSummonedInCombat ());
+	}
+	
+	/**
 	 * @return Experience level of this unit (0-5 for regular units, 0-8 for heroes) excluding bonuses from Warlord/Crusade; for units that don't gain experience (e.g. summoned), returns null
 	 */
 	@Override
@@ -269,27 +275,6 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	public final int getFullFigureCount ()
 	{
 		return getUnitDefinition ().getFigureCount ();
-	}
-
-	/**
-	 * @param db Lookup lists built over the XML database
-	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
-	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
-	 */
-	@Override
-	public final boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException
-	{
-		boolean found = false;
-
-		final Iterator<String> iter = basicSkillValues.keySet ().iterator ();
-		while ((!found) && (iter.hasNext ()))
-		{
-			final UnitSkill skillDef = db.findUnitSkill (iter.next (), "unitIgnoresCombatTerrain");
-			if ((skillDef.isIgnoreCombatTerrain () != null) && (skillDef.isIgnoreCombatTerrain ()))
-				found = true;
-		}
-
-		return found;
 	}
 
 	/**

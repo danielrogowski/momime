@@ -9,9 +9,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
@@ -73,6 +71,12 @@ public interface MinimalUnitDetails
 	 * @return Whether or not the unit is a summoned creature
 	 */
 	public boolean isSummoned ();
+
+	/**
+	 * @return Whether or not the unit was summoned in combat, e.g. phantom warriors
+	 * @throws MomException This won't happen since we check if the unit is a memory unit 
+	 */
+	public boolean wasSummonedInCombat () throws MomException;
 	
 	/**
 	 * @return Experience level of this unit (0-5 for regular units, 0-8 for heroes) excluding bonuses from Warlord/Crusade; for units that don't gain experience (e.g. summoned), returns null
@@ -118,13 +122,6 @@ public interface MinimalUnitDetails
 	 * @return Number of figures in this unit before it takes any damage
 	 */
 	public int getFullFigureCount ();
-
-	/**
-	 * @param db Lookup lists built over the XML database
-	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
-	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
-	 */
-	public boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @return How much fame a player loses when this unit dies

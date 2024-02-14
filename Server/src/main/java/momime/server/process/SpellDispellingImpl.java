@@ -14,7 +14,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -22,6 +22,8 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.DiplomacyWizardDetails;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -38,6 +40,7 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.server.MomSessionVariables;
+import momime.server.ai.RelationAI;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
@@ -71,6 +74,9 @@ public final class SpellDispellingImpl implements SpellDispelling
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
+	
 	/**
 	 * Makes dispel rolls against a list of target spells and CAEs
 	 * 
@@ -81,6 +87,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 	 * @param targetCAEs Target CAEs that we will make rolls to try to dispel, can be left null
 	 * @param targetWarpedNode Warped node that we are trying to return to normal
 	 * @param targetVortexes Vortexes are odd in that the unit as a whole gets dispelled (killed) rather than a spell cast on the unit
+	 * @param penaltyToVisibleRelation How mad each wizard will get whose spells we are targeting for dispelling
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether dispelling any spells resulted in the death of any units
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -90,13 +97,13 @@ public final class SpellDispellingImpl implements SpellDispelling
 	@Override
 	public final boolean processDispelling (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer,
 		final List<MemoryMaintainedSpell> targetSpells, final List<MemoryCombatAreaEffect> targetCAEs,
-		final MapCoordinates3DEx targetWarpedNode, final List<MemoryUnit> targetVortexes, final MomSessionVariables mom)
+		final MapCoordinates3DEx targetWarpedNode, final List<MemoryUnit> targetVortexes, final int penaltyToVisibleRelation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		// Build up a map so we remember which results we have to send to which players
+		// Build up a map so we remember which results we have to send to which players.
+		// Also used to just get a list of players we made dispel attempts against, so for now put AI players in the list too.
 		final Map<Integer, List<DispelMagicResult>> resultsMap = new HashMap<Integer, List<DispelMagicResult>> ();
-		if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-			resultsMap.put (castingPlayer.getPlayerDescription ().getPlayerID (), new ArrayList<DispelMagicResult> ());
+		resultsMap.put (castingPlayer.getPlayerDescription ().getPlayerID (), new ArrayList<DispelMagicResult> ());
 
 		// Work out dispelling power - this is a bit of a cheat to just check combatBaseDamage first, we should know for certain if being cast in combat or overland.
 		// However all dispel spells have the same combat and overland stats, so this is fine.
@@ -171,7 +178,6 @@ public final class SpellDispellingImpl implements SpellDispelling
 				// Retorts that make spells more difficult to dispel
 				int multiplier = 1;
 				
-				final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spellToDispel.getCastingPlayerID (), "processDispelling (D1)");
 				final List<PlayerPick> spellOwnerPicks = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 					spellToDispel.getCastingPlayerID (), "processDispelling (D1)").getPick ();
 				
@@ -190,19 +196,15 @@ public final class SpellDispellingImpl implements SpellDispelling
 				result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
 	
 				// Add it to the messages first, because we might update who owns it
-				if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-					resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+				resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 				
-				if (spellOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				List<DispelMagicResult> results = resultsMap.get (spellToDispel.getCastingPlayerID ());
+				if (results == null)
 				{
-					List<DispelMagicResult> results = resultsMap.get (spellToDispel.getCastingPlayerID ());
-					if (results == null)
-					{
-						results = new ArrayList<DispelMagicResult> ();
-						resultsMap.put (spellToDispel.getCastingPlayerID (), results);
-					}
-					results.add (result);
+					results = new ArrayList<DispelMagicResult> ();
+					resultsMap.put (spellToDispel.getCastingPlayerID (), results);
 				}
+				results.add (result);
 				
 				// If spell locked then keep a list of it
 				if ((spellToDispel.getUnitURN () != null) && (spellToDispelDef.isBlocksOtherDispels () != null) && (spellToDispelDef.isBlocksOtherDispels ()))
@@ -238,7 +240,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 					
 					// Regular dispel
 					else
-						mom.getWorldUpdates ().switchOffSpell (spellToDispel.getSpellURN ());
+						mom.getWorldUpdates ().switchOffSpell (spellToDispel.getSpellURN (), false);
 				}			
 			}
 		
@@ -259,7 +261,6 @@ public final class SpellDispellingImpl implements SpellDispelling
 					// Retorts that make spells more difficult to dispel
 					int multiplier = 1;
 					
-					final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cae.getCastingPlayerID (), "processDispelling (D2)");
 					final List<PlayerPick> spellOwnerPicks = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 						cae.getCastingPlayerID (), "processDispelling (D2)").getPick ();
 					
@@ -280,19 +281,15 @@ public final class SpellDispellingImpl implements SpellDispelling
 					if (result.isDispelled ())
 						mom.getWorldUpdates ().removeCombatAreaEffect (cae.getCombatAreaEffectURN ());
 		
-					if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-						resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+					resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 					
-					if (spellOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+					List<DispelMagicResult> results = resultsMap.get (cae.getCastingPlayerID ());
+					if (results == null)
 					{
-						List<DispelMagicResult> results = resultsMap.get (cae.getCastingPlayerID ());
-						if (results == null)
-						{
-							results = new ArrayList<DispelMagicResult> ();
-							resultsMap.put (cae.getCastingPlayerID (), results);
-						}
-						results.add (result);
+						results = new ArrayList<DispelMagicResult> ();
+						resultsMap.put (cae.getCastingPlayerID (), results);
 					}
+					results.add (result);
 				}
 			}
 		
@@ -330,25 +327,20 @@ public final class SpellDispellingImpl implements SpellDispelling
 						}
 			}
 			
-			if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-				resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+			resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 			
 			final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(targetWarpedNode.getZ ()).getRow ().get (targetWarpedNode.getY ()).getCell ().get (targetWarpedNode.getX ()).getTerrainData ();
 			
 			if (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ()))
 			{
-				final PlayerServerDetails nodeOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), terrainData.getNodeOwnerID (), "processDispelling (W2)");
-				if (nodeOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				List<DispelMagicResult> results = resultsMap.get (terrainData.getNodeOwnerID ());
+				if (results == null)
 				{
-					List<DispelMagicResult> results = resultsMap.get (terrainData.getNodeOwnerID ());
-					if (results == null)
-					{
-						results = new ArrayList<DispelMagicResult> ();
-						resultsMap.put (terrainData.getNodeOwnerID (), results);
-					}
-					results.add (result);
+					results = new ArrayList<DispelMagicResult> ();
+					resultsMap.put (terrainData.getNodeOwnerID (), results);
 				}
+				results.add (result);
 			}
 		}
 		
@@ -369,7 +361,6 @@ public final class SpellDispellingImpl implements SpellDispelling
 					// Retorts that make spells more difficult to dispel
 					int multiplier = 1;
 					
-					final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), vortex.getOwningPlayerID (), "processDispelling (V1)");
 					final List<PlayerPick> spellOwnerPicks = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 						vortex.getOwningPlayerID (), "processDispelling (V1)").getPick ();
 					
@@ -390,36 +381,42 @@ public final class SpellDispellingImpl implements SpellDispelling
 					if (result.isDispelled ())
 						mom.getWorldUpdates ().killUnit (vortex.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 					
-					if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-						resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+					resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 					
-					if (spellOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+					List<DispelMagicResult> results = resultsMap.get (vortex.getOwningPlayerID ());
+					if (results == null)
 					{
-						List<DispelMagicResult> results = resultsMap.get (vortex.getOwningPlayerID ());
-						if (results == null)
-						{
-							results = new ArrayList<DispelMagicResult> ();
-							resultsMap.put (vortex.getOwningPlayerID (), results);
-						}
-						results.add (result);
+						results = new ArrayList<DispelMagicResult> ();
+						resultsMap.put (vortex.getOwningPlayerID (), results);
 					}
+					results.add (result);
 				}
 			}
 		
 		// Send the results to each human player invovled
-		if (resultsMap.size () > 0)
+		final DispelMagicResultsMessage msg = new DispelMagicResultsMessage ();
+		msg.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+		msg.setSpellID (spell.getSpellID ());
+		
+		for (final Entry<Integer, List<DispelMagicResult>> entry : resultsMap.entrySet ())
 		{
-			final DispelMagicResultsMessage msg = new DispelMagicResultsMessage ();
-			msg.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
-			msg.setSpellID (spell.getSpellID ());
-			
-			for (final Entry<Integer, List<DispelMagicResult>> entry : resultsMap.entrySet ())
+			// Send dispel results to human players
+			final PlayerServerDetails entryPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "processDispelling (D3)");
+			if (entryPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				msg.getDispelMagicResult ().clear ();
 				msg.getDispelMagicResult ().addAll (entry.getValue ());
 				
-				final PlayerServerDetails entryPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "processDispelling (D3)");
 				entryPlayer.getConnection ().sendMessageToClient (msg);
+			}
+			
+			// Anyone who had their spells attempted to be dispelled will be upset at the caster
+			if ((penaltyToVisibleRelation > 0) && (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (entry.getKey ())))
+			{
+				final MomPersistentPlayerPrivateKnowledge entryPriv = (MomPersistentPlayerPrivateKnowledge) entryPlayer.getPersistentPlayerPrivateKnowledge ();
+				final KnownWizardDetails entryOpinionOfCaster = getKnownWizardUtils ().findKnownWizardDetails (entryPriv.getFogOfWarMemory ().getWizardDetails (), castingPlayer.getPlayerDescription ().getPlayerID ());
+				if (entryOpinionOfCaster != null)
+					getRelationAI ().penaltyToVisibleRelation ((DiplomacyWizardDetails) entryOpinionOfCaster, penaltyToVisibleRelation);
 			}
 		}
 		
@@ -576,8 +573,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 					final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
 
 					int thisCount = 0;					
-					if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
-						(mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 						
 						// How many enemy spells are here?
 						thisCount = (int) priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
@@ -612,8 +608,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
 
 						int thisCount = 0;					
-						if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
-							(mc.getCityData ().getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
+						if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 						{
 							if (priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().anyMatch
 								(s -> (s.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()) && (s.getCastingPlayerID () != mc.getCityData ().getCityOwnerID ()) &&
@@ -778,5 +773,21 @@ public final class SpellDispellingImpl implements SpellDispelling
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

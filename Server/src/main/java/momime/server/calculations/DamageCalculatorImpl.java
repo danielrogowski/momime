@@ -9,8 +9,8 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
 import com.ndg.utils.Holder;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -288,6 +288,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 						if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_UNDEAD))
 						{
 							damageType = db.findDamageType (ServerDatabaseValues.DAMAGE_TYPE_ID_LIFE_STEALING, "attackFromUnitSkill");
+							if (xuDefender.isUnitImmuneToDamageType (damageType))
+								damageType = null;
+						}
+						else if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ADVANCED_LIFE_STEALING))
+						{
+							damageType = db.findDamageType (ServerDatabaseValues.DAMAGE_TYPE_ID_ADVANCED_LIFE_STEALING, "attackFromUnitSkill");
 							if (xuDefender.isUnitImmuneToDamageType (damageType))
 								damageType = null;
 						}

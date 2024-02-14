@@ -26,7 +26,7 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.CitySize;
@@ -59,6 +59,7 @@ import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
@@ -785,6 +786,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
@@ -825,6 +828,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
+		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
 		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -843,7 +847,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -913,6 +917,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
@@ -975,6 +981,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
+		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
 		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -993,7 +1000,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1010,9 +1017,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), mom);
 		
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
+		verifyNoMoreInteractions	 (midTurnMulti, fowProcessing, serverResourceCalculations);
 	}
 
 	/**
@@ -1070,6 +1075,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
@@ -1132,6 +1139,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
+		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
 		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -1150,7 +1158,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1167,9 +1175,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 0), mom);
 
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
+		verifyNoMoreInteractions	 (midTurnMulti, fowProcessing, serverResourceCalculations);
 	}
 	
 	/**
@@ -1234,9 +1240,15 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 
 		// Wizards
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPd.getPlayerID (), "combatEnded")).thenReturn (defendingWizard);
+		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
 		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -1316,7 +1328,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
 		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
-		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID ())).thenReturn (10);
 		
 		// Combat details
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
@@ -1326,7 +1337,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
-		final CityProcessing cityProcessing = mock (CityProcessing.class);
+		final CityUpdates cityUpdates = mock (CityUpdates.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnMultiChanges (midTurnMulti);
@@ -1337,12 +1348,13 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setOverlandMapServerUtils (overlandMapServerUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		cse.setCityProcessing (cityProcessing);
 		cse.setMemoryBuildingUtils (memoryBuildingUtils);
 		cse.setCityServerUtils (cityServerUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
 		cse.setRandomUtils (mock (RandomUtils.class));
 		cse.setSpellCasting (mock (SpellCasting.class));
+		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		cse.setCityUpdates (cityUpdates);
 		
 		// Run method
 		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
@@ -1361,7 +1373,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1375,7 +1387,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the city owner was updated
-		verify (cityProcessing).captureCity (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (cityUpdates).conquerCity (combatLocation, attackingPlayer, defendingPlayer, CaptureCityDecisionID.CAPTURE, goldSwiped, mom);
 		
 		// Check the attacker's units advanced forward into the city
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -1385,11 +1397,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped);
 		verify (resourceValueUtils).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
 		
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
-		verifyNoMoreInteractions	(resourceValueUtils);
-		verifyNoMoreInteractions	(cityProcessing);
+		verifyNoMoreInteractions	(midTurnMulti, fowProcessing, serverResourceCalculations, resourceValueUtils, cityUpdates);
 	}
 	
 	/**
@@ -1454,9 +1462,15 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Wizards
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPd.getPlayerID (), "combatEnded")).thenReturn (defendingWizard);
+		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
 		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -1539,7 +1553,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// It isn't their Wizard's Fortress
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
-		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID ())).thenReturn (10);
 		
 		// Combat details
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
@@ -1549,7 +1562,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
-		final CityProcessing cityProcessing = mock (CityProcessing.class);
+		final CityUpdates cityUpdates = mock (CityUpdates.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnMultiChanges (midTurnMulti);
@@ -1561,9 +1574,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setOverlandMapServerUtils (overlandMapServerUtils);
 		cse.setCityServerUtils (cityServerUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		cse.setCityProcessing (cityProcessing);
 		cse.setMemoryBuildingUtils (memoryBuildingUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
+		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		cse.setCityUpdates (cityUpdates);
 		
 		// Run method
 		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
@@ -1582,7 +1596,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1596,7 +1610,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the city was trashed
-		verify (cityProcessing).razeCity (combatLocation, mom);
+		verify (cityUpdates).conquerCity (combatLocation, attackingPlayer, defendingPlayer, CaptureCityDecisionID.RAZE, goldSwiped, mom);
 		
 		// Check the attacker's units advanced forward into where the city used to be
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -1606,11 +1620,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);
 		verify (resourceValueUtils).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
 		
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
-		verifyNoMoreInteractions	(resourceValueUtils);
-		verifyNoMoreInteractions	(cityProcessing);
+		verifyNoMoreInteractions	(midTurnMulti, fowProcessing, serverResourceCalculations, resourceValueUtils, cityUpdates);
 	}
 
 	/**
@@ -1662,6 +1672,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		
 		// Session variables
 		final WorldUpdates wu = mock (WorldUpdates.class);
@@ -1718,6 +1730,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setSimultaneousTurnsProcessing (simultaneousTurnsProcessing);
 		cse.setKnownWizardUtils (knownWizardUtils);
+		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Regular combat, so only the attacker has a pending movement
 		final PendingMovement attackerPendingMovement = new PendingMovement ();
@@ -1744,7 +1757,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	    assertNull (msg1.getGoldFromRazing ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
@@ -1765,9 +1778,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (1, attackingPriv.getPendingMovement ().size ());
 		assertSame (attackerOtherPendingMovement, attackingPriv.getPendingMovement ().get (0));
 		
-		verifyNoMoreInteractions	(midTurnMulti);
-		verifyNoMoreInteractions	(fowProcessing);
-		verifyNoMoreInteractions	(serverResourceCalculations);
+		verifyNoMoreInteractions	 (midTurnMulti, fowProcessing, serverResourceCalculations);
 	}
 
 	/**
@@ -1817,6 +1828,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -1870,6 +1883,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setSimultaneousTurnsProcessing (simultaneousTurnsProcessing);
 		cse.setKnownWizardUtils (knownWizardUtils);
+		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Border conflict, so we have two pending movements
 		final PendingMovement attackerPendingMovement = new PendingMovement ();
@@ -1893,7 +1907,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	    assertNull (msg1.getGoldFromRazing ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombatAtLocation (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);

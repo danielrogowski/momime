@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,10 +20,11 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.NdgUIUtilsImpl;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import jakarta.xml.bind.Unmarshaller;
 import momime.client.ClientTestData;
@@ -146,13 +148,22 @@ public final class TestCombatUI extends ClientTestData
 		mapFeature.getMapFeatureMagicRealm ().add (null);
 		when (db.findMapFeature ("MF01", "CombatUI")).thenReturn (mapFeature);
 		
+		// Image sizes
+		final ModifiedImageCache cache = mock (ModifiedImageCache.class);
+		
 		for (int n = 1; n <= 6; n++)
 		{
 			final CombatAreaEffect cae = new CombatAreaEffect ();
 			cae.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CAE0" + n + ".png");
 			
 			if ((n != 3) && (n != 6))
+			{
 				when (db.findCombatAreaEffect ("CAE0" + n, "generateCombatAreaEffectIcons")).thenReturn (cae);
+				
+				final BufferedImage originalImage = utils.loadImage (cae.getCombatAreaEffectImageFile ());
+				final Image doubleSize = originalImage.getScaledInstance (originalImage.getWidth () * 2, originalImage.getHeight () * 2, Image.SCALE_FAST);
+				when (cache.doubleSize (cae.getCombatAreaEffectImageFile ())).thenReturn (doubleSize);
+			}
 		}
 		
 		// Overland map
@@ -331,8 +342,11 @@ public final class TestCombatUI extends ClientTestData
 		when (unitCalc.findPreferredMovementSkillGraphics (xuSelectedUnit, db)).thenReturn (movementSkill);
 		
 		// Image generator
+		final BufferedImage originalSize = utils.loadImage (unitDef.getUnitOverlandImageFile ());
+		final Image doubleSize = originalSize.getScaledInstance (originalSize.getWidth (), originalSize.getHeight (), Image.SCALE_FAST);
+		
 		final PlayerColourImageGenerator generator = mock (PlayerColourImageGenerator.class);
-		when (generator.getOverlandUnitImage (unitDef, atkPd.getPlayerID ())).thenReturn (utils.loadImage (unitDef.getUnitOverlandImageFile ()));
+		when (generator.getOverlandUnitImage (unitDef, atkPd.getPlayerID (), true)).thenReturn (doubleSize);
 		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
@@ -346,6 +360,7 @@ public final class TestCombatUI extends ClientTestData
 		
 		final CombatUI combat = new CombatUI ();
 		combat.setUtils (utils);
+		combat.setModifiedImageCache (cache);
 		combat.setLanguageHolder (langHolder);
 		combat.setLanguageChangeMaster (langMaster);
 		combat.setCombatMapBitmapGenerator (gen);
@@ -363,7 +378,7 @@ public final class TestCombatUI extends ClientTestData
 		combat.setUnitCalculations (unitCalc);
 		combat.setExpandUnitDetails (expand);
 		combat.setTextUtils (new TextUtilsImpl ());
-		combat.setSpellBookUI (new SpellBookUI ());
+		combat.setSpellBookUI (new SpellBookNewUI ());
 		combat.setSmallFont (CreateFontsForTests.getSmallFont ());
 		combat.setMediumFont (CreateFontsForTests.getMediumFont ());
 		combat.setLargeFont (CreateFontsForTests.getLargeFont ());

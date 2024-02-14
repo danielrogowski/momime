@@ -17,9 +17,10 @@ import javax.swing.WindowConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.newturnmessages.NewTurnMessageOfferItemEx;
@@ -55,6 +56,9 @@ public final class HeroItemOfferUI extends MomClientFrameUI implements OfferUI
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** Buy action */
 	private Action buyAction;
@@ -143,8 +147,8 @@ public final class HeroItemOfferUI extends MomClientFrameUI implements OfferUI
 		getFrame ().setTitle (getNewTurnMessageOffer ().getHeroItem ().getHeroItemName ());
 		
 		final HeroItemType itemType = getClient ().getClientDB ().findHeroItemType (getNewTurnMessageOffer ().getHeroItem ().getHeroItemTypeID (), "HeroItemOfferUI");
-		final BufferedImage image = getUtils ().loadImage (itemType.getHeroItemTypeImageFile ().get (getNewTurnMessageOffer ().getHeroItem ().getHeroItemImageNumber ()));
-		itemImage.setIcon (new ImageIcon (getUtils ().doubleSize (image)));
+		final String image = itemType.getHeroItemTypeImageFile ().get (getNewTurnMessageOffer ().getHeroItem ().getHeroItemImageNumber ());
+		itemImage.setIcon (new ImageIcon (getModifiedImageCache ().doubleSize (image)));
 		
 		// Lock dialog size
 		getFrame ().setContentPane (contentPane);
@@ -308,5 +312,21 @@ public final class HeroItemOfferUI extends MomClientFrameUI implements OfferUI
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
+	}
+	
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
 	}
 }

@@ -21,7 +21,7 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -35,6 +35,7 @@ import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.UnitStatusID;
@@ -789,8 +790,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final int regenerateUnits (final MapCoordinates3DEx combatLocation, final PlayerServerDetails winningPlayer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		int count = 0;
-		
+		final List<Integer> resurrectedUnitURNs = new ArrayList<Integer> ();
 		for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 
 			// Don't check combatPosition here - DEAD units should have no position
@@ -808,9 +808,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 				
 				if (regeneration)
 				{
-					// Only count up the ones that were actually dead; not just if we're healing them
+					// Only list the ones that were actually dead; not just if we're healing them
 					if (trueUnit.getStatus () != UnitStatusID.ALIVE)
-						count++;
+						resurrectedUnitURNs.add (trueUnit.getUnitURN ());
 					
 					trueUnit.setStatus (UnitStatusID.ALIVE);
 					getUnitServerUtils ().healDamage (trueUnit.getUnitDamage (), 1000, false);
@@ -820,8 +820,13 @@ public final class CombatProcessingImpl implements CombatProcessing
 				}
 			}
 		
-		log.debug ("regenerateUnits brought " + count + " units back to life");
-		return count;
+		// Did any of the resurrected units have spells cast on them?  If so they will only exist in the server's true memory, waiting to see if the unit comes back to life or not.
+		for (final MemoryMaintainedSpell trueSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+			if (resurrectedUnitURNs.contains (trueSpell.getUnitURN ()))
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (trueSpell, mom);
+		
+		log.debug ("regenerateUnits brought " + resurrectedUnitURNs.size () + " units back to life");
+		return resurrectedUnitURNs.size ();
 	}
 	
 	/**
@@ -919,7 +924,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// Now create them
 			for (int zombieNo = 0; zombieNo < zombieCount; zombieNo++)
 				zombiesCreated.add (getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (CommonDatabaseConstants.UNIT_ID_ZOMBIE, newLocation, null, null, null,
-					winningPlayer, UnitStatusID.ALIVE, true, mom));
+					winningPlayer, UnitStatusID.ALIVE, true, false, mom));
 		}
 	
 		log.debug ("zombiesCreated created zombies from " + zombiesCreated.size ()  + " dead normal units");
@@ -995,63 +1000,87 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// Don't check combatPosition here - DEAD units should have no position
 			if (combatLocation.equals (trueUnit.getCombatLocation ()))
 			{
-				// Permanently remove any dead regular units (which were kept around until now so they could be Animate Dead'ed)
-				// Also remove any combat summons like Phantom Warriors
-				boolean manuallyTellAttackerClientToKill = false;
-				boolean manuallyTellDefenderClientToKill = false;
-				if ((trueUnit.isWasSummonedInCombat ()) || ((trueUnit.getStatus () == UnitStatusID.DEAD) &&
-					(!mom.getServerDB ().findUnit (trueUnit.getUnitID (), "purgeDeadUnitsAndCombatSummonsFromCombat").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))))
+				if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "purgeDeadUnitsAndCombatSummonsFromCombat").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 				{
+					// Heroes that didn't regenerate need any spells cast on them to be removed.  They were removed on the client during KillUnitUpdate,
+					// but the server has to keep a copy of the spell in its true memory just in case the hero regenerates and so keeps the spell.
 					if (trueUnit.getStatus () == UnitStatusID.DEAD)
-						deadCount++;
-					else
-						summonedCount++;
-					
-					// The kill routine below will free off dead units on the server fine, but never instruct the client to do the same,
-					// since the "knows about unit" routine always returns false for dead units
-					
-					// Players not involved in the combat would have freed the units straight away from the
-					// ApplyDamage message, so this only affects the attacking & defending players
-					
-					// Heroes are fine - for the player who owns the hero, we leave them as dead so they can be later resurrected;
-					// the enemy of the hero would have freed them from ApplyDamage
-					manuallyTellAttackerClientToKill = (trueUnit.getStatus () == UnitStatusID.DEAD);
-					manuallyTellDefenderClientToKill = (manuallyTellAttackerClientToKill) && (defendingPlayer != null);
-					
-					if (manuallyTellAttackerClientToKill)
-						log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling attacker to remove dead unit URN " + trueUnit.getUnitURN ());
-					if (manuallyTellDefenderClientToKill)
-						log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling defender to remove dead unit URN " + trueUnit.getUnitURN ());
-					
-					// Use regular kill routine
-					mom.getWorldUpdates ().killUnit (trueUnit.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-				}
-				
-				// Special case where we have to tell the client to kill off the unit outside of the FOW routines?
-				if ((manuallyTellAttackerClientToKill) || (manuallyTellDefenderClientToKill))
-				{
-					final KillUnitMessage manualKillMessage = new KillUnitMessage ();
-					manualKillMessage.setUnitURN (trueUnit.getUnitURN ());
-					// Leave status null so unit is completely removed
-
-					// Defender
-					if (manuallyTellDefenderClientToKill)
 					{
-						final MomPersistentPlayerPrivateKnowledge defPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-						getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), defPriv.getFogOfWarMemory ().getUnit ());
-
-						if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-							defendingPlayer.getConnection ().sendMessageToClient (manualKillMessage);
+						for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+							if ((spell.getUnitURN () != null) && (spell.getUnitURN () == trueUnit.getUnitURN ()))
+								mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN (), false);
+						
+						// Also relieve them of their items.  They'll be awarded to the winner of the combat.
+						final CombatDetails combatDetails = (trueUnit.getCombatLocation () == null) ? null :
+							getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), (MapCoordinates3DEx) trueUnit.getCombatLocation (), "purgeDeadUnitsAndCombatSummonsFromCombat");
+						
+						if (combatDetails != null)
+							trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
+							{
+								combatDetails.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
+								slot.setHeroItem (null);
+							});
+					}
+				}
+				else
+				{
+					// Permanently remove any dead regular units (which were kept around until now so they could be Animate Dead'ed)
+					// Also remove any combat summons like Phantom Warriors
+					boolean manuallyTellAttackerClientToKill = false;
+					boolean manuallyTellDefenderClientToKill = false;
+					if ((trueUnit.isWasSummonedInCombat ()) || (trueUnit.getStatus () == UnitStatusID.DEAD))
+					{
+						if (trueUnit.getStatus () == UnitStatusID.DEAD)
+							deadCount++;
+						else
+							summonedCount++;
+						
+						// The kill routine below will free off dead units on the server fine, but never instruct the client to do the same,
+						// since the "knows about unit" routine always returns false for dead units
+						
+						// Players not involved in the combat would have freed the units straight away from the
+						// ApplyDamage message, so this only affects the attacking & defending players
+						
+						// Heroes are fine - for the player who owns the hero, we leave them as dead so they can be later resurrected;
+						// the enemy of the hero would have freed them from ApplyDamage
+						manuallyTellAttackerClientToKill = (trueUnit.getStatus () == UnitStatusID.DEAD);
+						manuallyTellDefenderClientToKill = (manuallyTellAttackerClientToKill) && (defendingPlayer != null);
+						
+						if (manuallyTellAttackerClientToKill)
+							log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling attacker to remove dead unit URN " + trueUnit.getUnitURN ());
+						if (manuallyTellDefenderClientToKill)
+							log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling defender to remove dead unit URN " + trueUnit.getUnitURN ());
+						
+						// Use regular kill routine
+						mom.getWorldUpdates ().killUnit (trueUnit.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 					}
 					
-					// Attacker
-					if (manuallyTellAttackerClientToKill)
+					// Special case where we have to tell the client to kill off the unit outside of the FOW routines?
+					if ((manuallyTellAttackerClientToKill) || (manuallyTellDefenderClientToKill))
 					{
-						final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-						getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), atkPriv.getFogOfWarMemory ().getUnit ());
-					
-						if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-							attackingPlayer.getConnection ().sendMessageToClient (manualKillMessage);
+						final KillUnitMessage manualKillMessage = new KillUnitMessage ();
+						manualKillMessage.setUnitURN (trueUnit.getUnitURN ());
+						// Leave status null so unit is completely removed
+	
+						// Defender
+						if (manuallyTellDefenderClientToKill)
+						{
+							final MomPersistentPlayerPrivateKnowledge defPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+							getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), defPriv.getFogOfWarMemory ().getUnit ());
+	
+							if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+								defendingPlayer.getConnection ().sendMessageToClient (manualKillMessage);
+						}
+						
+						// Attacker
+						if (manuallyTellAttackerClientToKill)
+						{
+							final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+							getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), atkPriv.getFogOfWarMemory ().getUnit ());
+						
+							if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+								attackingPlayer.getConnection ().sendMessageToClient (manualKillMessage);
+						}
 					}
 				}
 			}

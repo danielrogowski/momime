@@ -35,12 +35,12 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.MouseClickListener;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.MouseClickListener;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
@@ -52,6 +52,7 @@ import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.frames.DiplomacyUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
@@ -125,6 +126,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Diplomacy UI */
+	private DiplomacyUI diplomacyUI;
 	
 	/** Minimap panel */
 	private JPanel miniMapPanel;
@@ -1192,8 +1196,11 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 						final ProductionTypeEx productionType = getClient ().getClientDB ().findProductionType (mapFeatureProduction.getProductionTypeID (), "surveyorLocationOrLanguageChanged");
 						final String productionTypeDescription = getLanguageHolder ().findDescription (productionType.getProductionTypeDescription ());
 						
-						effects.add (getTextUtils ().halfIntToStrPlusMinus (mapFeatureProduction.getDoubledProductionValue ()) +
-							(productionType.isPercentage () ? "% " : " ") + (productionTypeDescription));
+						int value = mapFeatureProduction.getDoubledProductionValue ();
+						if (productionType.isDisplayNegated ())
+							value = -value;
+						
+						effects.add (getTextUtils ().halfIntToStrPlusMinus (value) + (productionType.isDisplayAsPercentage () ? "% " : " ") + (productionTypeDescription));
 					}
 				
 				// Fixed effects of feature
@@ -1364,6 +1371,17 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToUnassignedHeroItems.png");
 				text.append (BULLET_POINT + getLanguageHolder ().findDescription
 					(getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnUnassignedHeroItems ()) + System.lineSeparator ());
+			}
+			
+			// Do we still have the diplomacy screen open?
+			if (getDiplomacyUI ().isVisible ())
+			{
+				final PlayerPublicDetails talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getDiplomacyUI ().getTalkingWizardID (), "updateProductionTypesStoppingUsFromEndingTurn");
+				
+				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToDiplomacy.png");
+				text.append (BULLET_POINT + getLanguageHolder ().findDescription
+					(getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnDiplomacy ()).replaceAll
+						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)) + System.lineSeparator ());
 			}
 	
 			// Regenerate disabled button?
@@ -1930,5 +1948,21 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Diplomacy UI
+	 */
+	public final DiplomacyUI getDiplomacyUI ()
+	{
+		return diplomacyUI;
+	}
+
+	/**
+	 * @param ui Diplomacy UI
+	 */
+	public final void setDiplomacyUI (final DiplomacyUI ui)
+	{
+		diplomacyUI = ui;
 	}
 }

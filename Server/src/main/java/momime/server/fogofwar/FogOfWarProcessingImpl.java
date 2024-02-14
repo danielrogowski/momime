@@ -371,6 +371,7 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	 * @param player The player whose FOW we are recalculating
 	 * @param triggeredFrom What caused the change in visible area - this is only used for debug messages on the client
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether anything interesting changed (a unit, city, building, terrain, anything new or changed we didn't know about before, besides just the visible area changing)
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -378,10 +379,14 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void updateAndSendFogOfWar (final PlayerServerDetails player, final String triggeredFrom, final MomSessionVariables mom)
+	public final boolean updateAndSendFogOfWar (final PlayerServerDetails player, final String triggeredFrom, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		markVisibleArea (player, mom);
+		
+		// Were any changes made, besides just the visible area we can see?  Check everything EXCEPT msg.getFogOfWarUpdate ()
+		// But we have to figure this out WITHOUT looking at the msg, as that will be null for AI players
+		boolean somethingInterestingChanged = false;
 
 		// Start off the big message, if a human player
 		final FogOfWarVisibleAreaChangedMessage msg;
@@ -414,6 +419,9 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 								getKnownWizardServerUtils ().meetWizard (tc.getTerrainData ().getNodeOwnerID (), player.getPlayerDescription ().getPlayerID (), true, mom);
 							
 							if (getFogOfWarDuplication ().copyTerrainAndNodeAura (tc, mc))
+							{
+								somethingInterestingChanged = true;
+								
 								if (msg != null)
 								{
 									final UpdateTerrainMessageData terrainMsg = new UpdateTerrainMessageData ();
@@ -421,6 +429,7 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 									terrainMsg.setTerrainData (mc.getTerrainData ());
 									msg.getTerrainUpdate ().add (terrainMsg);
 								}
+							}
 							break;
 						}
 
@@ -428,6 +437,9 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 						case FOG_OF_WAR_ACTION_FORGET:
 						{
 							if (getFogOfWarDuplication ().blankTerrainAndNodeAura (mc))
+							{
+								somethingInterestingChanged = true;
+
 								if (msg != null)
 								{
 									final UpdateTerrainMessageData terrainMsg = new UpdateTerrainMessageData ();
@@ -435,6 +447,7 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 									terrainMsg.setTerrainData (mc.getTerrainData ());
 									msg.getTerrainUpdate ().add (terrainMsg);
 								}
+							}
 							break;
 						}
 
@@ -466,6 +479,8 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 							if (getFogOfWarDuplication ().copyCityData (tc, mc,
 								(cityOwnerID == player.getPlayerDescription ().getPlayerID ()) || (mom.getSessionDescription ().getFogOfWarSetting ().isSeeEnemyCityConstruction ()),
 								cityOwnerID == player.getPlayerDescription ().getPlayerID ()))
+							{
+								somethingInterestingChanged = true;
 
 								if (msg != null)
 								{
@@ -474,6 +489,7 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 									cityMsg.setCityData (mc.getCityData ());
 									msg.getCityUpdate ().add (cityMsg);
 								}
+							}
 							break;
 						}
 
@@ -481,6 +497,9 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 						case FOG_OF_WAR_ACTION_FORGET:
 						{
 							if (getFogOfWarDuplication ().blankCityData (mc))
+							{
+								somethingInterestingChanged = true;
+
 								if (msg != null)
 								{
 									final UpdateCityMessageData cityMsg = new UpdateCityMessageData ();
@@ -488,6 +507,7 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 									cityMsg.setCityData (mc.getCityData ());
 									msg.getCityUpdate ().add (cityMsg);
 								}
+							}
 							break;
 						}
 						
@@ -521,8 +541,12 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 			if (determineVisibleAreaChangedUpdateAction (state, mom.getSessionDescription ().getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
 				if (getFogOfWarDuplication ().copyBuilding (thisBuilding, priv.getFogOfWarMemory ().getBuilding ()))
+				{
+					somethingInterestingChanged = true;
+
 					if (msg != null)
 						msg.getAddBuilding ().add (thisBuilding);
+				}
 		}
 
 		// Check to see what buildings we need to remove
@@ -544,6 +568,8 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 			if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
 				(getMemoryBuildingUtils ().findBuildingURN (thisBuilding.getBuildingURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == null)))
 			{
+				somethingInterestingChanged = true;
+
 				if (msg != null)
 					msg.getDestroyBuilding ().add (thisBuilding.getBuildingURN ());
 
@@ -601,8 +627,13 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 					updatedUnitURNs.add (thisUnit.getUnitURN ());
 
 					log.debug ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
-					if ((unitChanged) && (msg != null))
-						msg.getAddOrUpdateUnit ().add (thisUnit);
+					if (unitChanged)
+					{
+						somethingInterestingChanged = true;
+
+						if (msg != null)
+							msg.getAddOrUpdateUnit ().add (thisUnit);
+					}
 				}
 			}
 
@@ -659,6 +690,11 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 					final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (thisUnit.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 					if (trueUnit == null)
 						needToRemoveUnit = true;
+					
+					// Heroes exist in the true units list even if they've been dismissed and gone back to generated, so we still want to remove the unit if the status is anything other than "alive"
+					else if (trueUnit.getStatus () != UnitStatusID.ALIVE)
+						needToRemoveUnit = true;
+					
 					else
 						// We don't need to worry about checking whether or not we can see where the unit has moved to - we already know that we can't
 						// because if we could see it, we'd have already dealt with it and updated our memory of the unit in the 'add' section above
@@ -673,6 +709,8 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 					log.debug ("UnitURN " + thisUnit.getUnitURN () + " has gone out of view for player " + player.getPlayerDescription ().getPlayerID () + ", sending kill as part of VAC");
 					removedUnitURNs.add (thisUnit.getUnitURN ());
 
+					somethingInterestingChanged = true;
+					
 					if (msg != null)
 						msg.getKillUnit ().add (thisUnit.getUnitURN ());
 
@@ -711,8 +749,12 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 					// Copy spell into player's memory
 					if (getFogOfWarDuplication ().copyMaintainedSpell (thisSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
+					{
+						somethingInterestingChanged = true;
+						
 						if (msg != null)
 							msg.getAddMaintainedSpell ().add (thisSpell);
+					}
 			}
 
 		// Check to see what maintained spells we could see but now can't (this runs down our local memory of the spells)
@@ -751,6 +793,8 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 				if (needToRemoveSpell)
 				{
+					somethingInterestingChanged = true;
+					
 					if (msg != null)
 						msg.getSwitchOffMaintainedSpell ().add (thisSpell.getSpellURN ());
 
@@ -777,8 +821,12 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 				if (determineVisibleAreaChangedUpdateAction (state, mom.getSessionDescription ().getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
 					if (getFogOfWarDuplication ().copyCombatAreaEffect (thisCAE, priv.getFogOfWarMemory ().getCombatAreaEffect ()))
+					{
+						somethingInterestingChanged = true;
+
 						if (msg != null)
 							msg.getAddCombatAreaEffect ().add (thisCAE);
+					}
 			}
 
 		// Check to see what combat area effects we need to remove from our memory (this runs down our local memory of the CAEs)
@@ -801,6 +849,8 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
 					(getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (thisCAE.getCombatAreaEffectURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect ()) == null)))
 				{
+					somethingInterestingChanged = true;
+
 					if (msg != null)
 						msg.getCancelCombaAreaEffect ().add (thisCAE.getCombatAreaEffectURN ());
 
@@ -858,9 +908,11 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 					}
 				}
 
-		// Send the completed message
-		if (msg != null)
+		// Send the completed message, as long as there's actually something to send (its null for AI players)
+		if ((msg != null) && ((somethingInterestingChanged) || (!msg.getFogOfWarUpdate ().isEmpty ())))
 			player.getConnection ().sendMessageToClient (msg);
+		
+		return somethingInterestingChanged;
 	}
 
 	/**

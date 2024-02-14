@@ -17,9 +17,10 @@ import javax.swing.ListCellRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.NdgUIUtils;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
@@ -42,6 +43,9 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 	
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** Medium font */
 	private Font mediumFont;
@@ -84,8 +88,8 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 		try
 		{
 			final HeroItemType itemType = getClient ().getClientDB ().findHeroItemType (value.getHeroItemTypeID (), "UnassignedHeroItemCellRenderer");
-			final BufferedImage image = getUtils ().loadImage (itemType.getHeroItemTypeImageFile ().get (value.getHeroItemImageNumber ()));
-			doubleSizeImage = getUtils ().doubleSize (image);
+			final String image = itemType.getHeroItemTypeImageFile ().get (value.getHeroItemImageNumber ());
+			doubleSizeImage = getModifiedImageCache ().doubleSize (image);
 		}
 		catch (final IOException e)
 		{
@@ -155,6 +159,22 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 		utils = util;
 	}
 
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
+	}
+	
 	/**
 	 * @return Medium font
 	 */

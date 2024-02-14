@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.random.RandomUtils;
+import com.ndg.map.generator.HeightMapGenerator;
+import com.ndg.map.generator.HeightMapGeneratorImpl;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.database.CombatMapElement;
 import momime.common.database.CombatMapLayerID;
@@ -69,7 +71,11 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		final MapAreaOfCombatTiles map = setAllToDefaultTerrain (combatMapCoordinateSystem, tileType);
 		
 		// Generate height-based scenery
-		final HeightMapGenerator heightMap = new HeightMapGenerator (combatMapCoordinateSystem, combatMapCoordinateSystem.getZoneWidth (), combatMapCoordinateSystem.getZoneHeight (), 0);
+		final HeightMapGenerator heightMap = new HeightMapGeneratorImpl ();
+		heightMap.setCoordinateSystem (combatMapCoordinateSystem);
+		heightMap.setZoneWidth (combatMapCoordinateSystem.getZoneWidth ());
+		heightMap.setZoneHeight (combatMapCoordinateSystem.getZoneHeight ());
+		heightMap.getNumberOfRowsFromMapEdgeToAvoid ().add (7);		// This was baked into the map generator before, so keep it the same
 		heightMap.setRandomUtils (getRandomUtils ());
 		heightMap.generateHeightMap ();
 		

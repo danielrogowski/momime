@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:momMod xmlns:ns2="http://momime/common/mod">
+	<heroItemBonus heroItemBonusID="IB38">
+		<heroItemBonusStat unitSkillID="US031" mod="delete" />
+        <heroItemBonusStat unitSkillID="US031X">
+            <appliesOnlyToAttacksAppropriateForTypeOfHeroItem>true</appliesOnlyToAttacksAppropriateForTypeOfHeroItem>
+        </heroItemBonusStat>
+	</heroItemBonus>
+    <unitSkill unitSkillID="US031X">
+        <unitSkillDescription language="en">
+            <text>Life Stealing</text>
+        </unitSkillDescription>
+        <unitSkillDescription language="fr">
+            <text>Vol de Vie</text>
+        </unitSkillDescription>
+        <unitSkillDescription language="pl">
+            <text>Kradzież Życia</text>
+        </unitSkillDescription>
+        <unitSkillHelpText language="en">
+        	<text>Life stealing converts all melee and ranged damage dealt by the unit into Life steal damage, which heals the unit.  Units killed mainly by life steal return as undead under the control of their destroyer.</text>
+        </unitSkillHelpText>
+        <unitSkillTypeID>F</unitSkillTypeID>
+        <damageTypeID>DT13X</damageTypeID>
+        <magicRealmID>MB02</magicRealmID>
+        <aiRatingAdditive>20</aiRatingAdditive>
+        <unitSkillImageFile>/momime.client.graphics/unitSkills/US031-icon.png</unitSkillImageFile>
+        <unitSkillWeaponGrade weaponGradeNumber="0">
+            <skillImageFile>/momime.client.graphics/unitSkills/lifeSteal.png</skillImageFile>
+        </unitSkillWeaponGrade>
+    </unitSkill>
+    <damageType damageTypeID="DT13X">
+        <damageTypeName language="en">
+            <text>Advanced life stealing damage</text>
+        </damageTypeName>
+        <damageTypeDescription>Advanced life stealing damage - Blocked by Death Immunity, Magic Immunity and Righteousness. Stores as its own unique damage type.</damageTypeDescription>
+        <storedDamageTypeID>L</storedDamageTypeID>
+        <damageTypeImmunity unitSkillID="US047" />
+        <damageTypeImmunity unitSkillID="IS00" />
+        <damageTypeImmunity unitSkillID="US012" />
+        <damageTypeImmunity unitSkillID="SS069" />
+        <damageTypeImmunity unitSkillID="IS11" />
+        <damageTypeImmunity unitSkillID="SS144" />
+        <damageTypeImmunity unitSkillID="US171" />
+    </damageType>
+	<unit unitID="UN033">
+		<unitHasSkill unitSkillID="US031" mod="delete" />
+		<unitHasSkill unitSkillID="US031X" />
+	</unit>
+	<unit unitID="UN167">
+		<unitHasSkill unitSkillID="US019" mod="delete" />
+		<unitHasSkill unitSkillID="US031X" />
+	</unit>
+	<unit unitID="UN171">
+		<unitHasSkill unitSkillID="US031" mod="delete" />
+		<unitHasSkill unitSkillID="US031X" />
+	</unit>
+	<unit unitID="UN173">
+		<unitHasSkill unitSkillID="US031" mod="delete" />
+		<unitHasSkill unitSkillID="US031X" />
+	</unit>
+	<unit unitID="UN174">
+		<unitHasSkill unitSkillID="US031" mod="delete" />
+		<unitHasSkill unitSkillID="US031X" />
+	</unit>
+</ns2:momMod>

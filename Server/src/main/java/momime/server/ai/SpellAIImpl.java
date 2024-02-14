@@ -20,8 +20,8 @@ import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.random.RandomUtils;
-import com.ndg.random.WeightedChoicesImpl;
+import com.ndg.utils.random.RandomUtils;
+import com.ndg.utils.random.WeightedChoicesImpl;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -61,6 +61,7 @@ import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellTargetingUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
@@ -91,6 +92,9 @@ public final class SpellAIImpl implements SpellAI
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Methods that determine whether something is a valid target for a spell */
+	private SpellTargetingUtils spellTargetingUtils;
 	
 	/** AI spell calculations */
 	private AISpellCalculations aiSpellCalculations;
@@ -366,7 +370,7 @@ public final class SpellAIImpl implements SpellAI
 						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 						{
 							final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000))
+							if ((mc != null) && (mc.getCityData () != null))
 							{
 								if (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())
 									ourCities.add (new MapCoordinates3DEx (x, y, z));
@@ -439,7 +443,7 @@ public final class SpellAIImpl implements SpellAI
 													final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 													
 													// Routine checks everything, even down to whether there is even a city there or not, or whether the city already has that spell cast on it, so just let it handle it
-													if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
+													if (getSpellTargetingUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
 														player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
 														priv.getFogOfWarMemory ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 														mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
@@ -549,7 +553,7 @@ public final class SpellAIImpl implements SpellAI
 												final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (x, y, z);
 												
 												// Routine checks everything, looking for visible enemy owned unwarped nodes
-												if (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell,
+												if (getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell (spell,
 													player.getPlayerDescription ().getPlayerID (), nodeLocation, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 													mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 													
@@ -581,7 +585,7 @@ public final class SpellAIImpl implements SpellAI
 										final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 											mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 										if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
-											(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
+											(getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
 												priv.getFogOfWarMemory (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 											
 											validTargetFound = true;
@@ -621,7 +625,7 @@ public final class SpellAIImpl implements SpellAI
 										final PlayerServerDetails targetPlayer = iter.next ();
 										
 										// Don't need OverlandCastingInfo since this isn't Spell Blast
-										if (getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (spell, player.getPlayerDescription ().getPlayerID (),
+										if (getSpellTargetingUtils ().isWizardValidTargetForSpell (spell, player.getPlayerDescription ().getPlayerID (),
 											priv, targetPlayer.getPlayerDescription ().getPlayerID (), null) == TargetSpellResult.VALID_TARGET)
 											
 											validPlayerFound = true;
@@ -694,7 +698,7 @@ public final class SpellAIImpl implements SpellAI
 											final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
 											for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 												if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
-													(!nearOurCities.contains (coords)) && (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+													(!nearOurCities.contains (coords)) && (getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 														(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 															mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 													
@@ -723,7 +727,7 @@ public final class SpellAIImpl implements SpellAI
 													final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
 														(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 													
-													if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+													if ((getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 														(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 															mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 														(terrainData != null) && (terrainData.getTileTypeID () != null) && (!terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_GRASS)))	
@@ -755,7 +759,7 @@ public final class SpellAIImpl implements SpellAI
 															grassTileNotNearEnemyCityFound = true;
 														
 														else if ((BAD_TILE_TYPES.contains (terrainData.getTileTypeID ())) &&
-															(getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+															(getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 																(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 																	mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 															weighting = 3;														
@@ -796,7 +800,7 @@ public final class SpellAIImpl implements SpellAI
 												final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
 													(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 												
-												if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+												if ((getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 													(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 														mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 													(terrainData != null) && (terrainData.getMapFeatureID () != null))
@@ -823,7 +827,7 @@ public final class SpellAIImpl implements SpellAI
 												final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
 													(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 												
-												if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+												if ((getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 													(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 														mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 													(terrainData != null) && (terrainData.getMapFeatureID () != null))
@@ -949,8 +953,7 @@ public final class SpellAIImpl implements SpellAI
 							for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 							{
 								final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-								if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
-									(mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+								if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 								{
 									final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 									
@@ -979,7 +982,7 @@ public final class SpellAIImpl implements SpellAI
 								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 								
 								// Routine checks everything, even down to whether there is even a city there or not, so just let it handle it
-								if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
+								if (getSpellTargetingUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
 									player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
 									priv.getFogOfWarMemory ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 									mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
@@ -1003,7 +1006,7 @@ public final class SpellAIImpl implements SpellAI
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 						mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 					if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
-						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
+						(getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
 							priv.getFogOfWarMemory (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 					{
 						int thisUnitRating = getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
@@ -1029,7 +1032,7 @@ public final class SpellAIImpl implements SpellAI
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 						mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 					if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
-						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
+						(getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
 							priv.getFogOfWarMemory (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 					{
 						int thisUnitRating = getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
@@ -1104,7 +1107,7 @@ public final class SpellAIImpl implements SpellAI
 							final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (x, y, z);
 							
 							// Routine checks everything, looking for visible enemy owned unwarped nodes
-							if (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell,
+							if (getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell (spell,
 								player.getPlayerDescription ().getPlayerID (), nodeLocation, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 								
@@ -1125,7 +1128,7 @@ public final class SpellAIImpl implements SpellAI
 				playerChoices.setRandomUtils (getRandomUtils ());
 
 				for (final PlayerServerDetails targetPlayer : mom.getPlayers ())
-					if (getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (spell, player.getPlayerDescription ().getPlayerID (),
+					if (getSpellTargetingUtils ().isWizardValidTargetForSpell (spell, player.getPlayerDescription ().getPlayerID (),
 						priv, targetPlayer.getPlayerDescription ().getPlayerID (), null) == TargetSpellResult.VALID_TARGET)
 					{
 						final MomPersistentPlayerPrivateKnowledge targetPriv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -1208,7 +1211,7 @@ public final class SpellAIImpl implements SpellAI
 						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 						{
 							final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000))
+							if ((mc != null) && (mc.getCityData () != null))
 							{
 								if (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())
 									ourCities.add (new MapCoordinates3DEx (x, y, z));
@@ -1235,7 +1238,7 @@ public final class SpellAIImpl implements SpellAI
 						final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
 						for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 							if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
-								(!nearOurCities.contains (coords)) && (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+								(!nearOurCities.contains (coords)) && (getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 									(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 										mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 							{
@@ -1268,7 +1271,7 @@ public final class SpellAIImpl implements SpellAI
 								final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
 									(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 								
-								if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+								if ((getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 									(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 										mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 									(terrainData != null) && (terrainData.getTileTypeID () != null) && (!terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_GRASS)))	
@@ -1299,7 +1302,7 @@ public final class SpellAIImpl implements SpellAI
 										grassTilesNotNearEnemyCity.add (new MapCoordinates3DEx (coords));
 									
 									else if ((BAD_TILE_TYPES.contains (terrainData.getTileTypeID ())) &&
-										(getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+										(getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 											(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 												mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 										primaryTargets.add (new MapCoordinates3DEx (coords));
@@ -1330,7 +1333,7 @@ public final class SpellAIImpl implements SpellAI
 						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 						{
 							final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000))
+							if ((mc != null) && (mc.getCityData () != null))
 							{
 								if (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())
 									ourCities.add (new MapCoordinates3DEx (x, y, z));
@@ -1355,7 +1358,7 @@ public final class SpellAIImpl implements SpellAI
 							final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
 								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 							
-							if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+							if ((getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 								(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 									mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 								(terrainData != null) && (terrainData.getMapFeatureID () != null))
@@ -1380,7 +1383,7 @@ public final class SpellAIImpl implements SpellAI
 							final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
 								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 							
-							if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+							if ((getSpellTargetingUtils ().isOverlandLocationValidTargetForSpell
 								(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
 									mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 								(terrainData != null) && (terrainData.getMapFeatureID () != null))
@@ -1410,9 +1413,8 @@ public final class SpellAIImpl implements SpellAI
 						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 						{
 							final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
-								(mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
-									ourCities.add (new MapCoordinates3DEx (x, y, z));
+							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+								ourCities.add (new MapCoordinates3DEx (x, y, z));
 						}
 				
 				final List<MapCoordinates3DEx> targetLocations = new ArrayList<MapCoordinates3DEx> ();
@@ -1698,6 +1700,22 @@ public final class SpellAIImpl implements SpellAI
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtil)
 	{
 		memoryMaintainedSpellUtils = spellUtil;
+	}
+	
+	/**
+	 * @return Methods that determine whether something is a valid target for a spell
+	 */
+	public final SpellTargetingUtils getSpellTargetingUtils ()
+	{
+		return spellTargetingUtils;
+	}
+
+	/**
+	 * @param s Methods that determine whether something is a valid target for a spell
+	 */
+	public final void setSpellTargetingUtils (final SpellTargetingUtils s)
+	{
+		spellTargetingUtils = s;
 	}
 	
 	/**

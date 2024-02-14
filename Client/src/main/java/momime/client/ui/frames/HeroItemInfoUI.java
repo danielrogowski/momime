@@ -17,9 +17,10 @@ import javax.swing.WindowConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
@@ -41,6 +42,9 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 	
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** Small font */
 	private Font smallFont;
@@ -115,8 +119,8 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 		getFrame ().setTitle (getItem ().getHeroItemName ());
 		
 		final HeroItemType itemType = getClient ().getClientDB ().findHeroItemType (getItem ().getHeroItemTypeID (), "HeroItemInfoUI");
-		final BufferedImage image = getUtils ().loadImage (itemType.getHeroItemTypeImageFile ().get (getItem ().getHeroItemImageNumber ()));
-		itemImage.setIcon (new ImageIcon (getUtils ().doubleSize (image)));
+		final String image = itemType.getHeroItemTypeImageFile ().get (getItem ().getHeroItemImageNumber ());
+		itemImage.setIcon (new ImageIcon (getModifiedImageCache ().doubleSize (image)));
 		
 		// Lock dialog size
 		getFrame ().setContentPane (contentPane);
@@ -200,6 +204,22 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 		client = obj;
 	}
 
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
+	}
+	
 	/**
 	 * @return Small font
 	 */

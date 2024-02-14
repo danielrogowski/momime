@@ -28,9 +28,10 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -425,13 +426,13 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Check units were added
 		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN001", humanLocation, humanLocation, null, null,
-			humanPlayer, UnitStatusID.ALIVE, false, mom);
+			humanPlayer, UnitStatusID.ALIVE, false, false, mom);
 		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN002", aiLocation, aiLocation, null, null,
-			aiPlayer, UnitStatusID.ALIVE, false, mom);
+			aiPlayer, UnitStatusID.ALIVE, false, false, mom);
 		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN003", raidersArcanusLocation, raidersArcanusLocation, null, null,
-			raidersPlayer, UnitStatusID.ALIVE, false, mom);
+			raidersPlayer, UnitStatusID.ALIVE, false, false, mom);
 		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN004", raidersMyrrorLocation, raidersMyrrorLocation, null, null,
-			raidersPlayer, UnitStatusID.ALIVE, false, mom);
+			raidersPlayer, UnitStatusID.ALIVE, false, false, mom);
 		
 		// Check buildings were added.
 		// Note players intentionally left as null so that building is only added on the server.
@@ -454,11 +455,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final Building building = new Building ();
-		building.setBuildingID ("BL01");
-		building.setProductionCost (1000);
-		when (db.findBuilding ("BL01", "progressConstructionProjects")).thenReturn (building);
 		
 		// Session description
 		final OverlandMapSize sys = createOverlandMapSize ();
@@ -498,6 +494,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (cityCalculations.calculateSingleCityProduction (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
+		final CityProductionCalculations cityProductionCalculations = mock (CityProductionCalculations.class);
+		when (cityProductionCalculations.calculateProductionCost (players, priv.getFogOfWarMemory (), new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, db, null)).thenReturn (1000);
+		
 		// No event
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		
@@ -515,6 +514,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		// Set up object to test
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setCityCalculations (cityCalculations);
+		proc.setCityProductionCalculations (cityProductionCalculations);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
@@ -539,11 +539,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final UnitEx unit = new UnitEx ();
-		unit.setUnitID ("UN001");
-		unit.setProductionCost (1000);
-		when (db.findUnit ("UN001", "progressConstructionProjects")).thenReturn (unit);				
 		
 		// Session description
 		final OverlandMapSize sys = createOverlandMapSize ();
@@ -583,6 +578,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (cityCalculations.calculateSingleCityProduction (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
+		final CityProductionCalculations cityProductionCalculations = mock (CityProductionCalculations.class);
+		when (cityProductionCalculations.calculateProductionCost (players, priv.getFogOfWarMemory (), new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, db, null)).thenReturn (1000);
+		
 		// No event
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		
@@ -600,6 +598,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		// Set up object to test
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setCityCalculations (cityCalculations);
+		proc.setCityProductionCalculations (cityProductionCalculations);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
@@ -672,6 +671,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (cityCalculations.calculateSingleCityProduction (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
+		final CityProductionCalculations cityProductionCalculations = mock (CityProductionCalculations.class);
+		when (cityProductionCalculations.calculateProductionCost (players, priv.getFogOfWarMemory (), new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, db, null)).thenReturn (1000);
+		
 		// No event
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		
@@ -691,6 +693,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setCityCalculations (cityCalculations);
+		proc.setCityProductionCalculations (cityProductionCalculations);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		
@@ -788,6 +791,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (cityCalculations.calculateSingleCityProduction (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
+		final CityProductionCalculations cityProductionCalculations = mock (CityProductionCalculations.class);
+		when (cityProductionCalculations.calculateProductionCost (players, priv.getFogOfWarMemory (), new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, db, null)).thenReturn (1000);
+		
 		// Where the unit will appear
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (new MapCoordinates3DEx (25, 15, 1), "UN001", 1, mom)).thenReturn
@@ -799,6 +805,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setCityCalculations (cityCalculations);
+		proc.setCityProductionCalculations (cityProductionCalculations);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setUnitServerUtils (unitServerUtils);
 		proc.setFogOfWarMidTurnChanges (midTurn);
@@ -819,7 +826,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals (new MapCoordinates3DEx (25, 15, 1), ntm.getCityLocation ());
 
 		verify (midTurn).addUnitOnServerAndClients ("UN001", new MapCoordinates3DEx (26, 15, 1), new MapCoordinates3DEx (25, 15, 1), null, null,
-			cityOwner, UnitStatusID.ALIVE, true, mom);
+			cityOwner, UnitStatusID.ALIVE, true, true, mom);
 		
 		verify (wu).recalculateCity (new MapCoordinates3DEx (25, 15, 1));
 		verify (wu).process (mom);
@@ -866,7 +873,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		priv.setTaxRateID ("TR01");
 		
 		final PlayerServerDetails cityOwnerPlayer = new PlayerServerDetails (pd, null, priv, null, trans);
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<PlayerServerDetails> players = Arrays.asList (cityOwnerPlayer);
 
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd.getPlayerID (), "growCities")).thenReturn (cityOwnerPlayer);

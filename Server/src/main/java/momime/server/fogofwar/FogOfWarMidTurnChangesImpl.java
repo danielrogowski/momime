@@ -324,6 +324,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param unitOwner Player who will own the new unit
 	 * @param initialStatus Initial status of the unit, typically ALIVE
 	 * @param addOnClients Usually true, can set to false when monsters are initially added to the map and don't need to worry about who can see them
+	 * @param giveFullOverlandMovement If true, doubleOverlandMovesLeft will be initialized to its full value
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Newly created unit
 	 * @throws MomException If there is a problem with any of the calculations
@@ -335,7 +336,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	@Override
 	public final MemoryUnit addUnitOnServerAndClients (final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation,
 		final Integer overrideStartingExperience, final MapCoordinates3DEx combatLocation, final PlayerServerDetails unitOwner, final UnitStatusID initialStatus,
-		final boolean addOnClients, final MomSessionVariables mom)
+		final boolean addOnClients, final boolean giveFullOverlandMovement, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		// There's a bunch of other unit statuses that don't make sense to use here - so worth checking this
@@ -380,7 +381,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().add (newUnit);
 
 		if (initialStatus == UnitStatusID.ALIVE)
-			updateUnitStatusToAliveOnServerAndClients (newUnit, locationToAddUnit, unitOwner, addOnClients, mom);
+			updateUnitStatusToAliveOnServerAndClients (newUnit, locationToAddUnit, unitOwner, addOnClients, giveFullOverlandMovement, mom);
 		else
 			newUnit.setStatus (initialStatus);
 
@@ -395,6 +396,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param locationToAddUnit Location to add the new unit, must be filled in
 	 * @param unitOwner Player who will own the new unit, note the reason this has to be passed in separately is because the players list is allowed to be null
 	 * @param addOnClients Usually true, can set to false when monsters are initially added to the map and don't need to worry about who can see them
+	 * @param giveFullOverlandMovement If true, doubleOverlandMovesLeft will be initialized to its full value
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
@@ -404,7 +406,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final MapCoordinates3DEx locationToAddUnit,
-		final PlayerServerDetails unitOwner, final boolean addOnClients, final MomSessionVariables mom)
+		final PlayerServerDetails unitOwner, final boolean addOnClients, final boolean giveFullOverlandMovement, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		// Update on server
@@ -412,6 +414,11 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		trueUnit.setUnitLocation (unitLocation);
 		trueUnit.setStatus (UnitStatusID.ALIVE);
+		
+		// Movement allocation?
+		if (giveFullOverlandMovement)
+			trueUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (trueUnit, null, null, null,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 
 		// What can the new unit see? (it may expand the unit owner's vision to see things that they couldn't previously)
 		if ((addOnClients) && (trueUnit.getCombatLocation () == null))

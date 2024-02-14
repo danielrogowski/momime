@@ -38,7 +38,7 @@ public final class FlagChecker
 	private final static File FLAGS_FOLDER = new File ("W:\\EclipseHome\\SourceForge\\MoMIME\\Client\\src\\main\\resources\\momime.client.graphics\\flags");
 	
 	/** Location of the flags folder as a resource for the MoM client module */
-	private static final String FLAG_RESOURCE_PREFIX = "/momime.client.graphics/flags/";
+	private final static String FLAG_RESOURCE_PREFIX = "/momime.client.graphics/flags/";
 	
 	/** Location of XML to read/update */
 	private final static File XML_LOCATION = new File ("W:\\EclipseHome\\SourceForge\\MoMIME\\Server\\src\\external\\resources\\momime.server.database\\Original Master of Magic 1.31 rules.momime.xml");

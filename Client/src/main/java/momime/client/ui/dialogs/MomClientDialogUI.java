@@ -85,9 +85,12 @@ public abstract class MomClientDialogUI extends LanguageVariableUIImpl
 					@Override
 					public final void mouseDragged (final MouseEvent ev)
 					{
-						final Point mouseNow = ev.getLocationOnScreen ();
-						final Point dialogNow = new Point (dialogStart.x + mouseNow.x - mouseStart.x, dialogStart.y + mouseNow.y - mouseStart.y);
-						dialog.setLocation (dialogNow);
+						if (dialogStart != null)
+						{
+							final Point mouseNow = ev.getLocationOnScreen ();
+							final Point dialogNow = new Point (dialogStart.x + mouseNow.x - mouseStart.x, dialogStart.y + mouseNow.y - mouseStart.y);
+							dialog.setLocation (dialogNow);
+						}
 					}
 
 					/**

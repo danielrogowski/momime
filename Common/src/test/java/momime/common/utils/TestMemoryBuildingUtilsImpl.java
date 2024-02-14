@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.CitySpellEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
@@ -739,6 +741,35 @@ public final class TestMemoryBuildingUtilsImpl
 		assertEquals (20, utils.experienceFromBuildings (memBuildings, memSpells, new MapCoordinates3DEx (15, 10, 1), db));
 	}
 
+	/**
+	 * Tests the experienceFromBuildings method, where its a spell rather than buildings giving the experience bonus
+	 * @throws RecordNotFoundException If we encounter a building that can't be found in the DB
+	 */
+	@Test
+	public final void testExperienceFromBuildings_AltarOfBattle () throws RecordNotFoundException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.setCitySpellEffectExperience (100);
+		when (db.findCitySpellEffect ("CSE01", "experienceFromBuildings")).thenReturn (effect);
+
+		// Buildings
+		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
+		
+		// Set up list of spells
+		final MemoryMaintainedSpell altarOfBattle = new MemoryMaintainedSpell ();
+		altarOfBattle.setCityLocation (new MapCoordinates3DEx (15, 10, 1));
+		altarOfBattle.setCitySpellEffectID ("CSE01");
+		
+		final List<MemoryMaintainedSpell> memSpells = Arrays.asList (altarOfBattle);
+
+		// Do test
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
+		assertEquals (100, utils.experienceFromBuildings (memBuildings, memSpells, new MapCoordinates3DEx (15, 10, 1), db));
+	}
+	
 	/**
 	 * Tests the totalBonusProductionPerPersonFromBuildings, where the only buildings present do not grant a bonus
 	 * @throws RecordNotFoundException If we encounter a building that can't be found in the DB

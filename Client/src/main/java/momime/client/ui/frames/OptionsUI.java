@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,19 +14,17 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import jakarta.xml.bind.Unmarshaller;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.config.MomImeClientConfig;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.LanguageVariableUI;
 import momime.client.language.database.LanguageOptionEx;
@@ -65,15 +62,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 	
-	/** Complete client config, so we can edit various settings */
-	private MomImeClientConfig clientConfig;
-	
-	/** Marshaller for saving client config */
-	private Marshaller clientConfigMarshaller;
-	
-	/** Location to save updated client config */
-	private String clientConfigLocation;
-
 	/** Where to look for language XML files */
 	private String pathToLanguageXmlFiles;
 	
@@ -137,6 +125,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/** True to use the full terrain tileset so e.g. ridges and dark areas run together; false to use only "blocky" combat tiles */
 	private JCheckBox combatSmoothTerrain;
 
+	/** True to use new shadow model for combat units */
+	private JCheckBox newShadows;
+	
 	/** True to view all Units, Buildings and Spell URNs */
 	private JCheckBox debugShowURNs;
 
@@ -241,6 +232,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		combatSmoothTerrain = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
 		contentPane.add (combatSmoothTerrain, "frmOptionsSmoothCombatTerrain");
 
+		newShadows = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
+		contentPane.add (newShadows, "frmOptionsNewShadows");
+		
 		debugShowURNs = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
 		contentPane.add (debugShowURNs, "frmOptionsShowURNs");
 		
@@ -283,6 +277,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandShowEnemyBorders.setSelected		(getClientConfig ().isOverlandShowEnemyBorders ());
 		overlandAnimateUnitsMoving.setSelected		(getClientConfig ().isOverlandAnimateUnitsMoving ());
 		combatSmoothTerrain.setSelected				(getClientConfig ().isCombatSmoothTerrain ());
+		newShadows.setSelected							(getClientConfig ().isNewShadows ());
 		showHeroPortraits.setSelected						(getClientConfig ().isShowHeroPortraits ());
 		debugShowURNs.setSelected						(getClientConfig ().isDebugShowURNs ());
 		debugShowEdgesOfMap.setSelected			(getClientConfig ().isDebugShowEdgesOfMap ());
@@ -433,6 +428,16 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			}
 		});
 
+		newShadows.addItemListener (new ItemListener ()
+		{
+			@Override
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
+			{
+				getClientConfig ().setNewShadows (newShadows.isSelected ());
+				saveConfigFile ();
+			}
+		});
+		
 		debugShowURNs.addItemListener (new ItemListener ()
 		{
 			@Override
@@ -535,6 +540,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandShowEnemyBorders.setText	(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowEnemyBorders ()));
 		overlandAnimateUnitsMoving.setText	(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getAnimateUnitsMoving ()));
 		combatSmoothTerrain.setText				(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getSmoothTerrain ()));
+		newShadows.setText							(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getNewShadows ()));
 		debugShowURNs.setText						(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowUnitURNs ()));
 		debugShowEdgesOfMap.setText			(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowEdgesOfMap ()));
 		chooseLanguageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getChooseLanguage ()));
@@ -583,21 +589,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			unitAttributesChoice.setSelectedIndex (selectedIndex);
 	}
 	
-	/**
-	 * After any change to the config options, we resave out the config XML immediately
-	 */
-	private final void saveConfigFile ()
-	{
-		try
-		{
-			getClientConfigMarshaller ().marshal (getClientConfig (), new File (getClientConfigLocation ()));
-		}
-		catch (final Exception e)
-		{
-			log.error (e, e);
-		}
-	}
-
 	/**
 	 * Remember that we need to tell the listener when the user changes the selected language
 	 * @param listener Screen on which to call the .languageChanged () method
@@ -712,54 +703,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	public final void setUnitClientUtils (final UnitClientUtils util)
 	{
 		unitClientUtils = util;
-	}
-
-	/**
-	 * @return Complete client config, so we can edit various settings
-	 */
-	public final MomImeClientConfig getClientConfig ()
-	{
-		return clientConfig;
-	}
-
-	/**
-	 * @param cfg Complete client config, so we can edit various settings
-	 */
-	public final void setClientConfig (final MomImeClientConfig cfg)
-	{
-		clientConfig = cfg;
-	}
-
-	/**
-	 * @return Marshaller for saving client config
-	 */
-	public final Marshaller getClientConfigMarshaller ()
-	{
-		return clientConfigMarshaller;
-	}
-
-	/**
-	 * @param marsh Marshaller for saving client config
-	 */
-	public final void setClientConfigMarshaller (final Marshaller marsh)
-	{
-		clientConfigMarshaller = marsh;
-	}
-
-	/**
-	 * @return Location to save updated client config
-	 */
-	public final String getClientConfigLocation ()
-	{
-		return clientConfigLocation;
-	}
-
-	/**
-	 * @param loc Location to save updated client config
-	 */
-	public final void setClientConfigLocation (final String loc)
-	{
-		clientConfigLocation = loc;
 	}
 
 	/**

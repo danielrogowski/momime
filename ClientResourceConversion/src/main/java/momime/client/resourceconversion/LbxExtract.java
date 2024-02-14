@@ -63,7 +63,7 @@ public final class LbxExtract
 				if (fileName.toUpperCase ().endsWith (".NDGARC"))
 					stream = new FileInputStream ("W:\\Delphi\\Master of Magic\\New Graphics\\" + fileName);
 				else if (fileName.toUpperCase ().endsWith (".LBX"))
-					stream = new FileInputStream ("C:\\32 bit Program Files\\DosBox - Master of Magic\\Magic\\" + fileName);
+					stream = new FileInputStream ("C:\\32 bit Program Files\\DosBox - Main\\Magic\\" + fileName);
 				else
 					throw new IOException ("getFileAsInputStream doesn't know how to locate file \"" + fileName + "\"");
 
@@ -89,13 +89,13 @@ public final class LbxExtract
 			}
 		} */		
 		
-		for (int n = 0; n <= 10; n++)
+		for (int n = 0; n <= 5; n++)
 		{
 			String s = Integer.valueOf (n+1).toString ();
-			while (s.length () < 2)
-				s = "0" + s;
+			//while (s.length () < 2)
+			//	s = "0" + s;
 
-			convertImage ("DIPLOMAC.LBX", 13+n, 0, "ui\\diplomacy\\eyes-left-" + s);
+			convertImage ("SPECFX.LBX", 43, n, "spells//SP177//cast-frame" + s);
 		}
 		
 		//convertImage ("DIPLOMAC.LBX", 0, 0, "ui\\backgrounds\\diplomacy");

@@ -1,11 +1,11 @@
 DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	0 - blank
-	15 - Thanks for the gift
+	15 - Thanks for the gift (diplomacyScreen / thanksForGoldPhrase)
 	30 - Thanks for attacking wizard X, have some gold
-	45 - Thanks for the spell
-	60 - I'm going to kill you
-	75 - I don't like you anymore
-	90 - Lets both kill wizard X
+	45 - Thanks for the spell (diplomacyScreen / thanksForSpellPhrase)
+	60 - I'm going to kill you (diplomacyScreen / declareWarCityPhrase)
+	75 - I don't like you anymore (diplomacyScreen / brokenPactPhrase)
+	90 - Lets both kill wizard X (diplomacyScreen / proposeDeclareWarOnAnotherWizardPhrase)
 	
 	105 - Get out of my land or I will kill you
 	120 - Stop attacking my units or I will kill you
@@ -16,12 +16,12 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	195 - Switch off your X spell cast on Y (city curse) or I will kill you
 	210 - Stop getting stronger or I will kill you
 	
-	225 - Meet, Maniacal
-	240 - Meet, Ruthless
-	255 - Meet, Aggressive
-	270 - Meet, Choatic
-	285 - Meet, Lawful
-	300 - Meet, Peaceful (though this seems a bug, as none of the messages sound at all peaceful)
+	225 - Meet, Maniacal (wizardPersonality WP01 initialMeetingPhrase)
+	240 - Meet, Ruthless (wizardPersonality WP02 initialMeetingPhrase)
+	255 - Meet, Aggressive (wizardPersonality WP03 initialMeetingPhrase)
+	270 - Meet, Choatic (wizardPersonality WP04 initialMeetingPhrase)
+	285 - Meet, Lawful (wizardPersonality WP05 initialMeetingPhrase)
+	300 - Meet, Peaceful (though this seems a bug, as none of the messages sound at all peaceful) (wizardPersonality WP06 initialMeetingPhrase)
 	
 	315 - Broken treaty
 	330 - Get out of my land or I will break treaty
@@ -33,10 +33,10 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	420 - Switch off your X spell cast on Y (city curse) or I will break treaty
 	435 - Stop getting stronger or I will kill break treaty
 
-	450 - Nicely break treaty
+	450 - Nicely break treaty (diplomacyScreen / breakPactPhrase)
 	465 - Get out of my land, treaty broken
-	480 - Stop attacking my units, treaty broken
-	495 - Stop attacking my cities, treaty broken
+	480 - Stop attacking my units, treaty broken (diplomacyScreen / pactBrokenUnitsPhrase)
+	495 - Stop attacking my cities, treaty broken (diplomacyScreen / pactBrokenCityPhrase)
 	510 - Stop casting SoM, treaty broken
 	525 - Stop summoning powerful units, treaty broken
 	540 - Switch off your X spell (overland enchantment), treaty broken
@@ -45,25 +45,25 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	
 	585 - Declare war
 	600 - Declare war
-	615 - Declare war
+	615 - Declare war (diplomacyScreen / respondToThreatWarPhrase)
 	
-	630 - Starting diplomacy (saying hi)
-	645 - Starting diplomacy (saying hi, but mad)
-	660 - I'm not talking to you!
-	675 - Lets have a wizard pact
-	690 - Lets have an alliance
-	705 - Break your treaty with wizard X
-	720 - I want your spell X
-	735 - Lets have a peace treaty
+	630 - Starting diplomacy (saying hi) (diplomacyScreen / normalGreetingPhrase)
+	645 - Starting diplomacy (saying hi, but mad) (diplomacyScreen / impatientGreetingPhrase)
+	660 - I'm not talking to you! (diplomacyScreen / refuseGreeting)
+	675 - Lets have a wizard pact (diplomacyScreen / proposeWizardPactPhrase)
+	690 - Lets have an alliance (diplomacyScreen / proposeAlliancePhrase)
+	705 - Break your treaty with wizard X (diplomacyScreen / proposeBreakAllianceWithAnotherWizardPhrase)
+	720 - I want your spell X (diplomacyScreen / exchangeSpellOursPhrase)
+	735 - Lets have a peace treaty (diplomacyScreen / proposePeaceTreatyPhrase)
 	750 - Lets have a peace treaty if I suck up and give you X
-	765 - Agree to wizard pact
-	780 - Agree to alliance
-	795 - Agree to peace treaty
+	765 - Agree to wizard pact (diplomacyScreen / acceptWizardPactPhrase)
+	780 - Agree to alliance (diplomacyScreen / acceptAlliancePhrase)
+	795 - Agree to peace treaty (diplomacyScreen / acceptPeaceTreatyPhrase)
 	810 - You were nice and gave me a spell, so sure (but in response to what?)
-	825 - Sure I broke my treaty with wizard X
-	840 - Sure lets have an alliance to kill wizard X
+	825 - Sure I broke my treaty with wizard X (diplomacyScreen / acceptBreakAllianceWithAnotherWizardPhrase)
+	840 - Sure lets have an alliance to kill wizard X (diplomacyScreen / acceptDeclareWarOnAnotherWizardPhrase)
 	
-	855 - No
+	855 - No (diplomacyScreen / genericRefusePhrase)
 	870 - No, because of previously broken treaties
 	885 - Get out of my land, so nty to treaty
 	900 - Stop attacking my units, so nty to treaty
@@ -74,10 +74,10 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	975 - Switch off your X spell cast on Y (city curse), so nty to treaty
 	990 - Stop getting stronger, so nty to treaty
 	
-	1005 - No to threat
+	1005 - No to threat (diplomacyScreen / respondToThreatIgnorePhrase)
 	1020 - I agree to stop attacking your towns
 	1035 - I agree to stop attacking your towns and suck up by giving X gold too
-	1050 - Suck up offering a spell
-	1065 - Tired of talking to you
-	1080 - No spells to exchange
+	1050 - Suck up offering a spell (diplomacyScreen / respondToThreatSpellPhrase)
+	1065 - Tired of talking to you (diplomacyScreen / grownImpatientPhrase)
+	1080 - No spells to exchange (diplomacyScreen / refuseExchangeSpellPhrase )
 	1095 - Get away from my city

@@ -310,7 +310,10 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 				(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
 			{
 				// Just stick a value in there to stop asking about targeting wizard spells
-				getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity (new MapCoordinates3DEx (-1, -1, -1));
+				if (getMaintainedSpell ().getTargetPlayerID () != null)
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedPlayerID (getMaintainedSpell ().getTargetPlayerID ());
+				else
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity (new MapCoordinates3DEx (-1, -1, -1));
 				
 				// Redraw the NTMs
 				getNewTurnMessagesUI ().languageChanged ();

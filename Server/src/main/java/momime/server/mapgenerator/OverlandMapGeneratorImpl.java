@@ -19,9 +19,11 @@ import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.map.generator.HeightMapGenerator;
+import com.ndg.map.generator.HeightMapGeneratorImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -478,9 +480,12 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 		{
 			// Generate height-based scenery
-			final HeightMapGenerator heightMap = new HeightMapGenerator (mom.getSessionDescription ().getOverlandMapSize (),
-				mom.getSessionDescription ().getOverlandMapSize ().getZoneWidth (), mom.getSessionDescription ().getOverlandMapSize ().getZoneHeight (),
-				mom.getSessionDescription ().getLandProportion ().getTundraRowCount ());
+			final HeightMapGenerator heightMap = new HeightMapGeneratorImpl ();
+			heightMap.setCoordinateSystem (mom.getSessionDescription ().getOverlandMapSize ());
+			heightMap.setZoneWidth (mom.getSessionDescription ().getOverlandMapSize ().getZoneWidth ());
+			heightMap.setZoneHeight (mom.getSessionDescription ().getOverlandMapSize ().getZoneHeight ());
+			heightMap.getNumberOfRowsFromMapEdgeToAvoid ().add (7);		// This was baked into the map generator before, so keep it the same
+			heightMap.getNumberOfRowsFromMapEdgeToAvoid ().add (mom.getSessionDescription ().getLandProportion ().getTundraRowCount ());
 			heightMap.setRandomUtils (getRandomUtils ());
 			heightMap.generateHeightMap ();
 
@@ -1657,7 +1662,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			for (int monsterNo = 0; monsterNo < mainMonsterCount; monsterNo++)
 			{
 				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mainMonster.getUnitID (), lairLocation, null, null, null,
-					monsterPlayer, UnitStatusID.ALIVE, false, mom);
+					monsterPlayer, UnitStatusID.ALIVE, false, false, mom);
 				monstersStrength = monstersStrength - mainMonster.getProductionCost ();
 			}
 		}
@@ -1673,7 +1678,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			// Actually add them
 			for (int monsterNo = 0; monsterNo < secondaryMonsterCount; monsterNo++)
 				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (secondaryMonster.getUnitID (), lairLocation, null, null, null,
-					monsterPlayer, UnitStatusID.ALIVE, false, mom);
+					monsterPlayer, UnitStatusID.ALIVE, false, false, mom);
 		}
 	}
 
@@ -1718,7 +1723,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				remainingBudget = remainingBudget - unitDef.getProductionCost ();
 
 				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unitDef.getUnitID (), spawnLocation, null, null, null,
-					monsterPlayer, UnitStatusID.ALIVE, true, mom);
+					monsterPlayer, UnitStatusID.ALIVE, true, true, mom);
 				
 				if (monstersCreated >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
 					keepGoing = false;

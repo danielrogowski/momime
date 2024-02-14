@@ -92,12 +92,13 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 			{
 				// Animation of wizard getting zapped
 				final boolean isDefeated = (getWizardState () == WizardState.DEFEATED);
-				final PlayerPublicDetails banishingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
+				final PlayerPublicDetails banishingWizard = (getBanishingPlayerID () == null) ? null :
+					getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
 				
 				// Show animation
 				if (banishedWizardDetails.getStandardPhotoID () != null)
 				{
-					final KnownWizardDetails banishingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+					final KnownWizardDetails banishingWizardDetails = (getBanishingPlayerID () == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
 					
 					final WizardBanishedUI wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
@@ -112,18 +113,29 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 				else
 				{
 					// Custom portrait, so cannot show animation, just a message box
-					final KnownWizardDetails banishingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
-					
 					final List<LanguageText> languageText;
-					if (getPlayerKnowledgeUtils ().isWizard (banishingWizardDetails.getWizardID ()))
-						languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
+					if (getBanishingPlayerID () == null)
+					{
+						// Banished themselves
+						languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByNobody () : getLanguages ().getWizardBanishedScreen ().getBanishedByNobody ();
+					}
 					else
-						languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
+					{
+						final KnownWizardDetails banishingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
+						
+						if (getPlayerKnowledgeUtils ().isWizard (banishingWizardDetails.getWizardID ()))
+							languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
+						else
+							languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
+					}
 					
-					final String title = getLanguageHolder ().findDescription (languageText).replaceAll
-						("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
-						("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
+					String title = getLanguageHolder ().findDescription (languageText).replaceAll
+						("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard));
+					
+					if (banishingWizard != null)
+						title = title.replaceAll
+							("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
 					
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 					msg.setTitle (title);

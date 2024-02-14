@@ -2,12 +2,17 @@ package momime.server.calculations;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.ndg.random.RandomUtils;
+import com.ndg.utils.random.RandomUtils;
 
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.PickTypeCountContainer;
@@ -160,7 +165,57 @@ public final class ServerSpellCalculationsImpl implements ServerSpellCalculation
 						researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
 		}
 	}
+	
+	/**
+	 * @param tradeableSpells Spells known by the player who is giving away a spell
+	 * @param knownSpells Spells known by the player who is being given a spell
+	 * @return List of tradeable spells
+	 */
+	@Override
+	public final List<String> listTradeableSpells (final List<SpellResearchStatus> tradeableSpells, final List<SpellResearchStatus> knownSpells)
+	{
+		final Set<String> learnableSpellIDs = knownSpells.stream ().filter (s -> (s.getStatus () == SpellResearchStatusID.NOT_IN_SPELL_BOOK) ||
+			(s.getStatus () == SpellResearchStatusID.RESEARCHABLE) || (s.getStatus () == SpellResearchStatusID.RESEARCHABLE_NOW)).map (s -> s.getSpellID ()).collect (Collectors.toSet ());
 
+		return tradeableSpells.stream ().filter
+			(s -> (s.getStatus () == SpellResearchStatusID.AVAILABLE) && (learnableSpellIDs.contains (s.getSpellID ())) && (!s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY))).map
+			(s -> s.getSpellID ()).collect (Collectors.toList ());
+	}
+
+	/**
+	 * @param spellIDs List of candidate spells
+	 * @param count Maximum number of spells to return
+	 * @param db Lookup lists built over the XML database
+	 * @return List of (count) cheapest spells from the list
+	 * @throws RecordNotFoundException If there's a spell in the list that can't be found in the database
+	 */
+	@Override
+	public final List<String> findCheapestSpells (final List<String> spellIDs, final int count, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		// Look up the research cost of every spell
+		final Map<String, Integer> researchCosts = new HashMap<String, Integer> ();
+		final List<String> cheapestSpells = new ArrayList<String> ();
+		for (final String spellID : spellIDs)
+		{
+			final Spell spellDef = db.findSpell (spellID, "findCheapestSpells");
+			if ((spellDef.getResearchCost () != null) && (spellDef.getResearchCost () > 0))
+			{
+				researchCosts.put (spellID, spellDef.getResearchCost ());
+				cheapestSpells.add (spellID);
+			}
+		}
+		
+		// Sort the list
+		cheapestSpells.sort ((s1, s2) -> researchCosts.get (s1) - researchCosts.get (s2));
+		
+		// Reduce the size of the list if too many spells are listed
+		while (cheapestSpells.size () > count)
+			cheapestSpells.remove (count);
+		
+		return cheapestSpells;
+	}
+	
 	/**
 	 * @return Spell utils
 	 */

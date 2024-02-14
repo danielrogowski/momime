@@ -11,10 +11,11 @@ import javax.swing.ActionMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import momime.client.config.WindowID;
 import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -167,7 +168,8 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
 		setCloseOnClick (true);
-	
+		setWindowID (WindowID.ADVISORS);
+
 		getFrame ().setShape (new Polygon
 			(new int [] {0, BORDER_WIDTH, BORDER_WIDTH, background.getWidth () - BORDER_WIDTH, background.getWidth () - BORDER_WIDTH, background.getWidth (), background.getWidth (), background.getWidth () - 2, background.getWidth () - 2, background.getWidth (), background.getWidth (), background.getWidth () - BORDER_WIDTH, background.getWidth () - BORDER_WIDTH, BORDER_WIDTH, BORDER_WIDTH, 0, 0, 2, 2, 0}, 
 			new int [] {0, 0, 2, 2, 0, 0, TOP_HEIGHT, TOP_HEIGHT, background.getHeight () - BOTTOM_HEIGHT, background.getHeight () - BOTTOM_HEIGHT, background.getHeight (), background.getHeight (), background.getHeight () - 2, background.getHeight () - 2, background.getHeight (), background.getHeight (), background.getHeight () - BOTTOM_HEIGHT, background.getHeight () - BOTTOM_HEIGHT, TOP_HEIGHT, TOP_HEIGHT},

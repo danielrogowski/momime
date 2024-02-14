@@ -5,6 +5,7 @@
 	<decompressDataReceivedFromClient>true</decompressDataReceivedFromClient>
 	<userRegistryFilename>server/userRegistry/MoMIMEServerUserRegistry.xml</userRegistryFilename>
 	<pathToServerXmlDatabases>server/databases</pathToServerXmlDatabases>
+	<pathToModXmls>server/mods</pathToModXmls>
 	<pathToSavedGames>server/savedGames</pathToSavedGames>
 	<savePointKeepCount>16</savePointKeepCount>
 </config:momImeServerConfig>

@@ -22,10 +22,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import momime.client.config.WindowID;
 import momime.client.newturnmessages.NewTurnMessageAnimated;
 import momime.client.newturnmessages.NewTurnMessageClickable;
 import momime.client.newturnmessages.NewTurnMessageRepaintOnCityDataChanged;
@@ -159,6 +160,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
+		setWindowID (WindowID.NEW_TURN_MESSAGES);
 
 		// Trying to get the shape of this right is very long and complicated, and impossible to get perfect because the edges are all jagged,
 		// so this is just as close as I can get it.  It starts from the top-right corner under the roller and proceeds clockwise.

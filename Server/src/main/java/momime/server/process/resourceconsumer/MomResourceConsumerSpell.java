@@ -110,7 +110,7 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		mom.getWorldUpdates ().switchOffSpell (getSpell ().getSpellURN ());
+		mom.getWorldUpdates ().switchOffSpell (getSpell ().getSpellURN (), false);
 		mom.getWorldUpdates ().process (mom);
 
 		if (getPlayer ().getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -30,17 +31,19 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.JPanelWithConstantRepaints;
-import com.ndg.swing.actions.LoggingAction;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
-import com.ndg.zorder.ZOrderGraphicsImpl;
+import com.ndg.utils.swing.GridBagConstraintsNoFill;
+import com.ndg.utils.swing.JPanelWithConstantRepaints;
+import com.ndg.utils.swing.ModifiedImageCache;
+import com.ndg.utils.swing.actions.LoggingAction;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.swing.zorder.ZOrderGraphicsImpl;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
+import momime.client.config.WindowID;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.languages.database.Shortcut;
@@ -101,6 +104,7 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitVisibilityUtils;
 
 /**
  * Combat UI.  Note there's only one of these - I played with the idea of allowing multiple combats going on at once (for simultaneous
@@ -201,7 +205,7 @@ public final class CombatUI extends MomClientFrameUI
 	private UnitCalculations unitCalculations;
 
 	/** Spell book */
-	private SpellBookUI spellBookUI;
+	private SpellBookNewUI spellBookUI;
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -229,6 +233,12 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Methods dealing with checking whether we can see units or not */
+	private UnitVisibilityUtils unitVisibilityUtils;
+
+	/** For creating resized images */
+	private ModifiedImageCache modifiedImageCache;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -582,7 +592,7 @@ public final class CombatUI extends MomClientFrameUI
 							if (unit != null)
 								try
 								{
-									if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
+									if (getUnitVisibilityUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
 										getClient ().getSessionDescription ().getCombatMapSize ()))
 									{
@@ -614,7 +624,8 @@ public final class CombatUI extends MomClientFrameUI
 										// Draw unit
 										getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
 											getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
-											getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours (), null);
+											getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours (), null,
+											getClientConfig ().isNewShadows ());
 									}
 								}
 								catch (final Exception e)
@@ -631,7 +642,7 @@ public final class CombatUI extends MomClientFrameUI
 						final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), !teleporting, getClient ().getClientDB ());
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
 							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours (),
-							getUnitMoving ().getMergingRatio ());
+							getUnitMoving ().getMergingRatio (), getClientConfig ().isNewShadows ());
 					}
 					catch (final Exception e)
 					{
@@ -723,13 +734,13 @@ public final class CombatUI extends MomClientFrameUI
 						// Draw each missile
 						for (final int [] position : getAttackAnim ().getCurrent ())
 						{
-							final int imageWidth = ratImage.getWidth () * position [2];
-							final int imageHeight = ratImage.getHeight () * position [2];
+							final int doubleWidth = ratImage.getWidth () * 2;
+							final int doubleHeight = ratImage.getHeight () * 2;
 							
-							final int currentX = position [0] - (imageWidth / 2);
-							final int currentY = position [1] - imageHeight;
+							final int currentX = position [0] - (doubleWidth / 2);
+							final int currentY = position [1] - doubleHeight;
 							
-							g.drawImage (ratImage, currentX, currentY, imageWidth, imageHeight, null);
+							g.drawImage (ratImage, currentX, currentY, doubleWidth, doubleHeight, null);
 						}
 					}
 					catch (final Exception e)
@@ -747,7 +758,7 @@ public final class CombatUI extends MomClientFrameUI
 								((unit.getOverlays () != null) && (unit.getOverlays ().size () > 0))))
 								try
 								{
-									if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
+									if (getUnitVisibilityUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
 										getClient ().getSessionDescription ().getCombatMapSize ()))
 									{
@@ -978,7 +989,7 @@ public final class CombatUI extends MomClientFrameUI
 							getClient ().getSessionDescription ().getCombatMapSize (), false);
 						if (xu != null)
 						{
-							if ((xu == getSelectedUnitInCombat ()) || (xu.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
+							if ((xu.getMemoryUnit () == getSelectedUnitInCombat ()) || (xu.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
 								(xu.getDoubleCombatMovesLeft () == null) || (xu.getDoubleCombatMovesLeft () <= 0))
 							{
 								// Is there a unit info screen already open for this unit?
@@ -1052,6 +1063,8 @@ public final class CombatUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		getFrame ().setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
+		setWindowID (WindowID.COMBAT);
+		setPersistVisibility (false);
 		
 		// Shortcut keys
 		contentPane.getActionMap ().put (Shortcut.COMBAT_TOGGLE_AUTO,								autoAction);
@@ -1234,10 +1247,20 @@ public final class CombatUI extends MomClientFrameUI
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		manaValue.setText (getTextUtils ().intToStrCommas (manaStored));
 	
-		rangeValue.setText ("x " + getTextUtils ().halfIntToStr (doubleRangePenalty));
+		final int manaAvailable;
+		if (doubleRangePenalty == null)
+		{
+			rangeValue.setVisible (false);
+			manaAvailable = 0;
+		}
+		else
+		{
+			rangeValue.setVisible (true);
+			rangeValue.setText ("x " + getTextUtils ().halfIntToStr (doubleRangePenalty));
+			manaAvailable = (manaStored * 2) / doubleRangePenalty;
+		}
 		
 		// How much mana can we put into a spell, given the range?
-		final int manaAvailable = (manaStored * 2) / doubleRangePenalty;
 		maxCastable = Math.min (manaAvailable, currentSkill);
 		castableValue.setText (getTextUtils ().intToStrCommas (maxCastable));
 		
@@ -1433,9 +1456,9 @@ public final class CombatUI extends MomClientFrameUI
 					// Add the image - caeList.size () is a sneaky way of generating the 'x' values for the GridBagLayout
 					if (caePanel != null)
 					{
-						final BufferedImage image = getUtils ().loadImage (getClient ().getClientDB ().findCombatAreaEffect
-							(cae.getCombatAreaEffectID (), "generateCombatAreaEffectIcons").getCombatAreaEffectImageFile ());
-						final JLabel label = getUtils ().createImage (getUtils ().doubleSize (image));
+						final String image = getClient ().getClientDB ().findCombatAreaEffect
+							(cae.getCombatAreaEffectID (), "generateCombatAreaEffectIcons").getCombatAreaEffectImageFile ();
+						final JLabel label = getUtils ().createImage (getModifiedImageCache ().doubleSize (image));
 						
 						caePanel.add (label, getUtils ().createConstraintsNoFill (caeList.size (), 0, 1, 1, new Insets (0, 1, 0, 1), GridBagConstraintsNoFill.CENTRE));
 						caeList.add (label);
@@ -1661,8 +1684,8 @@ public final class CombatUI extends MomClientFrameUI
 				(getUnitCalculations ().findPreferredMovementSkillGraphics (xu, getClient ().getClientDB ()).getMovementIconImageFile ())));
 			
 			// Unit image
-			final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (xu.getUnitDefinition (), xu.getOwningPlayerID ());
-			selectedUnitImage.setIcon (new ImageIcon (getUtils ().doubleSize (unitImage)));
+			final Image unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (xu.getUnitDefinition (), xu.getOwningPlayerID (), true);
+			selectedUnitImage.setIcon (new ImageIcon (unitImage));
 		}
 		
 		enableOrDisableSpellAction ();
@@ -2292,7 +2315,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @return Spell book
 	 */
-	public final SpellBookUI getSpellBookUI ()
+	public final SpellBookNewUI getSpellBookUI ()
 	{
 		return spellBookUI;
 	}
@@ -2300,7 +2323,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @param ui Spell book
 	 */
-	public final void setSpellBookUI (final SpellBookUI ui)
+	public final void setSpellBookUI (final SpellBookNewUI ui)
 	{
 		spellBookUI = ui;
 	}
@@ -2471,5 +2494,37 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Methods dealing with checking whether we can see units or not
+	 */
+	public final UnitVisibilityUtils getUnitVisibilityUtils ()
+	{
+		return unitVisibilityUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with checking whether we can see units or not
+	 */
+	public final void setUnitVisibilityUtils (final UnitVisibilityUtils u)
+	{
+		unitVisibilityUtils = u;
+	}
+
+	/**
+	 * @return For creating resized images
+	 */
+	public final ModifiedImageCache getModifiedImageCache ()
+	{
+		return modifiedImageCache;
+	}
+
+	/**
+	 * @param m For creating resized images
+	 */
+	public final void setModifiedImageCache (final ModifiedImageCache m)
+	{
+		modifiedImageCache = m;
 	}
 }

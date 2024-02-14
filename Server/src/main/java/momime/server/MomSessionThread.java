@@ -4,11 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.transform.JDOMSource;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -44,6 +51,7 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.server.ai.DiplomacyProposal;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseValues;
@@ -70,9 +78,15 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** Path to where all the server database XMLs are - from config file */
 	private String pathToServerXmlDatabases;
+
+	/** Path to where all the mod XMLs are - from config file */
+	private String pathToModXmls;
 	
 	/** JAXB Unmarshaller for loading database XML files */
 	private Unmarshaller commonDatabaseUnmarshaller;
+	
+	/** JDOM builder */
+	private SAXBuilder saxBuilder;
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
@@ -86,6 +100,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/** Combat details storage */
 	private List<CombatDetails> combatDetails = new ArrayList<CombatDetails> ();
 	
+	/** List of diplomacy proposals an AI player is waiting to send to a human player */
+	private List<DiplomacyProposal> pendingDiplomacyProposals = new ArrayList<DiplomacyProposal> ();
+
 	/**
 	 * Descendant server classes will want to override this to create a thread that knows how to process useful messages
 	 * 
@@ -96,17 +113,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	public final void initializeNewGame () throws JAXBException, XMLStreamException, IOException
 	{
-		// Load server XML
-		log.info ("Loading server XML...");
-		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
-			ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
-		final CommonDatabaseImpl sdb = (CommonDatabaseImpl) getCommonDatabaseUnmarshaller ().unmarshal (fullFilename); 
-
-		// Create hash maps to look up all the values from the DB
-		log.info ("Building maps and running checks over XML data...");
-		sdb.buildMaps ();
-		sdb.consistencyChecks ();
-		getGeneralPublicKnowledge ().setMomDatabase (sdb);
+		loadDatabase ();
 		
 		// Generate the overland map
 		log.info ("Generating overland map...");
@@ -130,17 +137,127 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	public final void preInitializeLoadedGame () throws JAXBException, XMLStreamException, IOException
 	{
+		loadDatabase ();
+	}
+	
+	/**
+	 * Loads the XML database, applying any selected mods, then performs all checks on it
+	 *    
+	 * @throws JAXBException If there is an error dealing with any XML files during creation
+	 * @throws XMLStreamException If there is an error dealing with any XML files during creation
+	 * @throws IOException If there is a problem generating the client database for this session
+	 */
+	private final void loadDatabase () throws JAXBException, XMLStreamException, IOException
+	{
 		// Load server XML
 		log.info ("Loading server XML...");
 		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
 			ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
-		final CommonDatabaseImpl sdb = (CommonDatabaseImpl) getCommonDatabaseUnmarshaller ().unmarshal (fullFilename); 
 		
+		final CommonDatabaseImpl sdb;
+		if (getSessionDescription ().getModName ().isEmpty ())
+		{
+			// No mods to apply, so unmarshal XML directly
+			sdb = (CommonDatabaseImpl) getCommonDatabaseUnmarshaller ().unmarshal (fullFilename);
+		}
+		else
+			try
+			{
+				// Load main XML
+				final Document doc = getSaxBuilder ().build (fullFilename);
+				
+				// Apply each mod in turn
+				for (final String modName : getSessionDescription ().getModName ())
+				{
+					final File fullModFilename = new File (getPathToModXmls () + "/" + modName + ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
+					final Document mod = getSaxBuilder ().build (fullModFilename);
+					applyMod (doc.getRootElement (), mod.getRootElement ());
+				}
+				
+				sdb = (CommonDatabaseImpl) getCommonDatabaseUnmarshaller ().unmarshal (new JDOMSource (doc));
+			}
+			catch (final JDOMException e)
+			{
+				throw new IOException ("Error applying mods", e);
+			}
+
 		// Create hash maps to look up all the values from the DB
 		log.info ("Building maps and running checks over XML data...");
 		sdb.buildMaps ();
 		sdb.consistencyChecks ();
 		getGeneralPublicKnowledge ().setMomDatabase (sdb);
+	}
+	
+	/**
+	 * Applys modifications from one XML node to another
+	 * 
+	 * @param target Main XML element
+	 * @param source Mod XML element
+	 * @throws IOException If there is a problem
+	 */
+	private final void applyMod (final Element target, final Element source) throws IOException
+	{
+		for (final Element sourceElement : source.getChildren ())
+		{
+			final Map<String, String> sourceAttributes = sourceElement.getAttributes ().stream ().collect (Collectors.toMap (a -> a.getName (), a -> a.getValue ()));
+			
+			// Force replacement of all content under this node, as if it was new
+			final boolean replace = "replace".equals (sourceAttributes.get ("mod"));
+			final boolean delete = "delete".equals (sourceAttributes.get ("mod"));
+			if ((replace) || (delete))
+				sourceAttributes.remove ("mod");
+
+			// Find matching element in target if present, otherwise create one
+			final List<Element> targetElementsWithName = target.getChildren (sourceElement.getName ());
+			final List<Element> possibleTargetElements = targetElementsWithName.stream ().filter
+				(t -> t.getAttributes ().stream ().collect (Collectors.toMap (a -> a.getName (), a -> a.getValue ())).equals (sourceAttributes)).collect (Collectors.toList ());
+			
+			log.debug ("Applying mod element, found " + possibleTargetElements.size () + " possible target element(s) for " + sourceElement + " - " + sourceAttributes);
+			
+			if ((possibleTargetElements.isEmpty ()) && (!delete))
+			{
+				// Have to find the right place to insert it - after all the elements with the same name
+				if (targetElementsWithName.isEmpty ())
+					target.addContent (sourceElement.clone ());		// Add it at the end and hope for the best
+				else
+				{
+					// Be smarter about the insertion point
+					final Element lastTargetElementWithName =  targetElementsWithName.get (targetElementsWithName.size () - 1);
+					final int index = target.indexOf (lastTargetElementWithName);
+					
+					target.addContent (index + 1, sourceElement.clone ());
+				}
+			}
+			else if (possibleTargetElements.size () == 1)
+			{
+				final Element targetElement = possibleTargetElements.get (0);
+				
+				if (delete)
+				{
+					// Replace only removes child nodes.  Delete removes the found node itself too.
+					log.debug ("Deleting node " + targetElement.getText ());
+					targetElement.detach ();
+				}
+				else if ((sourceElement.getChildren ().isEmpty ()) && (targetElement.getChildren ().isEmpty ()))
+				{
+					log.debug ("Applying mod element, replacing with text " + sourceElement.getText ());
+					targetElement.setText (sourceElement.getText ());
+				}
+				else
+				{
+					if (replace)
+					{
+						final List<Element> removeElements = new ArrayList<Element> (targetElement.getChildren ());
+						removeElements.forEach (c -> c.detach ());
+					}
+					
+					// Drill down into child elements
+					applyMod (targetElement, sourceElement);
+				}
+			}
+			else
+				throw new IOException ("Multiple possible target elements for " + sourceElement + " - " + sourceAttributes);
+		}
 	}
 	
 	/**
@@ -407,6 +524,15 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	}
 
 	/**
+	 * @return List of diplomacy proposals an AI player is waiting to send to a human player
+	 */
+	@Override
+	public final List<DiplomacyProposal> getPendingDiplomacyProposals ()
+	{
+		return pendingDiplomacyProposals;
+	}
+	
+	/**
 	 * @param mapGen Overland map generator for this session
 	 */
 	public final void setOverlandMapGenerator (final OverlandMapGenerator mapGen)
@@ -447,6 +573,22 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	}
 
 	/**
+	 * @return Path to where all the mod XMLs are - from config file
+	 */
+	public final String getPathToModXmls ()
+	{
+		return pathToModXmls;
+	}
+
+	/**
+	 * @param path Path to where all the mod XMLs are - from config file
+	 */
+	public final void setPathToModXmls (final String path)
+	{
+		pathToModXmls = path;
+	}
+	
+	/**
 	 * @return JAXB Unmarshaller for loading database XML files
 	 */
 	public final Unmarshaller getCommonDatabaseUnmarshaller ()
@@ -462,6 +604,22 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		commonDatabaseUnmarshaller = unmarshaller;
 	}
 
+	/**
+	 * @return JDOM builder
+	 */
+	public final SAXBuilder getSaxBuilder ()
+	{
+		return saxBuilder;
+	}
+
+	/**
+	 * @param s JDOM builder
+	 */
+	public final void setSaxBuilder (final SAXBuilder s)
+	{
+		saxBuilder = s;
+	}
+	
 	/**
 	 * @return Methods for dealing with player msgs
 	 */

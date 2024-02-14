@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.ndg.map.CoordinateSystemType;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -13,6 +14,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -34,6 +36,25 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/**
+	 * @return Combat map size settings, which are fixed
+	 */
+	@Override
+	public final CombatMapSize createCombatMapSize ()
+	{
+		final CombatMapSize combatMapSize = new CombatMapSize ();
+		combatMapSize.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
+		combatMapSize.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
+		combatMapSize.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);
+		combatMapSize.setDepth (1);
+		combatMapSize.setWrapsLeftToRight (false);
+		combatMapSize.setWrapsTopToBottom (false);
+		combatMapSize.setZoneWidth (10);
+		combatMapSize.setZoneHeight (8);
+		
+		return combatMapSize;
+	}
 	
 	/**
 	 * @param tile Tile to search

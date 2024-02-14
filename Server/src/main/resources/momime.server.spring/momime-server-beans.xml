@@ -360,6 +360,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="compress" value="#{serverConfig.compressDataSentToClient}" />
 		<property name="decompress" value="#{serverConfig.decompressDataReceivedFromClient}" />
 		<property name="sessionThreadFactory" ref="sessionThreadFactory" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
 	</bean>
 	
 	<!-- Saved games support -->

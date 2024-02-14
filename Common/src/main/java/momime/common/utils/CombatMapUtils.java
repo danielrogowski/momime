@@ -9,6 +9,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -20,6 +21,11 @@ import momime.common.messages.MomCombatTile;
  */
 public interface CombatMapUtils
 {
+	/**
+	 * @return Combat map size settings, which are fixed
+	 */
+	public CombatMapSize createCombatMapSize ();
+	
 	/**
 	 * @param tile Tile to search
 	 * @param layer Layer to look for

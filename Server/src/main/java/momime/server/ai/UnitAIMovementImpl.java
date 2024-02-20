@@ -122,12 +122,15 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
+		log.debug ("Looking for suitable stationary target for our unit stack with rating " + ourCurrentRating + " currently at " + currentLocation);
+		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		AIMovementDistance bestDistanceSoFar = null;
 		Integer bestEnemyUnitStackCombatUnitCurrentRatings = null;		// Just for debug msg
 
 		// The only way that any location on the plane other than where we are will be reachable is if we're stood right on a tower of wizardry,
 		// in which case this will evaluate which plane to exit off from, which is exactly what we want.  Same is true for most of the other movement codes.
+		int tooStrongCount = 0;
 		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
@@ -163,13 +166,18 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 								else if (thisDistance.equals (bestDistanceSoFar))
 									destinations.add (location);
 							}
+							else
+								tooStrongCount++;
 						}
 					}
 				}
 		
 		final AIMovementDecision decision;
 		if (destinations.isEmpty ())
+		{
 			decision = null;		// No reachable enemy unit defence positions that we stand a chance of beating
+			log.debug ("No suitable stationary targets found - " + tooStrongCount + " stacks were too strong to attack");
+		}
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
@@ -215,10 +223,13 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
+		log.debug ("Looking for suitable wandering target for our unit stack with rating " + ourCurrentRating + " currently at " + currentLocation);
+		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		AIMovementDistance bestDistanceSoFar = null;
 		Integer bestEnemyUnitStackCombatUnitCurrentRatings = null;		// Just for debug msg
 
+		int tooStrongCount = 0;
 		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
@@ -251,12 +262,17 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 							else if (thisDistance.equals (bestDistanceSoFar))
 								destinations.add (location);
 						}
+						else
+							tooStrongCount++;
 					}
 				}
 		
 		final AIMovementDecision decision;
 		if (destinations.isEmpty ())
+		{
 			decision = null;		// No reachable wandering enemy units that we stand a chance of beating
+			log.debug ("No suitable wandering targets found - " + tooStrongCount + " stacks were too strong to attack");
+		}
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));

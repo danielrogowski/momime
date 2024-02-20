@@ -707,16 +707,19 @@ public final class UnitAIImpl implements UnitAI
 	 * @param isMonsters Whether it is the rampaging monsters player
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
+	 * @param players Players list
+	 * @param wizards True wizard details list
 	 * @return See AIMovementDecision for explanation of return values
 	 * @throws RecordNotFoundException If an expected record cannot be found
+	 * @throws PlayerNotFoundException If the player owning a unit stack can't be found
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
 	@Override
 	public final AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final OverlandMovementCell [] [] [] moves,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations,
-		final boolean isRaiders, final boolean isMonsters, final CoordinateSystem sys, final CommonDatabase db)
-		throws MomException, RecordNotFoundException
+		final boolean isRaiders, final boolean isMonsters, final CoordinateSystem sys, final CommonDatabase db, final List<PlayerServerDetails> players, final List<KnownWizardDetails> wizards)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		AIMovementDecision decision = null;
 		final Iterator<AiMovementCode> iter = movementCodes.iterator ();
@@ -734,11 +737,11 @@ public final class UnitAIImpl implements UnitAI
 						break;
 						
 					case ATTACK_STATIONARY:
-						decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (units, moves, enemyUnits, isRaiders, isMonsters, terrain, sys, db);
+						decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (units, moves, enemyUnits, isRaiders, isMonsters, terrain, sys, db, players, wizards);
 						break;
 						
 					case ATTACK_WANDERING:
-						decision = getUnitAIMovement ().considerUnitMovement_AttackWandering (units, moves, enemyUnits, isMonsters, terrain, sys, db);
+						decision = getUnitAIMovement ().considerUnitMovement_AttackWandering (units, moves, enemyUnits, isMonsters, terrain, sys, db, players, wizards);
 						break;
 						
 					case SCOUT_LAND:
@@ -863,7 +866,7 @@ public final class UnitAIImpl implements UnitAI
 	
 			final AIMovementDecision destination = decideUnitMovement (units, category.getMovementCode (), moves, underdefendedLocations,
 				ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredSpecialUnitLocations, isRaiders, isMonsters,
-				mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+				mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ());
 			
 			// Move, if we found somewhere to go
 			if (destination == null)

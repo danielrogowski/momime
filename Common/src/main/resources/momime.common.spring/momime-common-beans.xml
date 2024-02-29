@@ -437,7 +437,6 @@
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>

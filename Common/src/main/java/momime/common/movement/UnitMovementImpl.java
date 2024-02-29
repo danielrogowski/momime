@@ -85,7 +85,7 @@ public final class UnitMovementImpl implements UnitMovement
 	 * @param db Lookup lists built over the XML database
 	 */
 	@Override
-	public final void considerPossibleMove (final UnitStack unitStack, final Set<String> unitStackSkills,
+	public final void considerPossibleOverlandMove (final UnitStack unitStack, final Set<String> unitStackSkills,
 		final MapCoordinates3DEx moveFrom, final OverlandMovementType movementType, final int direction,
 		final MapCoordinates3DEx moveTo, final int movingPlayerID, final int doubleDistanceToHere, final int doubleMovementRemainingToHere,
 		final int [] [] [] cellTransportCapacity, final Map<String, Integer> doubleMovementRates,

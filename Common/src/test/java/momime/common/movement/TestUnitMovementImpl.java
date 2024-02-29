@@ -34,10 +34,10 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 public final class TestUnitMovementImpl
 {
 	/**
-	 * Tests the considerPossibleMove method where no previous route to the target cell was found
+	 * Tests the considerPossibleOverlandMove method where no previous route to the target cell was found
 	 */
 	@Test	
-	public final void testConsiderPossibleMove_NoPreviousRoute ()
+	public final void testConsiderPossibleOverlandMove_NoPreviousRoute ()
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -76,7 +76,7 @@ public final class TestUnitMovementImpl
 		utils.setUnitCalculations (unitCalculations);
 		
 		// Run method
-		utils.considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
+		utils.considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
 			new MapCoordinates3DEx (21, 11, 1), 1, 2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
 		// Check cell generated
@@ -94,10 +94,10 @@ public final class TestUnitMovementImpl
 	}
 
 	/**
-	 * Tests the considerPossibleMove method where we can reach the cell, but it will start an attack so we can't move past the cell
+	 * Tests the considerPossibleOverlandMove method where we can reach the cell, but it will start an attack so we can't move past the cell
 	 */
 	@Test	
-	public final void testConsiderPossibleMove_Attack ()
+	public final void testConsiderPossibleOverlandMove_Attack ()
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -136,7 +136,7 @@ public final class TestUnitMovementImpl
 		utils.setUnitCalculations (unitCalculations);
 		
 		// Run method
-		utils.considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
+		utils.considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
 			new MapCoordinates3DEx (21, 11, 1), 1, 2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
 		// Check cell generated
@@ -153,10 +153,10 @@ public final class TestUnitMovementImpl
 	}
 	
 	/**
-	 * Tests the considerPossibleMove method where the target cell is impassable
+	 * Tests the considerPossibleOverlandMove method where the target cell is impassable
 	 */
 	@Test	
-	public final void testConsiderPossibleMove_Impassable ()
+	public final void testConsiderPossibleOverlandMove_Impassable ()
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -190,7 +190,7 @@ public final class TestUnitMovementImpl
 		utils.setMovementUtils (movementUtils);
 		
 		// Run method
-		utils.considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
+		utils.considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
 			new MapCoordinates3DEx (21, 11, 1), 1, 2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
 		// Check cell generated
@@ -207,10 +207,10 @@ public final class TestUnitMovementImpl
 	}
 	
 	/**
-	 * Tests the considerPossibleMove method where we already know the target cell is impassable so there's no point rechecking it
+	 * Tests the considerPossibleOverlandMove method where we already know the target cell is impassable so there's no point rechecking it
 	 */
 	@Test	
-	public final void testConsiderPossibleMove_KnownImpassable ()
+	public final void testConsiderPossibleOverlandMove_KnownImpassable ()
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -243,7 +243,7 @@ public final class TestUnitMovementImpl
 		final UnitMovementImpl utils = new UnitMovementImpl ();
 		
 		// Run method
-		utils.considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
+		utils.considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
 			new MapCoordinates3DEx (21, 11, 1), 1, 2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
 		// Check cell was unaltered

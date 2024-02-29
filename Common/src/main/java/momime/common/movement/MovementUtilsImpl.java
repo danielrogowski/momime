@@ -452,7 +452,7 @@ public final class MovementUtilsImpl implements MovementUtils
 						moveTo.setZ (0);
 					
 					if (!blockedLocations.contains (moveTo))
-						getUnitMovement ().considerPossibleMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.ADJACENT, d, moveTo, movingPlayerID,
+						getUnitMovement ().considerPossibleOverlandMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.ADJACENT, d, moveTo, movingPlayerID,
 							doubleDistanceToHere, doubleMovementRemainingToHere, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 				}
 			}
@@ -461,7 +461,7 @@ public final class MovementUtilsImpl implements MovementUtils
 		if (earthGates.contains (moveFrom))
 			for (final MapCoordinates3DEx earthGate : earthGates)
 				if ((!earthGate.equals (moveFrom)) && (earthGate.getZ () == moveFrom.getZ ()) && (!blockedLocations.contains (earthGate)))
-					getUnitMovement ().considerPossibleMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.EARTH_GATE, 0, earthGate, movingPlayerID,
+					getUnitMovement ().considerPossibleOverlandMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.EARTH_GATE, 0, earthGate, movingPlayerID,
 						doubleDistanceToHere, doubleMovementRemainingToHere, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
 		// Astral gates
@@ -469,7 +469,7 @@ public final class MovementUtilsImpl implements MovementUtils
 		{
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveFrom.getX (), moveFrom.getY (), 1 - moveFrom.getZ ());
 			if (!blockedLocations.contains (coords))
-				getUnitMovement ().considerPossibleMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.ASTRAL_GATE, 0, coords, movingPlayerID,
+				getUnitMovement ().considerPossibleOverlandMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.ASTRAL_GATE, 0, coords, movingPlayerID,
 					doubleDistanceToHere, doubleMovementRemainingToHere, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		}
 	}

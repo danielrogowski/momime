@@ -420,26 +420,26 @@ public final class TestMovementUtilsImpl
 			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
 		
 		// Check correct moves were generated
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		// Direction 7 is blocked
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
@@ -519,49 +519,49 @@ public final class TestMovementUtilsImpl
 			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
 		
 		// Check correct moves were generated
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		// Direction 7 on Arcanus is blocked
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		// Direction 4 on Myrror is blocked
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 7, new MapCoordinates3DEx (19, 10, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
@@ -635,26 +635,26 @@ public final class TestMovementUtilsImpl
 			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
 		
 		// Check correct moves were generated
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
 			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
 			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
 			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
 			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,		// <--------
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
 			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
 			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		// Direction 7 is blocked
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
 			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
@@ -726,30 +726,30 @@ public final class TestMovementUtilsImpl
 			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
 		
 		// Check correct moves were generated
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		// Direction 7 is blocked
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.EARTH_GATE, 0, new MapCoordinates3DEx (40, 5, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
@@ -818,30 +818,30 @@ public final class TestMovementUtilsImpl
 			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
 		
 		// Check correct moves were generated
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		// Direction 7 is blocked
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 0), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
-		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+		verify (unitMovement).considerPossibleOverlandMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
 			OverlandMovementType.ASTRAL_GATE, 0, new MapCoordinates3DEx (20, 10, 1), 1,
 			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		

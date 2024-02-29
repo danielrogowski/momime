@@ -41,7 +41,7 @@ public interface UnitMovement
 	 * @param mem The player who is trying to move here's knowledge
 	 * @param db Lookup lists built over the XML database
 	 */
-	public void considerPossibleMove (final UnitStack unitStack, final Set<String> unitStackSkills,
+	public void considerPossibleOverlandMove (final UnitStack unitStack, final Set<String> unitStackSkills,
 		final MapCoordinates3DEx moveFrom, final OverlandMovementType movementType, final int direction,
 		final MapCoordinates3DEx moveTo, final int movingPlayerID, final int doubleDistanceToHere, final int doubleMovementRemainingToHere,
 		final int [] [] [] cellTransportCapacity, final Map<String, Integer> doubleMovementRates,

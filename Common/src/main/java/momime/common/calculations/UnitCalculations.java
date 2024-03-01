@@ -137,12 +137,26 @@ public interface UnitCalculations
 
 	/**
 	 * @param unit Unit that we want to move
+	 * @param unitStack Unit stack we are moving; if we're only trying to test whether the terrain is impassable or not (result == null or not) then can pass in null for this
+	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
+	 * @param tileTypeID Type of tile we are moving onto
+	 * @param db Lookup lists built over the XML database
+	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
+	 * @throws MomException If the list includes something other than MemoryUnits
+	 */
+	public Integer calculateDoubleMovementToEnterTileType (final ExpandedUnitDetails unit, final List<ExpandedUnitDetails> unitStack, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db)
+		throws MomException;
+	
+	/**
+	 * This is same as calling calculateDoubleMovementToEnterTileType and checking if the result == null
+	 * 
+	 * @param unit Unit that we want to move
 	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
 	 * @param tileTypeID Type of tile we are moving onto
 	 * @param db Lookup lists built over the XML database
 	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
 	 */
-	public Integer calculateDoubleMovementToEnterTileType (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db);
+	public boolean isTileTypeImpassable (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db);
 	
 	/**
 	 * @param unit Unit that we want to move

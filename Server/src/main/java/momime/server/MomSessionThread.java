@@ -102,6 +102,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** List of diplomacy proposals an AI player is waiting to send to a human player */
 	private List<DiplomacyProposal> pendingDiplomacyProposals = new ArrayList<DiplomacyProposal> ();
+	
+	/** Set to true if the thread is running a game consisting of only AI players */
+	private boolean aiGame;
 
 	/**
 	 * Descendant server classes will want to override this to create a thread that knows how to process useful messages
@@ -270,8 +273,16 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	public final void initializeLoadedGame () throws JAXBException, XMLStreamException, IOException
 	{
-		// If its a single player game, then start it immediately
-		getPlayerMessageProcessing ().checkIfCanStartLoadedGame (this);
+		if (isAiGame ())
+		{
+			// Start up a game containing only AI players
+			getPlayerMessageProcessing ().checkIfCanStartGame (this);
+		}
+		else
+		{
+			// If its a single player game, then start it immediately
+			getPlayerMessageProcessing ().checkIfCanStartLoadedGame (this);
+		}
 	}
 	
 	/**
@@ -650,5 +661,22 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final void setHeroItemServerUtils (final HeroItemServerUtils util)
 	{
 		heroItemServerUtils = util;
+	}
+
+	/**
+	 * @return Set to true if the thread is running a game consisting of only AI players
+	 */
+	@Override
+	public final boolean isAiGame ()
+	{
+		return aiGame;
+	}
+
+	/**
+	 * @param ai Set to true if the thread is running a game consisting of only AI players
+	 */
+	public final void setAiGame (final boolean ai)
+	{
+		aiGame = ai;
 	}
 }

@@ -1365,6 +1365,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
 	</bean>
 
 	<bean id="joinGameLayout" class="com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

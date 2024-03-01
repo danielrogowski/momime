@@ -860,7 +860,7 @@ public final class TestSpellTargetingUtilsImpl
 		
 		// Terrain is passable to the new unit
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (replacementUnit, modifiedSkillIDs, "TT01", db)).thenReturn (1);
+		when (unitCalculations.isTileTypeImpassable (replacementUnit, modifiedSkillIDs, "TT01", db)).thenReturn (false);
 		
 		// Set up object to test
 		final SpellTargetingUtilsImpl utils = new SpellTargetingUtilsImpl ();
@@ -932,9 +932,9 @@ public final class TestSpellTargetingUtilsImpl
 		
 		when (sampleUnitUtils.createSampleUnit ("UN001", 1, null, players, mem, db)).thenReturn (replacementUnit);
 		
-		// Terrain is passable to the new unit
+		// Terrain is impassable to the new unit
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (replacementUnit, modifiedSkillIDs, "TT01", db)).thenReturn (null);
+		when (unitCalculations.isTileTypeImpassable (replacementUnit, modifiedSkillIDs, "TT01", db)).thenReturn (true);
 		
 		// Set up object to test
 		final SpellTargetingUtilsImpl utils = new SpellTargetingUtilsImpl ();
@@ -5315,7 +5315,7 @@ public final class TestSpellTargetingUtilsImpl
 		
 		// Tile is passable
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db)).thenReturn (1);
+		when (unitCalculations.isTileTypeImpassable (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db)).thenReturn (false);
 		
 		// Set up object to test
 		final SpellTargetingUtilsImpl utils = new SpellTargetingUtilsImpl ();
@@ -5469,9 +5469,9 @@ public final class TestSpellTargetingUtilsImpl
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (sampleUnitUtils.createSampleUnit (spell.getSummonedUnit ().get (0), 2, null, players, mem, db)).thenReturn (xu);
 		
-		// Tile is passable
+		// Tile is impassable
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db)).thenReturn (null);
+		when (unitCalculations.isTileTypeImpassable (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db)).thenReturn (true);
 		
 		// Set up object to test
 		final SpellTargetingUtilsImpl utils = new SpellTargetingUtilsImpl ();

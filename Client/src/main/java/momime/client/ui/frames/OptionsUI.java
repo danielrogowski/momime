@@ -41,9 +41,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (OptionsUI.class);
 	
-	/** Suffix we expect language files to have */
-	public final static String FILE_SUFFIX = ".Master of Magic Language.xml";
-	
 	/** XML layout */
 	private XmlLayoutContainerEx optionsLayout;
 	

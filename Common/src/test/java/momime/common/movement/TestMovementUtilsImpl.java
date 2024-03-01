@@ -125,7 +125,7 @@ public final class TestMovementUtilsImpl
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		when (xu1.getUnitDefinition ()).thenReturn (unitDef);
 		when (expand.expandUnitDetails (unit1, null, null, null, players, map, db)).thenReturn (xu1);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu1, unitStackSkills, "TT01", db)).thenReturn (null);
+		when (unitCalculations.isTileTypeImpassable (xu1, unitStackSkills, "TT01", db)).thenReturn (true);
 		
 		// At 0, 0, 2 there's a transport with capacity 2
 		final MemoryUnit unit2 = new MemoryUnit ();
@@ -158,7 +158,7 @@ public final class TestMovementUtilsImpl
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
 		when (xu4.getUnitDefinition ()).thenReturn (unitDef);
 		when (expand.expandUnitDetails (unit4, null, null, null, players, map, db)).thenReturn (xu4);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu4, unitStackSkills, "TT01", db)).thenReturn (null);
+		when (unitCalculations.isTileTypeImpassable (xu4, unitStackSkills, "TT01", db)).thenReturn (true);
 		
 		// At 0, 0, 4 there's a transport with capacity 2 with 1 unit standing next to it but not inside it (terrain is passable to that unit)
 		final MemoryUnit unit5 = new MemoryUnit ();
@@ -180,7 +180,7 @@ public final class TestMovementUtilsImpl
 		final ExpandedUnitDetails xu6 = mock (ExpandedUnitDetails.class);
 		when (xu6.getUnitDefinition ()).thenReturn (unitDef);
 		when (expand.expandUnitDetails (unit6, null, null, null, players, map, db)).thenReturn (xu6);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu6, unitStackSkills, "TT01", db)).thenReturn (2);
+		when (unitCalculations.isTileTypeImpassable (xu6, unitStackSkills, "TT01", db)).thenReturn (false);
 		
 		// At 0, 0, 5 there's somebody else's unit which makes no difference, we can "move onto it" to attack it
 		final MemoryUnit unit7 = new MemoryUnit ();
@@ -244,9 +244,9 @@ public final class TestMovementUtilsImpl
 		final List<ExpandedUnitDetails> units = new ArrayList<ExpandedUnitDetails> ();
 		
 		final ExpandedUnitDetails spearmenUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT01"), eq (db))).thenReturn (4);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT02"), eq (db))).thenReturn (6);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT03"), eq (db))).thenReturn (null);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), eq (units), anySet (), eq ("TT01"), eq (db))).thenReturn (4);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), eq (units), anySet (), eq ("TT02"), eq (db))).thenReturn (6);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), eq (units), anySet (), eq ("TT03"), eq (db))).thenReturn (null);
 		
 		units.add (spearmenUnit);
 
@@ -258,7 +258,7 @@ public final class TestMovementUtilsImpl
 		
 		// Stacking a faster unit with it makes no difference - it always chooses the slowest movement rate
 		final ExpandedUnitDetails flyingUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (flyingUnit), anySet (), any (String.class), eq (db))).thenReturn (2);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (flyingUnit), eq (units), anySet (), any (String.class), eq (db))).thenReturn (2);
 		
 		units.add (flyingUnit);
 		
@@ -270,7 +270,7 @@ public final class TestMovementUtilsImpl
 		
 		// Stack a slower unit
 		final ExpandedUnitDetails pathfindingUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (pathfindingUnit), anySet (), any (String.class), eq (db))).thenReturn (5);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (pathfindingUnit), eq (units), anySet (), any (String.class), eq (db))).thenReturn (5);
 		
 		units.add (pathfindingUnit);
 		

@@ -1,0 +1,37 @@
+Cavalry on regular grassland - 2 movement, 1 MP each tile
+Cavalry on road - 2 movement, 1/2 MP each tile
+Cavalry on enchanted road - 2 movement, 0 MP each tile
+Non-corporeal cavalry - 2 movement, 1/2 MP each tile
+Non-corporeal cavalry on enchanted road - 2 movement, 1/2 MP each tile (so non-corporeal units cannot use enchanted road)
+Flying cavalry - 3 movement, 1 MP per tile
+Flying cavalry on road - 3 movement, 1 MP per tile (so flying units cannot use normal roads)
+Flying cavalry on enchanted road - 3 movement, 0 MP per tile (so flying units CAN use enchanted roads)
+Flying Non-corporeal cavalry - same as if they only had flying
+Flying Non-corporeal cavalry on road - same as if they only had flying
+Flying Non-corporeal cavalry on enchanted road - same as if they only had flying
+
+Rules in MoM IME 1.6.5 currently written as:
+1) If Non-corporeal, 1 MP cost (regardless of any terrain, roads, etc)
+2) If flying or walking on enchanted road, 0 MP cost
+3) If flying on any other terrain, 1 MP cost
+4) If walking and stacked with a unit with pathfinding, 1/2 MP cost
+5) If walking and stacked with a unit with mountaineer or forester (and on right type of terrain), 1 MP cost
+6) If walking then as appropriate per terrain type
+7) If on water, and have swimming/sailing/water walking, 1 MP cost
+
+What about wind walkers?
+	- Does being stacked with a wind walker make you lose the ability to use normal roads?  YES
+	- Do non-corporeal units stacked with a wind walker behave as if they were flying, and can use enchanted roads?  YES
+
+So this could be written as:
+1) If flying (including any unit stacked with a wind walker, even boats) on enchanted road, 0 MP cost
+2) If flying (including any unit stacked with a wind walker, even boats) on any other terrain, 1 MP cost
+3) If Non-corporeal, 1/2 MP cost (regardless of any terrain, roads, etc)
+4) If walking on enchanted road, 0 MP cost
+5) If walking on normal road, 1/2 MP cost
+6) If walking and stacked with a unit with pathfinding, 1/2 MP cost
+7) If walking and stacked with a unit with mountaineer or forester (and on right type of terrain), 1 MP cost
+8) If walking then MP cost as per terrain type
+9) If on water, and have swimming/sailing/water walking, 1 MP cost
+
+Besides the movement table in MoM IME, there is the issue that Flight grants a minimum movement of 3 which is not yet implemented (Wind Walking does not)

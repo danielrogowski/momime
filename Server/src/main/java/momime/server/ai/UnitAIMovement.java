@@ -4,9 +4,12 @@ import java.util.List;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.movement.OverlandMovementCell;
 
@@ -37,17 +40,20 @@ public interface UnitAIMovement
 	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param isRaiders Whether it is the raiders player
-	 * @param isMonsters Whether it is the rampaging monsters player
+	 * @param isMonsters Whether it is the rampaging monsters player; ramping monsters attack the nearest target recklessly whether they stand a chance of winning or not
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
+	 * @param players Players list
+	 * @param wizards True wizard details list
 	 * @return See AIMovementDecision for explanation of return values
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
+	 * @throws PlayerNotFoundException If the player owning a unit stack can't be found
 	 */
 	public AIMovementDecision considerUnitMovement_AttackStationary (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final boolean isMonsters,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
-		throws RecordNotFoundException;
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db, final List<PlayerServerDetails> players, final List<KnownWizardDetails> wizards)
+		throws RecordNotFoundException, PlayerNotFoundException;
 	
 	/**
 	 * AI tries to move units to attack enemy unit stacks wandering around the map where the sum of our UARs > the sum of their UARs.
@@ -55,17 +61,20 @@ public interface UnitAIMovement
 	 * @param units The units to move
 	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
-	 * @param isMonsters Whether it is the rampaging monsters player
+	 * @param isMonsters Whether it is the rampaging monsters player; ramping monsters attack the nearest target recklessly whether they stand a chance of winning or not
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
+	 * @param players Players list
+	 * @param wizards True wizard details list
 	 * @return See AIMovementDecision for explanation of return values
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
+	 * @throws PlayerNotFoundException If the player owning a unit stack can't be found
 	 */
 	public AIMovementDecision considerUnitMovement_AttackWandering (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isMonsters,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
-		throws RecordNotFoundException;
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db, final List<PlayerServerDetails> players, final List<KnownWizardDetails> wizards)
+		throws RecordNotFoundException, PlayerNotFoundException;
 
 	/**
 	 * AI tries to move units to scout any unknown terrain that is adjacent to at least one tile that we know to be land.

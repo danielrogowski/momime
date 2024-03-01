@@ -803,28 +803,29 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 */
 	private final void saveGame (final MomSessionVariables mom)
 	{
-		try
-		{
-			// Temporarily strip out the database, so it doesn't get included in the saved game file.
-			final MomDatabase db = mom.getGeneralPublicKnowledge ().getMomDatabase ();
-			mom.getGeneralPublicKnowledge ().setMomDatabase (null);
+		if (!mom.isAiGame ())
 			try
 			{
-				mom.saveGame (Integer.valueOf (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+				// Temporarily strip out the database, so it doesn't get included in the saved game file.
+				final MomDatabase db = mom.getGeneralPublicKnowledge ().getMomDatabase ();
+				mom.getGeneralPublicKnowledge ().setMomDatabase (null);
+				try
+				{
+					mom.saveGame (Integer.valueOf (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+				}
+				finally
+				{
+					mom.getGeneralPublicKnowledge ().setMomDatabase (db);
+				}
+				
+				if (getSavePointKeepCount () > 0)
+					mom.deleteOldestSavePoints (getSavePointKeepCount ());
 			}
-			finally
+			catch (final Exception e)
 			{
-				mom.getGeneralPublicKnowledge ().setMomDatabase (db);
+				// Don't allow failure to save the game to totally kill things if there's a problem
+				log.error (e, e);
 			}
-			
-			if (getSavePointKeepCount () > 0)
-				mom.deleteOldestSavePoints (getSavePointKeepCount ());
-		}
-		catch (final Exception e)
-		{
-			// Don't allow failure to save the game to totally kill things if there's a problem
-			log.error (e, e);
-		}
 	}
 
 	/**

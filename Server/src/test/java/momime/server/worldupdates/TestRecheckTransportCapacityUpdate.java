@@ -93,7 +93,7 @@ public final class TestRecheckTransportCapacityUpdate extends ServerTestData
 		when (expand.expandUnitDetails (trireme, null, null, null, players, trueMap, db)).thenReturn (xuTrireme);
 		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
 
-		when (unitCalc.calculateDoubleMovementToEnterTileType (xuTrireme, unitStackSkills, "TT01", db)).thenReturn (2);
+		when (unitCalc.isTileTypeImpassable (xuTrireme, unitStackSkills, "TT01", db)).thenReturn (false);
 		
 		MemoryUnit killedUnit = null;
 		for (int n = 0; n < 3; n++)
@@ -113,7 +113,7 @@ public final class TestRecheckTransportCapacityUpdate extends ServerTestData
 			if (n == 1)
 				when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
 
-			when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT01", db)).thenReturn (null);
+			when (unitCalc.isTileTypeImpassable (xuSpearmen, unitStackSkills, "TT01", db)).thenReturn (true);
 			
 			if (n == 1)
 				killedUnit = spearmen;

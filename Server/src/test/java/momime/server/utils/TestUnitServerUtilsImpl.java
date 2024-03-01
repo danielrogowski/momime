@@ -703,7 +703,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
+		when (calc.isTileTypeImpassable (testUnit, testUnitSkills, "TT01", db)).thenReturn (false);
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -792,7 +792,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
+		when (calc.isTileTypeImpassable (testUnit, testUnitSkills, "TT01", db)).thenReturn (false);
 		
 		// Other units
 		final MemoryUnit ourUnit = new MemoryUnit ();
@@ -886,7 +886,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
+		when (calc.isTileTypeImpassable (testUnit, testUnitSkills, "TT01", db)).thenReturn (false);
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -929,7 +929,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (null);		// <---
+		when (calc.isTileTypeImpassable (testUnit, testUnitSkills, "TT01", db)).thenReturn (true);		// <---
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -979,7 +979,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
+		when (calc.isTileTypeImpassable (testUnit, testUnitSkills, "TT01", db)).thenReturn (false);
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1029,7 +1029,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
+		when (calc.isTileTypeImpassable (testUnit, testUnitSkills, "TT01", db)).thenReturn (false);
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1078,8 +1078,8 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
-			any (CommonDatabase.class))).thenReturn (1);
+		when (calc.isTileTypeImpassable (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
+			any (CommonDatabase.class))).thenReturn (false);
 		
 		// Put 8 units in the city so we just fit
 		final MemoryUnit ourUnit = new MemoryUnit ();
@@ -1156,10 +1156,10 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		// Unit can enter tiles TT01 and TT02, but TT03 is impassable
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
-			any (CommonDatabase.class))).thenReturn (1);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT03"),
-			any (CommonDatabase.class))).thenReturn (null);
+		when (calc.isTileTypeImpassable (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
+			any (CommonDatabase.class))).thenReturn (false);
+		when (calc.isTileTypeImpassable (any (ExpandedUnitDetails.class), anySet (), eq ("TT03"),
+			any (CommonDatabase.class))).thenReturn (true);
 		
 		// Put 9 units in the city so we can't fit
 		final MemoryUnit ourUnit = new MemoryUnit ();
@@ -1243,8 +1243,8 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		// Easiest thing to do is make the tile type impassable, then we can't fit anywhere
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
-			any (CommonDatabase.class))).thenReturn (null);
+		when (calc.isTileTypeImpassable (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
+			any (CommonDatabase.class))).thenReturn (true);
 
 		// Session variables
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();

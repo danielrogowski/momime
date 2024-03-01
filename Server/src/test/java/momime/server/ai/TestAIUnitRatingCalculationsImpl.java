@@ -243,7 +243,7 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 			String race = "";
 			if (u.getUnitRaceID () != null)
 				race = u.getUnitRaceID () + " - ";
-			log.debug (race + u.getUnitName () + " has base rating of " + e.getKey ());
+			log.debug (race + u.getUnitName ().get (0).getText () + " has base rating of " + e.getKey ());
 		}));
 	}
 	
@@ -307,7 +307,7 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 			String race = "";
 			if (u.getUnitRaceID () != null)
 				race = u.getUnitRaceID () + " - ";
-			log.debug (race + u.getUnitName () + " has potential rating of " + e.getKey ());
+			log.debug (race + u.getUnitName ().get (0).getText () + " has potential rating of " + e.getKey ());
 		}));
 	}
 }

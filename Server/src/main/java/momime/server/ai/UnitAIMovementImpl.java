@@ -10,12 +10,15 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.utils.random.RandomUtils;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.UnitSpecialOrder;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
@@ -45,6 +48,9 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	
 	/** AI decisions about cities */
 	private CityAI cityAI;
+	
+	/** Underlying methods that the AI uses to calculate ratings about how good units are */
+	private AIUnitRatingCalculations aiUnitRatingCalculations;
 	
 	/**
 	 * AI tries to move units to any location that lacks defence or can be captured without a fight.
@@ -106,28 +112,36 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param isRaiders Whether it is the raiders player
-	 * @param isMonsters Whether it is the rampaging monsters player
+	 * @param isMonsters Whether it is the rampaging monsters player; ramping monsters attack the nearest target recklessly whether they stand a chance of winning or not
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
+	 * @param players Players list
+	 * @param wizards True wizard details list
 	 * @return See AIMovementDecision for explanation of return values
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
+	 * @throws PlayerNotFoundException If the player owning a unit stack can't be found
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_AttackStationary (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final boolean isMonsters,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
-		throws RecordNotFoundException
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db, final List<PlayerServerDetails> players, final List<KnownWizardDetails> wizards)
+		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
-		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
+		final int ourCurrentRatingBase = units.totalCombatUnitCurrentRatings ();
+		final int ourCurrentRatingBonus = getAiUnitRatingCalculations ().ratingBonusFromPowerBase (units, players, wizards);
+		final int ourCurrentRating = ourCurrentRatingBase + ourCurrentRatingBonus;
+		log.debug ("Looking for suitable stationary target for our unit stack with rating " + ourCurrentRatingBase + " base + " + ourCurrentRatingBonus + " bonus = " + ourCurrentRating + " currently at " + currentLocation);
+
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		AIMovementDistance bestDistanceSoFar = null;
 		Integer bestEnemyUnitStackCombatUnitCurrentRatings = null;		// Just for debug msg
 
 		// The only way that any location on the plane other than where we are will be reachable is if we're stood right on a tower of wizardry,
 		// in which case this will evaluate which plane to exit off from, which is exactly what we want.  Same is true for most of the other movement codes.
+		int tooStrongCount = 0;
 		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
@@ -143,7 +157,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						if (((cityData != null) || ((!isRaiders) && (!isMonsters) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))) &&
 							(enemyUnitStack != null) && (cell != null))
 						{
-							final int thisEnemyUnitStackCombatUnitCurrentRatings = enemyUnitStack.totalCombatUnitCurrentRatings ();
+							final int thisEnemyUnitStackCombatUnitCurrentRatings = enemyUnitStack.totalCombatUnitCurrentRatings () + getAiUnitRatingCalculations ().ratingBonusFromPowerBase (enemyUnitStack, players, wizards);
 							if ((isMonsters) || (ourCurrentRating > thisEnemyUnitStackCombatUnitCurrentRatings))
 							{
 								// We can get there eventually, and stand a chance of beating them
@@ -163,13 +177,18 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 								else if (thisDistance.equals (bestDistanceSoFar))
 									destinations.add (location);
 							}
+							else
+								tooStrongCount++;
 						}
 					}
 				}
 		
 		final AIMovementDecision decision;
 		if (destinations.isEmpty ())
+		{
 			decision = null;		// No reachable enemy unit defence positions that we stand a chance of beating
+			log.debug ("No suitable stationary targets found - " + tooStrongCount + " stacks were too strong to attack");
+		}
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
@@ -199,26 +218,34 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @param units The units to move
 	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
-	 * @param isMonsters Whether it is the rampaging monsters player
+	 * @param isMonsters Whether it is the rampaging monsters player; ramping monsters attack the nearest target recklessly whether they stand a chance of winning or not
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
+	 * @param players Players list
+	 * @param wizards True wizard details list
 	 * @return See AIMovementDecision for explanation of return values
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
+	 * @throws PlayerNotFoundException If the player owning a unit stack can't be found
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_AttackWandering (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isMonsters,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
-		throws RecordNotFoundException
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db, final List<PlayerServerDetails> players, final List<KnownWizardDetails> wizards)
+		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
-		
-		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
+	
+		final int ourCurrentRatingBase = units.totalCombatUnitCurrentRatings ();
+		final int ourCurrentRatingBonus = getAiUnitRatingCalculations ().ratingBonusFromPowerBase (units, players, wizards);
+		final int ourCurrentRating = ourCurrentRatingBase + ourCurrentRatingBonus;
+		log.debug ("Looking for suitable wandering target for our unit stack with rating " + ourCurrentRatingBase + " base + " + ourCurrentRatingBonus + " bonus = " + ourCurrentRating + " currently at " + currentLocation);
+
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		AIMovementDistance bestDistanceSoFar = null;
 		Integer bestEnemyUnitStackCombatUnitCurrentRatings = null;		// Just for debug msg
 
+		int tooStrongCount = 0;
 		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
@@ -231,7 +258,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					if ((cityData == null) && (!getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)) &&
 						(enemyUnitStack != null) && (cell != null))
 					{
-						final int thisEnemyUnitStackCombatUnitCurrentRatings = enemyUnitStack.totalCombatUnitCurrentRatings ();
+						final int thisEnemyUnitStackCombatUnitCurrentRatings = enemyUnitStack.totalCombatUnitCurrentRatings () + getAiUnitRatingCalculations ().ratingBonusFromPowerBase (enemyUnitStack, players, wizards);
 						if ((isMonsters) || (ourCurrentRating > thisEnemyUnitStackCombatUnitCurrentRatings))
 						{
 							// We can get there eventually, and stand a chance of beating them
@@ -251,12 +278,17 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 							else if (thisDistance.equals (bestDistanceSoFar))
 								destinations.add (location);
 						}
+						else
+							tooStrongCount++;
 					}
 				}
 		
 		final AIMovementDecision decision;
 		if (destinations.isEmpty ())
+		{
 			decision = null;		// No reachable wandering enemy units that we stand a chance of beating
+			log.debug ("No suitable wandering targets found - " + tooStrongCount + " stacks were too strong to attack");
+		}
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
@@ -1027,5 +1059,21 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final void setCityAI (final CityAI ai)
 	{
 		cityAI = ai;
+	}
+
+	/**
+	 * @return Underlying methods that the AI uses to calculate ratings about how good units are
+	 */
+	public final AIUnitRatingCalculations getAiUnitRatingCalculations ()
+	{
+		return aiUnitRatingCalculations;
+	}
+
+	/**
+	 * @param calc Underlying methods that the AI uses to calculate ratings about how good units are
+	 */
+	public final void setAiUnitRatingCalculations (final AIUnitRatingCalculations calc)
+	{
+		aiUnitRatingCalculations = calc;
 	}
 }

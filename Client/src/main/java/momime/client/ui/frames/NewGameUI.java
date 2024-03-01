@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.swing.Action;
@@ -113,7 +113,6 @@ import momime.common.database.SwitchResearch;
 import momime.common.database.UnitSetting;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPickCount;
-import momime.common.messages.CombatMapSize;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -127,6 +126,7 @@ import momime.common.messages.clienttoserver.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.ChooseWizardMessage;
 import momime.common.messages.clienttoserver.UploadCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
+import momime.common.utils.CombatMapUtils;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
@@ -236,6 +236,9 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
+	
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -4527,16 +4530,7 @@ public final class NewGameUI extends MomClientFrameUI
 		sd.setOverlandMapSize (overlandMapSize);
 		
 		// Combat map size is fixed, at least for now
-		final CombatMapSize combatMapSize = new CombatMapSize ();
-		combatMapSize.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
-		combatMapSize.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
-		combatMapSize.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);
-		combatMapSize.setDepth (1);
-		combatMapSize.setWrapsLeftToRight (false);
-		combatMapSize.setWrapsTopToBottom (false);
-		combatMapSize.setZoneWidth (10);
-		combatMapSize.setZoneHeight (8);
-		sd.setCombatMapSize (combatMapSize);
+		sd.setCombatMapSize (getCombatMapUtils ().createCombatMapSize ());
 		
 		// Land proportion
 		final LandProportionTileType forestTileType = new LandProportionTileType ();
@@ -4997,6 +4991,22 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+	
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+
+	/**
+	 * @param util Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils util)
+	{
+		combatMapUtils = util;
 	}
 	
 	/**

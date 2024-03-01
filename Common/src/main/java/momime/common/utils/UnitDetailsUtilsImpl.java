@@ -190,8 +190,8 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 		if (breakdown == null)
 			result = AddSkillBonusResult.UNIT_DOES_NOT_HAVE_SKILL;
 		
-		else if ((addsToSkill.getAddsToSkillValueType () != AddsToSkillValueType.ADD_FIXED) &&
-			(addsToSkill.getAddsToSkillValueType () != AddsToSkillValueType.ADD_DIVISOR))
+		else if ((addsToSkill.getAddsToSkillValueType () != AddsToSkillValueType.ADD_FIXED) && (addsToSkill.getAddsToSkillValueType () != AddsToSkillValueType.ADD_DIVISOR) &&
+			(addsToSkill.getAddsToSkillValueType () != AddsToSkillValueType.MINIMUM))
 			result = AddSkillBonusResult.INCORRECT_TYPE_OF_ADJUSTMENT;
 		
 		else
@@ -260,6 +260,22 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 					final int bonus;
 					if ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.ADD_FIXED) && (addsToSkill.getAddsToSkillValue () != null))
 						bonus = addsToSkill.getAddsToSkillValue ();
+					
+					// Set skill to a minimum value?
+					else if ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.MINIMUM) && (addsToSkill.getAddsToSkillValue () != null))
+					{
+						int currentSkillValue = 0;
+						for (final Entry<UnitSkillComponent, Integer> c : breakdown.getComponents ().entrySet ())
+							if (c.getValue () == null)
+								throw new MomException ("expandUnitDetails on " + mu.getUnitID () + " trying to sum addsFromSkill ID " + addsToSkill.getAddsToSkillID () + " for minimum value but the " + c.getKey () + " component is null");
+							else
+								currentSkillValue = currentSkillValue + c.getValue ();
+
+						if (addsToSkill.getAddsToSkillValue () > currentSkillValue)
+							bonus = addsToSkill.getAddsToSkillValue () - currentSkillValue;
+						else
+							bonus = 0;
+					}
 					
 					// Divisors are only applicable when adding a value based on another skill
 					else if (unitSkillID == null)

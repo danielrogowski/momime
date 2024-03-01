@@ -2,29 +2,29 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-parent</artifactId>
-	<version>1.6.5</version>
+	<version>1.6.6</version>
 	<name>momimeParent</name>
 	<description>MoM IME multimodule parent project</description>
 	<packaging>pom</packaging>
 
 	<scm>
 		<connection>scm:git:ssh://nigelgay@git.code.sf.net/p/momime/momime</connection>
-		<tag>momime-parent-1.6.5</tag>
+		<tag>momime-parent-1.6.6</tag>
 	</scm>
 
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.6.1</version>
+		<version>0.6.2</version>
 	</parent>
 
 	<properties>
-		<mom.multiplayer.version>0.6.1</mom.multiplayer.version>
-		<mom.map.version>0.6.2</mom.map.version>
-		<mom.xmleditor.version>0.6.2</mom.xmleditor.version>
-		<mom.ndgutils.version>0.6.1</mom.ndgutils.version>
-		<mom.jre.version>17.0.4</mom.jre.version>
-		<mom.jre.build>8</mom.jre.build>
+		<mom.multiplayer.version>0.6.2</mom.multiplayer.version>
+		<mom.map.version>0.6.3</mom.map.version>
+		<mom.xmleditor.version>0.6.3</mom.xmleditor.version>
+		<mom.ndgutils.version>0.6.2</mom.ndgutils.version>
+		<mom.jre.version>17.0.10</mom.jre.version>
+		<mom.jre.build>7</mom.jre.build>
 	</properties>
 
 	<modules>

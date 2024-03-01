@@ -418,6 +418,22 @@
 			<normalKey>N</normalKey>
 		</keyLang>
 	</shortcutKey>
+	<shortcutKey shortcut="VARIABLE_MANA_CONFIRM">
+		<keyLang language="en">
+			<shift>false</shift>
+			<alt>false</alt>
+			<ctrl>false</ctrl>
+			<virtualKey>VK_ENTER</virtualKey>
+		</keyLang>
+	</shortcutKey>
+	<shortcutKey shortcut="ALCHEMY_CONFIRM">
+		<keyLang language="en">
+			<shift>false</shift>
+			<alt>false</alt>
+			<ctrl>false</ctrl>
+			<virtualKey>VK_ENTER</virtualKey>
+		</keyLang>
+	</shortcutKey>
 	<simple>
 		<ok language="en">
 			<text>OK</text>

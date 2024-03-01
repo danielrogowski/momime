@@ -222,7 +222,7 @@ public final class SpellTargetingUtilsImpl implements SpellTargetingUtils
 		    	final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (targetUnit.getUnitLocation ().getZ ()).getRow
 	    			().get (targetUnit.getUnitLocation ().getY ()).getCell ().get (targetUnit.getUnitLocation ().getX ()).getTerrainData ();
 				
-    			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db) == null)
+    			if (getUnitCalculations ().isTileTypeImpassable (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db))
     				result = TargetSpellResult.TERRAIN_IMPASSABLE;
     			
 	    		else
@@ -504,7 +504,7 @@ public final class SpellTargetingUtilsImpl implements SpellTargetingUtils
 	   			{
 					final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), castingPlayerID, null, players, mem, db);
 	
-	    			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db) == null)
+	    			if (getUnitCalculations ().isTileTypeImpassable (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db))
 	    				result = TargetSpellResult.TERRAIN_IMPASSABLE;
 	    			
 		    		else

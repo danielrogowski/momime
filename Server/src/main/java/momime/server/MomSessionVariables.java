@@ -116,4 +116,9 @@ public interface MomSessionVariables
 	 * @return List of diplomacy proposals an AI player is waiting to send to a human player
 	 */
 	public List<DiplomacyProposal> getPendingDiplomacyProposals ();
+	
+	/**
+	 * @return Set to true if the thread is running a game consisting of only AI players
+	 */
+	public boolean isAiGame ();
 }

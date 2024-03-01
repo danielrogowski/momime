@@ -560,7 +560,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				(!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))) ||
 					
 				// Terrain must be passable (so building boats get bumped to ocean tiles)
-				(getUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnit.listModifiedSkillIDs (), tc.getTerrainData ().getTileTypeID (), db) == null))
+				(getUnitCalculations ().isTileTypeImpassable (testUnit, testUnit.listModifiedSkillIDs (), tc.getTerrainData ().getTileTypeID (), db)))
 
 				okToAdd = false;
 			else

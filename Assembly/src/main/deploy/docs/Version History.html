@@ -36,8 +36,34 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.6.5</b></td>
-			<td align=left><b>27 Aug 2023</b></td>
+			<td align=left><b>Current version: 1.6.6</b></td>
+			<td align=left><b>27 Feb 2024</b></td>
+			<td align=left>
+				<b>Updates to overland movement to bring it more in line with original MoM:</b>
+				<ul>
+					<li>Updated movement rate table, especially with regard to flying taking precedence over non-corporeal, and non-corporeal costing &frac12; MP per move
+					<li>Flight (from casting spell or equipped on a hero item) will raise movement speed to 3 if it was less than this
+					<li>Chaos Channels - Flight will raise movement speed to 2 if it was less than this
+					<li>A unit stacked with a wind walker can move at least as far as the wind walker can
+				</ul>
+				
+				<b>Other changes:</b>
+				<ul>
+					<li>AI players now take power base of both themselves and opponent into account when deciding whether to attack, so for example wizards will be more inclined to attack even heavily guarded neutral towns later in the game,
+						wizards will take advantage and attack a wizard's remaining towns while they are banished, AI players will think twice about attacking a powerful wizard, and raiders are more reluctant to attack powerful wizards
+					<li>Enter shortcut key now confirms the Alchemy and Variable Mana popups
+				</ul>
+				
+				<b>Library upgrades:</b>
+				<ul>
+					<li>Upgraded packaged JRE to 17.0.10
+					<li>Upgraded many 3rd party libraries including some with security vulnerabilities
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>Current version: 1.6.5</td>
+			<td align=left>27 Aug 2023</td>
 			<td align=left>
 				<b>Bug fixes relating to Word of Recall and Recall Hero:</b>
 				<ul>

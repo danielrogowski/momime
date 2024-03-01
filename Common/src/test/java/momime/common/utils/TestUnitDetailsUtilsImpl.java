@@ -585,6 +585,78 @@ public final class TestUnitDetailsUtilsImpl
 	}
 
 	/**
+	 * Tests the addSkillBonus method in the situation where we raise a skill we do have to a minimum value
+	 * and we already had some of that skill component
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddSkillBonus_Minimum_Applies () throws Exception
+	{
+		// Unit we are calculating stats for
+		final MinimalUnitDetails mu = mock (MinimalUnitDetails.class);
+		
+		// Details about skill bonus to add
+		final AddsToSkill addsToSkill = new AddsToSkill ();
+		addsToSkill.setAddsToSkillID ("US001");
+		addsToSkill.setAddsToSkillValue (6);
+		addsToSkill.setAddsToSkillValueType (AddsToSkillValueType.MINIMUM);
+		
+		// Existing skill breakdown
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		
+		final UnitSkillValueBreakdown breakdown = new UnitSkillValueBreakdown (null);
+		breakdown.getComponents ().put (UnitSkillComponent.BASIC, 1);
+		breakdown.getComponents ().put (UnitSkillComponent.SPELL_EFFECTS, 1);
+		modifiedSkillValues.put ("US001", breakdown);
+		
+		// Set up object to test
+		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
+		
+		// Run method
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillBonus (mu, null, addsToSkill, null, modifiedSkillValues, null, null, null, null));
+		
+		// Check results
+		assertEquals (2, breakdown.getComponents ().size ());
+		assertEquals (1, breakdown.getComponents ().get (UnitSkillComponent.BASIC));
+		assertEquals (5, breakdown.getComponents ().get (UnitSkillComponent.SPELL_EFFECTS));
+	}
+	
+	/**
+	 * Tests the addSkillBonus method in the situation where we raise a skill we do have to a minimum value, but we already have the skill at least that value
+	 * and we already had some of that skill component
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddSkillBonus_Minimum_DoesNotApplies () throws Exception
+	{
+		// Unit we are calculating stats for
+		final MinimalUnitDetails mu = mock (MinimalUnitDetails.class);
+		
+		// Details about skill bonus to add
+		final AddsToSkill addsToSkill = new AddsToSkill ();
+		addsToSkill.setAddsToSkillID ("US001");
+		addsToSkill.setAddsToSkillValue (2);
+		addsToSkill.setAddsToSkillValueType (AddsToSkillValueType.MINIMUM);
+		
+		// Existing skill breakdown
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		
+		final UnitSkillValueBreakdown breakdown = new UnitSkillValueBreakdown (null);
+		breakdown.getComponents ().put (UnitSkillComponent.BASIC, 4);
+		modifiedSkillValues.put ("US001", breakdown);
+		
+		// Set up object to test
+		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
+		
+		// Run method - it still returns APPLIES because the bonus would apply, we just don't need it because we already have the skill value higher
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillBonus (mu, null, addsToSkill, null, modifiedSkillValues, null, null, null, null));
+		
+		// Check results
+		assertEquals (1, breakdown.getComponents ().size ());
+		assertEquals (4, breakdown.getComponents ().get (UnitSkillComponent.BASIC));
+	}
+	
+	/**
 	 * Tests the addSkillBonus method in the situation where the amount that gets added is a division of the unit's level, like happens with hero skills
 	 * @throws Exception If there is a problem
 	 */

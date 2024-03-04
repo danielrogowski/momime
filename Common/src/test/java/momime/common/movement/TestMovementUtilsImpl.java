@@ -3,6 +3,7 @@ package momime.common.movement;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,16 +32,22 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CitySpellEffect;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileBorderBlocksMovementID;
 import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
+import momime.common.database.Pick;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
@@ -48,7 +56,10 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Tests the MovementUtilsImpl class
@@ -353,6 +364,726 @@ public final class TestMovementUtilsImpl
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
 					assertEquals (0, counts [z] [y] [x]);
+	}
+	
+	/**
+	 * Tests the determineBlockedLocations method on normal ground units
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testDetermineBlockedLocations_Normal () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Pick magicRealm1 = new Pick ();
+		magicRealm1.setPickID ("MB01");
+		
+		final Pick magicRealm2 = new Pick ();
+		magicRealm2.setPickID ("MB02");
+		
+		final CitySpellEffect spellWard1 = new CitySpellEffect ();
+		spellWard1.setCitySpellEffectID ("CSE01");
+		spellWard1.setBlockEntryByCreaturesOfRealm (true);
+		spellWard1.getProtectsAgainstSpellRealm ().add ("MB01");
+
+		final CitySpellEffect spellWard3 = new CitySpellEffect ();
+		spellWard3.setCitySpellEffectID ("CSE03");
+		spellWard3.setBlockEntryByCreaturesOfRealm (true);
+		spellWard3.getProtectsAgainstSpellRealm ().add ("MB03");
+		
+		when (db.getCitySpellEffect ()).thenReturn (Arrays.asList (spellWard1, spellWard3));
+		
+		// Flying skills
+		final CombatTileType cloud = new CombatTileType ();
+		cloud.getCombatTileTypeRequiresSkill ().add ("FLY01");
+		when (db.findCombatTileType (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD, "calculateDoubleMovementToEnterTile")).thenReturn (cloud);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+
+		// Our units at each map cell
+		final int [] [] [] ourUnitCountAtLocation = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		ourUnitCountAtLocation [0] [10] [4] = 7;	// 2 units moving, so can add to stack of 7, but not 8
+		ourUnitCountAtLocation [0] [10] [5] = 8;
+		
+		// Spell wards
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MemoryMaintainedSpell spellWardedCity1 = new MemoryMaintainedSpell ();
+		spellWardedCity1.setCityLocation (new MapCoordinates3DEx (1, 10, 0));
+		spellWardedCity1.setCitySpellEffectID ("CSE01");
+		mem.getMaintainedSpell ().add (spellWardedCity1);
+
+		final MemoryMaintainedSpell spellWardedCity3 = new MemoryMaintainedSpell ();
+		spellWardedCity3.setCityLocation (new MapCoordinates3DEx (2, 10, 0));
+		spellWardedCity3.setCitySpellEffectID ("CSE03");
+		mem.getMaintainedSpell ().add (spellWardedCity3);
+		
+		// Unit stack that's trying to move
+		final ExpandedUnitDetails xuUnit = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails xuTransport = mock (ExpandedUnitDetails.class);
+		
+		when (xuUnit.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm1);
+		when (xuTransport.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm2);
+		
+		when (xuUnit.hasModifiedSkill ("FLY01")).thenReturn (false);
+		when (xuTransport.hasModifiedSkill ("FLY01")).thenReturn (false);
+		
+		final UnitStack unitStack = new UnitStack ();
+		unitStack.getUnits ().add (xuUnit);
+		unitStack.getTransports ().add (xuTransport);
+		
+		// Blocked by Flying Fortress because unit stack can't fly, unless its ours
+		final MemoryMaintainedSpell flyingFortress = new MemoryMaintainedSpell ();
+		flyingFortress.setSpellID (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS);
+		flyingFortress.setCastingPlayerID (2);
+		flyingFortress.setCityLocation (new MapCoordinates3DEx (3, 10, 0));
+		mem.getMaintainedSpell ().add (flyingFortress);
+		
+		// Wizard who owns the stack
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails movingWizard = new KnownWizardDetails ();
+		movingWizard.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "determineBlockedLocations")).thenReturn (movingWizard);
+		
+		// No planar seal
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (mem.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null)).thenReturn (null); 
+		
+		// Regular wizard
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		
+		// Run method
+		final Set<MapCoordinates3DEx> locations = utils.determineBlockedLocations (unitStack, 1, ourUnitCountAtLocation, sys, mem, db);
+		
+		// Check results
+		assertEquals (3, locations.size ());
+		assertTrue (locations.contains (new MapCoordinates3DEx (1, 10, 0)), "Should be blocked by matching magic realm Spell ward");
+		assertTrue (locations.contains (new MapCoordinates3DEx (3, 10, 0)), "Should be blocked by Flying Fortress");
+		assertTrue (locations.contains (new MapCoordinates3DEx (5, 10, 0)), "Should be blocked by too many of our units");
+		
+		verifyNoMoreInteractions (db, xuUnit, xuTransport, knownWizardUtils, memoryMaintainedSpellUtils, playerKnowledgeUtils);
+	}
+	
+	/**
+	 * Tests the determineBlockedLocations method when the whole unit stack can fly
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testDetermineBlockedLocations_Flying () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Pick magicRealm1 = new Pick ();
+		magicRealm1.setPickID ("MB01");
+		
+		final Pick magicRealm2 = new Pick ();
+		magicRealm2.setPickID ("MB02");
+		
+		final CitySpellEffect spellWard1 = new CitySpellEffect ();
+		spellWard1.setCitySpellEffectID ("CSE01");
+		spellWard1.setBlockEntryByCreaturesOfRealm (true);
+		spellWard1.getProtectsAgainstSpellRealm ().add ("MB01");
+
+		final CitySpellEffect spellWard3 = new CitySpellEffect ();
+		spellWard3.setCitySpellEffectID ("CSE03");
+		spellWard3.setBlockEntryByCreaturesOfRealm (true);
+		spellWard3.getProtectsAgainstSpellRealm ().add ("MB03");
+		
+		when (db.getCitySpellEffect ()).thenReturn (Arrays.asList (spellWard1, spellWard3));
+		
+		// Flying skills
+		final CombatTileType cloud = new CombatTileType ();
+		cloud.getCombatTileTypeRequiresSkill ().add ("FLY01");
+		when (db.findCombatTileType (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD, "calculateDoubleMovementToEnterTile")).thenReturn (cloud);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+
+		// Our units at each map cell
+		final int [] [] [] ourUnitCountAtLocation = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		ourUnitCountAtLocation [0] [10] [4] = 7;	// 2 units moving, so can add to stack of 7, but not 8
+		ourUnitCountAtLocation [0] [10] [5] = 8;
+		
+		// Spell wards
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MemoryMaintainedSpell spellWardedCity1 = new MemoryMaintainedSpell ();
+		spellWardedCity1.setCityLocation (new MapCoordinates3DEx (1, 10, 0));
+		spellWardedCity1.setCitySpellEffectID ("CSE01");
+		mem.getMaintainedSpell ().add (spellWardedCity1);
+
+		final MemoryMaintainedSpell spellWardedCity3 = new MemoryMaintainedSpell ();
+		spellWardedCity3.setCityLocation (new MapCoordinates3DEx (2, 10, 0));
+		spellWardedCity3.setCitySpellEffectID ("CSE03");
+		mem.getMaintainedSpell ().add (spellWardedCity3);
+		
+		// Unit stack that's trying to move
+		final ExpandedUnitDetails xuUnit = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails xuTransport = mock (ExpandedUnitDetails.class);
+		
+		when (xuUnit.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm1);
+		when (xuTransport.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm2);
+		
+		when (xuUnit.hasModifiedSkill ("FLY01")).thenReturn (true);
+		when (xuTransport.hasModifiedSkill ("FLY01")).thenReturn (true);
+		
+		final UnitStack unitStack = new UnitStack ();
+		unitStack.getUnits ().add (xuUnit);
+		unitStack.getTransports ().add (xuTransport);
+		
+		// Not blocked by Flying Fortress because unit stack can fly
+		final MemoryMaintainedSpell flyingFortress = new MemoryMaintainedSpell ();
+		flyingFortress.setSpellID (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS);
+		flyingFortress.setCastingPlayerID (2);
+		flyingFortress.setCityLocation (new MapCoordinates3DEx (3, 10, 0));
+		mem.getMaintainedSpell ().add (flyingFortress);
+		
+		// Wizard who owns the stack
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails movingWizard = new KnownWizardDetails ();
+		movingWizard.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "determineBlockedLocations")).thenReturn (movingWizard);
+		
+		// No planar seal
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (mem.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null)).thenReturn (null); 
+		
+		// Regular wizard
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		
+		// Run method
+		final Set<MapCoordinates3DEx> locations = utils.determineBlockedLocations (unitStack, 1, ourUnitCountAtLocation, sys, mem, db);
+		
+		// Check results
+		assertEquals (2, locations.size ());
+		assertTrue (locations.contains (new MapCoordinates3DEx (1, 10, 0)), "Should be blocked by matching magic realm Spell ward");
+		assertTrue (locations.contains (new MapCoordinates3DEx (5, 10, 0)), "Should be blocked by too many of our units");
+		
+		verifyNoMoreInteractions (db, xuUnit, xuTransport, knownWizardUtils, memoryMaintainedSpellUtils, playerKnowledgeUtils);
+	}
+	
+	/**
+	 * Tests the determineBlockedLocations method with Planar Seal in effect
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testDetermineBlockedLocations_PlanarSeal () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Pick magicRealm1 = new Pick ();
+		magicRealm1.setPickID ("MB01");
+		
+		final Pick magicRealm2 = new Pick ();
+		magicRealm2.setPickID ("MB02");
+		
+		final CitySpellEffect spellWard1 = new CitySpellEffect ();
+		spellWard1.setCitySpellEffectID ("CSE01");
+		spellWard1.setBlockEntryByCreaturesOfRealm (true);
+		spellWard1.getProtectsAgainstSpellRealm ().add ("MB01");
+
+		final CitySpellEffect spellWard3 = new CitySpellEffect ();
+		spellWard3.setCitySpellEffectID ("CSE03");
+		spellWard3.setBlockEntryByCreaturesOfRealm (true);
+		spellWard3.getProtectsAgainstSpellRealm ().add ("MB03");
+		
+		when (db.getCitySpellEffect ()).thenReturn (Arrays.asList (spellWard1, spellWard3));
+		
+		// Flying skills
+		final CombatTileType cloud = new CombatTileType ();
+		cloud.getCombatTileTypeRequiresSkill ().add ("FLY01");
+		when (db.findCombatTileType (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD, "calculateDoubleMovementToEnterTile")).thenReturn (cloud);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+
+		// Our units at each map cell
+		final int [] [] [] ourUnitCountAtLocation = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		ourUnitCountAtLocation [0] [10] [4] = 7;	// 2 units moving, so can add to stack of 7, but not 8
+		ourUnitCountAtLocation [0] [10] [5] = 8;
+		
+		// Spell wards
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MemoryMaintainedSpell spellWardedCity1 = new MemoryMaintainedSpell ();
+		spellWardedCity1.setCityLocation (new MapCoordinates3DEx (1, 10, 0));
+		spellWardedCity1.setCitySpellEffectID ("CSE01");
+		mem.getMaintainedSpell ().add (spellWardedCity1);
+
+		final MemoryMaintainedSpell spellWardedCity3 = new MemoryMaintainedSpell ();
+		spellWardedCity3.setCityLocation (new MapCoordinates3DEx (2, 10, 0));
+		spellWardedCity3.setCitySpellEffectID ("CSE03");
+		mem.getMaintainedSpell ().add (spellWardedCity3);
+		
+		// Unit stack that's trying to move
+		final ExpandedUnitDetails xuUnit = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails xuTransport = mock (ExpandedUnitDetails.class);
+		
+		when (xuUnit.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm1);
+		when (xuTransport.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm2);
+		
+		when (xuUnit.hasModifiedSkill ("FLY01")).thenReturn (false);
+		when (xuTransport.hasModifiedSkill ("FLY01")).thenReturn (false);
+		
+		final UnitStack unitStack = new UnitStack ();
+		unitStack.getUnits ().add (xuUnit);
+		unitStack.getTransports ().add (xuTransport);
+		
+		// Blocked by Flying Fortress because unit stack can't fly, unless its ours
+		final MemoryMaintainedSpell flyingFortress = new MemoryMaintainedSpell ();
+		flyingFortress.setSpellID (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS);
+		flyingFortress.setCastingPlayerID (2);
+		flyingFortress.setCityLocation (new MapCoordinates3DEx (3, 10, 0));
+		mem.getMaintainedSpell ().add (flyingFortress);
+		
+		// Wizard who owns the stack
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails movingWizard = new KnownWizardDetails ();
+		movingWizard.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "determineBlockedLocations")).thenReturn (movingWizard);
+		
+		// Planar seal
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (mem.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
+		
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		mem.setMap (terrain);
+		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (6).setTerrainData (terrainData);
+		
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (true);
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (null)).thenReturn (false);	// Every other cell has null terrainData
+		
+		// Regular wizard
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		
+		// Run method
+		final Set<MapCoordinates3DEx> locations = utils.determineBlockedLocations (unitStack, 1, ourUnitCountAtLocation, sys, mem, db);
+		
+		// Check results
+		assertEquals (4, locations.size ());
+		assertTrue (locations.contains (new MapCoordinates3DEx (1, 10, 0)), "Should be blocked by matching magic realm Spell ward");
+		assertTrue (locations.contains (new MapCoordinates3DEx (3, 10, 0)), "Should be blocked by Flying Fortress");
+		assertTrue (locations.contains (new MapCoordinates3DEx (5, 10, 0)), "Should be blocked by too many of our units");
+		assertTrue (locations.contains (new MapCoordinates3DEx (6, 10, 0)), "Should be blocked by a Tower when Planar Seal is in effect");
+		
+		verifyNoMoreInteractions (db, xuUnit, xuTransport, knownWizardUtils, memoryMaintainedSpellUtils, playerKnowledgeUtils, memoryGridCellUtils);
+	}
+	
+	/**
+	 * Tests the determineBlockedLocations method on a stack of rampaging monsters
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testDetermineBlockedLocations_RampagingMonsters () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Pick magicRealm1 = new Pick ();
+		magicRealm1.setPickID ("MB01");
+		
+		final Pick magicRealm2 = new Pick ();
+		magicRealm2.setPickID ("MB02");
+		
+		final CitySpellEffect spellWard1 = new CitySpellEffect ();
+		spellWard1.setCitySpellEffectID ("CSE01");
+		spellWard1.setBlockEntryByCreaturesOfRealm (true);
+		spellWard1.getProtectsAgainstSpellRealm ().add ("MB01");
+
+		final CitySpellEffect spellWard3 = new CitySpellEffect ();
+		spellWard3.setCitySpellEffectID ("CSE03");
+		spellWard3.setBlockEntryByCreaturesOfRealm (true);
+		spellWard3.getProtectsAgainstSpellRealm ().add ("MB03");
+		
+		when (db.getCitySpellEffect ()).thenReturn (Arrays.asList (spellWard1, spellWard3));
+		
+		// Flying skills
+		final CombatTileType cloud = new CombatTileType ();
+		cloud.getCombatTileTypeRequiresSkill ().add ("FLY01");
+		when (db.findCombatTileType (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD, "calculateDoubleMovementToEnterTile")).thenReturn (cloud);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+
+		// Our units at each map cell
+		final int [] [] [] ourUnitCountAtLocation = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		ourUnitCountAtLocation [0] [10] [4] = 7;	// 2 units moving, so can add to stack of 7, but not 8
+		ourUnitCountAtLocation [0] [10] [5] = 8;
+		
+		// Spell wards
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MemoryMaintainedSpell spellWardedCity1 = new MemoryMaintainedSpell ();
+		spellWardedCity1.setCityLocation (new MapCoordinates3DEx (1, 10, 0));
+		spellWardedCity1.setCitySpellEffectID ("CSE01");
+		mem.getMaintainedSpell ().add (spellWardedCity1);
+
+		final MemoryMaintainedSpell spellWardedCity3 = new MemoryMaintainedSpell ();
+		spellWardedCity3.setCityLocation (new MapCoordinates3DEx (2, 10, 0));
+		spellWardedCity3.setCitySpellEffectID ("CSE03");
+		mem.getMaintainedSpell ().add (spellWardedCity3);
+		
+		// Unit stack that's trying to move
+		final ExpandedUnitDetails xuUnit = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails xuTransport = mock (ExpandedUnitDetails.class);
+		
+		when (xuUnit.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm1);
+		when (xuTransport.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm2);
+		
+		when (xuUnit.hasModifiedSkill ("FLY01")).thenReturn (false);
+		when (xuTransport.hasModifiedSkill ("FLY01")).thenReturn (false);
+		
+		final UnitStack unitStack = new UnitStack ();
+		unitStack.getUnits ().add (xuUnit);
+		unitStack.getTransports ().add (xuTransport);
+		
+		// Blocked by Flying Fortress because unit stack can't fly, unless its ours
+		final MemoryMaintainedSpell flyingFortress = new MemoryMaintainedSpell ();
+		flyingFortress.setSpellID (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS);
+		flyingFortress.setCastingPlayerID (2);
+		flyingFortress.setCityLocation (new MapCoordinates3DEx (3, 10, 0));
+		mem.getMaintainedSpell ().add (flyingFortress);
+		
+		// Rampaging monsters own the stack, also set up raiders and some other wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails rampagingMonsters = new KnownWizardDetails ();
+		rampagingMonsters.setPlayerID (1);
+		rampagingMonsters.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		
+		final KnownWizardDetails raiders = new KnownWizardDetails ();
+		raiders.setPlayerID (2);
+		raiders.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
+
+		final KnownWizardDetails someWizard = new KnownWizardDetails ();
+		someWizard.setPlayerID (3);
+		someWizard.setWizardID ("WZ01");
+		
+		mem.getWizardDetails ().add (rampagingMonsters);
+		mem.getWizardDetails ().add (raiders);
+		mem.getWizardDetails ().add (someWizard);
+		
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "determineBlockedLocations")).thenReturn (rampagingMonsters);
+		
+		// Rampaging monsters can't move onto nodes/lairs/towers
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		mem.setMap (terrain);
+		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (6).setTerrainData (terrainData);
+		
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.isNodeLairTower (terrainData, db)).thenReturn (true);
+		when (memoryGridCellUtils.isNodeLairTower (null, db)).thenReturn (false);		// Every other cell has null terrainData
+		
+		// Who are and are not wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS)).thenReturn (false);
+		when (playerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS)).thenReturn (false);
+		
+		// We won't attack a Raiders unit stack
+		final MemoryUnit raidersUnit = new MemoryUnit ();
+		raidersUnit.setStatus (UnitStatusID.ALIVE);
+		raidersUnit.setOwningPlayerID (2);
+		raidersUnit.setUnitLocation (new MapCoordinates3DEx (7, 10, 0));
+		mem.getUnit ().add (raidersUnit);
+
+		final MemoryUnit otherUnit = new MemoryUnit ();
+		otherUnit.setStatus (UnitStatusID.ALIVE);
+		otherUnit.setOwningPlayerID (3);
+		otherUnit.setUnitLocation (new MapCoordinates3DEx (8, 10, 0));
+		mem.getUnit ().add (otherUnit);
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		
+		// Run method
+		final Set<MapCoordinates3DEx> locations = utils.determineBlockedLocations (unitStack, 1, ourUnitCountAtLocation, sys, mem, db);
+		
+		// Check results
+		assertEquals (5, locations.size ());
+		assertTrue (locations.contains (new MapCoordinates3DEx (1, 10, 0)), "Should be blocked by matching magic realm Spell ward");
+		assertTrue (locations.contains (new MapCoordinates3DEx (3, 10, 0)), "Should be blocked by Flying Fortress");
+		assertTrue (locations.contains (new MapCoordinates3DEx (5, 10, 0)), "Should be blocked by too many of our units");
+		assertTrue (locations.contains (new MapCoordinates3DEx (6, 10, 0)), "Should be blocked by a Node/Lair/Tower to Rampaging Monsters");
+		assertTrue (locations.contains (new MapCoordinates3DEx (6, 10, 0)), "Should be blocked by a Raiders unit");
+
+		verifyNoMoreInteractions (db, xuUnit, xuTransport, knownWizardUtils, playerKnowledgeUtils, memoryGridCellUtils);
+	}
+	
+	/**
+	 * Tests the findEarthGates method
+	 */
+	@Test
+	public final void testFindEarthGates ()
+	{
+		// List of spells
+		final MemoryMaintainedSpell match = new MemoryMaintainedSpell ();
+		match.setCastingPlayerID (1);
+		match.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		match.setSpellID (CommonDatabaseConstants.SPELL_ID_EARTH_GATE);
+
+		final MemoryMaintainedSpell wrongPlayer = new MemoryMaintainedSpell ();
+		wrongPlayer.setCastingPlayerID (2);
+		wrongPlayer.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		wrongPlayer.setSpellID (CommonDatabaseConstants.SPELL_ID_EARTH_GATE);
+		
+		final MemoryMaintainedSpell wrongSpell = new MemoryMaintainedSpell ();
+		wrongSpell.setCastingPlayerID (1);
+		wrongSpell.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		wrongSpell.setSpellID ("SP001");
+		
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (match, wrongPlayer, wrongSpell);
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		
+		// Run method
+		final Set<MapCoordinates3DEx> locations = utils.findEarthGates (1, spells);
+		
+		// Check results
+		assertEquals (1, locations.size ());
+		assertTrue (locations.contains (new MapCoordinates3DEx (20, 10, 1)));
+	}
+	
+	/**
+	 * Tests the findAstralGates method when there is no Planar Seal in effect
+	 */
+	@Test
+	public final void testFindAstralGates_Normal ()
+	{
+		// List of spells
+		final MemoryMaintainedSpell match = new MemoryMaintainedSpell ();
+		match.setCastingPlayerID (1);
+		match.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		match.setSpellID (CommonDatabaseConstants.SPELL_ID_ASTRAL_GATE);
+
+		final MemoryMaintainedSpell wrongPlayer = new MemoryMaintainedSpell ();
+		wrongPlayer.setCastingPlayerID (2);
+		wrongPlayer.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		wrongPlayer.setSpellID (CommonDatabaseConstants.SPELL_ID_ASTRAL_GATE);
+		
+		final MemoryMaintainedSpell wrongSpell = new MemoryMaintainedSpell ();
+		wrongSpell.setCastingPlayerID (1);
+		wrongSpell.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		wrongSpell.setSpellID ("SP001");
+		
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (match, wrongPlayer, wrongSpell);
+
+		// No planar seal
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null)).thenReturn (null);
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// Run method
+		final Set<MapCoordinates2DEx> locations = utils.findAstralGates (1, spells);
+
+		// Check results
+		assertEquals (1, locations.size ());
+		assertTrue (locations.contains (new MapCoordinates2DEx (20, 10)));
+		
+		verifyNoMoreInteractions (memoryMaintainedSpellUtils);
+	}
+
+	/**
+	 * Tests the findAstralGates method when there is Planar Seal in effect
+	 */
+	@Test
+	public final void testFindAstralGates_PlanarSeal ()
+	{
+		// List of spells
+		final MemoryMaintainedSpell match = new MemoryMaintainedSpell ();
+		match.setCastingPlayerID (1);
+		match.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		match.setSpellID (CommonDatabaseConstants.SPELL_ID_ASTRAL_GATE);
+
+		final MemoryMaintainedSpell wrongPlayer = new MemoryMaintainedSpell ();
+		wrongPlayer.setCastingPlayerID (2);
+		wrongPlayer.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		wrongPlayer.setSpellID (CommonDatabaseConstants.SPELL_ID_ASTRAL_GATE);
+		
+		final MemoryMaintainedSpell wrongSpell = new MemoryMaintainedSpell ();
+		wrongSpell.setCastingPlayerID (1);
+		wrongSpell.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		wrongSpell.setSpellID ("SP001");
+		
+		final List<MemoryMaintainedSpell> spells = Arrays.asList (match, wrongPlayer, wrongSpell);
+
+		// No planar seal
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// Run method
+		final Set<MapCoordinates2DEx> locations = utils.findAstralGates (1, spells);
+
+		// Check results
+		assertEquals (0, locations.size ());
+		
+		verifyNoMoreInteractions (memoryMaintainedSpellUtils);
+	}
+	
+	/**
+	 * Tests the calculateDoubleMovementToEnterTile method on passable terrain
+	 */
+	@Test
+	public final void testCalculateDoubleMovementToEnterTile_Passable ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Terrain
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Transports
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		
+		// Unit stack to calculate movement rate for
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+
+		// Movement rates
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, true)).thenReturn ("TT01");
+
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		doubleMovementRates.put ("TT01", 4);
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		
+		// Run method
+		assertEquals (4, utils.calculateDoubleMovementToEnterTile (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), cellTransportCapacity, doubleMovementRates, terrain, db));
+		
+		// Check mocks
+		verifyNoMoreInteractions (db, memoryGridCellUtils);
+	}
+
+	/**
+	 * Tests the calculateDoubleMovementToEnterTile method on impassable terrain
+	 */
+	@Test
+	public final void testCalculateDoubleMovementToEnterTile_Impassable ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Terrain
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Transports
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		
+		// Unit stack to calculate movement rate for
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+
+		// Movement rates
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, true)).thenReturn ("TT01");
+
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		
+		// Run method
+		assertNull (utils.calculateDoubleMovementToEnterTile (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), cellTransportCapacity, doubleMovementRates, terrain, db));
+		
+		// Check mocks
+		verifyNoMoreInteractions (db, memoryGridCellUtils);
+	}
+
+	/**
+	 * Tests the calculateDoubleMovementToEnterTile method terrain that is impassable to us, but there's a transport there we can get in
+	 */
+	@Test
+	public final void testCalculateDoubleMovementToEnterTile_Transport ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Terrain
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Transports
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		cellTransportCapacity [1] [10] [20] = 1;
+		
+		// Unit stack to calculate movement rate for
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+
+		// Movement rates
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, true)).thenReturn ("TT01");
+
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Set up object to test
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		
+		// Run method
+		assertEquals (2, utils.calculateDoubleMovementToEnterTile (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), cellTransportCapacity, doubleMovementRates, terrain, db));
+		
+		// Check mocks
+		verifyNoMoreInteractions (db, memoryGridCellUtils);
 	}
 	
 	/**
@@ -940,5 +1671,84 @@ public final class TestMovementUtilsImpl
 		// Change the building to a rock, which doesn't block movement, now the road works
 		tile.getTileLayer ().get (1).setCombatTileTypeID ("CBL01");
 		assertEquals (1, utils.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
+		
+		verifyNoMoreInteractions (db, xu);
+	}
+	
+	/**
+	 * Tests the processCombatMovementCell method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProcessCombatMovementCell () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Unit being moved
+		final ExpandedUnitDetails unitBeingMoved = mock (ExpandedUnitDetails.class);
+
+		// Combat map
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles combatMap = GenerateTestData.createCombatMap (sys);
+		
+		// Most lists are just passed into the method and down into considerPossibleCombatMove
+		final List<MapCoordinates2DEx> cellsLeftToCheck = new ArrayList<MapCoordinates2DEx> ();
+		final int [] [] doubleMovementDistances = new int [sys.getHeight ()] [sys.getWidth ()];
+		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
+		final CombatMovementType [] [] movementTypes = new CombatMovementType [sys.getHeight ()] [sys.getWidth ()];
+		final boolean [] [] ourUnits = new boolean [sys.getHeight ()] [sys.getWidth ()];
+		final String [] [] enemyUnits = new String [sys.getHeight ()] [sys.getWidth ()];
+		final List<String> borderTargetIDs = new ArrayList<String> ();
+		
+		// 4 double movement points left
+		when (unitBeingMoved.getDoubleCombatMovesLeft ()).thenReturn (6);
+		doubleMovementDistances [10] [5] = 2;
+		
+		// Set up object to test
+		final UnitMovement unitMovement = mock (UnitMovement.class);
+		
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		utils.setUnitMovement (unitMovement);
+		
+		// Run method
+		utils.processCombatMovementCell (new MapCoordinates2DEx (5, 10), unitBeingMoved, false, cellsLeftToCheck, doubleMovementDistances,
+			movementDirections, movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, sys, db);
+		
+		// Check method calls
+		verify (unitMovement).considerPossibleCombatMove (new MapCoordinates2DEx (5, 10), new MapCoordinates2DEx (5, 8), 1, 2, 4,
+			unitBeingMoved, false, cellsLeftToCheck, doubleMovementDistances, movementDirections,
+			movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, sys, db);
+
+		verify (unitMovement).considerPossibleCombatMove (new MapCoordinates2DEx (5, 10), new MapCoordinates2DEx (5, 9), 2, 2, 4,
+			unitBeingMoved, false, cellsLeftToCheck, doubleMovementDistances, movementDirections,
+			movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, sys, db);
+
+		verify (unitMovement).considerPossibleCombatMove (new MapCoordinates2DEx (5, 10), new MapCoordinates2DEx (6, 10), 3, 2, 4,
+			unitBeingMoved, false, cellsLeftToCheck, doubleMovementDistances, movementDirections,
+			movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, sys, db);
+
+		verify (unitMovement).considerPossibleCombatMove (new MapCoordinates2DEx (5, 10), new MapCoordinates2DEx (5, 11), 4, 2, 4,
+			unitBeingMoved, false, cellsLeftToCheck, doubleMovementDistances, movementDirections,
+			movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, sys, db);
+
+		verify (unitMovement).considerPossibleCombatMove (new MapCoordinates2DEx (5, 10), new MapCoordinates2DEx (5, 12), 5, 2, 4,
+			unitBeingMoved, false, cellsLeftToCheck, doubleMovementDistances, movementDirections,
+			movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, sys, db);
+
+		verify (unitMovement).considerPossibleCombatMove (new MapCoordinates2DEx (5, 10), new MapCoordinates2DEx (4, 11), 6, 2, 4,
+			unitBeingMoved, false, cellsLeftToCheck, doubleMovementDistances, movementDirections,
+			movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, sys, db);
+
+		verify (unitMovement).considerPossibleCombatMove (new MapCoordinates2DEx (5, 10), new MapCoordinates2DEx (4, 10), 7, 2, 4,
+			unitBeingMoved, false, cellsLeftToCheck, doubleMovementDistances, movementDirections,
+			movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, sys, db);
+
+		verify (unitMovement).considerPossibleCombatMove (new MapCoordinates2DEx (5, 10), new MapCoordinates2DEx (4, 9), 8, 2, 4,
+			unitBeingMoved, false, cellsLeftToCheck, doubleMovementDistances, movementDirections,
+			movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, sys, db);
+
+		verifyNoMoreInteractions (db, unitBeingMoved, unitMovement);
 	}
 }

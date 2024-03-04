@@ -248,7 +248,7 @@ public final class MovementUtilsImpl implements MovementUtils
 		
 		// Unless every single unit can fly, we're blocked from entering anywhere with Flying Fortress
 		if (!allCanFly.getValue ())
-			mem.getMaintainedSpell ().stream ().filter (s -> (s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS)) && (s.getCastingPlayerID () != movingPlayerID)).map
+			mem.getMaintainedSpell ().stream ().filter (s -> (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS.equals (s.getSpellID ())) && (s.getCastingPlayerID () != movingPlayerID)).map
 				(s -> (MapCoordinates3DEx) s.getCityLocation ()).forEach (l -> blockedLocations.add (l));
 		
 		// To rampaging monsters, all nodes, lairs and towers are blocked so they don't end up clearing or joining the lair
@@ -258,11 +258,15 @@ public final class MovementUtilsImpl implements MovementUtils
 			for (int z = 0; z < overlandMapCoordinateSystem.getDepth (); z++)
 				for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
 					for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
-					{
-						final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
-						if (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db))
+
+						if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
 							blockedLocations.add (new MapCoordinates3DEx (x, y, z));
-					}
+						else						
+						{
+							final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+							if (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db))
+								blockedLocations.add (new MapCoordinates3DEx (x, y, z));
+						}
 		}
 		else
 		{

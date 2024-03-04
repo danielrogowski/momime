@@ -69,7 +69,7 @@ public final class TestUnitVisibilityUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (3);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)).thenReturn (false);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL)).thenReturn (false);
-		when (xu.hasModifiedSkill ("IS08")).thenReturn (false);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_HERO_ITEM)).thenReturn (false);
 		
 		// Set up object to test
 		final UnitVisibilityUtilsImpl utils = new UnitVisibilityUtilsImpl ();
@@ -105,7 +105,7 @@ public final class TestUnitVisibilityUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (3);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)).thenReturn (true);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL)).thenReturn (false);
-		when (xu.hasModifiedSkill ("IS08")).thenReturn (false);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_HERO_ITEM)).thenReturn (false);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (3, 7));
 		
@@ -171,7 +171,7 @@ public final class TestUnitVisibilityUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (3);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)).thenReturn (true);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL)).thenReturn (false);
-		when (xu.hasModifiedSkill ("IS08")).thenReturn (false);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_HERO_ITEM)).thenReturn (false);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (3, 7));
 		
@@ -228,7 +228,7 @@ public final class TestUnitVisibilityUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (3);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)).thenReturn (true);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL)).thenReturn (false);
-		when (xu.hasModifiedSkill ("IS08")).thenReturn (false);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_HERO_ITEM)).thenReturn (false);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (3, 7));
 		
@@ -343,7 +343,7 @@ public final class TestUnitVisibilityUtilsImpl
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.getInvisibilityHeroItemBonusID ()).thenReturn ("IS08");
+		when (db.getInvisibilityHeroItemBonusID ()).thenReturn (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_HERO_ITEM);
 		
 		// Unit we're trying to see
 		final MemoryUnit mu = new MemoryUnit ();
@@ -351,7 +351,7 @@ public final class TestUnitVisibilityUtilsImpl
 		mu.setOwningPlayerID (3);
 		
 		final NumberedHeroItem item = new NumberedHeroItem ();
-		item.getHeroItemChosenBonus ().add ("IS08");
+		item.getHeroItemChosenBonus ().add (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_HERO_ITEM);
 		
 		final MemoryUnitHeroItemSlot itemSlot = new MemoryUnitHeroItemSlot ();
 		itemSlot.setHeroItem (item);

@@ -934,12 +934,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="advancedPlayerFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
-		<property name="serviceLocatorInterface" value="momime.client.audio.AdvancedPlayerFactory" />
+		<property name="serviceLocatorInterface" value="com.ndg.audio.AdvancedPlayerFactory" />
 	</bean>
 	
-	<bean id="advancedPlayer" class="momime.client.audio.AdvancedPlayerImpl" scope="prototype" />
+	<bean id="advancedPlayer" class="com.ndg.audio.AdvancedPlayerImpl" scope="prototype" />
 	
-	<bean id="musicPlayer" class="momime.client.audio.AudioPlayerImpl">
+	<bean id="musicPlayer" class="momime.client.audio.MomAudioPlayerImpl">
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="randomUtils" ref="randomUtils" />
@@ -949,7 +949,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerName" value="MusicPlayer" />
 	</bean>
 	
-	<bean id="soundPlayer" class="momime.client.audio.AudioPlayerImpl">
+	<bean id="soundPlayer" class="momime.client.audio.MomAudioPlayerImpl">
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="randomUtils" ref="randomUtils" />

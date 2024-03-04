@@ -19,7 +19,7 @@ import com.ndg.utils.swing.zorder.ZOrderGraphics;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.CombatTileFigurePositionsGfx;
 import momime.client.graphics.database.FigurePositionsForFigureCount;
@@ -111,7 +111,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	private PendingMovementUtils pendingMovementUtils;
 	
 	/** Sound effects player */
-	private AudioPlayer soundPlayer;
+	private MomAudioPlayer soundPlayer;
 	
 	/** Combat UI */
 	private CombatUI combatUI;
@@ -920,7 +920,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @return Sound effects player
 	 */
-	public final AudioPlayer getSoundPlayer ()
+	public final MomAudioPlayer getSoundPlayer ()
 	{
 		return soundPlayer;
 	}
@@ -928,7 +928,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @param player Sound effects player
 	 */
-	public final void setSoundPlayer (final AudioPlayer player)
+	public final void setSoundPlayer (final MomAudioPlayer player)
 	{
 		soundPlayer = player;
 	}

@@ -29,7 +29,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import jakarta.xml.bind.Unmarshaller;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.LanguageChangeMaster;
@@ -372,7 +372,7 @@ public final class TestCombatUI extends ClientTestData
 		combat.setSpellCalculations (spellCalculations);
 		combat.setUnitClientUtils (unitClientUtils);
 		combat.setCombatLocation (new MapCoordinates3DEx (20, 10, 0));
-		combat.setMusicPlayer (mock (AudioPlayer.class));
+		combat.setMusicPlayer (mock (MomAudioPlayer.class));
 		combat.setCombatMapProcessing (mock (CombatMapProcessing.class));
 		combat.setUnitMovement (unitMovement);
 		combat.setUnitCalculations (unitCalc);

@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import jakarta.xml.bind.JAXBException;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.config.MomImeClientConfig;
 import momime.client.config.WindowPosition;
 import momime.client.graphics.AnimationContainer;
@@ -86,7 +86,7 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 	private MainMenuUI mainMenuUI;
 	
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 	
 	/** Client config, containing various overland map settings */
 	private MomImeClientConfig clientConfig;
@@ -414,7 +414,7 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -422,7 +422,7 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}

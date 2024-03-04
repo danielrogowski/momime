@@ -12,7 +12,7 @@ import com.ndg.utils.swing.NdgUIUtilsImpl;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -92,7 +92,7 @@ public final class TestMainMenuUI extends ClientTestData
 		main.setLanguageChangeMaster (langMaster);
 		main.setClient (client);
 		main.setVersion ("9.9.9");
-		main.setMusicPlayer (mock (AudioPlayer.class));
+		main.setMusicPlayer (mock (MomAudioPlayer.class));
 		main.setLargeFont (CreateFontsForTests.getLargeFont ());
 		main.setMediumFont (CreateFontsForTests.getMediumFont ());
 		main.setAnim (anim);

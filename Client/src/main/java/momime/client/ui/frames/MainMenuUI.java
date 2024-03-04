@@ -27,7 +27,7 @@ import com.ndg.utils.swing.GridBagConstraintsNoFill;
 import com.ndg.utils.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.AnimationContainer;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.AnimationController;
@@ -71,7 +71,7 @@ public final class MainMenuUI extends MomClientFrameUI
 	private AnimationController anim;
 	
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 	
 	/** Connect to server action */
 	private Action connectToServerAction;
@@ -450,7 +450,7 @@ public final class MainMenuUI extends MomClientFrameUI
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -458,7 +458,7 @@ public final class MainMenuUI extends MomClientFrameUI
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}

@@ -432,6 +432,11 @@
 			<version>${mom.map.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.ndg.common</groupId>
+			<artifactId>ndgaudio</artifactId>
+			<version>${mom.audio.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-common</artifactId>
 			<version>${project.version}</version>
@@ -439,10 +444,6 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.soundlibs</groupId>
-			<artifactId>jlayer</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

@@ -14,7 +14,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
@@ -167,8 +167,8 @@ public final class TestWizardBanishedUI extends ClientTestData
 		wizardBanished.setBanishedWizardDetails (banishedWizardDetails);
 		wizardBanished.setBanishingWizard (banishingWizard);
 		wizardBanished.setBanishingWizardDetails (banishingWizardDetails);
-		wizardBanished.setMusicPlayer (mock (AudioPlayer.class));
-		wizardBanished.setSoundPlayer (mock (AudioPlayer.class));
+		wizardBanished.setMusicPlayer (mock (MomAudioPlayer.class));
+		wizardBanished.setSoundPlayer (mock (MomAudioPlayer.class));
 		
 		// Display form		
 		wizardBanished.setModal (false);

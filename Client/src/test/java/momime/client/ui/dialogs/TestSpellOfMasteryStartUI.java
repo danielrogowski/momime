@@ -13,7 +13,7 @@ import com.ndg.utils.swing.NdgUIUtilsImpl;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
@@ -92,7 +92,7 @@ public final class TestSpellOfMasteryStartUI extends ClientTestData
 		spellOfMasteryStart.setLanguageChangeMaster (langMaster);
 		spellOfMasteryStart.setLargeFont (CreateFontsForTests.getLargeFont ());
 		spellOfMasteryStart.setCastingWizard (castingWizard);
-		spellOfMasteryStart.setMusicPlayer (mock (AudioPlayer.class));
+		spellOfMasteryStart.setMusicPlayer (mock (MomAudioPlayer.class));
 		spellOfMasteryStart.setWizardClientUtils (wizardClientUtils);
 		
 		// Display form		

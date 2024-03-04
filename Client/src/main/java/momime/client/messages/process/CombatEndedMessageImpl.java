@@ -6,7 +6,7 @@ import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.OverlandMapProcessing;
@@ -41,7 +41,7 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	private AnimationController anim;
 	
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
@@ -145,7 +145,7 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -153,7 +153,7 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}

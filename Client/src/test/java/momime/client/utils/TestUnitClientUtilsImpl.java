@@ -36,7 +36,7 @@ import com.ndg.utils.swing.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitSkillComponentImage;
@@ -653,7 +653,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		unit.setUnitID ("UN001");
 		
 		// Set up object to test
-		final AudioPlayer soundPlayer = mock (AudioPlayer.class);
+		final MomAudioPlayer soundPlayer = mock (MomAudioPlayer.class);
 		
 		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
 		obj.setSoundPlayer (soundPlayer);
@@ -698,7 +698,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		unit.setUnitID ("UN001");
 		
 		// Set up object to test
-		final AudioPlayer soundPlayer = mock (AudioPlayer.class);
+		final MomAudioPlayer soundPlayer = mock (MomAudioPlayer.class);
 		
 		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
 		obj.setSoundPlayer (soundPlayer);

@@ -23,7 +23,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.UpdateWizardStateMessageImpl;
@@ -62,10 +62,10 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	private WizardClientUtils wizardClientUtils;
 
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 
 	/** Sound effects player */
-	private AudioPlayer soundPlayer;
+	private MomAudioPlayer soundPlayer;
 	
 	/** The wizard who was banished */
 	private PlayerPublicDetails banishedWizard;
@@ -408,7 +408,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -416,7 +416,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}
@@ -424,7 +424,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	/**
 	 * @return Sound effects player
 	 */
-	public final AudioPlayer getSoundPlayer ()
+	public final MomAudioPlayer getSoundPlayer ()
 	{
 		return soundPlayer;
 	}
@@ -432,7 +432,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	/**
 	 * @param player Sound effects player
 	 */
-	public final void setSoundPlayer (final AudioPlayer player)
+	public final void setSoundPlayer (final MomAudioPlayer player)
 	{
 		soundPlayer = player;
 	}

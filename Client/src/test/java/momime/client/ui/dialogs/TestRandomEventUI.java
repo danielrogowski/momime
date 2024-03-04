@@ -13,7 +13,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -84,7 +84,7 @@ public final class TestRandomEventUI extends ClientTestData
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		box.setRandomEventLayout (layout);
 		box.setRandomEventMessage (event);
-		box.setMusicPlayer (mock (AudioPlayer.class));
+		box.setMusicPlayer (mock (MomAudioPlayer.class));
 		
 		// Display form		
 		box.setModal (false);

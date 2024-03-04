@@ -41,7 +41,7 @@ import com.ndg.utils.swing.zorder.ZOrderGraphicsImpl;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.config.WindowID;
 import momime.client.graphics.AnimationContainer;
@@ -169,7 +169,7 @@ public final class CombatUI extends MomClientFrameUI
 	private CombatMapUtils combatMapUtils;
 	
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 	
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
@@ -2059,7 +2059,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -2067,7 +2067,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}

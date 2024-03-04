@@ -13,7 +13,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
@@ -146,7 +146,7 @@ public final class TestWizardWonUI extends ClientTestData
 		wizardWon.setLanguageChangeMaster (langMaster);
 		wizardWon.setLargeFont (CreateFontsForTests.getLargeFont ());
 		wizardWon.setWinningWizard (winningWizard);
-		wizardWon.setMusicPlayer (mock (AudioPlayer.class));
+		wizardWon.setMusicPlayer (mock (MomAudioPlayer.class));
 		
 		// Display form		
 		wizardWon.setModal (false);

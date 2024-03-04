@@ -437,6 +437,11 @@
 			<version>${mom.audio.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.ndg.common</groupId>
+			<artifactId>ndgutils</artifactId>
+			<version>${mom.ndgutils.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-common</artifactId>
 			<version>${project.version}</version>

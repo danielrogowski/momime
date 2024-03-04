@@ -29,7 +29,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.PlayerColourImageGenerator;
-import momime.client.ui.components.HideableComponent;
+import com.ndg.utils.swing.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;

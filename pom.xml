@@ -22,7 +22,7 @@
 		<mom.multiplayer.version>0.6.2</mom.multiplayer.version>
 		<mom.map.version>0.6.3</mom.map.version>
 		<mom.xmleditor.version>0.6.3</mom.xmleditor.version>
-		<mom.ndgutils.version>0.6.2</mom.ndgutils.version>
+		<mom.ndgutils.version>0.6.3-SNAPSHOT</mom.ndgutils.version>
 		<mom.audio.version>0.6.0-SNAPSHOT</mom.audio.version>
 		<mom.jre.version>17.0.10</mom.jre.version>
 		<mom.jre.build>7</mom.jre.build>

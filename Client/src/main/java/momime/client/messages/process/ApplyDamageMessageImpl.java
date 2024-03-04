@@ -20,7 +20,7 @@ import momime.client.audio.MomAudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.CombatMapProcessing;
-import momime.client.ui.components.HideableComponent;
+import com.ndg.utils.swing.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;

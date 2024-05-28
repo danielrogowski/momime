@@ -7,6 +7,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
+import momime.common.database.AddsToSkillValueType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
@@ -213,12 +214,14 @@ public interface ExpandUnitDetailsUtils
 	 * @param attackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
 	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
 	 * @param magicRealmLifeformTypeID Unit's modified magic realm/lifeform type
+	 * @param addsToSkillValueTypes List of types of skill value modification to apply
 	 * @param db Lookup lists built over the XML database
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public void addBonusesFromOtherSkills (final MinimalUnitDetails mu, final Map<String, UnitSkillValueBreakdown> modifiedSkillValues,
 		final Map<String, Integer> unitStackSkills, final List<ExpandedUnitDetails> enemyUnits,
-		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID, final CommonDatabase db)
+		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID, final CommonDatabase db,
+		final List<AddsToSkillValueType> addsToSkillValueTypes)
 		throws MomException;
 
 	/**

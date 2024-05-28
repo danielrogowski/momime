@@ -1,5 +1,6 @@
 package momime.common.utils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
+import momime.common.database.AddsToSkillValueType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Pick;
@@ -32,6 +34,12 @@ public final class ExpandUnitDetailsImpl implements ExpandUnitDetails
 	 */
 	private final static String [] SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL = new String []
 		{CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK};
+	
+	/** Types of addition where one skill adds to another skill, for example flame blade giving +2 to melee attack */
+	final static List<AddsToSkillValueType> SKILL_ADDS_TO_OTHER_SKILL = Arrays.asList (AddsToSkillValueType.ADD_FIXED, AddsToSkillValueType.ADD_DIVISOR);
+
+	/** Flight applies a minimum speed of 3 */
+	final static List<AddsToSkillValueType> SKILL_APPLYS_MINIMUM_VALUE_TO_OTHER_SKILL = Arrays.asList (AddsToSkillValueType.MINIMUM);
 	
 	/** Sections broken out from the big expandUnitDetails method to make it more manageable */
 	private ExpandUnitDetailsUtils expandUnitDetailsUtils;
@@ -120,56 +128,60 @@ public final class ExpandUnitDetailsImpl implements ExpandUnitDetails
 		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = getExpandUnitDetailsUtils ().buildInitialBreakdownFromBasicSkills
 			(basicSkillValuesWithNegatedSkillsRemoved);
 		
-		// STEP 10 - If we're a boat, see who has Wind Mastery cast
-		getExpandUnitDetailsUtils ().adjustMovementSpeedForWindMastery (basicSkillValues, modifiedSkillValues, unit.getOwningPlayerID (), mem.getMaintainedSpell ());
-		
-		// STEP 11 - Add bonuses from weapon grades
+		// STEP 10 - Add bonuses from weapon grades
 		final WeaponGrade weaponGrade = (unit.getWeaponGrade () == null) ? null : db.findWeaponGrade (unit.getWeaponGrade (), "expandUnitDetails");
 		if (weaponGrade != null)
 			getExpandUnitDetailsUtils ().addBonusesFromWeaponGrade (mu, weaponGrade, modifiedSkillValues, unitStackSkills,
 				attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID ());
 
-		// STEP 12 - Add bonuses from experience
+		// STEP 11 - Add bonuses from experience
 		if (mu.getModifiedExperienceLevel () != null)
 			getExpandUnitDetailsUtils ().addBonusesFromExperienceLevel (mu.getModifiedExperienceLevel (), modifiedSkillValues);
 		
-		// STEP 13 - Add bonuses from combat area effects
+		// STEP 12 - Add bonuses from combat area effects
 		final List<String> skillsGrantedFromCombatAreaEffects = getExpandUnitDetailsUtils ().addSkillsFromCombatAreaEffects
 			(unit, mem.getCombatAreaEffect (), modifiedSkillValues, enemyUnits, magicRealmLifeformType.getPickID (), db);
 		
 		// Small point here but, since CAEs can add skills we didn't previously have (which isn't the case with other kinds of bonuses), if the
 		// added skills are defined to grant further skills (which we did back in step 5) that won't happen.  But I don't think this is really needed.
 		
-		// STEP 14 - For any skills added from CAEs, recheck if they are negated - this is because High Prayer is added after Prayer
+		// STEP 13 - For any skills added from CAEs, recheck if they are negated - this is because High Prayer is added after Prayer
 		getExpandUnitDetailsUtils ().removeNegatedSkillsAddedFromCombatAreaEffects (skillsGrantedFromCombatAreaEffects, modifiedSkillValues, enemyUnits, db);
-		
-		// STEP 15 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
+
+		// STEP 14 - Minimum speed 3 from Flight
 		getExpandUnitDetailsUtils ().addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits,
-			attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID (), db);
+			attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID (), db, SKILL_APPLYS_MINIMUM_VALUE_TO_OTHER_SKILL);
+
+		// STEP 15 - If we're a boat, see who has Wind Mastery cast
+		getExpandUnitDetailsUtils ().adjustMovementSpeedForWindMastery (basicSkillValues, modifiedSkillValues, unit.getOwningPlayerID (), mem.getMaintainedSpell ());
 		
-		// STEP 16 - Hero items - numeric bonuses (dealt with valueless skills above)
+		// STEP 16 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
+		getExpandUnitDetailsUtils ().addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits,
+			attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID (), db, SKILL_ADDS_TO_OTHER_SKILL);
+		
+		// STEP 17 - Hero items - numeric bonuses (dealt with valueless skills above)
 		if (mu.isMemoryUnit ())
 			getExpandUnitDetailsUtils ().addBonusesFromHeroItems (mu.getMemoryUnit ().getHeroItemSlot (), modifiedSkillValues, attackFromSkillID, db);
 		
-		// STEP 17 - If we falied to find any + to hit / + to block values and we have no basic value then there's no point keeping it in the list
+		// STEP 18 - If we falied to find any + to hit / + to block values and we have no basic value then there's no point keeping it in the list
 		// We know the entry has to exist and have a valid map in it from the code above, but it may be an empty map
 		for (final String unitSkillID : SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL)
 			if (modifiedSkillValues.get (unitSkillID).getComponents ().isEmpty ())
 				modifiedSkillValues.remove (unitSkillID);
 		
-		// STEP 18 - Add penalties for hero items (special coding for the Chaos attribute halving attack strength)
+		// STEP 19 - Add penalties for hero items (special coding for the Chaos attribute halving attack strength)
 		if (mu.isMemoryUnit ())
 			getExpandUnitDetailsUtils ().addPenaltiesFromHeroItems (mu, modifiedSkillValues,
 				attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID (), db);
 		
-		// STEP 19 - Apply any skill adjustments that set to a fixed value (shatter), divide by a value (warp creature) or multiply by a value (berserk)
+		// STEP 20 - Apply any skill adjustments that set to a fixed value (shatter), divide by a value (warp creature) or multiply by a value (berserk)
 		getExpandUnitDetailsUtils ().addPenaltiesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits,
 			attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID (), db);
 		
-		// STEP 20 - Basic upkeep values - just copy from the unit definition
+		// STEP 21 - Basic upkeep values - just copy from the unit definition
 		final Map<String, Integer> basicUpkeepValues = mu.getBasicUpeepValues ();
 		
-		// STEP 21 - Modify upkeep values
+		// STEP 22 - Modify upkeep values
 		final Map<String, Integer> modifiedUpkeepValues = getExpandUnitDetailsUtils ().buildModifiedUpkeepValues (mu, basicUpkeepValues, modifiedSkillValues, db);
 		
 		// STEP 23 - Work out who has control of the unit at the moment

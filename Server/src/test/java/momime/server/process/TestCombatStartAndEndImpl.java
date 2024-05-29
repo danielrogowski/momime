@@ -725,7 +725,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check message was sent
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -831,7 +831,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -984,7 +984,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1142,7 +1142,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1357,7 +1357,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCityUpdates (cityUpdates);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1580,7 +1580,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCityUpdates (cityUpdates);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1743,7 +1743,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, attackerPendingMovement, null, 1, 1, 100, 100);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1893,7 +1893,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, attackerPendingMovement, defenderPendingMovement, 1, 1, 100, 100);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (1, attackingMsgs.getMessages ().size ());

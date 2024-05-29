@@ -132,7 +132,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 					
 					getCombatStartAndEnd ().combatEnded (combatDetails, attackingPlayer, defendingPlayer,
 						(trueUnit.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer,
-						null, mom);
+						null, mom, true);
 				}
 		}
 	}

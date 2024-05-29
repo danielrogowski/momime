@@ -764,12 +764,12 @@ public final class CombatProcessingImpl implements CombatProcessing
 					(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
 		}
 		
-		// If the combat is a stalemate, then just declare the defender as the winner
+		// If the combat is a stalemate, then just declare the defender as the winner, and they don't get fame for it
 		if ((mom.getPlayers ().size () > 0) && (combatPlayers.bothFound ()) && (combatDetails.getCombatTurnCount () >= COMBAT_MAX_TURNS))
 		{
 			log.debug ("Combat URN " + combatDetails.getCombatURN () + " timed out");
 			getCombatStartAndEnd ().combatEnded (combatDetails, (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
-				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), null, mom);
+				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), null, mom, false);
 		}
 	}
 

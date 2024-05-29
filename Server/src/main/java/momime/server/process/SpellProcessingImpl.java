@@ -1112,7 +1112,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Did casting the spell result in winning/losing the combat?
 		if (winningPlayer != null)
 		{
-			getCombatStartAndEnd ().combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+			getCombatStartAndEnd ().combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 			combatEnded = true;
 		}
 

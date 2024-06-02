@@ -264,21 +264,25 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 			// Check conditions
 			final String tileTypeID;
 			final String mapFeatureID;
+			final String roadTileTypeID;
 			if (mc.getTerrainData () == null)
 			{
 				tileTypeID = null;
 				mapFeatureID = null;
+				roadTileTypeID = null;
 			}
 			else
 			{
 				tileTypeID = mc.getTerrainData ().getTileTypeID ();
 				mapFeatureID = mc.getTerrainData ().getMapFeatureID ();
+				roadTileTypeID = mc.getTerrainData ().getRoadTileTypeID ();
 			}
 			
 			final int cityPopulation = (mc.getCityData () == null) ? -1 : mc.getCityData ().getCityPopulation ();
 			
 			if (((element.getTileTypeID () == null) || (element.getTileTypeID ().equals (tileTypeID))) &&
-				((element.getRoadTileTypeID () == null) || (adjacentRoadTileTypeIDs.contains (element.getRoadTileTypeID ()))) &&
+				((element.getRoadTileTypeID () == null) || (element.getRoadTileTypeID ().equals (roadTileTypeID))) &&
+				((element.getAdjacentRoadTileTypeID () == null) || (adjacentRoadTileTypeIDs.contains (element.getAdjacentRoadTileTypeID ()))) &&
 				((element.getMapFeatureID () == null) || (element.getMapFeatureID ().equals (mapFeatureID))) &&
 				((element.getMinimumPopulation () == null) || (cityPopulation >= element.getMinimumPopulation ())) &&
 				((element.getMaximumPopulation () == null) || (cityPopulation <= element.getMaximumPopulation ())) &&

@@ -281,6 +281,8 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		cityData.setCityPopulation (2700);
 		mc.setCityData (cityData);
 
+		terrainData.setRoadTileTypeID (CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD);
+
 		mapGen.placeCombatMapElements (map, db, trueTerrain, sys, combatMapLocation);
 		int roadCount = 0;
 		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)

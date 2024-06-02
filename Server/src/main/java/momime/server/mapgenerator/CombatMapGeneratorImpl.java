@@ -288,7 +288,9 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				((element.getMaximumPopulation () == null) || (cityPopulation <= element.getMaximumPopulation ())) &&
 				((element.getBuildingID () == null) || (getMemoryBuildingUtils ().findBuilding (trueTerrain.getBuilding (), combatMapLocation, element.getBuildingID ()) != null)) &&
 				((element.getSpellID () == null) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-					(trueTerrain.getMaintainedSpell (), null, element.getSpellID (), null, null, combatMapLocation, null) != null)))
+					(trueTerrain.getMaintainedSpell (), null, element.getSpellID (), null, null, combatMapLocation, null) != null)) &&
+				((element.getExcludeSpellID () == null) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+					(trueTerrain.getMaintainedSpell (), null, element.getExcludeSpellID (), null, null, combatMapLocation, null) == null)))
 			{
 				// Get the cell to update
 				final MomCombatTile combatTile = map.getRow ().get (element.getLocationY ()).getCell ().get (element.getLocationX ());

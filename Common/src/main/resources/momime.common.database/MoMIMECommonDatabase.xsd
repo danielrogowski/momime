@@ -1453,6 +1453,10 @@
 			<xsd:selector xpath="combatMapElement" />
 			<xsd:field xpath="spellID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:spellPK" name="combatMapElementFKexcludeSpell">
+			<xsd:selector xpath="combatMapElement" />
+			<xsd:field xpath="excludeSpellID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:tileTypePK" name="combatMapElementFKtileType">
 			<xsd:selector xpath="combatMapElement" />
 			<xsd:field xpath="tileTypeID" />
@@ -4308,6 +4312,13 @@ a city wall, a wizards' fortress tile should be added if the city contains the w
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellID" type="momimecommon:spellID" nxe:label="Condition - Spell" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>spellName</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="excludeSpellID" type="momimecommon:spellID" nxe:label="Condition - Exclude Spell" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>spellName</nxe:showreferencedfield>

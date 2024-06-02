@@ -1,10 +1,13 @@
 package momime.server.mapgenerator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.map.generator.HeightMapGenerator;
@@ -25,6 +28,7 @@ import momime.common.messages.MapRowOfCombatTiles;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.knowledge.ServerGridCellEx;
@@ -50,17 +54,21 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
 	/**
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Server database XML
 	 * @param trueTerrain Details of the overland map, buildings and so on
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @param combatMapLocation The location that the map is being generated for (we need this in order to look for buildings, etc)
 	 * @return Newly generated combat map
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
 	@Override
 	public final MapAreaOfCombatTiles generateCombatMap (final CombatMapSize combatMapCoordinateSystem,
-		final CommonDatabase db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
+		final CommonDatabase db, final FogOfWarMemory trueTerrain, final CoordinateSystem overlandMapCoordinateSystem, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		// What tileType is the map cell we're generating a combat map for?
@@ -96,7 +104,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		
 		// Place walls, buildings, houses, nodes, towers and anything else defined in the combat map elements in the server XML
 		// Purposefully do this 2nd, so if there happens to be a tree right where we need to put the Wizards' Fortress, the tree will be overwritten
-		placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+		placeCombatMapElements (map, db, trueTerrain, overlandMapCoordinateSystem, combatMapLocation);
 
 		if (flyingFortress)
 			placeClouds (map, db);
@@ -226,14 +234,29 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 * @param map Map to add elements to
 	 * @param db Server database XML
 	 * @param trueTerrain Details of the overland map, buildings and so on
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @param combatMapLocation The location that the map is being generated for (we need this in order to look for buildings, etc)
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
-	final void placeCombatMapElements (final MapAreaOfCombatTiles map, final CommonDatabase db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
+	final void placeCombatMapElements (final MapAreaOfCombatTiles map, final CommonDatabase db, final FogOfWarMemory trueTerrain,
+		final CoordinateSystem overlandMapCoordinateSystem, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		// Find the map cell
 		final MemoryGridCell mc = trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
+		
+		// Get a list of all road tile types in adjacent map cells, but NOT including the map cell in the centre (where the combat actually is)
+		final Set<String> adjacentRoadTileTypeIDs = new HashSet<String> ();
+		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ()); d++)
+		{
+			final MapCoordinates3DEx newCoords = new MapCoordinates3DEx (combatMapLocation);
+			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, newCoords, d))
+			{
+				final OverlandMapTerrainData ringTerrain = trueTerrain.getMap ().getPlane ().get (newCoords.getZ ()).getRow ().get (newCoords.getY ()).getCell ().get (newCoords.getX ()).getTerrainData ();
+				if ((ringTerrain != null) && (ringTerrain.getRoadTileTypeID () != null) && (!adjacentRoadTileTypeIDs.contains (ringTerrain.getRoadTileTypeID ())))
+					adjacentRoadTileTypeIDs.add (ringTerrain.getRoadTileTypeID ());
+			}
+		}
 		
 		// Check each element
 		for (final CombatMapElement element : db.getCombatMapElement ())
@@ -255,6 +278,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 			final int cityPopulation = (mc.getCityData () == null) ? -1 : mc.getCityData ().getCityPopulation ();
 			
 			if (((element.getTileTypeID () == null) || (element.getTileTypeID ().equals (tileTypeID))) &&
+				((element.getRoadTileTypeID () == null) || (adjacentRoadTileTypeIDs.contains (element.getRoadTileTypeID ()))) &&
 				((element.getMapFeatureID () == null) || (element.getMapFeatureID ().equals (mapFeatureID))) &&
 				((element.getMinimumPopulation () == null) || (cityPopulation >= element.getMinimumPopulation ())) &&
 				((element.getMaximumPopulation () == null) || (cityPopulation <= element.getMaximumPopulation ())) &&
@@ -290,11 +314,13 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 * @param map Map to renegerate the tile borders of
 	 * @param db Server database XML
 	 * @param trueTerrain Details of the overland map, buildings and so on
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @param combatMapLocation The location that the map is being regenerated for (we need this in order to look for buildings, etc)
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
 	@Override
-	public final void regenerateCombatTileBorders (final MapAreaOfCombatTiles map, final CommonDatabase db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
+	public final void regenerateCombatTileBorders (final MapAreaOfCombatTiles map, final CommonDatabase db, final FogOfWarMemory trueTerrain,
+		final CoordinateSystem overlandMapCoordinateSystem, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		// Scrub out all the old borders
@@ -306,7 +332,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 			}
 		
 		// Technically this re-places tiles set from map elements too, but since they're all fixed there's no real harm in doing so
-		placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+		placeCombatMapElements (map, db, trueTerrain, overlandMapCoordinateSystem, combatMapLocation);
 	}
 
 	/**
@@ -388,5 +414,21 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

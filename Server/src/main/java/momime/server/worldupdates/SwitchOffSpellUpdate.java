@@ -213,7 +213,7 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 						(MapCoordinates3DEx) trueSpell.getCityLocation (), "SwitchOffSpellUpdate");
 					
 					getCombatMapGenerator ().regenerateCombatTileBorders (combatDetails.getCombatMap (), mom.getServerDB (),
-						mom.getGeneralServerKnowledge ().getTrueMap (), (MapCoordinates3DEx) trueSpell.getCityLocation ());
+						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getOverlandMapSize (), (MapCoordinates3DEx) trueSpell.getCityLocation ());
 					
 					// Send the updated map
 					final UpdateCombatMapMessage combatMapMsg = new UpdateCombatMapMessage ();

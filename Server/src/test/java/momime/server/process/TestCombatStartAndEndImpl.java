@@ -238,8 +238,11 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatMapSize combatMapCoordinateSystem = createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
+		final OverlandMapSize overlandMapCoordinateSystem = createOverlandMapSize ();
+		sd.setOverlandMapSize (overlandMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
-		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
+		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, overlandMapCoordinateSystem, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
 		// Casting skill of each player
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
@@ -416,8 +419,11 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatMapSize combatMapCoordinateSystem = createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
+		final OverlandMapSize overlandMapCoordinateSystem = createOverlandMapSize ();
+		sd.setOverlandMapSize (overlandMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
-		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
+		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, overlandMapCoordinateSystem, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
 		// Casting skill of each player
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
@@ -595,8 +601,11 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatMapSize combatMapCoordinateSystem = createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
+		final OverlandMapSize overlandMapCoordinateSystem = createOverlandMapSize ();
+		sd.setOverlandMapSize (overlandMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
-		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
+		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, overlandMapCoordinateSystem, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
 		// Casting skill of each player
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);

@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.utils.random.RandomUtils;
 import com.ndg.utils.random.RandomUtilsImpl;
@@ -169,9 +170,10 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		mapGen.setCombatMapServerUtils (utils);
 		mapGen.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
+		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// If we have no population, no buildings, no tile type, no map feature or anything at all - then method should just run through and do nothing
-		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+		mapGen.placeCombatMapElements (map, db, trueTerrain, sys, combatMapLocation);
 		for (final MapRowOfCombatTiles row : map.getRow ())
 			for (final MomCombatTile cell : row.getCell ())
 				assertEquals (0, cell.getTileLayer ().size ());
@@ -183,7 +185,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		
 		trueTerrain.getBuilding ().add (fortress);
 
-		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+		mapGen.placeCombatMapElements (map, db, trueTerrain, sys, combatMapLocation);
 		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
 			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
@@ -205,7 +207,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		terrainData.setTileTypeID ("TT12");		// Sorcery node
 		mc.setTerrainData (terrainData);
 
-		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+		mapGen.placeCombatMapElements (map, db, trueTerrain, sys, combatMapLocation);
 		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
 			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
@@ -224,7 +226,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		terrainData.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_GRASS);		// i.e. anything that doesn't produce a combat map element
 		terrainData.setMapFeatureID ("MF19");		// Fallen temple
 
-		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+		mapGen.placeCombatMapElements (map, db, trueTerrain, sys, combatMapLocation);
 		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
 			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
@@ -251,7 +253,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		
 		trueTerrain.getMaintainedSpell ().add (wallOfFire);
 
-		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+		mapGen.placeCombatMapElements (map, db, trueTerrain, sys, combatMapLocation);
 		int wallOfFireTileCount = 0;
 		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
 			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
@@ -279,7 +281,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		cityData.setCityPopulation (2700);
 		mc.setCityData (cityData);
 
-		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+		mapGen.placeCombatMapElements (map, db, trueTerrain, sys, combatMapLocation);
 		int roadCount = 0;
 		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
 			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
@@ -376,6 +378,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		mapGen.setCombatMapServerUtils (new CombatMapServerUtilsImpl ());
 		mapGen.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
+		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		mapGen.setRandomUtils (random);
 		
 		// Location
@@ -400,7 +403,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		fow.getBuilding ().add (fortress);
 
 		// Run method
-		final MapAreaOfCombatTiles map = mapGen.generateCombatMap (sd.getCombatMapSize (), db, fow, combatMapLocation);
+		final MapAreaOfCombatTiles map = mapGen.generateCombatMap (sd.getCombatMapSize (), db, fow, sd.getOverlandMapSize (), combatMapLocation);
 
 		// We can't 'test' the output, only that the generation doesn't fail, but interesting to dump the maps to the standard output
 		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();

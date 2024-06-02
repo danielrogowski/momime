@@ -226,7 +226,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		
 		// Generate the combat scenery
 		final MapAreaOfCombatTiles combatMap = getCombatMapGenerator ().generateCombatMap (mom.getSessionDescription ().getCombatMapSize (),
-			mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
+			mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getOverlandMapSize (), combatLocation);
 		startCombatMessage.setCombatTerrain (combatMap);
 		
 		// Set the location of both defenders and attackers.

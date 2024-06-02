@@ -664,7 +664,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// The new enchantment presumably requires the combat map to be regenerated so we can see it
 				// (the only city enchantments/curses that can be cast in combat are Wall of Fire / Wall of Darkness)
 				getCombatMapGenerator ().regenerateCombatTileBorders (combatDetails.getCombatMap (),
-					mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
+					mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getOverlandMapSize (), combatLocation);
 				
 				// Send the updated map
 				final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();

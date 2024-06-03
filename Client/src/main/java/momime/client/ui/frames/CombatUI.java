@@ -621,11 +621,15 @@ public final class CombatUI extends MomClientFrameUI
 										if (combatActionID == null)
 											combatActionID = getUnitCalculations ().determineCombatActionID (unit.getUnit (), false, getClient ().getClientDB ());
 										
+										// Don't draw shadow if the unit is flying over clouds
+										final String terrainTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (combatTerrain.getRow ().get (y).getCell ().get (x), CombatMapLayerID.TERRAIN);
+										final boolean drawShadows = !terrainTileTypeID.equals (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD);
+										
 										// Draw unit
 										getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
 											getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
 											getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours (), null,
-											getClientConfig ().isNewShadows ());
+											getClientConfig ().isNewShadows (), drawShadows);
 									}
 								}
 								catch (final Exception e)
@@ -638,11 +642,19 @@ public final class CombatUI extends MomClientFrameUI
 				if (getUnitMoving () != null)
 					try
 					{
+						// Don't draw shadow if the unit is flying over clouds
+						final String terrainTileTypeMoveFromID = getCombatMapUtils ().getCombatTileTypeForLayer
+							(combatTerrain.getRow ().get (getUnitMoving ().getMoveFrom ().getY ()).getCell ().get (getUnitMoving ().getMoveFrom ().getX ()), CombatMapLayerID.TERRAIN);
+						final String terrainTileTypeMoveToID = getCombatMapUtils ().getCombatTileTypeForLayer
+							(combatTerrain.getRow ().get (getUnitMoving ().getMoveTo ().getY ()).getCell ().get (getUnitMoving ().getMoveTo ().getX ()), CombatMapLayerID.TERRAIN);
+						final boolean drawShadows = (!terrainTileTypeMoveFromID.equals (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD)) &&
+							(!terrainTileTypeMoveToID.equals (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD));
+
 						final boolean teleporting = (getUnitMoving ().getTeleportTo () != null);
 						final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), !teleporting, getClient ().getClientDB ());
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
 							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours (),
-							getUnitMoving ().getMergingRatio (), getClientConfig ().isNewShadows ());
+							getUnitMoving ().getMergingRatio (), getClientConfig ().isNewShadows (), drawShadows);
 					}
 					catch (final Exception e)
 					{

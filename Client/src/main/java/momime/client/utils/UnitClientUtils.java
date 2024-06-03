@@ -147,11 +147,12 @@ public interface UnitClientUtils
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @param newShadows Whether new shadows option is switched on in client config
 	 * @param newShadowsUnitAdjustY Adjusts Y position a unit is drawn at if it is flying (its shadow stays in the same place)
+	 * @param drawShadows Whether to draw shadows or not (this only has an effect if newShadows is switched on)
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final String unitID, final int playerID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
-		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio, final boolean newShadows, final int newShadowsUnitAdjustY) throws IOException;
+		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio, final boolean newShadows, final int newShadowsUnitAdjustY, final boolean drawShadows) throws IOException;
 
 	/**
 	 * Version which derives most of the values from an existing unit object.
@@ -168,11 +169,12 @@ public interface UnitClientUtils
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @param newShadows Whether new shadows option is switched on in client config
+	 * @param drawShadows Whether to draw shadows or not (this only has an effect if newShadows is switched on)
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final ExpandedUnitDetails unit, final String combatActionID, final int direction, final ZOrderGraphics g,
 		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder,
-		final List<String> shadingColours, final Double mergingRatio, final boolean newShadows) throws IOException;
+		final List<String> shadingColours, final Double mergingRatio, final boolean newShadows, final boolean drawShadows) throws IOException;
 
 	/**
 	 * Plays the sound effect for a particular unit taking a particular action.  This covers all combat actions, so the clank clank of units walking,

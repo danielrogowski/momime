@@ -84,7 +84,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnit
 					{
 						zOrderGraphics.setGraphics (g);
 						final String movingActionID = getUnitCalculations ().determineCombatActionID (unit, true, getClient ().getClientDB ());
-						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 0, PANEL_SIZE.height - 32, true, true, 0, null, null, false);
+						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 0, PANEL_SIZE.height - 32, true, true, 0, null, null, false, true);
 					}
 					catch (final Exception e)
 					{

@@ -367,6 +367,14 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	}
 	
 	/**
+	 * @return The location (in combat map cells) that we're moving to
+	 */
+	public final MapCoordinates2DEx getMoveTo ()
+	{
+		return moveTo;
+	}
+	
+	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */
 	public final NdgUIUtils getUtils ()

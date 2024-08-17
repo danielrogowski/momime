@@ -551,39 +551,42 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 	 * @param attackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
 	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
 	 * @param magicRealmLifeformTypeID Unit's modified magic realm/lifeform type
+	 * @param addsToSkillValueTypes List of types of skill value modification to apply
 	 * @param db Lookup lists built over the XML database
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
 	public final void addBonusesFromOtherSkills (final MinimalUnitDetails mu, final Map<String, UnitSkillValueBreakdown> modifiedSkillValues,
 		final Map<String, Integer> unitStackSkills, final List<ExpandedUnitDetails> enemyUnits,
-		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID, final CommonDatabase db)
+		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID, final CommonDatabase db,
+		final List<AddsToSkillValueType> addsToSkillValueTypes)
 		throws MomException
 	{
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
-			{
-				final boolean haveRequiredSkill;
-				UnitSkillComponent overrideComponent = null;
-				
-				if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
-					haveRequiredSkill = (enemyUnits != null) && (enemyUnits.size () == 1) && (enemyUnits.get (0).hasModifiedSkill (skillDef.getUnitSkillID ()));
-				
-				else if (addsToSkill.isAffectsEntireStack ())
-					haveRequiredSkill = unitStackSkills.containsKey (skillDef.getUnitSkillID ());
-				
-				else
+				if (addsToSkillValueTypes.contains (addsToSkill.getAddsToSkillValueType ()))
 				{
-					final UnitSkillValueBreakdown requiredSkill = modifiedSkillValues.get (skillDef.getUnitSkillID ());
-					haveRequiredSkill = (requiredSkill != null);
-					if ((requiredSkill != null) && (requiredSkill.getSource () == UnitSkillComponent.COMBAT_AREA_EFFECTS))		// So still show in green on unit details
-						overrideComponent = requiredSkill.getSource ();
-				}
+					final boolean haveRequiredSkill;
+					UnitSkillComponent overrideComponent = null;
 					
-				if (haveRequiredSkill)
-					getUnitDetailsUtils ().addSkillBonus (mu, skillDef.getUnitSkillID (), addsToSkill, overrideComponent, modifiedSkillValues, unitStackSkills,
-						attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformTypeID);
-			}
+					if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
+						haveRequiredSkill = (enemyUnits != null) && (enemyUnits.size () == 1) && (enemyUnits.get (0).hasModifiedSkill (skillDef.getUnitSkillID ()));
+					
+					else if (addsToSkill.isAffectsEntireStack ())
+						haveRequiredSkill = unitStackSkills.containsKey (skillDef.getUnitSkillID ());
+					
+					else
+					{
+						final UnitSkillValueBreakdown requiredSkill = modifiedSkillValues.get (skillDef.getUnitSkillID ());
+						haveRequiredSkill = (requiredSkill != null);
+						if ((requiredSkill != null) && (requiredSkill.getSource () == UnitSkillComponent.COMBAT_AREA_EFFECTS))		// So still show in green on unit details
+							overrideComponent = requiredSkill.getSource ();
+					}
+						
+					if (haveRequiredSkill)
+						getUnitDetailsUtils ().addSkillBonus (mu, skillDef.getUnitSkillID (), addsToSkill, overrideComponent, modifiedSkillValues, unitStackSkills,
+							attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformTypeID);
+				}
 	}
 	
 	/**

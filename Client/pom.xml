@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.ndg.momime</groupId>
 		<artifactId>momime-parent</artifactId>
-		<version>1.6.6</version>
+		<version>1.6.7</version>
 	</parent>
 
 	<build>
@@ -432,6 +432,16 @@
 			<version>${mom.map.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.ndg.common</groupId>
+			<artifactId>ndgaudio</artifactId>
+			<version>${mom.audio.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.common</groupId>
+			<artifactId>ndgutils</artifactId>
+			<version>${mom.ndgutils.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-common</artifactId>
 			<version>${project.version}</version>
@@ -439,10 +449,6 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.soundlibs</groupId>
-			<artifactId>jlayer</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

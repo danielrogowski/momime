@@ -1453,9 +1453,21 @@
 			<xsd:selector xpath="combatMapElement" />
 			<xsd:field xpath="spellID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:spellPK" name="combatMapElementFKexcludeSpell">
+			<xsd:selector xpath="combatMapElement" />
+			<xsd:field xpath="excludeSpellID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:tileTypePK" name="combatMapElementFKtileType">
 			<xsd:selector xpath="combatMapElement" />
 			<xsd:field xpath="tileTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:tileTypePK" name="combatMapElementFKroadTileType">
+			<xsd:selector xpath="combatMapElement" />
+			<xsd:field xpath="roadTileTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:tileTypePK" name="combatMapElementFKadjacentRoadTileType">
+			<xsd:selector xpath="combatMapElement" />
+			<xsd:field xpath="adjacentRoadTileTypeID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:mapFeaturePK" name="combatMapElementFKmapFeature">
 			<xsd:selector xpath="combatMapElement" />
@@ -4306,8 +4318,33 @@ a city wall, a wizards' fortress tile should be added if the city contains the w
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="excludeSpellID" type="momimecommon:spellID" nxe:label="Condition - Exclude Spell" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>spellName</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" nxe:label="Condition - Tile Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
+        			<xsd:documentation>Only place this combat map element if the tile type at the combat location is this.  Used to place the tree/pool/volcano for nodes.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="roadTileTypeID" type="momimecommon:tileTypeID" nxe:label="Condition - Road Tile Type" nxe:showmaincolumn="false">
+				<xsd:annotation>
+        			<xsd:documentation>Only place this combat map element if the road tile type at the combat location is this.  Used to place the roads inside cities.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="adjacentRoadTileTypeID" type="momimecommon:tileTypeID" nxe:label="Condition - Adjacent Road Tile Type" nxe:showmaincolumn="false">
+				<xsd:annotation>
+        			<xsd:documentation>Only place this combat map element if at least one tile adjacent to the combat has a road of this type.
+There being this kind of road at the combat location itself doesn't count, because all cities always get a free road on their own tile.  Used to place the roads outside cities.</xsd:documentation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
 					</xsd:appinfo>

@@ -23,7 +23,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.PlayAnimationMessageImpl;
@@ -57,7 +57,7 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 	private GraphicsDatabaseEx graphicsDB;
 
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
@@ -332,7 +332,7 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -340,7 +340,7 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}

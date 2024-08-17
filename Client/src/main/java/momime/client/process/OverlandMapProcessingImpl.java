@@ -17,7 +17,7 @@ import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
-import momime.client.ui.components.HideableComponent;
+import com.ndg.utils.swing.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.OverlandMapUI;

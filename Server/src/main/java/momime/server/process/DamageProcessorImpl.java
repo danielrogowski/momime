@@ -407,7 +407,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		
 		// End the combat if one side was totally wiped out
 		if (combatEnded)
-			getCombatStartAndEnd ().combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+			getCombatStartAndEnd ().combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		return new ResolveAttackResult (combatEnded, attackingPlayerUnitsKilled, defendingPlayerUnitsKilled);
 	}

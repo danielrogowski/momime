@@ -50,12 +50,13 @@ public interface CombatStartAndEnd
 	 * @param winningPlayer Player who won
 	 * @param captureCityDecision If taken a city and winner has decided whether to raze or capture it then is passed in here; null = player hasn't decided yet (see comment above)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param awardFame Whether or not to award fame.  False for lame wins like the defender making the combat time out after 50 turns.
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws IOException If there is another kind of problem
 	 */
 	public void combatEnded (final CombatDetails combatDetails,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
-		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
+		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom, final boolean awardFame)
 		throws JAXBException, XMLStreamException, IOException;
 }

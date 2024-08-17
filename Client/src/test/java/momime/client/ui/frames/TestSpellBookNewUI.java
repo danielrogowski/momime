@@ -19,7 +19,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.config.MomImeClientConfig;
 import momime.client.config.SpellBookViewMode;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -245,7 +245,7 @@ public final class TestSpellBookNewUI extends ClientTestData
 		book.setCombatUI (new CombatUI ());
 		book.setSpellClientUtils (spellClientUtils);
 		book.setGraphicsDB (mock (GraphicsDatabaseEx.class));
-		book.setSoundPlayer (mock (AudioPlayer.class));
+		book.setSoundPlayer (mock (MomAudioPlayer.class));
 		book.setCastType (SpellCastType.OVERLAND);
 
 		// Display form		

@@ -19,7 +19,7 @@ import com.ndg.utils.swing.zorder.ZOrderGraphics;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.CombatTileFigurePositionsGfx;
 import momime.client.graphics.database.FigurePositionsForFigureCount;
@@ -29,7 +29,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.PlayerColourImageGenerator;
-import momime.client.ui.components.HideableComponent;
+import com.ndg.utils.swing.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
@@ -111,7 +111,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	private PendingMovementUtils pendingMovementUtils;
 	
 	/** Sound effects player */
-	private AudioPlayer soundPlayer;
+	private MomAudioPlayer soundPlayer;
 	
 	/** Combat UI */
 	private CombatUI combatUI;
@@ -463,12 +463,13 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @param newShadows Whether new shadows option is switched on in client config
 	 * @param newShadowsUnitAdjustY Adjusts Y position a unit is drawn at if it is flying (its shadow stays in the same place)
+	 * @param drawShadows Whether to draw shadows or not (this only has an effect if newShadows is switched on)
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final String unitID, final int playerID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
-		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio, final boolean newShadows, final int newShadowsUnitAdjustY) throws IOException
+		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio, final boolean newShadows, final int newShadowsUnitAdjustY, final boolean drawShadows) throws IOException
 	{
 		// Draw sample tile
 		if (sampleTileImageFile != null)
@@ -491,13 +492,13 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			frame.getFlagOffsetX (), frame.getFlagOffsetY (), playerID, shadingColours, null);
 		
 		final Image shadowImage;
-		if ((newShadows) && (frame.getShadowImageFile () != null))
+		if ((newShadows) && (drawShadows) && (frame.getShadowImageFile () != null))
 			shadowImage = getPlayerColourImageGenerator ().getModifiedImage (frame.getShadowImageFile (), false, null, null, null, null, shadingColours, null);
 		else
 			shadowImage = null;
 		
 		// This needs to be done properly with a map, rather than assuming the directions are listed in the correct order
-		final UnitShadowOffset shadowOffset = newShadows ? unit.getUnitShadowOffset ().get (direction - 1) : null;
+		final UnitShadowOffset shadowOffset = (shadowImage != null) ? unit.getUnitShadowOffset ().get (direction - 1) : null;
 		
 		// Draw the figure in each position
 		for (final int [] position : figurePositions)
@@ -559,12 +560,13 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @param newShadows Whether new shadows option is switched on in client config
+	 * @param drawShadows Whether to draw shadows or not (this only has an effect if newShadows is switched on)
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final ExpandedUnitDetails unit, final String combatActionID, final int direction, final ZOrderGraphics g,
 		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder,
-		final List<String> shadingColours, final Double mergingRatio, final boolean newShadows) throws IOException
+		final List<String> shadingColours, final Double mergingRatio, final boolean newShadows, final boolean drawShadows) throws IOException
 	{
 		// Get alive figures
 		int aliveFigureCount = unit.calculateAliveFigureCount ();
@@ -594,7 +596,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			}			
 			
 			drawUnitFigures (unit.getUnitID (), unit.getOwningPlayerID (), fullFigureCount, aliveFigureCount, combatActionID,
-				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours, mergingRatio, newShadows, newShadowsUnitAdjustY);
+				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours, mergingRatio, newShadows, newShadowsUnitAdjustY, drawShadows);
 		}
 	}
 	
@@ -920,7 +922,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @return Sound effects player
 	 */
-	public final AudioPlayer getSoundPlayer ()
+	public final MomAudioPlayer getSoundPlayer ()
 	{
 		return soundPlayer;
 	}
@@ -928,7 +930,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @param player Sound effects player
 	 */
-	public final void setSoundPlayer (final AudioPlayer player)
+	public final void setSoundPlayer (final MomAudioPlayer player)
 	{
 		soundPlayer = player;
 	}

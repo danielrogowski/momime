@@ -89,16 +89,16 @@ public final class LbxExtract
 			}
 		} */		
 		
-		for (int n = 0; n <= 5; n++)
+		/* for (int n = 0; n <= 5; n++)
 		{
 			String s = Integer.valueOf (n+1).toString ();
 			//while (s.length () < 2)
 			//	s = "0" + s;
 
 			convertImage ("SPECFX.LBX", 43, n, "spells//SP177//cast-frame" + s);
-		}
+		} */
 		
-		//convertImage ("DIPLOMAC.LBX", 0, 0, "ui\\backgrounds\\diplomacy");
+		convertImage ("CMBTCITY.LBX", 69, 0, "combat\\terrain\\roadOutsideCity\\00000000");
 		
 		System.out.println ("All done!");
 	} 

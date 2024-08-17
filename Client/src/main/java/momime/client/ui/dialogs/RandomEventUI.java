@@ -22,7 +22,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
@@ -63,7 +63,7 @@ public final class RandomEventUI extends MomClientDialogUI
 	private MomClient client;
 	
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
@@ -270,7 +270,7 @@ public final class RandomEventUI extends MomClientDialogUI
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -278,7 +278,7 @@ public final class RandomEventUI extends MomClientDialogUI
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}

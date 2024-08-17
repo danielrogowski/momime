@@ -319,9 +319,13 @@ public final class CommonDatabaseConstants
 
 	/** Invisibility skill added from spell */
 	public final static String UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL = "SS062";
+
+	/** Invisibility skill added from hero item */
+	public final static String UNIT_SKILL_ID_INVISIBILITY_FROM_HERO_ITEM = "IS08";
 	
 	/** All invisibility skills */
-	public final static List<String> UNIT_SKILL_IDS_INVISIBILITY = Arrays.asList (UNIT_SKILL_ID_INVISIBILITY, UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL, "IS08");
+	public final static List<String> UNIT_SKILL_IDS_INVISIBILITY = Arrays.asList
+		(UNIT_SKILL_ID_INVISIBILITY, UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL, UNIT_SKILL_ID_INVISIBILITY_FROM_HERO_ITEM);
 
 	/** Converts melee damage dealt into life stealing stored damage type (ghouls) */
 	public final static String UNIT_SKILL_ID_CREATE_UNDEAD = "US019";
@@ -329,8 +333,18 @@ public final class CommonDatabaseConstants
 	/** All regeneration skills */
 	public final static List<String> UNIT_SKILL_IDS_REGENERATION = Arrays.asList ("IS01", "US024", "SS031");
 
+	/** Natural true sight (illusions immunity) */
+	public final static String UNIT_SKILL_ID_TRUE_SIGHT = "US010";
+	
+	/** True sight added from spell */
+	public final static String UNIT_SKILL_ID_TRUE_SIGHT_FROM_SPELL = "SS131";
+	
+	/** True sight added from hero item */
+	public final static String UNIT_SKILL_ID_TRUE_SIGHT_FROM_HERO_ITEM = "IS03";
+	
 	/** All true sight skills */
-	public final static List<String> UNIT_SKILL_IDS_TRUE_SIGHT = Arrays.asList ("IS03", "US010", "SS131");
+	public final static List<String> UNIT_SKILL_IDS_TRUE_SIGHT = Arrays.asList
+		(UNIT_SKILL_ID_TRUE_SIGHT, UNIT_SKILL_ID_TRUE_SIGHT_FROM_SPELL, UNIT_SKILL_ID_TRUE_SIGHT_FROM_HERO_ITEM);
 	
 	/** Skill for priests purifying corruption */
 	public final static String UNIT_SKILL_ID_PURIFY = "US025";

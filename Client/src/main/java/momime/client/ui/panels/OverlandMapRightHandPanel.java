@@ -48,7 +48,7 @@ import momime.client.newturnmessages.NewTurnMessageMustBeAnswered;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
-import momime.client.ui.components.HideableComponent;
+import com.ndg.utils.swing.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.dialogs.MessageBoxUI;

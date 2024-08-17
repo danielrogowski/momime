@@ -1367,41 +1367,48 @@ public final class TestExpandUnitDetailsUtilsImpl
 		// Full skill list
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final AddsToSkill addsToSkill1 = new AddsToSkill (); 
+		final AddsToSkill addsToSkill1 = new AddsToSkill ();
+		addsToSkill1.setAddsToSkillValueType (AddsToSkillValueType.ADD_FIXED);
 		final UnitSkillEx skillDef1 = new UnitSkillEx ();
 		skillDef1.setUnitSkillID ("US001");
 		skillDef1.getAddsToSkill ().add (addsToSkill1);
 
 		final AddsToSkill addsToSkill2 = new AddsToSkill (); 
+		addsToSkill2.setAddsToSkillValueType (AddsToSkillValueType.ADD_FIXED);
 		final UnitSkillEx skillDef2 = new UnitSkillEx ();
 		skillDef2.setUnitSkillID ("US002");
 		skillDef2.getAddsToSkill ().add (addsToSkill2);
 		
 		final AddsToSkill addsToSkill3 = new AddsToSkill ();
+		addsToSkill3.setAddsToSkillValueType (AddsToSkillValueType.ADD_FIXED);
 		addsToSkill3.setAffectsEntireStack (true);
 		final UnitSkillEx skillDef3 = new UnitSkillEx ();
 		skillDef3.setUnitSkillID ("US003");
 		skillDef3.getAddsToSkill ().add (addsToSkill3);
 
 		final AddsToSkill addsToSkill4 = new AddsToSkill ();
+		addsToSkill4.setAddsToSkillValueType (AddsToSkillValueType.MINIMUM);
 		addsToSkill4.setAffectsEntireStack (true);
 		final UnitSkillEx skillDef4 = new UnitSkillEx ();
 		skillDef4.setUnitSkillID ("US004");
 		skillDef4.getAddsToSkill ().add (addsToSkill4);
 		
 		final AddsToSkill addsToSkill5 = new AddsToSkill ();
+		addsToSkill5.setAddsToSkillValueType (AddsToSkillValueType.MINIMUM);
 		addsToSkill5.setPenaltyToEnemy (true);
 		final UnitSkillEx skillDef5 = new UnitSkillEx ();
 		skillDef5.setUnitSkillID ("US005");
 		skillDef5.getAddsToSkill ().add (addsToSkill5);
 
 		final AddsToSkill addsToSkill6 = new AddsToSkill ();
+		addsToSkill6.setAddsToSkillValueType (AddsToSkillValueType.ADD_DIVISOR);
 		addsToSkill6.setPenaltyToEnemy (true);
 		final UnitSkillEx skillDef6 = new UnitSkillEx ();
 		skillDef6.setUnitSkillID ("US006");
 		skillDef6.getAddsToSkill ().add (addsToSkill6);
 
 		final AddsToSkill addsToSkill7 = new AddsToSkill (); 
+		addsToSkill7.setAddsToSkillValueType (AddsToSkillValueType.ADD_DIVISOR);
 		final UnitSkillEx skillDef7 = new UnitSkillEx ();
 		skillDef7.setUnitSkillID ("US007");
 		skillDef7.getAddsToSkill ().add (addsToSkill7);
@@ -1422,7 +1429,7 @@ public final class TestExpandUnitDetailsUtilsImpl
 		
 		// Enemy units giving us penalties
 		final ExpandedUnitDetails enemyUnit = mock (ExpandedUnitDetails.class);
-		when (enemyUnit.hasModifiedSkill ("US005")).thenReturn (true);
+		// when (enemyUnit.hasModifiedSkill ("US005")).thenReturn (true);
 		when (enemyUnit.hasModifiedSkill ("US006")).thenReturn (false);
 		
 		final List<ExpandedUnitDetails> enemyUnits = new ArrayList<ExpandedUnitDetails> ();
@@ -1436,12 +1443,12 @@ public final class TestExpandUnitDetailsUtilsImpl
 		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
-		utils.addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, null, null, "MB01", db);
+		utils.addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, null, null, "MB01", db, ExpandUnitDetailsImpl.SKILL_ADDS_TO_OTHER_SKILL);
 		
 		// Check results
 		verify (unitDetailsUtils).addSkillBonus (mu, "US001", addsToSkill1, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
 		verify (unitDetailsUtils).addSkillBonus (mu, "US003", addsToSkill3, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
-		verify (unitDetailsUtils).addSkillBonus (mu, "US005", addsToSkill5, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
+		// verify (unitDetailsUtils).addSkillBonus (mu, "US005", addsToSkill5, null, modifiedSkillValues, unitStackSkills, null, null, "MB01"); - excluded because its a minimum = wrong value type
 		verify (unitDetailsUtils).addSkillBonus (mu, "US007", addsToSkill7, UnitSkillComponent.COMBAT_AREA_EFFECTS,
 			modifiedSkillValues, unitStackSkills, null, null, "MB01");
 		verifyNoMoreInteractions (unitDetailsUtils);

@@ -46,7 +46,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.config.WindowID;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
@@ -126,7 +126,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 	private SpellClientUtils spellClientUtils;
 
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 	
 	/** Medium font */
 	private Font mediumFont;
@@ -2030,7 +2030,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -2038,7 +2038,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}

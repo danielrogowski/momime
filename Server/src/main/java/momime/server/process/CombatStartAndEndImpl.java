@@ -226,7 +226,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		
 		// Generate the combat scenery
 		final MapAreaOfCombatTiles combatMap = getCombatMapGenerator ().generateCombatMap (mom.getSessionDescription ().getCombatMapSize (),
-			mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
+			mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getOverlandMapSize (), combatLocation);
 		startCombatMessage.setCombatTerrain (combatMap);
 		
 		// Set the location of both defenders and attackers.
@@ -291,7 +291,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		
 		// Bypass combat entirely?
 		if (endImmediately != null)
-			combatEnded (combatDetails, attackingPlayer, defendingPlayer, endImmediately, null, mom);
+			combatEnded (combatDetails, attackingPlayer, defendingPlayer, endImmediately, null, mom, true);
 		else
 		{
 			log.debug ("Continuing combat setup");
@@ -335,6 +335,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	 * @param winningPlayer Player who won
 	 * @param captureCityDecision If taken a city and winner has decided whether to raze or capture it then is passed in here; null = player hasn't decided yet (see comment above)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param awardFame Whether or not to award fame.  False for lame wins like the defender making the combat time out after 50 turns.
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws IOException If there is another kind of problem
@@ -342,7 +343,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	@Override
 	public final void combatEnded (final CombatDetails combatDetails,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
-		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
+		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom, final boolean awardFame)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -589,7 +590,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				attackerFameChange = attackerFameChange - combatDetails.getAttackerSpecialFameLost ();
 			
 			// Update fame
-			if ((attackerFameChange != 0) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())))
+			if ((awardFame) && (attackerFameChange != 0) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())))
 			{
 				// Fame cannot go negative
 				int attackerFame = getResourceValueUtils ().findAmountStoredForProductionType (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
@@ -600,7 +601,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getResourceValueUtils ().addToAmountStored (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME, attackerFameChange);
 			}
 
-			if ((defenderFameChange != 0) && (defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ())))
+			if ((awardFame) && (defenderFameChange != 0) && (defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ())))
 			{
 				// Fame cannot go negative
 				int defenderFame = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
@@ -623,13 +624,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Remember defending player may still be nil if we attacked an empty lair
 			if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 			{
-				msg.setFameChange (defenderFameChange);
+				msg.setFameChange (awardFame ? defenderFameChange : 0);
 				defendingPlayer.getConnection ().sendMessageToClient (msg);
 			}
 			
 			if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
-				msg.setFameChange (attackerFameChange);
+				msg.setFameChange (awardFame ? attackerFameChange : 0);
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
 			}
 			

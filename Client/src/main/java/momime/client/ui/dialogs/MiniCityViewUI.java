@@ -26,7 +26,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.messages.process.AddBuildingMessageImpl;
 import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
 import momime.client.messages.process.DestroyBuildingMessageImpl;
@@ -66,10 +66,10 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	private MomClient client;
 
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 
 	/** Sound effects player */
-	private AudioPlayer soundPlayer;
+	private MomAudioPlayer soundPlayer;
 
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
@@ -514,7 +514,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -522,7 +522,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}
@@ -530,7 +530,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/**
 	 * @return Sound effects player
 	 */
-	public final AudioPlayer getSoundPlayer ()
+	public final MomAudioPlayer getSoundPlayer ()
 	{
 		return soundPlayer;
 	}
@@ -538,7 +538,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/**
 	 * @param player Sound effects player
 	 */
-	public final void setSoundPlayer (final AudioPlayer player)
+	public final void setSoundPlayer (final MomAudioPlayer player)
 	{
 		soundPlayer = player;
 	}

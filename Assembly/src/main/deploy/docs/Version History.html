@@ -36,8 +36,28 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.6.6</b></td>
-			<td align=left><b>27 Feb 2024</b></td>
+			<td align=left><b>Current version: 1.6.7</b></td>
+			<td align=left><b>10 Jun 2024</b></td>
+			<td align=left>
+				<b>New features:</b>
+				<ul>
+					<li>Combat maps will now include the road leading up to a city, if the city on the overland map does have a road connecting to it
+				</ul>
+
+				<b>Bug fixes:</b>
+				<ul>
+					<li>The "minimum speed 3" from a unit having Flight may not be applied in the right order when calculating unit stats, for example casting Flight and Endurance on a unit it would give speed 4, but having a hero item
+						that grants Flight and casting Endurance would give speed 3.  Similarly Flight would be applied after Wind Mastery on boats, so fixed.
+					<li>Defender won't earn fame in combat if it timed out after 50 turns so it wasn't a real win
+					<li>Units flying over the clouds at a city with Flying Fortress no longer draw shadows, which ruined the perception of the clouds (you need "Show updated unit shadows" switched on in options for this to work)
+					<li>Movement allocation for rampaging monsters would allow them to stack more than 9 in a map cell (in theory, never actually saw it happen)
+					<li>Fixed warning message about commons-logging on startup
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.6.6</td>
+			<td align=left>27 Feb 2024</td>
 			<td align=left>
 				<b>Updates to overland movement to bring it more in line with original MoM:</b>
 				<ul>
@@ -62,7 +82,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td align=left>Current version: 1.6.5</td>
+			<td align=left>1.6.5</td>
 			<td align=left>27 Aug 2023</td>
 			<td align=left>
 				<b>Bug fixes relating to Word of Recall and Recall Hero:</b>

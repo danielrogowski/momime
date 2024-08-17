@@ -58,7 +58,7 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 		if ((getCaptureCityDecision () == CaptureCityDecisionID.CAPTURE) || (getCaptureCityDecision () == CaptureCityDecisionID.RAZE))
 		{
 			final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
-			getCombatStartAndEnd ().combatEnded (combatDetails, sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
+			getCombatStartAndEnd ().combatEnded (combatDetails, sender, defendingPlayer, sender, getCaptureCityDecision (), mom, true);
 		}
 		else
 		{

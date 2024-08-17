@@ -569,6 +569,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 	
 	<!-- Resource consumers -->

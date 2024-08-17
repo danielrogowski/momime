@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -41,7 +42,7 @@ public interface UnitMovement
 	 * @param mem The player who is trying to move here's knowledge
 	 * @param db Lookup lists built over the XML database
 	 */
-	public void considerPossibleMove (final UnitStack unitStack, final Set<String> unitStackSkills,
+	public void considerPossibleOverlandMove (final UnitStack unitStack, final Set<String> unitStackSkills,
 		final MapCoordinates3DEx moveFrom, final OverlandMovementType movementType, final int direction,
 		final MapCoordinates3DEx moveTo, final int movingPlayerID, final int doubleDistanceToHere, final int doubleMovementRemainingToHere,
 		final int [] [] [] cellTransportCapacity, final Map<String, Integer> doubleMovementRates,
@@ -65,6 +66,34 @@ public interface UnitMovement
 		final UnitStack unitStack, final int doubleMovementRemaining, final List<? extends PlayerPublicDetails> players,
 		final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
+	 * @param moveFrom Combat tile we're moving from
+	 * @param moveTo Combat tile we're trying to move to
+	 * @param d The direction to get from moveFrom to moveTo
+	 * @param distance The distance it already took to get from the unit's current location to moveFrom
+	 * @param doubleMovementRemainingToHere How much movement the unit has left after reaching moveFrom
+	 * @param unitBeingMoved The unit moving in combat
+	 * @param ignoresCombatTerrain True if the unit has a skill with the "ignoreCombatTerrain" flag
+	 * @param cellsLeftToCheck List of combat tiles we still need to check movement from
+	 * @param doubleMovementDistances Double the number of movement points it takes to move here, 0=free (enchanted road), negative=cannot reach
+	 * @param movementDirections Trace of unit directions taken to reach here
+	 * @param movementTypes Type of move (or lack of) for every location on the combat map (these correspond exactly to the X, move, attack, icons displayed in the client)
+	 * @param ourUnits Array marking location of all of our units in the combat
+	 * @param enemyUnits Array marking location of all enemy units in the combat; each element in the array is their combatActionID so we know which ones are flying
+	 * @param borderTargetIDs List of tile borders that we can attack besides being able to target units; null if there are none
+	 * @param combatMap The details of the combat terrain
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If an expected data item cannot be found
+	 * @throws MomException If there is another kind of problem
+	 */
+	public void considerPossibleCombatMove (final MapCoordinates2DEx moveFrom, final MapCoordinates2DEx moveTo,
+		final int d, final int distance, final int doubleMovementRemainingToHere, final ExpandedUnitDetails unitBeingMoved,
+		final boolean ignoresCombatTerrain, final List<MapCoordinates2DEx> cellsLeftToCheck, final int [] [] doubleMovementDistances,
+		final int [] [] movementDirections, final CombatMovementType [] [] movementTypes, final boolean [] [] ourUnits, final String [] [] enemyUnits,
+		final List<String> borderTargetIDs, final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
+		throws RecordNotFoundException, MomException;
 	
 	/**
 	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location in the combat map whether we can move there or not.

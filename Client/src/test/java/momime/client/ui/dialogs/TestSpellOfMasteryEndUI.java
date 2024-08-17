@@ -20,7 +20,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
@@ -204,7 +204,7 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		spellOfMasteryEnd.setCastingWizard (castingWizard);
 		spellOfMasteryEnd.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		spellOfMasteryEnd.setKnownWizardUtils (knownWizardUtils);
-		spellOfMasteryEnd.setMusicPlayer (mock (AudioPlayer.class));
+		spellOfMasteryEnd.setMusicPlayer (mock (MomAudioPlayer.class));
 		spellOfMasteryEnd.setWizardClientUtils (wizardClientUtils);
 		
 		// Display form		

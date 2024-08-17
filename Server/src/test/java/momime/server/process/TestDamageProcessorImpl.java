@@ -444,7 +444,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		verify (midTurnMulti).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, mom);
 		
 		// Defending player won
-		verify (combatStartAndEnd).combatEnded (eq (combatDetails), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), isNull (), eq (mom));
+		verify (combatStartAndEnd).combatEnded (eq (combatDetails), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), isNull (), eq (mom), eq (true));
 		
 		verifyNoMoreInteractions (attackResolutionProc);
 		verifyNoMoreInteractions (wu);

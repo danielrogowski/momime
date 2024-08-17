@@ -37,7 +37,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.config.SpellBookViewMode;
 import momime.client.config.WindowID;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -286,7 +286,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Sound effects player */
-	private AudioPlayer soundPlayer;
+	private MomAudioPlayer soundPlayer;
 	
 	/** Action for switching to standard view */
 	private Action viewModeStandardAction;
@@ -2264,7 +2264,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/**
 	 * @return Sound effects player
 	 */
-	public final AudioPlayer getSoundPlayer ()
+	public final MomAudioPlayer getSoundPlayer ()
 	{
 		return soundPlayer;
 	}
@@ -2272,7 +2272,7 @@ public final class SpellBookNewUI extends MomClientFrameUI
 	/**
 	 * @param player Sound effects player
 	 */
-	public final void setSoundPlayer (final AudioPlayer player)
+	public final void setSoundPlayer (final MomAudioPlayer player)
 	{
 		soundPlayer = player;
 	}

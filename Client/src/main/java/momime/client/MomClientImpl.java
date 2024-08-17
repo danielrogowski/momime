@@ -37,7 +37,7 @@ import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.utils.swing.NdgUIUtils;
 
 import jakarta.xml.bind.JAXBException;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.NewGameDatabase;
@@ -167,7 +167,7 @@ public final class MomClientImpl extends MultiplayerSessionClientImpl implements
 	private DiplomacyUI diplomacyUI;
 	
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 	
 	/** Overland map bitmap generator */
 	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
@@ -1285,7 +1285,7 @@ public final class MomClientImpl extends MultiplayerSessionClientImpl implements
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -1293,7 +1293,7 @@ public final class MomClientImpl extends MultiplayerSessionClientImpl implements
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}

@@ -25,7 +25,7 @@ import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.utils.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
@@ -84,7 +84,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	private Font largeFont;
 	
 	/** Music player */
-	private AudioPlayer musicPlayer;
+	private MomAudioPlayer musicPlayer;
 
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
@@ -511,7 +511,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	/**
 	 * @return Music player
 	 */
-	public final AudioPlayer getMusicPlayer ()
+	public final MomAudioPlayer getMusicPlayer ()
 	{
 		return musicPlayer;
 	}
@@ -519,7 +519,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	/**
 	 * @param player Music player
 	 */
-	public final void setMusicPlayer (final AudioPlayer player)
+	public final void setMusicPlayer (final MomAudioPlayer player)
 	{
 		musicPlayer = player;
 	}

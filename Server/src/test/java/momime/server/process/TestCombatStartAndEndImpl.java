@@ -238,8 +238,11 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatMapSize combatMapCoordinateSystem = createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
+		final OverlandMapSize overlandMapCoordinateSystem = createOverlandMapSize ();
+		sd.setOverlandMapSize (overlandMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
-		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
+		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, overlandMapCoordinateSystem, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
 		// Casting skill of each player
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
@@ -416,8 +419,11 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatMapSize combatMapCoordinateSystem = createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
+		final OverlandMapSize overlandMapCoordinateSystem = createOverlandMapSize ();
+		sd.setOverlandMapSize (overlandMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
-		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
+		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, overlandMapCoordinateSystem, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
 		// Casting skill of each player
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
@@ -595,8 +601,11 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatMapSize combatMapCoordinateSystem = createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
+		final OverlandMapSize overlandMapCoordinateSystem = createOverlandMapSize ();
+		sd.setOverlandMapSize (overlandMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
-		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
+		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, overlandMapCoordinateSystem, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
 		// Casting skill of each player
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -725,7 +734,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check message was sent
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -831,7 +840,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -984,7 +993,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1142,7 +1151,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1357,7 +1366,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCityUpdates (cityUpdates);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1580,7 +1589,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCityUpdates (cityUpdates);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1743,7 +1752,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, attackerPendingMovement, null, 1, 1, 100, 100);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1893,7 +1902,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, attackerPendingMovement, defenderPendingMovement, 1, 1, 100, 100);
 		
 		// Run method
-		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom, true);
 		
 		// Check correct messages were generated
 		assertEquals (1, attackingMsgs.getMessages ().size ());

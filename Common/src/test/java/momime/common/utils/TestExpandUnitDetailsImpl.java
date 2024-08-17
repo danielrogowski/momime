@@ -228,7 +228,8 @@ public final class TestExpandUnitDetailsImpl
 		verify (expandUnitDetailsUtils).addBonusesFromExperienceLevel (modifiedExpLvl, modifiedSkillValues);
 		verify (expandUnitDetailsUtils).removeNegatedSkillsAddedFromCombatAreaEffects
 			(skillsGrantedFromCombatAreaEffects, modifiedSkillValues, enemyUnits, db);
-		verify (expandUnitDetailsUtils).addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db);
+		verify (expandUnitDetailsUtils).addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db, ExpandUnitDetailsImpl.SKILL_APPLYS_MINIMUM_VALUE_TO_OTHER_SKILL);
+		verify (expandUnitDetailsUtils).addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db, ExpandUnitDetailsImpl.SKILL_ADDS_TO_OTHER_SKILL);
 		verify (expandUnitDetailsUtils).addBonusesFromHeroItems (unit.getHeroItemSlot (), modifiedSkillValues, "US001", db);
 		verify (expandUnitDetailsUtils).addPenaltiesFromHeroItems (mu, modifiedSkillValues, "US001", "MB01", "MB02", db);
 		verify (expandUnitDetailsUtils).addPenaltiesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db);

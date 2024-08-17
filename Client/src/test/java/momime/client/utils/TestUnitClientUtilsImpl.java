@@ -36,7 +36,7 @@ import com.ndg.utils.swing.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
+import momime.client.audio.MomAudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitSkillComponentImage;
@@ -587,11 +587,11 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 					zOrderGraphics.setGraphics (g);
 					
 					final int y = 40;
-					unitUtils.drawUnitFigures ("UN106", 1, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0);
-					unitUtils.drawUnitFigures ("UN075", 1, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0);
-					unitUtils.drawUnitFigures ("UN035", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0);
-					unitUtils.drawUnitFigures ("UN197", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0);
-					unitUtils.drawUnitFigures ("UN037", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null, null, false, 0);
+					unitUtils.drawUnitFigures ("UN106", 1, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0, true);
+					unitUtils.drawUnitFigures ("UN075", 1, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0, true);
+					unitUtils.drawUnitFigures ("UN035", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0, true);
+					unitUtils.drawUnitFigures ("UN197", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null, false, 0, true);
+					unitUtils.drawUnitFigures ("UN037", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null, null, false, 0, true);
 				}
 				catch (final IOException e)
 				{
@@ -653,7 +653,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		unit.setUnitID ("UN001");
 		
 		// Set up object to test
-		final AudioPlayer soundPlayer = mock (AudioPlayer.class);
+		final MomAudioPlayer soundPlayer = mock (MomAudioPlayer.class);
 		
 		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
 		obj.setSoundPlayer (soundPlayer);
@@ -698,7 +698,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		unit.setUnitID ("UN001");
 		
 		// Set up object to test
-		final AudioPlayer soundPlayer = mock (AudioPlayer.class);
+		final MomAudioPlayer soundPlayer = mock (MomAudioPlayer.class);
 		
 		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
 		obj.setSoundPlayer (soundPlayer);

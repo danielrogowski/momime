@@ -877,11 +877,15 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * 
 	 * @param damages List of damages to heal
 	 * @param amountToHeal Number of HP to heal
-	 * @param healPermanentDamage Whether we can heal permanent damage or not
+	 * @param healPermanentDamage Whether we can heal permanent damage or not - common, be real, how's the player supposed to know? - set to always true
 	 */
 	@Override
-	public final void healDamage (final List<UnitDamage> damages, final int amountToHeal, final boolean healPermanentDamage)
+	public final void healDamage (final List<UnitDamage> damages, int amountToHeal, boolean healPermanentDamage)
 	{
+	    if (!healPermanentDamage) {
+	        amountToHeal /= 2;
+	        healPermanentDamage = true;
+	    }
 		if ((amountToHeal > 0) && (damages.size () > 0))
 		{
 			// We always heal in a specific order of damage types, which is the order they're defined on the enum, not the order they are in the list passed into this method

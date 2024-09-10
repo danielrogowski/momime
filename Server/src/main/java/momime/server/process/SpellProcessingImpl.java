@@ -22,6 +22,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.utils.random.RandomUtils;
 
@@ -936,22 +937,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					}
 					else if (kind == KindOfSpell.HEALING)
 					{
-						// Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,
-						// and handles showing the animation for us, so its convenient to reuse it for this.  Effectively we're just applying negative damage...
-						final List<ResolveAttackTarget> unitWrappers = new ArrayList<ResolveAttackTarget> ();
-						for (final MemoryUnit tu : targetUnits)
-						{
-							final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
-							final int heal = Math.min (dmg, spell.getCombatBaseDamage ());
-							if (heal > 0)
-							{
-								getUnitServerUtils ().healDamage (tu.getUnitDamage (), heal, false);
-								unitWrappers.add (new ResolveAttackTarget (tu));
-							}
-						}
-						
-						getFogOfWarMidTurnChanges ().sendDamageToClients (null, attackingPlayer, defendingPlayer,
-							unitWrappers, null, spell.getSpellID (), null, null, skipAnimation, mom);
+					    healUnits(spell, defendingPlayer, attackingPlayer, skipAnimation, mom, targetUnits);
 					}
 					else if (kind == KindOfSpell.RECALL)
 					{
@@ -1118,6 +1104,28 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 		return combatEnded;
 	}
+
+    private void healUnits(final Spell spell, final PlayerServerDetails defendingPlayer,
+            final PlayerServerDetails attackingPlayer, final boolean skipAnimation, final MomSessionVariables mom,
+            final List<MemoryUnit> targetUnits)
+            throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException {
+        // Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,
+        // and handles showing the animation for us, so its convenient to reuse it for this.  Effectively we're just applying negative damage...
+        final List<ResolveAttackTarget> unitWrappers = new ArrayList<ResolveAttackTarget> ();
+        for (final MemoryUnit tu : targetUnits)
+        {
+        	final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
+        	final int heal = Math.min (dmg, spell.getCombatBaseDamage ());
+        	if (heal > 0)
+        	{
+        		getUnitServerUtils ().healDamage (tu.getUnitDamage (), heal, false);
+        		unitWrappers.add (new ResolveAttackTarget (tu));
+        	}
+        }
+        
+        getFogOfWarMidTurnChanges ().sendDamageToClients (null, attackingPlayer, defendingPlayer,
+        	unitWrappers, null, spell.getSpellID (), null, null, skipAnimation, mom);
+    }
 	
 	/**
 	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.
@@ -1251,25 +1259,32 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			else if (kind == KindOfSpell.HEALING)
 			{
-				// Nature's Cures - heal every unit at the location
-				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
-						(tu.getOwningPlayerID () == maintainedSpell.getCastingPlayerID ()))
-					{
-						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-						
-						if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null,
-							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
-							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
-						{
-							// Heal this unit
-							final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
-							getUnitServerUtils ().healDamage (tu.getUnitDamage (), dmg, false);
-							
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu, mom, null);
-						}
-					}
+			    final String spellId = maintainedSpell.getSpellID();
+			    log.info("spellId = " + spellId);
+			    if ("SP125".equals(spellId)) {
+			        healUnits(spell, castingPlayer, castingPlayer, false, mom, List.of(targetUnit));
+			    } else {
+    				// Nature's Cures - heal every unit at the location
+    				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) {
+    					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
+    						(tu.getOwningPlayerID () == maintainedSpell.getCastingPlayerID ()))
+    					{
+    						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
+    							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+    						
+    						if (getSpellTargetingUtils ().isUnitValidTargetForSpell (spell, null, null, null,
+    							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
+    							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+    						{
+    							// Heal this unit
+    							final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
+    							getUnitServerUtils ().healDamage (tu.getUnitDamage (), dmg, false);
+    							
+    							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu, mom, null);
+    						}
+    					}
+    				}
+			    }
 			}
 			
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)

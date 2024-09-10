@@ -313,10 +313,12 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 						
 						final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
 						final MapCoordinates2DEx combatPosition = (MapCoordinates2DEx) spellTargetUnit.getDefUnit ().getCombatPosition ();
-						castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-							(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
-						castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-							(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
+						if (combatPosition != null) {
+    						castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+    							(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
+    						castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+    							(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
+						}
 						castAnim.setAnim (spellAnim);
 						castAnim.setFrameCount (thisTickCount);
 						castAnim.setInFront ((thisSpell.isCombatCastAnimationInFront () == null) ? true : thisSpell.isCombatCastAnimationInFront ());

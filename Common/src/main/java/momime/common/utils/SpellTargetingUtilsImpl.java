@@ -206,8 +206,8 @@ public final class SpellTargetingUtilsImpl implements SpellTargetingUtils
     		else if ((kind == KindOfSpell.HEALING) && (getUnitUtils ().getTotalDamageTaken (targetUnit.getUnitDamage ()) == 0)) 
     			result = TargetSpellResult.UNDAMAGED;
 
-    		else if ((kind == KindOfSpell.HEALING) && (getUnitUtils ().getHealableDamageTaken (targetUnit.getUnitDamage ()) == 0))
-    			result = TargetSpellResult.PERMANENTLY_DAMAGED;
+//    		else if ((kind == KindOfSpell.HEALING) && (getUnitUtils ().getHealableDamageTaken (targetUnit.getUnitDamage ()) == 0))
+//    			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
     		else if ((kind == KindOfSpell.HEALING) && ((targetUnit.getModifiedUnitMagicRealmLifeformType ().isHealEachTurn () == null) ||
     			(!targetUnit.getModifiedUnitMagicRealmLifeformType ().isHealEachTurn ())))

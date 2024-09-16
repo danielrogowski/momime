@@ -1114,7 +1114,7 @@ public final class SpellProcessingImpl implements SpellProcessing
         final List<ResolveAttackTarget> unitWrappers = new ArrayList<ResolveAttackTarget> ();
         for (final MemoryUnit tu : targetUnits)
         {
-        	final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
+        	final int dmg = getUnitUtils ().getTotalDamageTaken(tu.getUnitDamage ());
         	final int heal = Math.min (dmg, spell.getCombatBaseDamage ());
         	if (heal > 0)
         	{

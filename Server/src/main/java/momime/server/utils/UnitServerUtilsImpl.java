@@ -877,13 +877,15 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * 
 	 * @param damages List of damages to heal
 	 * @param amountToHeal Number of HP to heal
-	 * @param healPermanentDamage Whether we can heal permanent damage or not - common, be real, how's the player supposed to know? - set to always true
+	 * @param healPermanentDamage Whether we can heal permanent damage or not - come on, be real, how's the player supposed to know? - set to always true
 	 */
 	@Override
 	public final void healDamage (final List<UnitDamage> damages, int amountToHeal, boolean healPermanentDamage)
 	{
 	    if (!healPermanentDamage) {
-	        amountToHeal /= 2;
+	        if (amountToHeal > 1) {
+	            amountToHeal /= 2;
+	        }
 	        healPermanentDamage = true;
 	    }
 		if ((amountToHeal > 0) && (damages.size () > 0))

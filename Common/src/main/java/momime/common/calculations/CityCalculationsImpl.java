@@ -537,12 +537,16 @@ public final class CityCalculationsImpl implements CityCalculations
 			
 			// Dark rituals
 			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mem.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_DARK_RITUALS,
-				null, null, cityLocation, null) != null)
-				
+				null, null, cityLocation, null) != null) {
 				growing.setDarkRitualsPercentagLoss (25);
+			}
+			
+			final int piousLifePercentageLoss =
+			        getMemoryMaintainedSpellUtils ().findMaintainedSpell (mem.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PIOUS_LIFE, null, null, cityLocation, null) != null
+			        ? 50 : 0;
 			
 			// Add on (or substract) percentage modifiers
-			final int percentageBonuses = growing.getHousingPercentageBonus () - growing.getDarkRitualsPercentagLoss ();
+			final int percentageBonuses = growing.getHousingPercentageBonus () - growing.getDarkRitualsPercentagLoss () - piousLifePercentageLoss;
 			if (percentageBonuses != 0)
 			{
 				growing.setPercentageModifiers ((growing.getTotalGrowthRateAfterStreamOfLife () * percentageBonuses / 1000) * 10);
@@ -1215,7 +1219,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		throws RecordNotFoundException, MomException
 	{
 		// Dark rituals depends on which buildings are/aren't religious, so that's awkward to model in the XML so just write it as a special case
-		if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DARK_RITUALS))
+		if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DARK_RITUALS) || spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_PIOUS_LIFE))
 		{
 			if (doubleTotalFromReligiousBuildings > 0)
 			{

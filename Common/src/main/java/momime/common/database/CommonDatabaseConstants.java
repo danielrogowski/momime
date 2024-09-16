@@ -565,6 +565,8 @@ public final class CommonDatabaseConstants
 	
 	/** Dark Rituals spell */
 	public final static String SPELL_ID_DARK_RITUALS = "SP163";	
+    
+    public final static String SPELL_ID_PIOUS_LIFE = "SP216"; 
 
 	/** Drain Power spell */
 	public final static String SPELL_ID_DRAIN_POWER = "SP171";	
